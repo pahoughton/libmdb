@@ -30,7 +30,7 @@ Classes Used
     DumpInfo<> (part of libClue)
 
 Class Description
-
+    
     MapFile is provides mapping between a processes address space and
     file. This allow you to access the file's data through a memory
     pointer instead of reading and/or writing to the file. The base
@@ -179,6 +179,9 @@ Performance Characteristics:
 	    
 #
 # $Log$
+# Revision 1.2  1997/08/09 14:46:58  houghton
+# Cleanup.
+#
 # Revision 1.1  1997/07/25 13:39:57  houghton
 # Initial Version.
 #
