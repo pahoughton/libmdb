@@ -150,7 +150,11 @@ public:
 	bool		showVer = true ) const {
     return( DumpInfo< DRBSet< Key, LessKey > >( *this, prefix, showVer ) );
   };
-  
+
+  ostream & dumpHist( ostream & dest, const_iterator it ) const {
+    return( table.dumpHist( dest, it ) );
+  };
+
 protected:
 
   Table	    table;
@@ -425,6 +429,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1998/03/03 20:57:04  houghton
+// Added dumpHist.
+//
 // Revision 2.7  1997/11/03 12:03:35  houghton
 // Added a method to check if a record is effective for a specfic date.
 //
