@@ -400,7 +400,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 		
 	getFreeNode( base->freeList.prev )->size -= (origSize - newSize);
 
-#if defined( CLUE1_DEBUG )`
+#if defined( CLUE1_DEBUG )
 	_LLg( LogLevel::App2 )
 	  << "SHRINK: post: " << ( getFreeNode( base->freeList.prev )->size -
 			     base->allocSize )
@@ -689,6 +689,9 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/03/19 16:23:40  houghton
+// Bug-Fix: stray character.
+//
 // Revision 2.3  1997/03/18 16:56:08  houghton
 // Bug-Fix: free p n x was not setting the next node's prev.
 // Added Lots of debug output using LibLog Levels App1 & App2. ifdef'd
