@@ -223,7 +223,7 @@ public:
 
   inline pair_iterator_bool	insert( const Value & rec, EffDate eff ) {
     Loc node = mgr->allocate( sizeof( DRBNode ) );
-    Loc hist = histMgr->allocate( sizeof( DRBNode ) );
+    Loc hist = histMgr->allocate( sizeof( DRBHist ) );
     
     if( node && hist )
       {
@@ -308,8 +308,11 @@ public:
     if( node != headerLoc )
       {
 	Loc hist = drbNode( node ).hist;
-	for( ; hist && history( hist ).when > eff;
+
+	// return the newest non deleted history
+	for( ; hist && history( hist ).del;
 	     hist = history( hist ).next );
+
 	
 	if( hist )
 	  return( history( hist ).del ? end() :
@@ -591,7 +594,7 @@ protected:
       }
     else
       {
-	Loc hist = histMgr->allocate( sizeof( DRBNode ) );
+	Loc hist = histMgr->allocate( sizeof( DRBHist ) );
 	
 	if( hist )
 	  {
@@ -757,6 +760,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/08/20 10:35:19  houghton
+// Bug-Fix: was allocating sizeof( DRBNode ) for hist
+//     (changed to sizeof(DRBHist ).
+// Changed lower_bound to return the newest non deleted hist.
+//
 // Revision 2.6  1997/08/17 01:38:06  houghton
 // Added lower_bound.
 // Added nextkey.
