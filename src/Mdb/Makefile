@@ -137,7 +137,9 @@ CXX_C_SOURCES	=			\
 	MultiMem.C			\
 	MultiMemOffset.C		\
 	MultiMemOffsetMapFixed.C	\
-	MapMemFixedDynamic.C		\
+	MapMemDynamicFixed.C		\
+	AvlTreeOffsetBase.C		\
+	DavlTreeOffsetBase.C		\
 
 hold = \
 	MapMemDynamicDynamic.C		\
@@ -155,7 +157,7 @@ USER_HH_INCS	=			\
 	MapMem.hh			\
 	MapMemDynamic.hh		\
 	MapMemDynamicDynamic.hh		\
-	MapMemFixedDynamic.hh		\
+	MapMemDynamicFixed.hh		\
 	HashTableBase.hh		\
 	DashTableBase.hh		\
 	DashTable.hh			\
@@ -176,6 +178,7 @@ USER_II_INCS	=			\
 	MapMem.ii			\
 	MapMemDynamic.ii		\
 	MapMemDynamicDynamic.ii		\
+	MapMemDynamicFixed.ii		\
 	HashTableBase.ii		\
 	DashTableBase.ii		\
 	DashTable.ii			\
@@ -260,6 +263,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.4  1997/06/19 12:01:38  houghton
+# Changed MapMemFixedDynamic to MapMemDynamicFixed.
+#
 # Revision 2.3  1997/06/18 14:14:21  houghton
 # Added MultiMem classes and MapMemFixedDynamic.
 #
