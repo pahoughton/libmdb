@@ -37,7 +37,7 @@ template< class T >
 inline
 MapBatch<T>::~MapBatch( void )
 {
-  if( (map.getMode() & ios::out ) && endPos )
+  if( (map.getMode() & ios::out ) )
     {
       map.unmap();
       
@@ -110,6 +110,9 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.5  1997/12/23 12:10:45  houghton
+// Bug-Fix: was not truncating file if batch was empty.
+//
 // Revision 2.4  1997/09/02 13:26:03  houghton
 // Bug-Fix: endpos had the address which could change due to an
 //     append(). Changed so endpos is an offset and added to getBase() which
