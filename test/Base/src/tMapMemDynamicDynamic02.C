@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <cstring>
+
 #define MAX_VALUE_SIZE	256
 
 struct Data
@@ -172,6 +174,9 @@ tMapMemDynamicDynamic02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:40:08  houghton
+// Bug-Fix: added include <cstring>
+//
 // Revision 2.1  1997/07/11 17:39:18  houghton
 // Initial Version.
 //
