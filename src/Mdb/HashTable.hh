@@ -23,7 +23,7 @@
 
 #include <MdbConfig.hh>
 #include <HashTableBase.hh>
-#include <ChunkMgr.hh>
+#include <MultiMemOffset.hh>
 
 #include <DumpInfo.hh>
 
@@ -179,21 +179,26 @@ public:
     HashTableBase::Loc	    node;
   };
 
+  typedef reverse_bidirectional_iterator< const_iterator,
+    Value, const Value &, difference_type >	const_reverse_iterator;
+  typedef reverse_bidirectional_iterator< iterator,
+    Value, Value &, difference_type >		reverse_iterator;
+    
   typedef pair< iterator, bool >    pair_iterator_bool;
   
-  inline HashTable( ChunkMgr &		chunkMgr,
+  inline HashTable( MultiMemOffset *	memMgr,
 		    const char *	indexFileName,
 		    ios::open_mode	mode = ios::in,
-		    unsigned short	permMask = 0,
-		    bool		create = false );
+		    bool		create = false,
+		    unsigned short	permMask = 02 );
 
   virtual ~HashTable( void ) {};
 
-  inline pair_iterator_bool	insert( const Key & key, const Value & rec ) {
-    Loc	    node = mgr.allocate( sizeof( HashNode ) );
+  inline pair_iterator_bool	insert( const Value & rec ) {
+    Loc	    node = mgr->allocate( sizeof( HashNode ) );
     if( node )
       {
-	Hash    hash = hashFunct( key );
+	Hash    hash = hashFunct( keyOf( rec ) );
 	if( HashTableBase::insert( hash, node ) )
 	  {
 	    value( node ) = rec;
@@ -203,18 +208,15 @@ public:
       return( pair_iterator_bool( iterator( this, endHash(), 0 ), false ) );
   };
   
-  inline bool		erase( const Key & key ) {
-    iterator  it = find( key );
-    if( it != end() )
-      return( HashTableBase::erase( it.hash, it.node ) );
-    else
-      return( false );
+  inline bool	    erase( const iterator & first, const iterator & last ) {
+    return( HashTableBase::erase( first.hash, first.node,
+				  last.hash, last.node ) );
   };
-
+    
   inline const_iterator	    find( const Key & key ) const {
     Hash    hash = hashFunct( key );
     Loc	    node = HashTableBase::find( hash );
-    for( ; node; hashNode( node ).next ) {
+    for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
 	  ! lessKey( keyOf( value( node ) ), key ) )
 	return( const_iterator( this, hash, node ) );
@@ -225,7 +227,7 @@ public:
   inline iterator	    find( const Key & key ) {
     Hash    hash = hashFunct( key );
     Loc	    node = HashTableBase::find( hash );
-    for( ; node; hashNode( node ).next ) {
+    for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
 	  ! lessKey( keyOf( value( node ) ), key ) )
 	return( iterator( this, hash, node ) );
@@ -233,6 +235,18 @@ public:
     return( end() );
   }
     
+  inline bool		erase( const iterator & it ) {
+    return( HashTableBase::erase( it.hash, it.node ) );
+  };
+
+  inline bool		erase( const Key & key ) {
+    iterator  it = find( key );
+    if( it != end() )
+      return( erase( it ) );
+    else
+      return( false );
+  };
+
   inline const_iterator	    begin( void ) const {
     Hash    hash = first();
     return( const_iterator( this, hash, hashLoc( hash ) ) );
@@ -251,18 +265,27 @@ public:
     return( iterator( this, endHash(), 0 ) );
   };
 
+  inline const_reverse_iterator	rbegin( void ) const {
+    return( const_reverse_iterator( end() ) );
+  };
+
+  inline const_reverse_iterator rend( void ) const {
+    return( const_reverse_iterator( begin() ) );
+  };
+
+  inline reverse_iterator	rbegin( void ) {
+    return( reverse_iterator( end() ) );
+  };
+
+  inline reverse_iterator	rend( void ) {
+    return( reverse_iterator( begin() ) );
+  };
 
   inline const Value &	    value( Loc node ) const;
   inline Value &	    value( Loc node );
   
+  static size_type	    getNodeSize( void );
   
-#if 0
-  virtual ostream &	    write( ostream & dest ) const;
-  virtual istream &	    read( istream & src );
-
-  virtual ostream &	    toStream( ostream & dest ) const;
-  virtual istream &	    fromStream( istream & src );
-
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -271,14 +294,49 @@ public:
 				  const char *  prefix = "    ",
                                   bool          showVer = true ) const;
 
-  static const ClassVersion version;
-  
   inline
-  DumpInfo< HashTable<T> >  dump( const char *	prefix = "    ",
-				  bool		showVer = true ) const;
-  
-#endif
+  DumpInfo< HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > >
+  dump( const char *	prefix = "    ",
+	bool		showVer = true ) const {
+    return( DumpInfo<
+	    HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > >(
+	      *this, prefix, showVer ) );
+  };
 
+  class TableDumpMethods : public HashTableBase::DumpMethods
+  {
+  public:
+
+    TableDumpMethods(
+      const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > & me ) :
+      self( me ) {};
+    
+    virtual ostream &	dumpKey( ostream &	dest,
+				 const Key &	CLUE_UNUSED( key ) ) const {
+      return( dest );
+    };
+  
+    virtual ostream &	dumpValue( ostream &	 dest,
+				   const Value & CLUE_UNUSED( value ) ) const {
+      return( dest );
+    };
+
+    virtual ostream &	    dumpNode( ostream & dest, Loc node ) const {
+      dumpKey( dest, self.keyOf( self.value( node ) ) );
+      dest << ' ';
+      dumpValue( dest, self.value( node ) );
+      return( dest );
+    };
+
+  private:
+    const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > & self;
+  };
+
+
+  // ostream &	dumpTable( ostream & dest,
+  //			   const TableDumpMethods & meth ) const;
+
+  
 protected:
 
   HashFunct	hashFunct;
@@ -380,6 +438,14 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:11:58  houghton
+// Changed to use MultiMemOffset.
+// Added erase( iterator it ).
+// Added erase( iterator first, iterator last ).
+// Added rbegin() & rend().
+// Added getNodeSize().
+// Reworked dumpTree().
+//
 // Revision 2.1  1997/06/05 11:29:10  houghton
 // Initial Version.
 //
