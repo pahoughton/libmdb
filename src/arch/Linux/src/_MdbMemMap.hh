@@ -31,7 +31,7 @@
 #define MAP_VARIABLE	0
 
 // I can not find a prototype for getpagesize anywhere.
-extern "C" size_t getpagesize( void );
+// extern "C" size_t getpagesize( void );
 
 
 //
@@ -118,6 +118,9 @@ extern "C" size_t getpagesize( void );
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1999/07/17 08:40:21  houghton
+// Changed: removed prototype for getpagesize.
+//
 // Revision 2.1  1997/09/21 19:21:41  houghton
 // Changed version to 2
 //
