@@ -22,7 +22,7 @@
 //
 
 #include <MdbConfig.hh>
-#include <ChunkMgr.hh>
+#include <MultiMemOffset.hh>
 #include <iostream>
 
 #if defined( MDB_DEBUG )
@@ -35,8 +35,8 @@ class RBTreeBase
 
 public:
 
-  typedef ChunkMgr::Loc		Loc;
-  typedef ChunkMgr::size_type	size_type;
+  typedef MultiMemOffset::Loc		Loc;
+  typedef MultiMemOffset::size_type	size_type;
   
   enum Color
   {
@@ -56,7 +56,7 @@ public:
   {
   public:
 
-    inline ConstNodeBase( const ChunkMgr & chunkMgr, Loc loc );
+    inline ConstNodeBase( const MultiMemOffset & memMgr, Loc loc );
     
     inline Loc		loc( void ) const;
     inline Loc		parent( void ) const;
@@ -69,7 +69,9 @@ public:
     
     inline ConstNodeBase &  operator ++ ( void );
     inline ConstNodeBase &  operator -- ( void );
-    
+
+    inline ConstNodeBase &  operator = ( Loc rhs );
+      
   protected:
 
     inline const RBNodeBase &	rbNode( void ) const;
@@ -78,7 +80,7 @@ public:
 
   private:
     
-    const ChunkMgr &	mgr;
+    const MultiMemOffset &	mgr;
 
   };
   
@@ -86,7 +88,7 @@ public:
   {
   public:
 
-    inline NodeBase( ChunkMgr & chunkMgr, Loc nodeLoc );
+    inline NodeBase( MultiMemOffset & memMgr, Loc nodeLoc );
 
     inline Loc &	parent( void );
     inline Loc &	left( void );
@@ -104,7 +106,7 @@ public:
     
     inline RBNodeBase &	rbNode( void );
     
-    ChunkMgr &		    mgr;
+    MultiMemOffset &		    mgr;
     
   private:
 
@@ -116,10 +118,15 @@ public:
     unsigned long   count;
   };
   
-  RBTreeBase( ChunkMgr & chunkMgr, Loc headerLoc = 0 );
+  RBTreeBase( MultiMemOffset *	memMgr,
+	      unsigned short	treeKey,
+	      bool		create );
 
   virtual ~RBTreeBase( void );
 
+  inline size_type	size( void ) const;
+  inline bool		empty( void ) const;
+  
   // virtual ostream &	    write( ostream & dest ) const;
   // virtual istream &	    read( istream & src );
 
@@ -137,12 +144,28 @@ public:
   
   static const ClassVersion version;
 
+
+  class DumpMethods
+  {
+  public:
+
+    virtual ostream &	dumpNode( ostream & dest,
+				  const Loc CLUE_UNUSED( node ) ) const {
+      return( dest );
+    };
+  };
+  
+  ostream &	dumpRBTree( ostream & dest, const DumpMethods & meth ) const;
+  bool		testNode( ostream & dest, const ConstNodeBase & node ) const;
+  bool		testTree( ostream & dest ) const;
+  bool		allTested( void ) const;
+  void		resetTested( void ) const;
     
 protected:
 
   virtual bool	lessKey( Loc one, Loc two ) const = 0;
 
-  Loc	    insertNode( NodeBase & cur, NodeBase & par, NodeBase & node );
+  Loc	    insertNode( const NodeBase & c, NodeBase & p, NodeBase & n );
   Loc	    insert( Loc nodeLoc );
 
   bool	    erase( Loc nodeLoc );
@@ -159,6 +182,9 @@ protected:
   inline Loc &		    last( void );
   inline Loc		    last( void ) const;
 
+  inline Loc		    next( Loc & node ) const;
+  inline Loc		    prev( Loc & node ) const;
+  
   inline NodeBase	    parent( const ConstNodeBase & node );
   inline NodeBase	    parent( Loc loc );
   inline ConstNodeBase	    parent( const ConstNodeBase & node ) const;
@@ -176,9 +202,9 @@ protected:
 
   inline bool		    setNode( Loc loc, Loc p, Loc l, Loc r, Color c );
 
-  inline bool		    isSmaller( const ConstNodeBase & one,
-				       const ConstNodeBase & two ) const;
-
+  inline NodeBase	    minimum( const NodeBase & node );
+  inline NodeBase	    maximum( const NodeBase & node );
+  
   void		rotate_left( Loc loc );
   void		rotate_right( Loc loc );
   
@@ -191,7 +217,7 @@ protected:
 
   bool	setError( ErrorNum err );
   
-  ChunkMgr &	    mgr;
+  MultiMemOffset *  mgr;
   Loc		    headerLoc;
   ErrorNum	    errorNum;
   
@@ -298,6 +324,12 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:33:15  houghton
+// Cleanup.
+// Changed to use MultiMemOffset.
+// Added size() & empty().
+// Added testing & debuging methods().
+//
 // Revision 2.1  1997/06/05 11:29:14  houghton
 // Initial Version.
 //
