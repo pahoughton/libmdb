@@ -79,24 +79,21 @@ install_dirs:
 		$(install_dir_exports)
 
 $(INSTALL_SUPPORT_LIB_TARGETS):
-	$(call make_subdirs,$@,						\
-	    $(foreach var,$(SUPPORT_ITEMS),				\
-		$(if $($(var)_LIBS)$($(var)_DEP_LIBS),			\
-		    $(if $($(var)_BUILD_DIR),				\
-			$($(var)_EXTRACT_DIR)/$($(var)_BUILD_DIR)))),	\
-	    $(exports)							\
-	    $(install_lib_exports)					\
-	    $($(@)_exports)						\
-	    INSTALL_INC_DIR=$(RUN_NO_DIR))
-	$(call make_subdirs,$(subst install_support_lib_,,$@),		\
-		$(PRJ_TOPDIR),						\
-		$(exports)						\
-		$($(subst install_support_lib_,,$@)_exports))
-	$(call make_subdirs,$(subst _support,,$@),$(PRJ_TOPDIR),	\
-		$(exports)						\
-		$(install_lib_exports)					\
-		$($(@)_exports)						\
-		INSTALL_INC_DIR=$(RUN_NO_DIR))
+	$(hide) $(call make_install_support_libs,$(SUPPORT_ITEMS))
+
+install_support_items:
+	@ echo "MAKEING $@ FOR $(SUPPORT_ITEMS)"
+	$(hide) $(call make_install_support_items,$(SUPPORT_ITEMS), \
+		    $(exports)					    \
+		    $($(@)_exports))
+
+
+install_support: install_support_items
+	$(hide) $(MAKE) -C $(PRJ_TOPDIR)/src	\
+		install_lib_shared		\
+		$(exports)			\
+		$($(@)_exports)
+
 
 $(INSTALL_SUPPORT_TARGETS):
 	$(call make_subdirs,$(subst _support,,$@),			\

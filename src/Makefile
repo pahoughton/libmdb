@@ -44,6 +44,7 @@ include Make/make.cfg.$(make_cfg_ver)
 BUILD_TYPE_LIST		= all default debug profile test shared
 
 DEPEND_TARGETS		= $(patsubst %,depend_%,$(BUILD_TYPE_LIST))
+BUILD_LIB_TARGETS	= $(patsubst %,lib_%,$(BUILD_TYPE_LIST))
 BUILD_TARGETS		= $(BUILD_TYPE_LIST)
 INSTALL_LIB_TARGETS	= $(patsubst %,install_lib_%,$(BUILD_TYPE_LIST))
 INSTALL_TARGETS		= $(patsubst %,install_%,$(BUILD_TYPE_LIST))
@@ -78,6 +79,11 @@ $(DEPEND_TARGETS):
 	$(call make_subdirs,$@,$(LIB_SUBDIRS) $(BIN_SUBDIRS),	\
 		$(exports)					\
 		$(depend_exports)				\
+		$($(@)_exports))
+
+$(BUILD_LIB_TARGETS):
+	$(hide) $(call make_subdirs,$(subst lib_,,$@),$(LIB_SUBDIRS), \
+		$(exports)					      \
 		$($(@)_exports))
 
 $(BUILD_TARGETS):

@@ -50,6 +50,7 @@ DIST_BINARY_TYPE_LIST	= shared debug
 BUILD_TYPE_LIST		= all default debug profile test shared
 
 DEPEND_TARGETS		= $(patsubst %,depend_%,$(BUILD_TYPE_LIST))
+BUILD_LIB_TARGETS	= $(patsubst %,lib_%,$(BUILD_TYPE_LIST))
 BUILD_TARGETS		= $(BUILD_TYPE_LIST)
 INSTALL_LIB_TARGETS	= $(patsubst %,install_lib_%,$(BUILD_TYPE_LIST))
 INSTALL_TARGETS		= $(patsubst %,install_%,$(BUILD_TYPE_LIST))
@@ -95,6 +96,11 @@ check:
 		$(exports)		\
 		$($(@)_exports))
 
+$(BUILD_LIB_TARGETS):
+	$(hide) $(call make_subdirs,$@,src,	\
+		$(exports)			\
+		$($(@)_exports))
+
 $(INSTALL_LIB_TARGETS):
 	$(call make_subdirs,$@,src,			\
 		$(exports)				\
@@ -112,9 +118,15 @@ $(INSTALL_TARGETS):
 
 install: install_shared
 
+install_support:
+	$(hide) $(MAKE) -C support -f Install.Makefile $@	\
+		$(install_support_exports)			\
+		$(exports)					\
+		$($(@)_exports)
+
 install_support_lib_all install_support_lib_shared:
 	$(hide) $(MAKE) -C support -f Install.Makefile $@	\
-		$(install_lib_exports)				\
+		$(install_support_lib_exports)			\
 		$(exports)					\
 		$($(@)_exports)
 
