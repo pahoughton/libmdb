@@ -153,6 +153,27 @@ MapMemDynamicDynamic::getNodeSize( off_t node ) const
 }
 
 inline
+long
+MapMemDynamicDynamic::addRef( void )
+{
+  return( ++refCount );
+}
+
+inline
+long
+MapMemDynamicDynamic::getRefCount( void ) const
+{
+  return( refCount );
+}
+
+inline
+bool
+MapMemDynamicDynamic::delRef( void )
+{
+  return( (--refCount <= 0 ) ? true : false );
+}
+
+inline
 DumpInfo< MapMemDynamicDynamic >
 MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
 {
@@ -167,6 +188,9 @@ MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/03/13 02:38:58  houghton
+// Added addRef, getRefCount and delRef.
+//
 // Revision 2.1  1997/03/08 10:29:53  houghton
 // Initial partially tested version.
 //
