@@ -206,10 +206,17 @@ void
 MapFile::unmap( void )
 {
   if( mapBase != 0 && mapSize != 0 )
-    munmap( mapBase, mapSize );
+    {
+      munmap( mapBase, mapSize );
+      mapBase = 0;
+      mapSize = 0;
+    }
   
   if( mapFd != 0 )
-    close( mapFd );
+    {
+      close( mapFd );
+      mapFd = 0;
+    }
 }
   
 MapFile::size_type
@@ -416,6 +423,9 @@ MapFile::createMap(
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/07/15 20:21:37  houghton
+// Bug-Fix: Reset values to 0 in unmap.
+//
 // Revision 2.8  1997/07/13 11:14:52  houghton
 // Cleanup
 //
