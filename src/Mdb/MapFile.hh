@@ -84,7 +84,7 @@ public:
   inline ios::open_mode	getMode( void ) const;
   inline size_type	getSize( void ) const;
   inline MapAddr	getBase( void );
-  inline const MapAddr getBase( void ) const;
+  inline const MapAddr  getBase( void ) const;
   inline MapAddr	getEnd( void );
   inline const MapAddr	getEnd( void ) const;
   static size_type	getPageSize( void  );
@@ -231,6 +231,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/06/09 11:57:12  houghton
+// Cleanup.
+//
 // Revision 2.7  1997/06/05 11:17:35  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
