@@ -23,11 +23,11 @@
 #include <iomanip>
 #include <cstring>
 
-#if defined( CLUE_DEBUG )
+#if defined( MDB_DEBUG )
 #include "MapMemDynamicDynamic.ii"
 #endif
 
-CLUE_VERSION(
+MDB_VERSION(
   MapMemDynamicDynamic,
   "$Id$");
 
@@ -716,6 +716,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/06/19 12:02:02  houghton
+// Changed to be part of libMdb.
+//
 // Revision 2.9  1997/06/18 14:14:36  houghton
 // Added include ClueUtils.
 //
