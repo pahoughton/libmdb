@@ -20,6 +20,7 @@
 #include <LibTest.hh>
 #include <Net2Host.hh>
 
+#include <algorithm>
 #include <fstream>
 
 static long TotalRecs = 10000;
@@ -243,7 +244,7 @@ tAvlTreeOffset02( LibTest & tester )
     
     {
       // destroy
-
+      
       t.tree().destroy();
       TESTR( t.error(), t.good() );
       
@@ -299,6 +300,9 @@ tAvlTreeOffset02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:36:32  houghton
+// Bug-Fix; added include <algorithm>
+//
 // Revision 2.2  1997/07/14 10:45:26  houghton
 // Port(AIX): had to case ofstream::read arg to 'char *'.
 //
