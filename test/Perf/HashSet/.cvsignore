@@ -1,2 +1,5 @@
+.depend_debug
+.depend_default
+PerfHashSet
 PerfHashSet_g
 objects
