@@ -111,7 +111,7 @@ our @Options =
 			"The record layout report to generate the table's"
 			." record structure from."],
    [ "struct=s",	undef,
-			"FILE",	    opt",
+			"FILE",	    "opt",
 			"c struct file",
 			"The file containing the 'c' language struct"
 			." to generate the record structure from."],
@@ -218,6 +218,9 @@ if( ! defined( $main::DontRun ) || $main::DontRun == 0 ) {
 # Revision Log:
 #
 # $Log$
+# Revision 1.3  2003/07/20 13:55:33  houghton
+# Minor fixes.
+#
 # Revision 1.2  2003/07/04 13:20:29  houghton
 # Added support to get from c struct souce file.
 #
