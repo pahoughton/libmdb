@@ -17,6 +17,7 @@
 
 #include "HashTableBase.hh"
 #include <Str.hh>
+#include <iomanip>
 
 #if defined( MDB_DEBUG )
 #include "HashTableBase.ii"
@@ -31,50 +32,53 @@ const unsigned long HashTableBase::hashTableVersion = 0x4d485402;   // MHT02
 const HashTableBase::Hash    HashTableBase::badHash( -1 );
 
 HashTableBase::HashTableBase(
-  ChunkMgr &	    chunkMgr,
+  MultiMemOffset *  memMgr,
   const char *	    indexFileName,
   ios::open_mode    mode,
-  unsigned short    permMask,
-  bool		    create
+  bool		    create,
+  unsigned short    permMask
   )
-  : mgr( chunkMgr ),
+  : mgr( memMgr ),
     index( 0 )
 {
-  if( create )
+  if( mgr && mgr->good() )
     {
-      index = new MapFile( indexFileName,
-			   MapFile::getPageSize(),
-			   0,
-			   permMask );
-      
-      if( index && index->good() )
+      if( create )
 	{
-	  Header * hdr = (Header *)index->getBase();
-	  hdr->version = hashTableVersion;
-	  hdr->count = 0;
-
-	  for( Loc * l = (Loc *)(index->getBase() + sizeof( Header ));
-	       l < (Loc *)index->getEnd();
-	       ++ l )
-	    *l = ChunkMgr::badLoc;
-
-	  setError( E_OK );
-	}
+	  index = new MapFile( indexFileName,
+			       MapFile::getPageSize(),
+			       0,
+			       permMask );
 	  
-    }
-  else
-    {
-      index = new MapFile( indexFileName,
-			   0,
-			   mode );
-      
-      if( index && index->good() )
+	  if( index && index->good() )
+	    {
+	      Header * hdr = (Header *)index->getBase();
+	      hdr->version = hashTableVersion;
+	      hdr->count = 0;
+	  
+	      for( Loc * l = (Loc *)(index->getBase() + sizeof( Header ));
+		   l < (Loc *)index->getEnd();
+		   ++ l )
+		*l = MultiMemOffset::badLoc;
+	      
+	      setError( E_OK );
+	    }
+	  
+	}
+      else
 	{
-	  Header * hdr = (Header *)index->getBase();
-	  if( hdr->version != hashTableVersion )
-	    setError( E_VERSION );
-	  else
-	    setError( E_OK );
+	  index = new MapFile( indexFileName,
+			       0,
+			       mode );
+	  
+	  if( index && index->good() )
+	    {
+	      Header * hdr = (Header *)index->getBase();
+	      if( hdr->version != hashTableVersion )
+		setError( E_VERSION );
+	      else
+		setError( E_OK );
+	    }
 	}
     }
 }
@@ -86,7 +90,8 @@ HashTableBase::~HashTableBase( void )
 bool
 HashTableBase::good( void ) const
 {
-  return( errorNum == E_OK && index && index->good() && mgr.good() );
+  return( errorNum == E_OK && index && index->good() &&
+	  mgr && mgr->good() );
 }
 
 const char *
@@ -110,8 +115,8 @@ HashTableBase::error( void ) const
       if( index && ! index->good() )
 	errStr << ": " << index->error();
 
-      if( ! mgr.good() )
-	errStr << ": " << mgr.error();
+      if( ! mgr->good() )
+	errStr << ": " << mgr->error();
 
       if( errorNum != E_OK )
 	{
@@ -170,7 +175,7 @@ HashTableBase::dumpInfo(
   Str pre;
   pre = prefix;
   pre << "mgr:";
-  mgr.dumpInfo( dest, pre, false );
+  mgr->dumpInfo( dest, pre, false );
   
   if( index )
     {
@@ -191,11 +196,43 @@ HashTableBase::dumpInfo(
   return( dest );
 }
 
+ostream &
+HashTableBase::dumpTable(
+  ostream &		dest,
+  const DumpMethods &	meth
+  ) const
+{
+  dest << "hash      node  prev  next\n";
+  
+  for( Hash hash = first(); hash < endHash(); ++ hash )
+    {
+      for( Loc node = hashLoc( hash );
+	   node != 0;
+	   node = hashNode( node ).next )
+	{
+	  dest << setw(8) << hash
+	       << setw(6) << node
+	       << setw(6) << hashNode( node ).prev
+	       << setw(6) << hashNode( node ).next
+	       << ' '
+	    ;
+	  meth.dumpNode( dest, node ) << '\n';
+	}
+    }
+  return( dest );
+}
+
+ostream &
+HashTableBase::dumpNode( ostream & dest, Loc CLUE_UNUSED( node ) ) const
+{
+  return( dest );
+}
+
 HashTableBase::Loc
 HashTableBase::insert( Hash hash, Loc node )
 {
   if( ! good() )
-    return( ChunkMgr::badLoc );
+    return( MultiMemOffset::badLoc );
 
   Loc hLoc = (hash * sizeof( Loc )) + sizeof( Header );
 
@@ -204,12 +241,12 @@ HashTableBase::insert( Hash hash, Loc node )
       size_t oSize = index->getSize();
       
       if( index->setSize( hLoc + sizeof( Loc ), 0 ) < hLoc + sizeof( Loc ) )
-	return( ChunkMgr::badLoc );
+	return( MultiMemOffset::badLoc );
 
       for( Loc * nLoc = (Loc *)(index->getBase() + oSize);
 	   nLoc < (Loc *)index->getEnd();
 	   ++ nLoc )
-	*nLoc = ChunkMgr::badLoc;
+	*nLoc = MultiMemOffset::badLoc;
 
     }
 
@@ -240,12 +277,42 @@ HashTableBase::erase( Hash hash, Loc node )
   if( hashNode( node ).next )
     hashNode( hashNode( node ).next ).prev = hashNode( node ).prev;
 
-  mgr.release( node );
+  mgr->release( node );
   
   -- header().count;
   return( true );
 }
 
+bool
+HashTableBase::erase(
+  Hash	    firstHash,
+  Loc	    firstNode,
+  Hash	    lastHash,
+  Loc	    lastNode
+  )
+{
+  if( ! good() )
+    return( false );
+
+  Hash  curHash  = firstHash;
+  Loc	curNode  = firstNode;
+  
+  Hash	nextHash = firstHash;
+  Loc	nextNode = firstNode;
+
+  for( next( nextHash, nextNode );
+       curHash != lastHash && curNode != lastNode;
+       next( nextHash, nextNode ) )
+    {
+      erase( curHash, curNode );
+      curHash = nextHash;
+      curNode = nextNode;
+    }
+
+  return( true );
+}
+
+  
 bool
 HashTableBase::setError( ErrorNum err )
 {
@@ -256,6 +323,11 @@ HashTableBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:14:05  houghton
+// Changed to use MultiMemOffset.
+// Changed dumpTable().
+// Added erase( first, last ).
+//
 // Revision 2.1  1997/06/05 11:29:10  houghton
 // Initial Version.
 //

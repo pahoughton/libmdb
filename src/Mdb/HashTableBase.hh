@@ -22,7 +22,7 @@
 //
 
 #include <MdbConfig.hh>
-#include <ChunkMgr.hh>
+#include <MultiMemOffset.hh>
 #include <MapFile.hh>
 
 #include <iostream>
@@ -38,15 +38,15 @@ class HashTableBase
 public:
 
   typedef long		    Hash;
-  typedef ChunkMgr::Loc	    Loc;
+  typedef MDB_TYPE_LOC	    Loc;
   
-  typedef size_t	    size_type;
+  typedef MDB_TYPE_SIZE	    size_type;
   
-  HashTableBase( ChunkMgr &	chunkMgr,
+  HashTableBase( MultiMemOffset *   memMgr,
 		 const char *	indexFileName,
 		 ios::open_mode	mode = ios::in,
-		 unsigned short	permMask = 0,
-		 bool		create = false );
+		 bool		create = false,
+		 unsigned short	permMask = 02 );
 
   virtual ~HashTableBase( void );
 
@@ -64,7 +64,7 @@ public:
   static const ClassVersion version;
 
   static const Hash  badHash;
-  
+
   struct Header
   {
     unsigned long   version;
@@ -77,8 +77,22 @@ public:
     Loc	    prev;
   };
 
+  class DumpMethods
+  {
+  public:
+
+    virtual ostream &	dumpNode( ostream & dest,
+				  Loc CLUE_UNUSED( node ) ) const {
+      return( dest );
+    };
+  };
+  
+  ostream & dumpTable( ostream & dest, const DumpMethods & meth ) const;
+  
 protected:
 
+  virtual ostream &	dumpNode( ostream & dest, Loc node ) const;
+  
   enum ErrorNum
   {
     E_OK,
@@ -97,7 +111,9 @@ protected:
   
   Loc		insert( Hash hash, Loc node );
   bool		erase( Hash hash, Loc node );
-
+  bool		erase( Hash firstHash, Loc firstNode,
+		       Hash lastHash, Loc lastNode );
+  
   inline Loc	find( Hash hash ) const;
 
   inline Hash	first( void ) const;
@@ -107,9 +123,9 @@ protected:
 
   bool		setError( ErrorNum err );
   
-  ChunkMgr &	mgr;
-  MapFile *	index;
-  ErrorNum	errorNum;
+  MultiMemOffset *  mgr;
+  MapFile *	    index;
+  ErrorNum	    errorNum;
   
 private:
 
@@ -219,6 +235,11 @@ operator >> ( istream & src, const HashTableBase & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/13 11:13:49  houghton
+// Changed to use MultiMemOffset.
+// Changed dumpTable().
+// Added erase( first, last ).
+//
 // Revision 2.2  1997/06/05 13:42:28  houghton
 // Changed for AIX: had to make HashNodeBase a public member.
 //
