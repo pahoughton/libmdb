@@ -23,6 +23,7 @@
 #include <LibTest.hh>
 #include <ClueUtils.hh>
 #include <functional>
+#include <set>
 
 struct Rec
 {
@@ -39,7 +40,7 @@ operator < ( const Rec & a, const Rec & b )
 
 struct HashRec
 {
-  HashTable::HashValue	operator () ( const Rec & key ) const {
+  HashTableBase::HashValue operator () ( const Rec & key ) const {
     return( abs( key.k ) );
   };
 };
@@ -54,23 +55,24 @@ typedef HashTable< Rec, Rec, MdbIdent< Rec, Rec >,
 #define TEST_INDEX_FN	TEST_DATA_DIR "/tHashTable01.hash"
 #define TEST_DATA_FN	TEST_DATA_DIR "/tTashTable01.data"
 
-#define INSERT_TEST( k_ )
-{
-  Rec i;
-  i.k = k_;
-  i.v = k * 100;
-  
-  Table::size_type  origSize;
-
-  TEST( "keys insert", keys.insert( i ).second );
-  TEST( "insert", t.insert( i ).second );
-
-  TEST( t.size() == origSize + 1 );
+#define INSERT_TEST( k_ )						      \
+{									      \
+  Rec i;								      \
+  i.k = k_;								      \
+  i.v = k * 100;							      \
+  									      \
+  Table::size_type  origSize;						      \
+									      \
+  TESTR( "keys insert", keys.insert( i ).second );			      \
+  TESTR( "insert", t.insert( i ).second );				      \
+									      \
+  TEST( t.size() == origSize + 1 );					      \
 }
 
 bool
 tHashTable01( LibTest & tester )
 {
+#if defined( FIXME )
   KeySet  keys;
   
   {
@@ -119,7 +121,7 @@ tHashTable01( LibTest & tester )
 
 
   }
-
+#endif
   return( true );
 }
 
@@ -216,14 +218,17 @@ tHashTable01( LibTest & tester )
 #endif
   }
 
-#endif
   return( true );
 }
 
+#endif
 
 // Revision Log:
 //
 // $Log$
+// Revision 1.5  1997/08/18 10:26:41  houghton
+// Commented out test code (not ready).
+//
 // Revision 1.4  1997/07/25 13:50:18  houghton
 // Reworking to do major portion of testing (work in progress).
 //
