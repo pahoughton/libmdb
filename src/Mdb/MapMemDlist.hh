@@ -134,6 +134,105 @@ public:
     
   };
 
+  class const_iterator
+    : public bidirectional_iterator< Value, difference_type >
+  {
+  public:
+
+    inline const_iterator( void )
+      : dlist( 0 ), recLoc( 0 ) {};
+
+    inline const_iterator( const iterator & from )
+      : dlist( from.dlist ), recLoc( from.recLoc ) {};
+
+    inline const_iterator( const const_iterator & from )
+      : dlist( from.dlist ), recLoc( from.recLoc ) {};
+
+    inline const_iterator &	    operator ++ ( void ) {
+      if( dlist ) (*dlist).next( recLoc );
+      return( *this );
+    };
+
+    inline const_iterator &	    operator -- ( void ) {
+      if( dlist ) (*dlist).prev( recLoc );
+      return( *this );
+    };
+
+    inline const_iterator	    operator -- (int) {
+      iterator it( *this );
+      -- *this;
+      return( it );
+    };
+
+    inline Value &	    operator * ( void ) {
+      return( (*dlist).value( recLoc ) );
+    };
+    
+    inline bool		operator == ( const const_iterator & rhs ) const {
+      return( dlist == rhs.dlist && recLoc == rhs.recLoc );
+    };
+    
+    inline bool		operator == ( const iterator & rhs ) const {
+      return( dlist == rhs.dlist && recLoc == rhs.recLoc );
+    };
+    
+    inline bool		operator != ( const iterator & rhs ) const {
+      return( !( *this == rhs) );
+    };
+    
+    inline const_iterator &	operator = ( const const_iterator & rhs ) {
+      dlist = rhs.dlist;
+      recLoc = rhs.recLoc;
+      return( *this );
+    };
+
+    inline const_iterator &	operator = ( const iterator & rhs ) {
+      dlist = rhs.dlist;
+      recLoc = rhs.recLoc;
+      return( *this );
+    };
+
+  protected:
+
+    friend class MapMemDlist< Value >;
+    friend class const_iterator;
+
+    inline Loc	    loc( void ) const {
+      return( recLoc );
+    };
+
+    inline Loc &    prevLoc( void ) const {
+      return( (*dlist).prevLoc( recLoc ) );
+    };
+
+    inline Loc &    nextLoc( void ) const {
+      return( (*dlist).nextLoc( recLoc ) );
+    };
+
+    inline Rec &    rec( void ) const {
+      return( (*dlist).rec( recLoc ) );
+    };
+    
+    inline Rec &    nextRec( void ) const {
+      return( (*dlist).nextRec( recLoc ) );
+    };
+
+    inline Rec &    prevRec( void ) const {
+      return( (*dlist).prevRec( recLoc ) );
+    };
+    
+    
+    inline const_iterator(
+      MapMemDlist< Value > *	aDlist,
+      Loc			aLoc )
+      : dlist( aDlist ), recLoc( aLoc ) {};
+
+    MapMemDlist< Value > *  dlist;
+    Loc			    recLoc;
+    
+  };
+
+
   typedef pair< iterator, bool >     pair_iterator_bool;
   
   inline pair_iterator_bool	insert( Loc &	    first,
@@ -229,6 +328,14 @@ public:
   
   inline iterator	end( void ) {
     return( iterator( this, 0 ) );
+  };
+  
+  inline const_iterator	begin( Loc first ) const {
+    return( const_iterator( this, first ) );
+  };
+  
+  inline const_iterator	end( void ) const {
+    return( const_iterator( this, 0 ) );
   };
   
   inline bool	    	good( void ) const;
@@ -398,6 +505,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1998/10/27 15:39:02  houghton
+// Added const_iterator.
+// Added begin() const && end() const.
+//
 // Revision 2.2  1998/10/27 15:33:19  houghton
 // Bug-Fix: if inserting to 'end' there was no 'return' statement.
 //
