@@ -1,3 +1,4 @@
+
 #ifndef _RBTree_hh_
 #define _RBTree_hh_
 //
@@ -295,7 +296,8 @@ public:
       return( dumpKey( dest, self->keyOf( self->value( node ) ) ) );
     };
 
-    virtual ostream & dumpKey( ostream & dest, const Key & key ) const {
+    virtual ostream & dumpKey( ostream & dest,
+			       const Key & CLUE_UNUSED( key ) ) const {
       return( dest );
     };
       
@@ -441,6 +443,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/07/25 15:59:27  houghton
+// Cleanup.
+//
 // Revision 2.5  1997/07/25 13:48:28  houghton
 // Cleanup.
 //
