@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.5  1997/03/03 14:32:42  houghton
+// Added virtual destructor.
+//
 // Revision 2.4  1996/11/06 18:07:27  houghton
 // Renamed Clue.hh to ClueUtils.hh.
 //
@@ -38,6 +41,7 @@ static const char * RcsId =
 #include "MapMemFixedDynamic.hh"
 #include <ClueUtils.hh>
 #include <Str.hh>
+#include <cstring>
 
 //
 // allocation chunks must be at least 1 page
@@ -133,6 +137,9 @@ MapMemFixedDynamic::MapMemFixedDynamic(
     }
 }
 
+MapMemFixedDynamic::~MapMemFixedDynamic( void )
+{
+}
 
 off_t
 MapMemFixedDynamic::getMem( size_t size )

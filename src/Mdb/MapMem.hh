@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/03/03 14:32:34  houghton
+// Added virtual destructor.
+//
 // Revision 2.1  1995/11/10 12:42:29  houghton
 // Change to Version 2
 //
@@ -72,6 +75,7 @@ public:
 	  unsigned long	    version,
 	  ios::open_mode    mode = ios::in );
 
+  virtual ~MapMem( void );
   
   unsigned long	    getVersion( void ) const;
   void *    	    getMapToAddr( void ) const;

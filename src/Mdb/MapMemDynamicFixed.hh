@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/03 14:32:47  houghton
+// Added virtual destructor.
+//
 // Revision 2.2  1996/11/06 18:07:27  houghton
 // Renamed Clue.hh to ClueUtils.hh.
 //
@@ -64,6 +67,7 @@ public:
   MapMemFixedDynamic( const char * 	fileName,
 		      ios::open_mode	mode = (ios::open_mode)(ios::in) );
 
+  virtual ~MapMemFixedDynamic( void );
   
   off_t	    	    getMem( size_t size = 0 );	// returns offset not addr!
   void	    	    freeMem( off_t  offset ); 	// needs offset not addr!

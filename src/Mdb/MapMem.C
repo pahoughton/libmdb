@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.2  1997/03/03 14:32:31  houghton
+// Added virtual destructor.
+//
 // Revision 2.1  1995/11/10 12:42:29  houghton
 // Change to Version 2
 //
@@ -107,6 +110,9 @@ MapMem::MapMem(
   mapInfo = (MapInfo *)MapFile::getBase();
 }
 
+MapMem::~MapMem( void )
+{
+}
 
 const char *
 MapMem::error( void ) const
