@@ -1,0 +1,40 @@
+#ifndef _MultiMemOffset_ii_
+#define _MultiMemOffset_ii_
+//
+// File:        MultiMemOffset.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MultiMemOffset
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/18/97 09:54
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/19 12:03:25  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MultiMemOffset_ii_ 

@@ -1,0 +1,96 @@
+#ifndef _MultiMemOffsetMapFixed_ii_
+#define _MultiMemOffsetMapFixed_ii_
+//
+// File:        MultiMemOffsetMapFixed.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MultiMemOffsetMapFixed
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/18/97 08:58
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+inline
+MultiMemOffsetMapFixed::Loc
+MultiMemOffsetMapFixed::allocate( size_type size )
+{
+  return( mem.allocate( size ) );
+}
+
+inline
+void 
+MultiMemOffsetMapFixed::release( Loc offset )
+{
+  mem.release( offset );
+}
+
+inline
+MultiMemOffsetMapFixed::Addr
+MultiMemOffsetMapFixed::address( Loc loc )
+{
+  return( mem.address( loc ) );
+}
+
+inline
+const MultiMemOffsetMapFixed::Addr
+MultiMemOffsetMapFixed::address( Loc loc ) const
+{
+  return( mem.address( loc ) );
+}
+
+inline
+MultiMemOffsetMapFixed::Loc
+MultiMemOffsetMapFixed::location( const Addr addr )
+{
+  return( mem.location( addr ) );
+}
+
+inline
+void *
+MultiMemOffsetMapFixed::getBase( void )
+{
+  return( mem.getBase() );
+}
+
+inline
+const void *
+MultiMemOffsetMapFixed::getBase( void ) const
+{
+  return( mem.getBase() );
+}
+
+inline
+MapMemDynamicFixed &
+MultiMemOffsetMapFixed::getMap( void )
+{
+  return( mem );
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/19 12:04:03  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MultiMemOffsetMapFixed_ii_ 
