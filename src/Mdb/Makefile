@@ -188,6 +188,7 @@ USER_II_INCS	=			\
 	AvlTreeOffsetBase.ii		\
 	AvlTreeOffset.ii		\
 	DavlTreeOffset.ii		\
+	DavlTreeOffsetBase.ii		\
 	MultiMemOffset.ii		\
 	MultiMemOffsetMapDynamic.ii	\
 	RBTreeBase.ii			\
@@ -273,6 +274,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.7  1997/07/16 19:21:18  houghton
+# Added DavlTreeOffsetBase.ii.
+#
 # Revision 2.6  1997/07/13 11:14:33  houghton
 # Cleanup
 # Removed ChunkMgr.
