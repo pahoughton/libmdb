@@ -58,11 +58,11 @@ VPATH		= $(ARCH_VPATH):.
 #
 
 
-SRC_DEFINES	= -DTEST_DATA_DIR=\"../data/\"
+SRC_DEFINES	= 
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DTEST_DEFAULT=1
-DEBUG_DEFINES	= -DTEST_DEBUG=1 -DMDB_DEBUG=1 -DRDB_TEST=1
+DEBUG_DEFINES	= -DTEST_DEBUG=1 -DMDB_DEBUG=1 -DRDB_TEST=1 -DCLUE_DEBUG=1
 PROFILE_DEFINES	= -DTEST_PROFILE=1
 STATIC_DEFINES	= -DTEST_STATIC=1
 
@@ -178,6 +178,8 @@ CXX_C_SOURCES	=			\
 	tAvlTreeOffset02.C		\
 	tDavlTreeOffset.C		\
 	tDavlTreeOffset01.C		\
+	tHashTable.C			\
+	tHashTable01.C			\
 	tHash.C				\
 	tHash01.C			\
 	tRBTree.C			\
@@ -236,6 +238,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.6  1997/07/19 10:35:21  houghton
+# Moved define TEST_DATA_DIR to TestConfigs.hh.
+#
 # Revision 1.5  1997/07/16 16:38:20  houghton
 # Added MapFile & DRBTree tests.
 #
