@@ -126,7 +126,7 @@ MapMemDynamicFixed::allocate( size_type size )
 
   if( freeList().nextFree == 0 )
     {      
-      if( ! expand() )
+      if( ! expand( mapInfo()->allocNumRecs * mapInfo()->recSize ) )
 	return( 0 );
     }
 
@@ -399,13 +399,15 @@ MapMemDynamicFixed::valid( off_t offset ) const
 
 
 bool
-MapMemDynamicFixed::expand( void )
+MapMemDynamicFixed::expand( size_type minAmount )
 {
 
   if( ! good() )
     return( false );
 
-  unsigned long amount = mapInfo()->allocNumRecs * mapInfo()->recSize;
+  unsigned long amount = max( minAmount,
+			      mapInfo()->allocNumRecs * mapInfo()->recSize );
+  
 
   Loc	origLastNode = lastNode();
   
@@ -727,6 +729,9 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.17  1997/07/28 16:50:24  houghton
+// Changed expand() to virtual and to take an 'size' arg.
+//
 // Revision 2.16  1997/07/13 11:27:16  houghton
 // Cleanup.
 // Major rework to make more readable and improve performance.

@@ -77,7 +77,7 @@ public:
   size_type	    getRecSize( void ) const;
   size_type	    getAllocNumRecs( void ) const;
   
-  bool 	    	    expand( void );
+  virtual bool	    expand( size_type minAmount );
 
   virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;    
@@ -241,6 +241,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1997/07/28 16:50:34  houghton
+// Changed expand() to virtual and to take an 'size' arg.
+//
 // Revision 2.11  1997/07/19 10:29:14  houghton
 // Port(Sun5): the compiler could not handle protected and/or private
 //     classes or structs.
