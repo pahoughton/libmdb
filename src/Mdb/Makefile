@@ -53,6 +53,8 @@ include Make/make.cfg.$(make_cfg_ver)
 NAME		= Mdb
 
 PRJ_TOPDIR	= ../..
+CFG_DIR		= $(PRJ_TOPDIR)/src/config
+
 
 INSTALL_LIB_DIR	= $(local_libdir)
 INSTALL_INC_DIR	= $(local_incdir)
@@ -70,6 +72,8 @@ LIBRARY_SHARED	= lib$(NAME)_s.$(shlib_ext)
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
+
+include $(CFG_DIR)/00-Makefile.cfg
 
 VPATH		= $(ARCH_VPATH):.
 
@@ -99,7 +103,7 @@ SHARED_DEFINES	= -DMDB_SHARED=1
 
 
 SRC_INC		= $(ARCH_INC) -I.
-PRJ_INC		= -I$(INSTALL_INC_DIR)
+PRJ_INC		= $(PROJECT_INC_DIRS)
 
 
 # Any other cpp flags to use on for all targets
@@ -302,6 +306,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.21  2000/05/26 11:44:53  houghton
+# Bug-Fix: was not including make config file.
+#
 # Revision 2.20  1999/05/09 17:31:53  houghton
 # Fixed install dirs.
 #
