@@ -118,7 +118,7 @@ HashTableBase::error( void ) const
       if( ! mgr->good() )
 	errStr << ": " << mgr->error();
 
-      if( errorNum != E_OK )
+      if( index && index->good() && mgr->good() && errorNum != E_OK )
 	{
 	  switch( errorNum )
 	    {
@@ -130,11 +130,12 @@ HashTableBase::error( void ) const
 		     << " expected: " << hashTableVersion
 		;
 	      break;
-	      
+		  
 	    default:
 	      break;
 	    }
 	}
+	
       
       if( eSize == errStr.size() )
         errStr << ": unknown error";
@@ -190,6 +191,7 @@ HashTableBase::dumpInfo(
 	   << ((const Header *)index->getBase())->version << '\n'
 	   << prefix << "count:      " 
 	   << ((const Header *)index->getBase())->count << '\n'
+	   << prefix << "endhash:    " << endHash() << '\n'
 	;
     }
   
@@ -323,6 +325,10 @@ HashTableBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/08/25 10:34:32  houghton
+// Reworked error output.
+// Added endhash() to dump output.
+//
 // Revision 2.3  1997/07/19 10:20:23  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.
