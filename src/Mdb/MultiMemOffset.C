@@ -17,7 +17,6 @@
 
 #include "MultiMemOffset.hh"
 #include <Str.hh>
-#include <cerrno>
 
 #if defined( MDB_DEBUG )
 #include "MultiMemOffset.ii"
@@ -27,11 +26,9 @@ MDB_VERSION(
   MultiMemOffset,
   "$Id$");
 
-
-MultiMemOffset MultiMemOffsetMalloc;
+const MultiMemOffset::Loc MultiMemOffset::badLoc( 0 );
 
 MultiMemOffset::MultiMemOffset( void )
-  : osErrno( 0 )
 {
 }
 
@@ -39,55 +36,10 @@ MultiMemOffset::~MultiMemOffset( void )
 {
 }
 
-MultiMemOffset::Loc
-MultiMemOffset::allocate( size_type size )
-{
-  void * mem = malloc( size );
-  if( ! mem )
-    osErrno = errno;
-  
-  return( (Loc)mem );
-}
-
-void
-MultiMemOffset::release( Loc offset )
-{
-  free( (void *)offset );
-}
-
-MultiMemOffset::Addr
-MultiMemOffset::address( Loc offset )
-{
-  return( (Addr)offset );
-}
-
-const MultiMemOffset::Addr
-MultiMemOffset::address( Loc offset ) const
-{
-  return( (const Addr)offset );
-}
-
-MultiMemOffset::Loc
-MultiMemOffset::location( const Addr addr ) const
-{
-  return( (Loc)addr );
-}
-
-void *
-MultiMemOffset::getBase( void )
-{
-  return( (void *)0 );
-}
-
-const void *
-MultiMemOffset::getBase( void ) const
-{
-  return( (void *)0 );
-}
 bool
 MultiMemOffset::good( void ) const
 {
-  return( osErrno == 0 );
+  return( true );
 }
 
 const char *
@@ -99,15 +51,12 @@ MultiMemOffset::error( void ) const
 
   if( good() )
     {
-       errStr += ": ok";
+      errStr << ": ok";
     }
   else
     {
       size_t eSize = errStr.size();
 
-      if( osErrno != 0 )
-	errStr << ": " << strerror( osErrno );
-      
       if( eSize == errStr.size() )
         errStr << ": unknown error";
     }
@@ -144,14 +93,16 @@ MultiMemOffset::dumpInfo(
   else
     dest << prefix << "Good" << '\n';
 
-  dest << "using malloc\n";
-
   return( dest );
 }
 
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/07/13 11:30:23  houghton
+// Cleanup.
+// Removed code for allocate & release (now pure virtual).
+//
 // Revision 2.6  1997/06/19 13:35:51  houghton
 // Changed location to be a const method.
 //
