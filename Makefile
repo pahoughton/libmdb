@@ -55,35 +55,35 @@ beta_exports	=				\
 .PHONY: test
 
 depend depend_all depend_default depend_debug:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
 
 depend_test:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
-	$(hide) if ! $(MAKE) -C $(TEST_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
+	$(hide) $(MAKE) -C $(TEST_DIR) $@ $(exports)
 
 all default debug:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
 
 clean realclean:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
-	$(hide) if ! $(MAKE) -C $(DOC_DIR) $@ $(exports); then exit; fi
-	$(hide) if ! $(MAKE) -C $(TEST_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
+	$(hide) $(MAKE) -C $(TEST_DIR) $@ $(exports)
+#	$(hide) $(MAKE) -C $(DOC_DIR) $@ $(exports)
 
 test:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
-	$(hide) if ! $(MAKE) -C $(TEST_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
+	$(hide) $(MAKE) -C $(TEST_DIR) $@ $(exports)
 
 install_doc:
-	$(hide) if ! $(MAKE) -C $(DOC_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(DOC_DIR) $@ $(exports)
 
 install_all install: install_doc
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
 
 install_beta:
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) install_all $(beta_exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) install_all $(beta_exports)
 
 install_default install_debug: 
-	$(hide) if ! $(MAKE) -C $(SRC_DIR) $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C $(SRC_DIR) $@ $(exports)
 
 
 
@@ -91,6 +91,9 @@ install_default install_debug:
 
 #
 # $Log$
+# Revision 1.2  1999/07/02 09:26:01  houghton
+# Changed if $(MAKE) ... to $(MAKE) ...
+#
 # Revision 1.1  1998/10/23 13:15:45  houghton
 # Initial Version.
 #
