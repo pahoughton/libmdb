@@ -1,0 +1,40 @@
+#ifndef _MultiMemOffsetMapDynamic_ii_
+#define _MultiMemOffsetMapDynamic_ii_
+//
+// File:        MultiMemOffsetMapDynamic.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MultiMemOffsetMapDynamic
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/30/97 07:15
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:37:45  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MultiMemOffsetMapDynamic_ii_ 

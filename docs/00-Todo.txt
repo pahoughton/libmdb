@@ -1,0 +1,57 @@
+#
+#
+# Title:        00-Todo.txt
+# Project:	Mdb
+# Desc:
+# 
+#   This is the libMdb TODO file it is used to track all
+#   bug reports and enhancement request. It is formated so
+#   a perl script can be used to generate reports.
+#
+# The order of entries implies priority
+#   
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	07/11/97 09:14
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+ENH Paul A. Houghton 07/11/97 09:17
+Write Performance test for all classes.
+
+ENH Paul A. Houghton 07/11/97 09:16
+Write new RBMap< class Key, class Value, class LessKey >
+
+ENH Paul A. Houghton 07/11/97 09:14
+Write new AvlSet< class Key, class Comp >
+
+ENH Paul A. Houghton 07/11/97 09:15
+Write new MapMemFixed
+
+ENH Paul A. Houghton 07/11/97 09:15
+Write new MapMemFixedDynamic
+
+ENH Paul A. Houghton 07/11/97 09:15
+Write new MapMemFixedFixed
+
+ENH Paul A. Houghton 07/11/97 09:16
+Write new AvlSetAddr< class Key, class Comp >
+
+#
+# $Log$
+# Revision 1.1  1997/07/11 17:36:25  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:TODO
+# End:

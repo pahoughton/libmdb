@@ -1,0 +1,55 @@
+#ifndef _AvlTreeOffsetBase_ii_
+#define _AvlTreeOffsetBase_ii_
+//
+// File:        AvlTreeOffsetBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for AvlTreeOffsetBase
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/30/97 05:03
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+AvlTreeOffsetBase::Node *
+AvlTreeOffsetBase::node( Loc root ) const
+{
+  return( (Node *)( getBase() + root ) );
+}
+
+
+inline
+void
+AvlTreeOffsetBase::initNode( Loc root )
+{
+  node( root )->subTree[ LEFT ]     = 0;
+  node( root )->subTree[ RIGHT ]    = 0;
+  node( root )->bal 	    	    = 0;
+}
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:36:51  houghton
+// Initial Version.
+//
+//
+#endif // ! def _AvlTreeOffsetBase_ii_ 

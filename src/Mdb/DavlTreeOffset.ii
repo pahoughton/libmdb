@@ -1,0 +1,1237 @@
+#ifndef _DavlTreeOffset_ii_
+#define _DavlTreeOffset_ii_
+//
+// File:        DavlTreeOffset.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DavlTreeOffset
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/01/97 08:06
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+
+// constructor - create a new tree
+template<class K, class D>
+inline
+DavlTreeOffset<K,D>::DavlTreeOffset(
+  int		    (* compKey)( const K & one, const K & two ),
+  K &		    (* keyCopy)( K & dest, const K & src ),
+  D &		    (* dataCopy)( D & dest, const D & src ),
+  MultiMemOffset *  keyMemMgr,
+  MultiMemOffset *  dataMemMgr,
+  unsigned short    treeKey,
+  bool		    create
+  )
+  : davlError( E_NOTREE ),
+    tree( 0 ),
+    keyMem( keyMemMgr ),
+    dataMem( dataMemMgr )
+{
+  if( create )
+    {
+      initTree( compKey, keyCopy, dataCopy );
+      if( keyMem && tree )
+	keyMem->setKey( treeKey, tree );
+    }
+  else
+    {
+      initTree( compKey, keyCopy, dataCopy,
+	        keyMem ? keyMem->getKey( treeKey ) : 0 );
+    }
+}
+
+// add - add a node and/or history to the tree
+template<class K, class D>
+inline
+AvlTreeOffsetBase::Loc
+DavlTreeOffset<K,D>::add( const K & key, time_t when, const D &	data )
+{
+  DAVLTREE_CHECK( 0 );
+  
+  Loc	    newNode = getKeyMem();
+  Loc	    addNode = newNode;
+  DAVLTREE_SAFE( newNode, 0 );
+  
+  initNode( newNode );
+
+  Loc	    newData = getDataMem();
+  DAVLTREE_SAFE( newData, 0 );
+  
+  initHist( newData );
+  
+  copyK( getNodeKey( newNode ), key );
+  copyD( getHistData( newData ), data );
+
+  getHistWhen( newData ) = when;
+  
+  insertNode( &(getTree()->root), &addNode );
+
+  getTree()->histCount++;
+
+  if( addNode == 0 )
+    {
+      getTree()->count++;
+      getNodeAddr( newNode )->hist = newData;
+    }
+  else
+    {
+      insertHist( & (getNodeAddr( addNode )->hist), newData );
+      freeKeyMem( newNode );
+    }
+  
+  return( 0 );
+}
+
+// find - find data ( returns a 'D' offset )
+template<class K,class D>
+inline
+AvlTreeOffsetBase::Loc
+DavlTreeOffset<K,D>::find( const K & key, time_t when ) const
+{
+  DAVLTREE_CHECK( 0 );
+  
+  Loc	foundNode = findNode( getTree()->root, &key );
+
+  if( foundNode )
+    {
+      Loc foundHist = findHist( getNodeAddr( foundNode )->hist, when );
+
+      if( foundHist )
+	{
+	  return( getHistDataOffset( foundHist ) );
+	}
+    }
+  return( 0 );
+}
+
+// findData - find data and return a D pointer
+template<class K,class D>
+inline
+D *
+DavlTreeOffset<K,D>::findData( const K & key, time_t when )
+{
+  Loc found = find( key, when );
+  return( (found) ? getDataAddr( found ) : 0 );
+}
+
+// del - add a delete marker to the tree
+template<class K,class D>
+inline
+bool
+DavlTreeOffset<K,D>::del( const K & key, time_t when )
+{
+  DAVLTREE_CHECK( false );
+  
+  Loc	    delData = getDataMem();
+  DAVLTREE_SAFE( delData, false );
+
+  initHist( delData );
+  getHistWhen( delData ) = when;
+
+  getHistAddr( delData )->deleted = true;
+  
+  Loc	    delNode = findNode( getTree()->root, &key  );
+
+  if( delNode != 0 )
+    {
+      getTree()->histCount++;
+      insertHist( &(getNodeAddr( delNode )->hist), delData  );
+      return( true );
+    }
+  else
+    {
+      freeDataMem( delData );
+      return( false );
+    }
+}
+
+// walk - exeucte user function at every node in the tree
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walk(
+  time_t when,
+  bool (* action)( K & key, time_t when, D & data ) )
+{
+  DAVLTREE_CHECK( true );
+  
+  if( action ) walkAction = action;
+
+  return( walkTree( getTree()->root, when ) );
+}
+
+// walk - exeucte user function at every node in the tree
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walk(
+  void *    closure,
+  time_t    when,
+  bool 	    (* action)( K & key, time_t when, D & data, void * closure )
+  )
+{
+  DAVLTREE_CHECK( true );
+  
+  if( action ) walkActionClosure = action;
+
+  return( walkTree( getTree()->root, when, closure ) );
+}
+
+// walkHist - exeucte user function at every hist in the tree
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHist(
+  time_t    when,
+  bool 	    (* action)( K & key, time_t when, D & data, bool deleted )
+  )
+{
+  DAVLTREE_CHECK( true );
+  
+  if( action ) walkAllAction = action;
+
+  return( walkTreeHist( getTree()->root, when ) );
+}
+
+// walkHist - exeucte user function at every hist in the tree
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHist(
+  void *    closure,
+  time_t    when,
+  bool 	    (* action)( K & key, time_t when,
+			D & data, bool deleted, void * closure )
+  )
+{
+  DAVLTREE_CHECK( true );
+  
+  if( action ) walkAllActionClosure = action;
+
+  return( walkTreeHist( getTree()->root, when, closure ) );
+}
+
+// walkHist - execute user function for each hist rec of the key
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHist(
+  const K & key,
+  time_t    when,
+  bool 	    (* action)( K & key, time_t when,
+			D & data, bool deleted )
+  )
+{
+  DAVLTREE_CHECK( true );
+  
+  Loc node = findNode( getTree()->root, &key );
+
+  if( node )
+    {
+      if( action ) walkKeyAction = action;
+
+      return( walkKeyHist( node, when ) );
+    }
+  else
+    {
+      return( true );
+    }
+}
+    
+// walkHist - execute user function for each hist rec of the key
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHist(
+  const K & key,
+  void * closure,
+  time_t    when,
+  bool 	    (* action)( K & key, time_t when,
+			D & data, bool deleted, void * closure )
+  )
+{
+  DAVLTREE_CHECK( true );
+  
+  Loc node = findNode( getTree()->root, &key );
+
+  if( node )
+    {
+      if( action ) walkKeyActionClosure = action;
+
+      return( walkKeyHist( node, when, closure ) );
+    }
+  else
+    {
+      return( true );
+    }
+}
+    
+  
+// trim - remove some history from the tree
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::trim(
+  time_t    when,
+  void 	    (* action)( K & key, time_t when, D & rec, bool deleted )
+  )
+{
+  DAVLTREE_CHECK_NORET();
+  
+  if( action ) trimAction = action;
+
+  trimTree( &(getTree()->root), when );
+}
+
+// trim - remove some history from the tree
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::trim(
+  void *    closure,
+  time_t    when,
+  void 	    (* action)( K & key, time_t when,
+			D & rec, bool deleted, void * closure )
+  )
+{
+  DAVLTREE_CHECK_NORET();
+  
+  if( action ) trimActionClosure = action;
+
+  trimTree( &(getTree()->root), when, closure );
+}
+
+// destroy - remove all data from the tree
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::destroy(
+  void (* action)( K & key, time_t when, D & data, bool deleted )
+  )
+{
+  DAVLTREE_CHECK_NORET();
+    
+  if( action ) destroyAction = action;
+  destroyTree( &(getTree()->root) );
+}
+
+// destroy - remove all data from the tree
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::destroy(
+  void * closure,
+  void (* action)( K & key, time_t when,
+		   D & data, bool deleted, void * closure )
+  )
+{
+  DAVLTREE_CHECK_NORET();
+    
+  if( action ) destroyActionClosure = action;
+  destroyTree( &(getTree()->root), closure );
+}
+
+// setWalk - specifiy the user function to execute for a walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalk( bool (*action)( K & key, time_t when, D & data ) )
+{
+  walkAction = action;
+}
+
+// setWalk - specifiy the user function to execute for a walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalk(
+  bool (*action)( K & key, time_t when, D & data, void * closure )
+  )
+{
+  walkActionClosure = action;
+}
+
+// setWalkHist - specifiy the user function to execute for a walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalkHist(
+  bool (*action)( K & key, time_t when, D & data, bool deleted ) )
+{
+  walkAllAction = action;
+}
+
+// setWalkHist - specifiy the user function to execute for a walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalkHist(
+  bool (*action)( K & key, time_t when, D & data, bool deleted, void * closure ) )
+{
+  walkAllActionClosure = action;
+}
+
+// setWalkKeyHist - specify the use function to execut for key walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalkKeyHist(
+  bool (*action)( K & key, time_t when, D & data, bool deleted )
+  )
+{
+  walkKeyAction = action;
+}
+
+// setWalkKeyHist - specify the use function to execut for key walk
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setWalkKeyHist(
+  bool (*action)( K & key, time_t when, D & data, bool deleted, void * closure )
+  )
+{
+  walkKeyActionClosure = action;
+}
+
+// setTrim - specifiy the user function to execute for a trim
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setTrim(
+  void (*action)( K & key, time_t when, D & data, bool deleted ) )
+{
+  trimAction = action;
+}
+
+// setTrim - specifiy the user function to execute for a trim
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setTrim(
+  void (*action)( K & key, time_t when, D & data, bool deleted, void * closure ) )
+{
+  trimActionClosure = action;
+}
+
+// setDestroy - specifiy the user function to execute for a destroy
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setDestroy(
+  void (*action)( K & key, time_t when, D & data, bool deleted ) )
+{
+  destroyAction = action;
+}
+
+// setDestroy - specifiy the user function to execute for a destroy
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::setDestroy(
+  void (*action)( K & key, time_t when, D & data, bool deleted, void * closure ) )
+{
+  destroyActionClosure = action;
+}
+
+// getKeyAddr - get a K pointer from a key offset
+template<class K, class D>
+inline
+K *
+DavlTreeOffset<K,D>::getKeyAddr( AvlTreeOffsetBase::Loc keyOffset )
+{
+  return( (K *)(getBase() + keyOffset ) );
+}
+
+// getDataAddr - get a D pointer from a data offset
+template<class K, class D>
+inline
+D *
+DavlTreeOffset<K,D>::getDataAddr( AvlTreeOffsetBase::Loc dataOffset )
+{
+  return( (D *)(getBaseData() + dataOffset ) );
+}
+
+// getKeyAddr - get a K pointer from a key offset
+template<class K, class D>
+inline
+const K *
+DavlTreeOffset<K,D>::getKeyAddr( AvlTreeOffsetBase::Loc keyOffset ) const
+{
+  return( (K *)(getBase() + keyOffset ) );
+}
+
+// getDataAddr - get a D pointer from a data offset
+template<class K, class D>
+inline
+const D *
+DavlTreeOffset<K,D>::getDataAddr( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+  return( (D *)(getBaseData() + dataOffset ) );
+}
+
+// getKeyRef - get a K pointer from a key offset
+template<class K, class D>
+inline
+K &
+DavlTreeOffset<K,D>::getKeyRef( AvlTreeOffsetBase::Loc keyOffset )
+{
+  return( *getKeyAddr( keyOffset ) );
+}
+
+// getDataAddr - get a D pointer from a data offset
+template<class K, class D>
+inline
+D &
+DavlTreeOffset<K,D>::getDataRef( AvlTreeOffsetBase::Loc dataOffset )
+{
+  return( *getDataAddr( dataOffset ) );
+}
+
+// getKeyRef - get a K pointer from a key offset
+template<class K, class D>
+inline
+const K &
+DavlTreeOffset<K,D>::getKeyRef( AvlTreeOffsetBase::Loc keyOffset ) const
+{
+  return( *getKeyAddr( keyOffset ) );
+}
+
+// getDataRef - get a D pointer from a data offset
+template<class K, class D>
+inline
+const D &
+DavlTreeOffset<K,D>::getDataRef( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+  return( *getDataAddr( dataOffset ) );
+}
+
+// getWhen - get the hist time for a data offset
+template<class K, class D>
+inline
+time_t
+DavlTreeOffset<K,D>::getWhen( AvlTreeOffsetBase::Loc dataOffset )
+{
+  return( getHistAddrFromDataOffset( dataOffset )->when );
+}
+
+template<class K, class D>
+inline
+D &
+DavlTreeOffset<K,D>::operator [] ( AvlTreeOffsetBase::Loc dataOffset )
+{
+  return( getDataRef( dataOffset ) );
+}
+
+template<class K, class D>
+inline
+const D &
+DavlTreeOffset<K,D>::operator [] ( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+  return( getDataRef( dataOffset ) );
+}
+
+// getKeySize - return the size of a key node
+template<class K, class D>
+inline
+size_t
+DavlTreeOffset<K,D>::getKeySize( void )
+{
+  return( max( sizeof( DavlNode ), sizeof( DavlTree ) ) );
+}
+
+// getDataSize - return the size of a Hist entry
+template<class K, class D>
+inline
+size_t
+DavlTreeOffset<K,D>::getDataSize( void )
+{
+  return( sizeof( DavlHist ) );
+}
+
+// getCount - return number of keys in tree
+template<class K, class D>
+inline
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::getCount( void ) const
+{
+  return( getTree()->count );
+}
+
+// getHistCount - return number of hist entries
+template<class K, class D>
+inline
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::getHistCount( void ) const
+{
+  return( getTree()->histCount );
+}
+
+// getKeyMemMgr - return the key memory manager
+template<class K, class D>
+inline
+MultiMemOffset *
+DavlTreeOffset<K,D>::getKeyMemMgr( void )
+{
+  return( keyMem );
+}
+
+// getKeyMemMgr - return the key memory manager
+template<class K, class D>
+inline
+const MultiMemOffset *
+DavlTreeOffset<K,D>::getKeyMemMgr( void ) const
+{
+  return( keyMem );
+}
+
+// getDataMemMgr - return the data (hist) memory manager
+template<class K, class D>
+inline
+MultiMemOffset *
+DavlTreeOffset<K,D>::getDataMemMgr( void )
+{
+  return( dataMem );
+}
+
+// getDataMemMgr - return the data (hist) memory manager
+template<class K, class D>
+inline
+const MultiMemOffset *
+DavlTreeOffset<K,D>::getDataMemMgr( void ) const
+{
+  return( dataMem );
+}
+
+template<class K, class D>
+inline
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::size( void ) const
+{
+  return( getHistCount() );
+}
+
+// getClassName - return the class Name
+template<class K, class D>
+inline
+const char *
+DavlTreeOffset<K,D>::getClassName( void ) const
+{
+  return( "DavlTreeOffset<K,D>" );
+}
+
+// good - return true if no detected errors, else false
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::good( void ) const
+{
+  return( tree != 0 && dataMem->good() && keyMem->good() );
+}
+
+// error - return a description of the current state
+template<class K, class D>
+inline
+const char *
+DavlTreeOffset<K,D>::error( void ) const
+{
+  static Str errStr;
+  errStr.reset();
+
+  errStr << getClassName();
+  
+  if( good() )
+    {
+      errStr << ": ok";
+    }
+  else
+    {
+      switch( davlError )
+	{
+	case E_NOFUNCT:
+	  errStr << ": no copy or compare function";
+	  break;
+
+	case E_NOTREE:
+	  errStr << ": no tree (tree == 0)";
+	  break;
+
+	case E_MEMMGR:
+	  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
+	    {
+	      errStr << ": unknown mem error";
+	    }
+	  break;
+
+	default:
+	  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
+	    {
+	      errStr << ": unknown error";
+	    }
+	  break;
+	}
+
+      if( keyMem )
+	{
+	  if( ! keyMem->good() )
+	    {
+	      errStr << ": " << keyMem->error();
+	    }
+	}
+      else
+	{
+	  errStr << ": no key mem mgr.";
+	}
+
+      if( dataMem )
+	{
+	  if( ! dataMem->good() )
+	    {
+	      errStr << ": " << dataMem->error();
+	    }
+	}
+      else
+	{
+	  errStr << ": no data mem mgr.";
+	}
+      
+    }
+  return( errStr.cstr() );
+}
+
+template<class K, class D>
+inline
+ostream &
+DavlTreeOffset<K,D>::dumpInfo(
+  ostream &	dest,
+  const char *  prefix,
+  bool		CLUE_UNUSED( showVer )
+  ) const
+{
+  if( ! DavlTreeOffset<K,D>::good() )
+    dest << prefix << "Error: " << DavlTreeOffset<K,D>::error() << '\n';
+  else
+    dest << prefix << "Good\n";
+
+  Str pre;
+
+  if( keyMem )
+    {
+      pre = prefix;
+      pre << "keyMem:" ;
+      keyMem->dumpInfo( dest, pre, false );
+    }
+  else
+    {
+      dest << "No key mem manager!\n";
+    }
+
+  if( dataMem )
+    {
+      pre = prefix;
+      pre << "dataMem:" ;
+      dataMem->dumpInfo( dest, pre, false );
+    }
+  else
+    {
+      dest << "No data mem manager!\n";
+    }
+
+  dest << prefix << "tree:        " << tree << '\n'
+       << prefix << "key size:    " << getKeySize() << '\n'
+       << prefix << "data size:   " << getDataSize() << '\n'
+       << prefix << "root:        " << getTree()->root << '\n'
+       << prefix << "node count:  " << getTree()->count << '\n'
+       << prefix << "hist count:  " << getTree()->histCount << '\n'
+    ;
+  
+  return( dest );
+}  
+
+// dumpTree - send the tree structure to dest
+template<class K, class D>
+inline
+ostream &
+DavlTreeOffset<K,D>::dumpTree( ostream & dest ) const
+{
+  DAVLTREE_CHECK( dest );
+  return( dumpAvlTree( getTree()->root, dest ) );
+}
+
+// compare - virtual key compare function
+template<class K, class D>
+inline
+int
+DavlTreeOffset<K,D>::compare( const K & one, const K & two ) const
+{
+
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( ::Compare( one, two ) );
+#else
+  return( compareRec( one, two ) );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( (compareKey) ? compareKey( one, two) :
+	  ::Compare( one, two ) );
+#else
+  return( (compareKey) ? compareKey( one, two ) : 0 );
+#endif
+#endif
+}
+
+// compareNode - override for base class compareNode function
+template<class K, class D>
+inline
+int
+DavlTreeOffset<K,D>::compareNode(
+  const AvlTreeOffsetBase::Loc one,
+  const AvlTreeOffsetBase::Loc two
+  )
+{
+  return( compare( getNodeKey( one ), getNodeKey( two ) ) );
+}
+  
+// compareFind - override for base class compareNode function
+template<class K, class D>
+inline
+int
+DavlTreeOffset<K,D>::compareFind(
+  const void * one,
+  const AvlTreeOffsetBase::Loc two
+  ) const
+{
+  return( compare( *((K*)one), getNodeKey( two ) ) );
+}
+  
+//copy - copy key src to dest
+template<class K, class D>
+K & 
+DavlTreeOffset<K,D>::copyK( K & dest, const K & src )
+{
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   dest = src;
+#else
+   copyKey( dest, src );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   if( copyKey )
+     {
+       copyKey( dest, src );
+     }
+   else
+     {
+       dest = src;
+     }
+#else
+   if( copyKey ) copyKey( dest, src );
+#endif
+#endif
+   return( dest );
+}
+
+//copy - copy key src to dest
+template<class K, class D>
+D &
+DavlTreeOffset<K,D>::copyD( D & dest, const D & src )
+{
+
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   dest = src;
+#else
+   copyData( dest, src );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   if( copyData )
+     {
+       copyData( dest, src );
+     }
+   else
+     {
+       dest = src;
+     }
+#else
+   if( copyData ) copyData( dest, src );
+#endif
+#endif
+   return( dest );
+}
+
+
+// walkHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist
+  )
+{
+  bool abort = true;
+  if( walkAction )
+    {
+      abort = walkAction( getNodeKey( root ),
+			  getHistWhen( hist ),
+			  getHistData( hist ) );
+    }
+  return( abort );			  
+}
+
+// walkHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure
+  )
+{
+  bool abort = true;
+  if( walkActionClosure )
+    {
+      abort = walkActionClosure( getNodeKey( root ),
+				 getHistWhen( hist ),
+				 getHistData( hist ),
+				 closure );
+    }
+  return( abort );			  
+}
+
+// walkHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure
+  ) const
+{
+  ConstWalkHistClosure * wa = (ConstWalkHistClosure *)closure;
+
+  return( wa && wa->action ?
+	  wa->action( getNodeKey( root ),
+		      getHistWhen( hist ),
+		      getHistData( hist ),
+		      wa->closure ) :
+	  true );
+}
+
+// walkAllHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkAllHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist
+  )
+{
+  bool abort = true;
+  if( walkAllAction )
+    {
+      abort = walkAllAction( getNodeKey( root ),
+			     getHistWhen( hist ),
+			     getHistData( hist ),
+			     getHistAddr( hist )->deleted );
+    }
+  return( abort );			  
+}
+
+// walkAllHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkAllHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure )
+{
+  bool abort = true;
+  if( walkAllActionClosure )
+    {
+      abort = walkAllActionClosure( getNodeKey( root ),
+				    getHistWhen( hist ),
+				    getHistData( hist ),
+				    getHistAddr( hist )->deleted,
+				    closure );
+    }
+  return( abort );			  
+}
+
+// walkHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkAllHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure
+  ) const
+{
+  ConstWalkAllHistClosure * wa = (ConstWalkAllHistClosure *)closure;
+
+  return( wa && wa->action ?
+	  wa->action( getNodeKey( root ),
+		      getHistWhen( hist ),
+		      getHistData( hist ),
+		      getHistAddr( hist )->deleted,
+		      wa->closure ) :
+	  true );
+}
+
+// walkKeyHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkKeyHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist
+  )
+{
+  bool abort = true;
+  if( walkKeyAction )
+    {
+      abort = walkKeyAction( getNodeKey( root ),
+			     getHistWhen( hist ),
+			     getHistData( hist ),
+			     getHistAddr( hist )->deleted );
+    }
+  return( abort );			  
+}
+
+// walkKeyHistAction - call user function for a node
+template<class K, class D>
+inline
+bool
+DavlTreeOffset<K,D>::walkKeyHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure
+  )
+{
+  bool abort = true;
+  if( walkKeyActionClosure )
+    {
+      abort = walkKeyActionClosure( getNodeKey( root ),
+				    getHistWhen( hist ),
+				    getHistData( hist ),
+				    getHistAddr( hist )->deleted,
+				    closure );
+    }
+  return( abort );			  
+}
+
+// trimHistAction - call user function for trim
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::trimHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist
+  )
+{
+  if( hist )
+    {
+      if( trimAction )
+	{
+	  trimAction( getNodeKey( root ), getHistWhen( hist ),
+		      getHistData( hist ), getHistAddr( hist )->deleted );
+	}
+      freeDataMem( hist );
+    }
+  else
+    {
+      freeKeyMem( root );
+    }
+}
+      
+
+// trimHistAction - call user function for trim
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::trimHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure )
+{
+  if( hist )
+    {
+      if( trimActionClosure )
+	{
+	  trimActionClosure( getNodeKey( root ), getHistWhen( hist ),
+		      getHistData( hist ), getHistAddr( hist )->deleted,
+		      closure );
+	}
+      freeDataMem( hist );
+    }
+  else
+    {
+      freeKeyMem( root );
+    }
+}
+      
+// destroyHistAction - call user function for destroy
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::destroyHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist
+  )
+{
+  if( hist )
+    {
+      if( destroyAction )
+	{
+	  destroyAction( getNodeKey( root ), getHistWhen( hist ),
+			 getHistData( hist ), getHistAddr( hist )->deleted );
+	}
+      freeDataMem( hist );
+    }
+  else
+    {
+      freeKeyMem( root );
+    }
+}
+      
+// destroyHistAction - call user function for destroy
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::destroyHistAction(
+  AvlTreeOffsetBase::Loc root,
+  AvlTreeOffsetBase::Loc hist,
+  void * closure )
+{
+  if( hist )
+    {
+      if( destroyActionClosure )
+	{
+	  destroyActionClosure( getNodeKey( root ), getHistWhen( hist ),
+				getHistData( hist ), getHistAddr( hist )->deleted,
+				closure );
+	}
+      freeDataMem( hist );
+    }
+  else
+    {
+      freeKeyMem( root );
+    }
+}
+      
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::initTree(
+  int (*cmp)( const K & one, const K & two ),
+  K & (*cpyKey)( K & dest, const K & src ),
+  D & (*cpyData)( D & dest, const D & src )
+  )
+{
+  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
+    {
+      off_t newTree = getKeyMem( sizeof( DavlTree ) );
+
+      if( newTree )
+	{
+	  initTree( cmp, cpyKey, cpyData, newTree );
+	  
+	  if( davlError == E_OK )
+	    {
+	      getTree()->count = 0;
+	      getTree()->histCount = 0;
+	      getTree()->root = 0;
+	    }
+	}
+      else
+	{
+	  davlError = E_NOTREE;
+	}
+    }
+  else
+    {
+      davlError = E_MEMMGR;
+    }
+}
+
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::initTree(
+  int (*cmp)( const K & one, const K & two ),
+  K & (*cpyKey)( K & dest, const K & src ),
+  D & (*cpyData)( D & dest, const D & src ),
+  AvlTreeOffsetBase::Loc davlTree
+  )
+{
+
+  compareKey = cmp;
+  copyKey = cpyKey;
+  copyData = cpyData;
+
+  walkAction = 0;
+  walkActionClosure = 0;
+  walkAllAction = 0;
+  walkAllActionClosure = 0;
+
+  trimAction = 0;
+  trimActionClosure = 0;
+
+  destroyAction = 0;
+  destroyActionClosure = 0;
+
+  
+  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
+    {
+      if( davlTree )
+	{
+	  tree = davlTree;
+	}
+      else
+	{
+	  davlError = E_NOTREE;
+	  return;
+	}
+    }
+  else
+    {
+      davlError = E_MEMMGR;
+      return;
+    }
+
+#if !defined( AVLTREE_FAST )
+#if !defined( AVLTREE_GLOBALFUNCT )
+  if( ! compareKey || ! copyKey || ! copyData )
+    {
+      davlError = E_NOFUNCT;
+      return;
+    }
+#endif // ! def AVLTREE_GLOBALFUNCT
+#endif // ! def AVLTREE_FAST
+}      
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:37:08  houghton
+// Initial Version.
+//
+//
+#endif // ! def _DavlTreeOffset_ii_ 

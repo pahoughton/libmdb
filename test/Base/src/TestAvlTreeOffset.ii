@@ -1,0 +1,39 @@
+#ifndef _TestAvlTreeOffset_ii_
+#define _TestAvlTreeOffset_ii_
+//
+// File:        TestAvlTreeOffset.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for TestAvlTreeOffset
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/01/97 05:32
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:38:46  houghton
+// Initial Version.
+//
+//
+#endif // ! def _TestAvlTreeOffset_ii_ 

@@ -1,0 +1,65 @@
+#
+#
+# Title:        Classes.txt
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	07/11/97 09:06
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+RBSet< class Key, class LessKey >
+
+    This is a red black tree that uses a MulitMemOffset to store the
+    data. 
+    
+
+MultiMemOffset
+
+    This is and interface class that defines how a class allocates and
+    releases chunks for data storage.
+
+MultiMemOffsetMapDynamic
+  MultiMemOffset
+
+    This is a MultiMemOffset that uses a MapMemDynamic for data
+    storage.
+
+MapMemDynamic
+
+    This is a mapped memory class that uses dynamic addresses.
+
+MapMemDynamicDynamic
+  MapMemDynamic
+  
+    This is a MapMemDynamic that manages dynamically sized chunks.
+
+MapMemDynamicFixed
+  MapMemDynamic
+
+    This is a MapMemDynamic that manages fixed sized chunks.
+    
+    
+
+#
+# $Log$
+# Revision 1.1  1997/07/11 17:36:25  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:indented-text
+# End:

@@ -1,0 +1,99 @@
+#ifndef _DavlTreeOffsetBase_ii_
+#define _DavlTreeOffsetBase_ii_
+//
+// File:        DavlTreeOffsetBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DavlTreeOffsetBase
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/01/97 08:31
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+inline
+void
+DavlTreeOffsetBase::initHist( Loc histOffset )
+{
+  hist(histOffset)->when = 0;
+  hist(histOffset)->deleted = 0;
+  hist(histOffset)->next = 0;
+}
+
+inline
+DavlTreeOffsetBase::Loc
+DavlTreeOffsetBase::findHist(
+  Loc	    histOffset,
+  EffDate    when
+  ) const
+{
+  Loc h = histOffset;
+  for( ; h != 0; h = hist(h)->next )
+    {
+      if( hist(h)->when <= when )
+	{
+	  if( hist(h)->deleted )
+	    {
+	      return( 0 );
+	    }
+	  return( h );
+	}
+    }
+  return( h );
+}
+
+inline
+DavlTreeOffsetBase::HistData *
+DavlTreeOffsetBase::hist( Loc data )
+{
+  return( (HistData *)( getBaseData() + data ) );
+}
+
+inline
+DavlTreeOffsetBase::HistNode *
+DavlTreeOffsetBase::node( Loc root )
+{
+  return( (HistNode *)( getBase() + root ) );
+}
+
+inline
+const DavlTreeOffsetBase::HistData *
+DavlTreeOffsetBase::hist( Loc data ) const
+{
+  return( (HistData *)( getBaseData() + data ) );
+}
+
+inline
+const DavlTreeOffsetBase::HistNode *
+DavlTreeOffsetBase::node( Loc root ) const
+{
+  return( (HistNode *)( getBase() + root ) );
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:37:28  houghton
+// Initial Version.
+//
+//
+#endif // ! def _DavlTreeOffsetBase_ii_ 

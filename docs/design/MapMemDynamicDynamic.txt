@@ -1,0 +1,226 @@
+#
+#
+# Title:        MapMemDynamicDynamic.txt
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	06/27/97 07:53
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+Class Hierarchy
+
+    MapMemDynamicDynamic
+      MapMemDynamic
+        MapMem
+	  MapFile
+	  
+Class Description
+
+    The MapMemDynamicDynamic class provides dynamic chunk management for a
+    mapped memory file. It allow an application to allocate and
+    release chunks of the map from 1 to ~2 gig in size.
+
+    This map will try to stay as small as possible. Chunks are
+    allocated from the begining of the map to the end. Whenever the
+    last chunk is release, the map will shrink itself back down as
+    much as it can (according to the 'allocSize' parameter established
+    at create time.
+
+    The release and allocate mehtods work with 'Loc' instead of
+    addresses because the base address of the map can changed anytime
+    allocate, expand or release is called. To convert a 'Loc' into a
+    useable address, call 'MapMemDynamc::address( loc )' the address
+    returned will be valid until the next call to allocate, release
+    or expand.
+
+    The 'Loc' returned from an allocate is valid until specifically
+    released. This is true for the same map across applications and
+    executions.
+
+Detail Design
+
+    Data Structures
+
+	struct Node
+	    Each chunk in the map file is prefix by this structure.
+	    
+	    long    next;
+		contains the offset of the next node in the map. A
+		negative value is used to indicate the next node is a
+		'free' node. The value '0' is use to indicate this is
+		the last node in the map.
+
+	    long    prev;
+		contains the offsett of the previous node in the
+		map. A negative value is used to indicate the previous
+		node is a 'free' node. The value '0' is used to
+		indicate this is the first node in the map.
+	
+
+	struct FreeNode : public Node
+	    Each free chunk in the map file uses this structure.
+	    
+	    Node::next
+		the offset to next node in the map (free or
+		allocated). This is always positive.
+		
+	    Node::prev
+		the offset to the previous node in the map (free or
+		allocated). This is always positive.
+		
+	    long    nextFree;
+		the offset to the next 'free' node in the map.
+		
+	    long    prevFree;
+		the offset to the previous free node in the map.
+	
+	
+	struct MapDynamicDynamicInfo : public MapDynamicInfo
+	
+	    This is the header for a map file. It is store at the
+	    first byte of the map file.
+	
+	    unsigned long   minChunkSize;
+		the minimum chunk size to allocate. 
+		
+	    unsigned long   allocSize;
+		the minimum number of bytes to expand the map by when
+		more space is needed.
+		
+	    unsigned long   chunkSize;
+		the total space allocated to all chunks in the map.
+		
+	    unsigned long   freeSize;
+		the total amount of free space.
+		
+	    struct FreeNode freeList;
+
+		Node::next
+		    the offset to the first node in the map.
+		    
+		Node::prev
+		    the offset to the last node in the map.
+
+		nextFree
+		    the offset to the first free node in the map.
+
+		prevFree
+		    the offset to the last free node in the map.
+
+
+    Map Layout
+
+	The first sizeof( MapDynamicDynamicInfo ) bytes contain the
+	header. The rest of the map is an ordered double linked list
+	of 'Node'. Free 'Node's have additional ordered double linked
+	list info so they can be independantly searched. Both list are
+	ordered from the begining of the file to the end.
+
+	Example:
+
+	    Offset  item    prev    next    prevF   nextF
+
+	       0    Header  4040     124    4040     140
+	     124    node       0    -140
+	     140    free     124     180       0     200
+	     180    node    -140    -200
+	     200    free     180    1024     140    2048
+	    1024    node    -200    1200
+	    1200    node    1024   -2048
+	    2048    free    1200    3000     200    4040
+	    3000    node   -2048   -4040
+	    4040    free    3000    0	    2048    0	     
+
+
+    allocate( size_type s )
+
+	Search the free list for the first node that is at least
+	(sizeof( Node ) + s) bytes in size.
+
+	If none is found, expand the map and use the last free
+	node 'header.prevFree'.
+
+	Once a node is found, check to see if it is big enough to
+	split into the allocated node and a new free node. The node is
+	big enough to split if its size is greater than:
+
+	    (minChunkSize + sizeof( Node ) + s )
+
+	Remove it from the free list.
+
+	Return the node's 'Loc'. This is the node's offset +
+	sizeof(	Node ).
+
+
+    release( Loc loc )
+
+	Put the node at 'loc' back into the free list. Free nodes are
+	joined, so if the node before and/or after this one is free,
+	they will be joined to create a sinlge larger free node.
+
+	If the node cannot be joined, insert it into the free list,
+	maintaining first to last ordering.
+	
+Performanc Characteristics:
+
+    allocate( size_type s )
+
+	Best Case: (no looping)
+	    The first free node is large enough to satisfy the
+	    request. 
+
+	Worst Case: (loop through all free nodes)
+	    None of the free nodes are large enough to satisfy the
+	    request. Loops through each free node to see if it is
+	    large enough, then expands the map and uses the last node.
+	    	    
+    release( Loc loc )
+
+	Best Case: (no looping)
+
+	    No Free Nodes
+	    Join with either prev, next or both.
+	    'loc' will be first free Node.
+	    'loc' will be the last free node.    
+
+	Worst Case: (loop through most free nodes)
+
+	    header.nextFree < 'loc' < header.prevFree &&
+	    neither next or prev is a free node.
+
+	    In this case, the list of free nodes is searched for the
+	    correct placement of loc. To minimize the search, there is
+	    a test to see if 'loc' is closer to the first or last free
+	    node.
+	    
+
+	    
+
+
+
+
+
+
+#
+# $Log$
+# Revision 1.1  1997/07/11 17:36:29  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:indented-text
+# End:

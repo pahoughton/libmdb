@@ -1,0 +1,174 @@
+//
+// File:        MultiMemOffsetMapDynamic.C
+// Project:	Mdb
+// Desc:        
+//
+//  Compiled sources for MultiMemOffsetMapDynamic
+//  
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/30/97 07:07
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+
+#include "MultiMemOffsetMapDynamic.hh"
+#include "MapMemDynamic.hh"
+#include <Str.hh>
+
+#if defined( MDB_DEBUG )
+#include "MultiMemOffsetMapDynamic.ii"
+#endif
+
+MDB_VERSION(
+  MultiMemOffsetMapDynamic,
+  "$Id$");
+
+
+MultiMemOffsetMapDynamic::MultiMemOffsetMapDynamic(
+  MapMemDynamic *   mapMemMgr,
+  bool		    delMemMgr
+  )
+  : mem( mapMemMgr ),
+    delMem( delMemMgr )
+{
+}
+
+MultiMemOffsetMapDynamic::~MultiMemOffsetMapDynamic( void )
+{
+  if( delMem )
+    delete mem;
+}
+
+MultiMemOffsetMapDynamic::Loc
+MultiMemOffsetMapDynamic::allocate( size_type size )
+{
+  return( mem->allocate( size ) );
+}
+
+void
+MultiMemOffsetMapDynamic::release( Loc loc )
+{
+  mem->release( loc );
+}
+
+MultiMemOffsetMapDynamic::Addr
+MultiMemOffsetMapDynamic::getBase( void )
+{
+  return( mem->getBase() );
+}
+
+const MultiMemOffsetMapDynamic::Addr
+MultiMemOffsetMapDynamic::getBase( void ) const
+{
+  return( mem->getBase() );
+}
+
+long
+MultiMemOffsetMapDynamic::getKey( unsigned short key ) const
+{
+  return( mem->getKey( key ) );
+}
+
+long
+MultiMemOffsetMapDynamic::setKey(
+  unsigned short    key,
+  long		    value
+  )
+{
+  return( mem->setKey( key, value ) );
+}
+
+
+bool
+MultiMemOffsetMapDynamic::good( void ) const
+{
+  return( mem && mem->good() );
+}
+
+const char *
+MultiMemOffsetMapDynamic::error( void ) const
+{
+  static Str errStr;
+
+  errStr = MultiMemOffsetMapDynamic::getClassName();
+
+  if( good() )
+    {
+       errStr += ": ok";
+    }
+  else
+    {
+      size_t eSize = errStr.size();
+
+      if( ! mem )
+	{
+	  errStr << ": no mem mgr.";
+	}
+      else
+	{
+	  if( ! mem->good() )
+	    errStr << ": " << mem->error();
+	}
+  
+      if( eSize == errStr.size() )
+        errStr << ": unknown error";
+    }
+
+  return( errStr.c_str() );
+}
+
+const char *
+MultiMemOffsetMapDynamic::getClassName( void ) const
+{
+  return( "MultiMemOffsetMapDynamic" );
+}
+
+const char *
+MultiMemOffsetMapDynamic::getVersion( bool withPrjVer ) const
+{
+  return( version.getVer( withPrjVer ) );
+}
+
+
+ostream &
+MultiMemOffsetMapDynamic::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( showVer )
+    dest << MultiMemOffsetMapDynamic::getClassName() << ":\n"
+	 << MultiMemOffsetMapDynamic::getVersion() << '\n';
+
+  if( ! MultiMemOffsetMapDynamic::good() )
+    dest << prefix << "Error: " << MultiMemOffsetMapDynamic::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  if( mem )
+    {
+      Str pre;
+      pre = prefix;
+      pre << "mem::";
+      mem->dumpInfo( dest, pre, false );
+    }
+  else
+    {
+      dest << prefix << "mem:      (NONE)" << '\n';
+    }
+  
+  return( dest );
+}
+
+// Revision Log:
+//
+// $Log$
+// Revision 2.1  1997/07/11 17:37:39  houghton
+// Initial Version.
+//
+//

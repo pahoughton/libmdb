@@ -1,0 +1,683 @@
+#ifndef _AvlTreeOffset_ii_
+#define _AvlTreeOffset_ii_
+//
+// File:        AvlTreeOffset.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for AvlTreeOffset
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/30/97 05:37
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+//
+// Public
+//
+
+template<class T>
+inline
+AvlTreeOffset<T>::AvlTreeOffset(
+  int	    	    (* compareData)( const T & one, const T & two ),
+  T & 	    	    (* copyData)( T & dest, const T & src ),
+  MultiMemOffset *  memMgr,
+  unsigned short    treeKey,
+  bool		    create
+  )
+  : avlError( E_NOTREE ),
+    tree( 0 ),
+    mem( memMgr )
+{
+  if( create )
+    {
+      initTree( compareData, copyData );
+      if( mem && tree )
+	mem->setKey( treeKey, tree );
+    }
+  else
+    {
+      initTree( compareData, copyData, mem ? mem->getKey( treeKey ) : 0 );
+    }
+}
+
+
+// add - add a new node to the tree
+template< class T >
+inline
+AvlTreeOffsetBase::Loc
+AvlTreeOffset<T>::add( const T & rec )
+{
+  AVLTREE_CHECK( 0 );
+
+  Loc	newNode = getMem();
+  Loc	addNode = newNode;
+  
+  AVLTREE_SAFE( newNode, 0 );
+  
+  initNode( newNode );  
+  copy( getNodeData( newNode ), rec );
+  insertNode(  &(getTree()->root), &addNode );
+
+  if( addNode == 0 )
+    getTree()->count++;
+  else
+    freeMem( newNode );
+    
+  return( (addNode) ? getDataOffset( addNode ) : 0 );
+}
+
+// find - find a node in the tree
+template<class T>
+inline
+AvlTreeOffsetBase::Loc
+AvlTreeOffset<T>::find( const T & key ) const
+{
+  AVLTREE_CHECK( 0 );
+
+  Loc foundNode = findNode( getTree()->root, &key );
+
+  return( (foundNode) ? getDataOffset( foundNode ) : 0 );
+}
+
+// find - find a node in the tree
+template<class T>
+inline
+T *
+AvlTreeOffset<T>::findData( const T & key )
+{
+  Loc found = find( key );
+  return( (found) ? getAddr( found ) : 0 );
+}
+
+// del - remove a node from the tree
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::del( const T & key )
+{
+  AVLTREE_CHECK( 0 );
+
+  Loc	    delNode = 0;
+  
+  deleteNode( &(getTree()->root), &key, &delNode );
+
+  if( delNode  )
+    {
+      getTree()->count--;
+      freeMem( delNode );
+    }
+
+  return( delNode );
+}
+
+// walk - execute user function for each node in the tree
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walk( bool (*action)( T & rec ) )
+{
+  AVLTREE_CHECK( false );
+
+  if( action ) walkAction = action;
+  
+  return( walkTree( getTree()->root ) );
+}
+
+// walk - execute user function for each node in the tree
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walk(
+  void * closure,
+  bool (*action)( T & rec, void * closure )
+  )
+{
+  AVLTREE_CHECK( false );
+
+  if( action ) walkActionClosure = action;
+  
+  return( walkTree( getTree()->root, closure ) );
+}
+
+// walk - execute user function for each node in the tree
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walk(
+  void * closure,
+  bool (*action)( const T & rec, void * closure )
+  ) const
+{
+  AVLTREE_CHECK( false );
+
+  ConstWalkNodeWithClosure   wa;
+  
+  wa.action		= action;
+  wa.closure		= closure;
+  
+  return( walkTree( getTree()->root, &wa ) );
+}
+
+
+// destroy - remove all nodes from the tree
+template<class T>
+inline
+void
+AvlTreeOffset<T>::destroy( void (* action)( T & rec ) )
+{
+  AVLTREE_CHECK_NORET();
+
+  if( action ) destroyAction = action;
+  destroyTree( &(getTree()->root) );
+  getTree()->count = 0;
+}
+
+// destroy - remove all nodes from the tree
+template<class T>
+inline
+void
+AvlTreeOffset<T>::destroy(
+  void * closure,
+  void (* action)( T & rec, void * closure )
+  )
+{
+  AVLTREE_CHECK_NORET();
+
+  if( action ) destroyActionClosure = action;
+  destroyTree( &(getTree()->root), closure );
+  getTree()->count = 0;
+}
+
+// getAddr - return the address for data at 'dataOffset'
+template<class T>
+inline
+T *
+AvlTreeOffset<T>::getAddr( AvlTreeOffsetBase::Loc dataOffset )
+{
+    return( (T *) (getBase() + dataOffset) );
+}
+
+// getAddr - return a reference for data at 'dataOffset'
+template<class T>
+inline
+T &
+AvlTreeOffset<T>::getRef( AvlTreeOffsetBase::Loc dataOffset )
+{
+    return( *(getAddr( dataOffset )) );
+}
+
+// operator [] - return a reference for data at 'dataOffset
+template<class T>
+inline
+T &
+AvlTreeOffset<T>::operator [] ( AvlTreeOffsetBase::Loc dataOffset )
+{
+    return( getRef( dataOffset ) );
+}
+
+// getAddr - return the address for data at 'dataOffset'
+template<class T>
+inline
+const T *
+AvlTreeOffset<T>::getAddr( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+    return( (const T *) (getBase() + dataOffset) );
+}
+
+// getRef - return a reference for data at 'dataOffset'
+template<class T>
+inline
+const T &
+AvlTreeOffset<T>::getRef( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+    return( *(getAddr( dataOffset )) );
+}
+
+// operator [] - return a reference for data at 'dataOffset
+template<class T>
+inline
+const T &
+AvlTreeOffset<T>::operator [] ( AvlTreeOffsetBase::Loc dataOffset ) const
+{
+    return( getRef( dataOffset ) );
+}
+
+
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTreeOffset<T>::setWalk( bool (* action)( T & rec ) )
+{
+  walkAction = action;
+}
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTreeOffset<T>::setWalk( bool (* action)( T & rec, void * closure ) )
+{
+  walkActionClosure = action;
+}
+
+// setDestroy - set the function to execute for each node during a destroy
+template<class T>
+inline
+void 
+AvlTreeOffset<T>::setDestroy( void (* action)( T & rec ) )
+{
+  destroyAction = action;
+}
+
+// setDestroy - set the function to execute for each node during a destroy
+template<class T>
+inline
+void 
+AvlTreeOffset<T>::setDestroy( void (* action)( T & rec, void * closure ) )
+{
+  destroyActionClosure = action;
+}
+
+// getNodeSize - return the size of a node
+template<class T>
+inline
+AvlTreeOffsetBase::size_type
+AvlTreeOffset<T>::getNodeSize( void )
+{
+  return( sizeof( AvlNode ) );
+}
+
+// getCount - return the number of nodes in the tree
+template<class T>
+inline
+AvlTreeOffsetBase::size_type
+AvlTreeOffset<T>::getCount( void ) const
+{
+  return( getTree()->count );
+}
+
+// getCount - return the number of nodes in the tree
+template<class T>
+inline
+AvlTreeOffsetBase::size_type
+AvlTreeOffset<T>::size( void ) const
+{
+  return( getCount() );
+}
+
+// getMemMgr - return the memory manager
+template<class T>
+inline
+MultiMemOffset *
+AvlTreeOffset<T>::getMemMgr( void )
+{
+  return( mem );
+}
+
+// getMemMgr - return the memory manager
+template<class T>
+inline
+const MultiMemOffset *
+AvlTreeOffset<T>::getMemMgr( void ) const
+{
+  return( mem );
+}
+
+// good - return true if no detected error otherwize false
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::good( void ) const
+{
+  return( tree != 0 && mem && mem->good() );
+}
+
+// error - return a string that describes the state of the tree
+template<class T>
+inline
+const char *
+AvlTreeOffset<T>::error( void ) const
+{
+  static Str errStr;
+  errStr.reset();
+
+  // use the virtual class name (if defined)
+  errStr << getClassName();
+  
+  if( good() )
+    {
+      errStr << ": Ok";
+    }
+  else
+    {      
+      switch( avlError )
+	{
+	case E_NOFUNCT:
+	  errStr << ": no copy or compare function";
+	  break;
+
+	case E_NOTREE:
+	  errStr << ": no tree (tree == 0)";
+	  break;
+
+	case E_MEMMGR:
+	  if( mem )
+	    {
+	      if( mem->good() )
+		errStr << ": unknown mem error";
+	    }
+	  else
+	    {
+	      errStr << ": no memory manager.";
+	    }
+	  break;
+
+	default:
+	  if( mem && mem->good() )
+	    {
+	      errStr << ": unknown error";
+	    }
+	  break;
+	}
+
+      if( ! mem->good() )
+	{
+	  errStr << ": " << mem->error();
+	}
+    }
+  return( errStr.cstr() );
+}
+
+template< class T >
+inline
+ostream &
+AvlTreeOffset<T>::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		CLUE_UNUSED( showVer )
+  ) const
+{
+  if( ! AvlTreeOffset<T>::good() )
+    dest << prefix << "Error: " << AvlTreeOffset<T>::error() << '\n';
+  else
+    dest << prefix << "Good\n";
+
+  Str pre;
+
+  if( mem )
+    {
+      pre = prefix;
+      pre << "mem:" ;
+      mem->dumpInfo( dest, pre, false );
+    }
+  else
+    {
+      dest << "No mem manager!\n";
+    }
+
+  dest << prefix << "tree:        " << tree << '\n'
+       << prefix << "node size:   " << getNodeSize() << '\n'
+       << prefix << "root:        " << getTree()->root << '\n'
+       << prefix << "node count:  " << getCount() << '\n'
+    ;
+  
+  return( dest );
+}  
+
+// dumpTree - show tree structure
+template<class T>
+inline
+ostream &
+AvlTreeOffset<T>::dumpTree( ostream & dest )
+{
+  AVLTREE_CHECK( dest );
+
+  return( dumpAvlTree( getTree()->root, dest ) );
+}
+
+//
+// Protected
+//
+  
+// compare - vitural compare
+template<class T>
+inline
+int
+AvlTreeOffset<T>::compare( const T & one, const T & two ) const
+{
+
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( ::compare( one, two ) );
+#else
+  return( compareRec( one, two ) );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( (compareRec) ? compareRec( one, two) :
+	  ::compare( one, two ) );
+#else
+  return( (compareRec) ? compareRec( one, two ) : 0 );
+#endif
+#endif
+}
+
+// compareNode - overrides base class's virtual compare function
+template<class T>
+inline
+int
+AvlTreeOffset<T>::compareNode( const off_t one, const off_t two )
+{
+  return( compare( getNodeData( one ), getNodeData( two ) ) );
+}
+
+// compareFind - overrides base class's virtual compare function
+template<class T>
+inline
+int
+AvlTreeOffset<T>::compareFind( const void * one, const off_t two ) const
+{
+  return( compare( *((T*)one), getNodeData( two ) ) );
+}
+
+// copy - copy data 
+template<class T>
+inline
+T &
+AvlTreeOffset<T>::copy( T & dest, const T & src )
+{
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   dest = src;
+#else
+   copyRec( dest, src );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   if( copyRec )
+     {
+       copyRec( dest, src );
+     }
+   else
+     {
+       dest = src;
+     }
+#else
+   if( copyRec ) copyRec( dest, src );
+#endif
+#endif
+   return( dest );
+}
+
+// walkNode - execute user function at each node
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walkNode( off_t root )
+{
+  bool abort = true;
+  if( walkAction )
+    {
+      abort = walkAction( getNodeData( root ) );
+    }
+  
+  return( abort );
+}
+
+// walkNode - execute user function at each node
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walkNode( off_t root, void * closure )
+{
+  bool abort = true;
+  if( walkActionClosure )
+    {
+      abort = walkActionClosure( getNodeData( root ), closure );
+      return( abort );
+    }
+  
+  return( abort );
+}
+
+// walkNode - execute user function at each node
+template<class T>
+inline
+bool
+AvlTreeOffset<T>::walkNode( off_t root, void * closure ) const
+{
+  ConstWalkNodeWithClosure * wa = (ConstWalkNodeWithClosure *)closure;
+
+  return( wa && wa->action ?
+	  wa->action( getNodeData( root ), wa->closure ) :
+	  true );
+}
+
+// destroyNode - excute use function for each node during a destroy
+template<class T>
+inline
+void
+AvlTreeOffset<T>::destroyNode( off_t root )
+{
+  if( destroyAction )
+    {
+      destroyAction( getNodeData( root ) );
+    }
+
+  freeMem( root );
+
+}
+
+// destroyNode - excute use function for each node during a destroy
+template<class T>
+inline
+void
+AvlTreeOffset<T>::destroyNode( off_t root, void * closure )
+{
+  if( destroyActionClosure )
+    {
+      destroyActionClosure( getNodeData( root ), closure );
+    }
+
+  freeMem( root );
+}
+
+
+template<class T>
+inline
+void
+AvlTreeOffset<T>::initTree(
+  int (* cmp)( const T & one, const T & two ),
+  T & (* cpy)( T & dest, const T & src)
+  )
+{
+  if( mem && mem->good() )
+    {
+      Loc newTree = mem->allocate( sizeof( AvlTree ) );
+      
+      if( newTree )
+	{
+	  initTree( cmp, cpy, newTree );
+	  if( avlError == E_OK )
+	    {
+	      getTree()->root = 0;
+	      getTree()->count = 0;
+	    }
+	}
+      else
+	{
+	  avlError = E_NOTREE;	  
+	}
+    }
+  else
+    {
+      avlError = E_MEMMGR;
+    }
+}
+
+template<class T>
+inline
+void
+AvlTreeOffset<T>::initTree(
+  int (* cmp)( const T & one, const T & two ),
+  T & (* cpy)( T & dest, const T & src),
+  off_t avlTree
+  )
+{
+  compareRec = cmp;
+  copyRec = cpy;
+
+  walkAction = 0;
+  walkActionClosure = 0;
+  destroyAction = 0;
+  destroyActionClosure = 0;
+
+  if( ! mem || ! mem->good() )
+    {
+      avlError = E_MEMMGR;
+      return;
+    }
+
+  if( avlTree )
+    {
+      tree = avlTree;
+    }
+  else
+    {
+      avlError = E_NOTREE;
+      return;
+    }
+  
+#if !defined( AVLTREE_FAST )
+#if !defined( AVLTREE_GLOBALFUNCT )
+  if( ! compareRec || ! copyRec )
+    {
+      avlError = E_NOFUNCT;
+      return;
+    }
+#endif // ! def AVLTREE_GLOBALFUNCT
+#endif // ! def AVLTREE_FAST
+
+  avlError = E_OK;
+
+}
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:36:39  houghton
+// Initial Version.
+//
+//
+#endif // ! def _AvlTreeOffset_ii_ 

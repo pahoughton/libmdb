@@ -1,0 +1,108 @@
+#ifndef _RBSet_ii_
+#define _RBSet_ii_
+//
+// File:        RBSet.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for RBSet
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/10/97 05:53
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+template< class Key, class LessKey >
+inline
+RBSet< Key, LessKey >::RBSet(
+  MultiMemOffset *	memMgr,
+  unsigned short	treeKey,
+  bool			create
+  )
+  : table( memMgr, treeKey, create )
+{
+}
+
+template< class Key, class LessKey >
+inline
+RBSet< Key, LessKey >::~RBSet( void )
+{
+}
+
+template< class Key, class LessKey >
+inline
+bool
+RBSet< Key, LessKey >::good( void ) const
+{
+  return( table.good() );
+}
+
+
+template< class Key, class LessKey >
+inline
+const char * 
+RBSet< Key, LessKey >::error( void ) const
+{
+  return( table.error() );
+}
+
+
+template< class Key, class LessKey >
+inline
+const char * 
+RBSet< Key, LessKey >::getClassName( void ) const
+{
+  return( "RBSet< Key, LessKey >" );
+}
+
+template< class Key, class LessKey >
+inline
+const char *
+RBSet< Key, LessKey >::getVersion( bool withPrjVer ) const
+{
+  return( table.getVersion( withPrjVer ) );
+}
+
+template< class Key, class LessKey >
+inline
+ostream &
+RBSet< Key, LessKey >::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( showVer )
+    dest << RBSet::getClassName() << ":\n"
+	 << RBSet::getVersion() << '\n';
+
+  if( ! RBSet::good() )
+    dest << prefix << "Error: " << RBSet::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << "table:";
+  table.dumpInfo( dest, pre, false );
+  
+  return( dest );
+}
+
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/11 17:37:52  houghton
+// Initial Version.
+//
+//
+#endif // ! def _RBSet_ii_ 
