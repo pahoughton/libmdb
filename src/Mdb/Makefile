@@ -34,7 +34,7 @@
 #
 
 makefile_type   = lib
-make_cfg_ver	= 5.05
+make_cfg_ver	= 5.06
 make_target	= default
 show_commands 	= # true
 proto_dep	= true
@@ -84,8 +84,8 @@ PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DMDB_DEFAULT=1
 DEBUG_DEFINES	= -DMDB_DEBUG=1 -DSTLUTILS_DEBUG=1 
-TEST_DEFINES	= -DMDB_TEST=1 -DMDB_DEBUG=1 
-		  -DMDD_TEST=1 -DMDF_DEBUG=1 -DRBT_TEST=1
+TEST_DEFINES	= -DMDB_TEST=1 -DMDB_DEBUG=1 			\
+		  -DMDD_TEST=1 -DMDF_DEBUG=1 -DRBT_TEST=1	\
 		  -DSTLUTILS_DEBUG=1
 PROFILE_DEFINES	= -DMDB_PROFILE=1
 SHARED_DEFINES	= -DMDB_SHARED=1
@@ -98,8 +98,8 @@ SHARED_DEFINES	= -DMDB_SHARED=1
 #
 
 
-SRC_INC		= $(ARCH_INC) -I. -I$(PRJ_TOPDIR)
-PRJ_INC		= -I$(beta_incdir)
+SRC_INC		= $(ARCH_INC) -I.
+PRJ_INC		= -I$(INSTALL_INC_DIR)
 
 
 # Any other cpp flags to use on for all targets
@@ -174,6 +174,7 @@ USER_HH_INCS	=			\
 	MapBatch.hh			\
 	MapFile.hh			\
 	MapMem.hh			\
+	MapMemDlist.hh			\
 	MapMemDynamic.hh		\
 	MapMemDynamicDynamic.hh		\
 	MapMemDynamicFixed.hh		\
@@ -201,6 +202,7 @@ USER_II_INCS	=			\
 	MapBatch.ii			\
 	MapFile.ii			\
 	MapMem.ii			\
+	MapMemDlist.ii			\
 	MapMemDynamic.ii		\
 	MapMemDynamicDynamic.ii		\
 	MapMemDynamicFixed.ii		\
@@ -288,8 +290,6 @@ install_shared::  shared  $(INSTALL_LIB_DIR)/$(LIBRARY_SHARED)
 	$(hide) chmod +x $(INSTALL_LIB_DIR)/$(LIBRARY_SHARED)
 
 
-test::	default
-
 FORCE: 
 
 #
@@ -302,6 +302,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.19  1998/10/23 13:18:59  houghton
+# Changed to use MakeConfigs 5.06.
+#
 # Revision 2.18  1998/03/23 10:41:59  houghton
 # Changed to work with MakeConfigs 5.05.
 #
