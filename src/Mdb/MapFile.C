@@ -39,6 +39,7 @@ MDB_VERSION(
 
 
 const MapFile::size_type  MapFile::npos = NPOS;
+MapFile::size_type	    MapFile::totalMapped( 0 );
 
 MapFile::MapFile()
   : mapFd( -1 ),
@@ -231,6 +232,10 @@ MapFile::map(
       mapSize = 0;
       osErrno = errno;
     }
+  else
+    {
+      totalMapped += mapSize;
+    }
   
   return( mapSize );
 }
@@ -241,6 +246,7 @@ MapFile::unmap( void )
   if( mapBase != 0 && mapSize != 0 )
     {
       munmap( mapBase, mapSize );
+      totalMapped -= mapSize;
       mapBase = 0;
       mapSize = 0;
     }
@@ -323,7 +329,10 @@ MapFile::setSize(
     }
       
   if( mapSize != 0 )
-    munmap( mapBase, mapSize );
+    {
+      munmap( mapBase, mapSize );
+      totalMapped -= mapSize;
+    }
     
 
   
@@ -405,6 +414,10 @@ MapFile::setSize(
       mapSize = 0;
       osErrno = errno;
     }
+  else
+    {
+      totalMapped += mapSize;
+    }
 
   return( mapSize );
 }
@@ -447,7 +460,14 @@ MapFile::getPageSize( void )
   return( getpagesize() );
 }
 
-  
+
+MapFile::size_type
+MapFile::getTotalMapped( void )
+{
+  return( totalMapped );
+}
+
+
 bool
 MapFile::good( void ) const
 {
@@ -468,7 +488,7 @@ MapFile::error( void ) const
     }
   else
     {
-      errStr << ": " << fileStat.getName() << " - " << strerror( osErrno );
+      errStr << ": '" << fileStat.getName() << "' - " << strerror( osErrno );
     }
   return( errStr.cstr() );
 }
@@ -516,6 +536,7 @@ MapFile::dumpInfo(
        << prefix << "map size:      " << getSize() << '\n'
        << prefix << "base addr:     " << (void *)getBase() << '\n'
        << prefix << "end addr:      " << (void *)getEnd() << '\n'
+       << prefix << "total mapped:  " << totalMapped << '\n'
        << prefix << "page size:     " << getPageSize() << endl
     ;
 
@@ -527,6 +548,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.19  1999/03/02 12:58:00  houghton
+// Added totalMapped static variable.
+//
 // Revision 2.18  1998/03/18 06:41:36  houghton
 // Changed for Sun5 - the kernel does not allocate file space
 //     properly. I'm hoping 'writing' to the map file first will keep me
