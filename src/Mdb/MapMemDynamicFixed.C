@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.3  1995/07/21 15:43:15  ichudov
+// Revision 1.4  1995/11/05 12:05:55  houghton
+// Fixed bug in freeMem.
+//
+// Revision 1.3  1995/07/21  15:43:15  ichudov
 // DAVLs
 //
 // Revision 1.2  1995/03/02  16:35:35  houghton
@@ -273,22 +276,32 @@ MapMemFixedDynamic::freeMem(
 	      freeRecs++;
 	    }
 
+	  freeRecs --;
+	  
 	  if( freeRecs > base->chunkSize )
 	    {
 	      unsigned long releaseChunks = freeRecs / base->chunkSize;
 
-	      if( releaseChunks > 1 )
+	      if( releaseChunks )
 		{
-		  unsigned long releaseRecs = (releaseChunks - 1) * base->chunkSize;
+		  unsigned long releaseRecs = releaseChunks * base->chunkSize;
 
 		  size_t newSize = shrink( releaseRecs * base->recSize,
 					   (caddr_t)base->base  );
 
 		  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
+		  releaseRecs++;
 		  
 		  base->size = getSize();
 		  base->freeCount -= releaseRecs;
 		  base->recCount -= releaseRecs;
+		  base->freeList.prev = ( DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) ) +
+					  ( (base->recCount - 1)* base->recSize ) );
+
+		  struct FreeList * lastNode = (struct FreeList *)
+		    (baseAddr + base->freeList.prev);
+		  lastNode->next = 0;
+		  
 		}
 	    }
 	}
