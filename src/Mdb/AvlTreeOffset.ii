@@ -41,7 +41,12 @@ AvlTreeOffset<T>::AvlTreeOffset(
     {
       initTree( compareData, copyData );
       if( mem && tree )
-	mem->setKey( treeKey, tree );
+	{
+	  if( ! mem->setNewKey( treeKey, tree ) )
+	    {
+	      avlError = E_BADTREEKEY;
+	    }
+	}
     }
   else
     {
@@ -382,6 +387,10 @@ AvlTreeOffset<T>::error( void ) const
 	    }
 	  break;
 
+	case E_BADTREEKEY:
+	  errStr << ": bad key used for tree create.";
+	  break;
+	  
 	default:
 	  if( mem && mem->good() )
 	    {
@@ -678,6 +687,10 @@ AvlTreeOffset<T>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/10/01 14:04:05  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.3  1997/09/17 16:55:54  houghton
 // Changed for new library rename to StlUtils
 //

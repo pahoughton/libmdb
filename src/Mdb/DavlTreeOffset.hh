@@ -374,6 +374,7 @@ private:
   {
     E_OK,
     E_MEMMGR,
+    E_BADTREEKEY,
     E_NOTREE,
     E_NOFUNCT,
     E_UNDEFINED
@@ -514,6 +515,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/10/01 14:04:09  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.8  1997/09/17 16:55:55  houghton
 // Changed for new library rename to StlUtils
 //

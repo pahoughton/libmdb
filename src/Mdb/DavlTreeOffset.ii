@@ -42,7 +42,12 @@ DavlTreeOffset<K,D>::DavlTreeOffset(
     {
       initTree( compKey, keyCopy, dataCopy );
       if( keyMem && tree )
-	keyMem->setKey( treeKey, tree );
+	{
+	  if( ! keyMem->setNewKey( treeKey, tree ) )
+	    {
+	      davlError = E_BADTREEKEY;
+	    }
+	}
     }
   else
     {
@@ -672,6 +677,10 @@ DavlTreeOffset<K,D>::error( void ) const
 	    }
 	  break;
 
+	case E_BADTREEKEY:
+	  errStr << ": bad key used for tree create.";
+	  break;
+	  
 	default:
 	  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
 	    {
@@ -1229,6 +1238,10 @@ DavlTreeOffset<K,D>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.5  1997/10/01 14:04:16  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.4  1997/09/17 16:55:56  houghton
 // Changed for new library rename to StlUtils
 //

@@ -125,7 +125,10 @@ RBTreeBase::RBTreeBase(
       first()		    = headerLoc;
       last()		    = headerLoc;
       
-      mgr->setKey( treeKey, headerLoc );
+      if( ! mgr->setNewKey( treeKey, headerLoc ) )
+	{
+	  errorNum = E_BADTREEKEY;
+	}
     }
   else
     {
@@ -985,9 +988,25 @@ RBTreeBase::error( void ) const
 	  myErrStr << ": no mgr";
 	}
 
-      if( errorNum != E_OK )
-	myErrStr << ": " << errorNum;
-      
+      switch( errorNum )
+	{
+	case E_OK:
+	  break;
+
+	case E_VERSION:
+	  myErrStr << ": bad version: '" << header().version
+		   << "' expected: '" << rbTreeVersion << "'";
+	  break;
+
+	case E_BADTREEKEY:
+	  myErrStr << ": invalid treeKey (already in use).";
+	  break;
+
+	default:
+	  myErrStr << ": errorNum(" << errorNum << ')';
+	  break;
+	}
+
       if( eSize == myErrStr.size() )
         myErrStr << ": unknown error";
     }
@@ -1564,6 +1583,10 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/10/01 14:03:29  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.5  1997/08/18 10:24:10  houghton
 // Port(Sun5): had to add static errStr to be used by template sub
 //     classes (DBTree). The sun compiler gets a dup symbol error.

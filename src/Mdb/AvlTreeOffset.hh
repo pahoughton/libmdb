@@ -194,6 +194,7 @@ private:
   {
     E_OK,
     E_MEMMGR,
+    E_BADTREEKEY,
     E_NOTREE,
     E_NOFUNCT,
     E_UNDEFINED
@@ -332,6 +333,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/10/01 14:04:03  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.8  1997/07/13 11:01:10  houghton
 // Moved inline definitions to AvlTreeOffset.ii.
 // Lots of cleanup.

@@ -207,6 +207,7 @@ protected:
   {
     E_OK,
     E_VERSION,
+    E_BADTREEKEY,
     E_UNDEFINED
   };
 
@@ -320,6 +321,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/10/01 14:03:33  houghton
+// Chaged to reserve 'keys' set.
+// Changed to use portable multi platform types.
+//
 // Revision 2.5  1997/09/17 16:56:10  houghton
 // Changed for new library rename to StlUtils
 //
