@@ -82,7 +82,7 @@ tAvlTreeOffset02( LibTest & tester )
 
     TestAvlTreeOffset::Rec  r;
 
-    while( f.read( &r, sizeof( r ) ).good() )
+    while( f.read( (char *)&r, sizeof( r ) ).good() )
       {
 	r.l = Net2Host( r.l );
 	recList.push_back( r );
@@ -299,6 +299,9 @@ tAvlTreeOffset02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/14 10:45:26  houghton
+// Port(AIX): had to case ofstream::read arg to 'char *'.
+//
 // Revision 2.1  1997/07/11 17:38:56  houghton
 // Initial Version.
 //
