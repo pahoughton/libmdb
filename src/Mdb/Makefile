@@ -39,7 +39,7 @@ INSTALL_INCDIR	= $(beta_incdir)
 
 VER_MAJOR	= 1
 VER_MINOR	= 00
-VER_RELEASE	= 00.a.01
+VER_RELEASE	= 00.a.02
 VERSION		= $(VER_MAJOR).$(VER_MINOR).$(VER_RELEASE)
 
 LIBRARY_DEFAULT	= lib$(NAME).a
@@ -280,6 +280,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.14  1997/09/02 13:24:35  houghton
+# Changed Version number.
+#
 # Revision 2.13  1997/08/25 10:36:00  houghton
 # Commented out RBT_TEST define.
 #
