@@ -236,18 +236,18 @@ public:
   typedef ::reverse_iterator< const_iterator >	const_reverse_iterator;
 #else
   typedef std::reverse_iterator< const_iterator,
-    const_iterator::iterator_category,
-    const_iterator::value_type,
-    const_iterator::reference,
-    const_iterator::pointer,
-    const_iterator::difference_type > const_reverse_iterator;
+    typename const_iterator::iterator_category,
+    typename const_iterator::value_type,
+    typename const_iterator::reference,
+    typename const_iterator::pointer,
+    typename const_iterator::difference_type > const_reverse_iterator;
   typedef std::reverse_iterator<
     iterator,
-    iterator::iterator_category,
-    iterator::value_type,
-    iterator::reference,
-    iterator::pointer,
-    iterator::difference_type > reverse_iterator;
+    typename iterator::iterator_category,
+    typename iterator::value_type,
+    typename iterator::reference,
+    typename iterator::pointer,
+    typename iterator::difference_type > reverse_iterator;
 #endif
     
   typedef pair< iterator, bool >    pair_iterator_bool;
@@ -917,6 +917,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.6  2004/04/19 20:26:48  houghton
+// Fixed warning messages.
+//
 // Revision 4.5  2003/09/18 15:16:38  houghton
 // Bug-Fix was getting into infinate loop because I was not testing hist
 // == 0 in nextNode and nextHist methods

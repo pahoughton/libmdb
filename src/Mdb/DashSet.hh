@@ -40,14 +40,14 @@ public:
 
   typedef DashTable< Key, Key, MdbIdent< Key, Key >, HashFunct, LessKey > Table;
 
-  typedef Table::size_type		size_type;
-  typedef Table::iterator		iterator;
-  typedef Table::const_iterator		const_iterator;
-  typedef Table::reverse_iterator	reverse_iterator;
-  typedef Table::const_reverse_iterator	const_reverse_iterator;
-  typedef Table::pair_iterator_bool	pair_iterator_bool;
+  typedef typename Table::size_type		    size_type;
+  typedef typename Table::iterator		    iterator;
+  typedef typename Table::const_iterator	    const_iterator;
+  typedef typename Table::reverse_iterator	    reverse_iterator;
+  typedef typename Table::const_reverse_iterator    const_reverse_iterator;
+  typedef typename Table::pair_iterator_bool	    pair_iterator_bool;
 
-  typedef Table::EffDate		EffDate;
+  typedef typename Table::EffDate		EffDate;
   
   inline DashSet( MultiMemOffset *	memMgr,
 	       const char *	indexFileName,
@@ -236,6 +236,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2004/04/19 20:26:48  houghton
+// Fixed warning messages.
+//
 // Revision 4.2  2003/08/09 12:43:23  houghton
 // Changed ver strings.
 //

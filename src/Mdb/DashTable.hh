@@ -141,7 +141,7 @@ public:
     inline const_iterator( const const_iterator & from )
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
-    inline const_iterator( const self::iterator & from )
+    inline const_iterator( const typename self::iterator & from )
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
     inline const_iterator &	operator ++ ( void ) {
@@ -181,11 +181,11 @@ public:
     };
 #endif
     
-    inline bool		operator == ( const self::iterator & rhs ) const {
+    inline bool		operator == ( const typename self::iterator & rhs ) const {
       return( table == rhs.table && hash == rhs.hash && node == rhs.node );
     };
     
-    inline bool		operator != ( const self::iterator & rhs ) const {
+    inline bool		operator != ( const typename self::iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
     
@@ -196,7 +196,7 @@ public:
       return( *this );
     };
 
-    inline const_iterator & operator = ( const self::iterator & rhs ) {
+    inline const_iterator & operator = ( const typename self::iterator & rhs ) {
       table = rhs.table;
       hash = rhs.hash;
       node = rhs.node;      
@@ -223,18 +223,18 @@ public:
   typedef ::reverse_iterator< const_iterator >	const_reverse_iterator;
 #else
   typedef std::reverse_iterator< const_iterator,
-    const_iterator::iterator_category,
-    const_iterator::value_type,
-    const_iterator::reference,
-    const_iterator::pointer,
-    const_iterator::difference_type > const_reverse_iterator;
+    typename const_iterator::iterator_category,
+    typename const_iterator::value_type,
+    typename const_iterator::reference,
+    typename const_iterator::pointer,
+    typename const_iterator::difference_type > const_reverse_iterator;
   typedef std::reverse_iterator<
     iterator,
-    iterator::iterator_category,
-    iterator::value_type,
-    iterator::reference,
-    iterator::pointer,
-    iterator::difference_type > reverse_iterator;
+    typename iterator::iterator_category,
+    typename iterator::value_type,
+    typename iterator::reference,
+    typename iterator::pointer,
+    typename iterator::difference_type > reverse_iterator;
 #endif
   
     
@@ -515,6 +515,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2004/04/19 20:26:48  houghton
+// Fixed warning messages.
+//
 // Revision 4.2  2003/08/09 12:43:23  houghton
 // Changed ver strings.
 //
