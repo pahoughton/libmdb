@@ -9,6 +9,10 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.2  1997/03/07 11:51:18  houghton
+// Add getBase() const.
+// Added dumpInfo.
+//
 // Revision 2.1  1995/11/10 12:42:38  houghton
 // Change to Version 2
 //
@@ -32,7 +36,7 @@ MultiMemOffsetMapFixed::error( void ) const
   
   if( good() )
     {
-      errStr << ": Ok";
+      errStr << ": ok";
     }
   else
     {
@@ -53,7 +57,28 @@ MultiMemOffsetMapFixed::getStats( ostream & dest ) const
   return( mem.getStats( dest ) );
 }
 
+ostream &
+MultiMemOffsetMapFixed::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! MultiMemOffsetMapFixed::good() )
+    dest << prefix << "Error: " << MultiMemOffsetMapFixed::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
 
+  Str pre;
+  pre = prefix;
+  pre << "mem";
+
+  mem.dumpInfo( dest, pre, false );
+
+  return( dest );
+}
+
+  
 
 //
 //              This software is the sole property of

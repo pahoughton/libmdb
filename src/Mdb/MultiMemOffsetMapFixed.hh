@@ -12,6 +12,10 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/03/07 11:51:08  houghton
+// Add getBase() const.
+// Added dumpInfo.
+//
 // Revision 2.1  1995/11/10 12:42:39  houghton
 // Change to Version 2
 //
@@ -46,16 +50,21 @@ public:
   virtual void 	    freeMem( off_t offset );
 
   virtual void *    getAddr( off_t offset );
-  virtual void *    getBase( void );
+  virtual void *	getBase( void );
+  virtual const void *  getBase( void ) const;
 
   MapMemFixedDynamic &     getMap( void );
 
   virtual ostream & 	getStats( ostream & dest ) const;
 
-  virtual const char *	getClassName( void ) const;
   virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;
 
+  virtual const char *	getClassName( void ) const;
+  virtual ostream &	dumpInfo( ostream &	dest = cerr,
+				  const char *	prefix = "    ",
+				  bool		showVer = false ) const;
+  
   friend inline ostream & operator<<( ostream & dest, const MultiMemOffsetMapFixed & mmo );
   
 protected:
@@ -119,6 +128,13 @@ MultiMemOffsetMapFixed::getAddr( off_t offset )
 inline
 void *
 MultiMemOffsetMapFixed::getBase( void )
+{
+  return( mem.getBase() );
+}
+
+inline
+const void *
+MultiMemOffsetMapFixed::getBase( void ) const
 {
   return( mem.getBase() );
 }
