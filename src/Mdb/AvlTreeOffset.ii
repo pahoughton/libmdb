@@ -404,7 +404,7 @@ ostream &
 AvlTreeOffset<T>::dumpInfo(
   ostream &	dest,
   const char *	prefix,
-  bool		CLUE_UNUSED( showVer )
+  bool		STLUTILS_UNUSED( showVer )
   ) const
 {
   if( ! AvlTreeOffset<T>::good() )
@@ -678,6 +678,9 @@ AvlTreeOffset<T>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/09/17 16:55:54  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.2  1997/07/19 10:12:54  houghton
 // Bug-Fix: changed how destroy calls destroyTree to work with the new version.
 //

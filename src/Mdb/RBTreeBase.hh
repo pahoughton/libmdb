@@ -145,7 +145,7 @@ public:
   public:
 
     virtual ostream &	dumpNode( ostream & dest,
-				  const Loc CLUE_UNUSED( node ) ) const {
+				  const Loc STLUTILS_UNUSED( node ) ) const {
       return( dest );
     };
   };
@@ -320,6 +320,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/17 16:56:10  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.4  1997/08/18 10:23:57  houghton
 // Port(Sun5): had to add static errStr to be used by template sub
 //     classes (DBTree). The sun compiler gets a dup symbol error.

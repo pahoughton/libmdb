@@ -137,11 +137,11 @@ DEBUG_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
-DEFAULT_LD_LIBS		= -lMdb -lClue -lGnuRegex -lCommon \
+DEFAULT_LD_LIBS		= -lMdb -lStlUtils -lGnuRegex -lCommon \
 			  $(ARCH_DEFAULT_LD_LIBS)
-DEBUG_LD_LIBS		= -lMdb_g -lClue_g -lGnuRegex -lCommon \
+DEBUG_LD_LIBS		= -lMdb_g -lStlUtils_g -lGnuRegex -lCommon \
 			  $(ARCH_DEBUG_LD_LIBS)
-PROFILE_LD_LIBS		= -lMdb_pg -lClue -lGnuRegex -lCommon \
+PROFILE_LD_LIBS		= -lMdb_pg -lStlUtils -lGnuRegex -lCommon \
 			  $(ARCH_PROFILE_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
 
@@ -221,6 +221,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.4  1997/09/17 16:56:15  houghton
+# Changed for new library rename to StlUtils
+#
 # Revision 1.3  1997/07/19 19:54:57  houghton
 # Fixed PRJ_TOPDIR.
 #

@@ -514,6 +514,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/09/17 16:55:55  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.7  1997/07/19 10:22:56  houghton
 // Bug-Fix: added include <DumpInfo.hh> and <ctime>.
 //
@@ -532,7 +535,7 @@ private:
 // Cleanup.
 //
 // Revision 2.3  1997/06/19 13:34:05  houghton
-// Changed include ClueConfig to include MdbConfig.
+// Changed include StlUtilsConfig to include MdbConfig.
 // Cleanup.
 //
 // Revision 2.2  1997/06/19 12:00:28  houghton

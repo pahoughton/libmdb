@@ -32,18 +32,18 @@ class Rating
 {
 public:
   
-  typedef CLUE_U32	    LocationId;
+  typedef STLUTILS_U32	    LocationId;
   typedef char		    CityName[16];
-  typedef CLUE_U16	    GeoCode;
-  typedef CLUE_U16	    RegionId;
+  typedef STLUTILS_U16	    GeoCode;
+  typedef STLUTILS_U16	    RegionId;
   typedef char		    RegionAbbr[4];
-  typedef CLUE_16	    TzMinOffset:
+  typedef STLUTILS_16	    TzMinOffset:
 
-  typedef CLUE_16	    s16;
-  typedef CLUE_U16	    u16;
+  typedef STLUTILS_16	    s16;
+  typedef STLUTILS_U16	    u16;
 
-  typedef CLUE_32	    s32;
-  typedef CLUE_U32	    u32;
+  typedef STLUTILS_32	    s32;
+  typedef STLUTILS_U32	    u32;
   typedef unsigned char	    Boolean;
   
 };
@@ -229,6 +229,9 @@ operator >> ( istream & src, const LocTable & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/09/17 16:56:22  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.1  1997/07/19 12:52:04  houghton
 // Initial Version (work in progess).
 //

@@ -188,6 +188,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/09/17 16:55:52  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.2  1997/06/25 12:48:36  houghton
 // Added dumpNode and dumpKey methods.
 //
@@ -202,7 +205,7 @@
 //
 //
 
-#include <ClueConfig.hh>
+#include <StlUtilsConfig.hh>
 
 #include <AvlTreeBase.hh>
 #include <sys/types.h>

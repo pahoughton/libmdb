@@ -127,6 +127,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/17 16:55:52  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.4  1997/07/13 10:56:35  houghton
 // Cleanup.
 //
@@ -134,7 +137,7 @@ private:
 // Added typedef Addr, Loc & size_type.
 //
 // Revision 2.2  1997/06/19 11:59:52  houghton
-// Changed include ClueConfig to include MdbConfig.
+// Changed include StlUtilsConfig to include MdbConfig.
 //
 // Revision 2.1  1995/11/10 12:42:00  houghton
 // Change to Version 2

@@ -19,7 +19,7 @@
 //  $Id$
 //
 
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 
 #if defined( MDB_DEBUG )
 #define inline
@@ -114,6 +114,9 @@ MapMemDynamicFixed::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/09/17 16:56:08  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.3  1997/07/13 11:27:39  houghton
 // Cleanup.
 // Added firstNode(), lastNode(), freeList() & freeNode().

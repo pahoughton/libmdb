@@ -225,7 +225,7 @@ HashTableBase::dumpTable(
 }
 
 ostream &
-HashTableBase::dumpNode( ostream & dest, Loc CLUE_UNUSED( node ) ) const
+HashTableBase::dumpNode( ostream & dest, Loc STLUTILS_UNUSED( node ) ) const
 {
   return( dest );
 }
@@ -325,6 +325,9 @@ HashTableBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/17 16:55:58  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.4  1997/08/25 10:34:32  houghton
 // Reworked error output.
 // Added endhash() to dump output.

@@ -314,6 +314,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/09/17 16:56:02  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.9  1997/07/19 10:26:35  houghton
 // Port(Sun5): renamed local variables to eliminate compiler warnings.
 //
@@ -329,7 +332,7 @@ MapMem::openMapMem(
 //
 // Revision 2.5  1997/06/05 11:23:36  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Added constructor that can create or open existing.
 // Changed to use new MapFile types.
 // Added createMapMem and openMapMemMehtods.

@@ -46,7 +46,7 @@ AvlTreeOffsetBase::AvlTreeOffsetBase( void )
 }
 
 AvlTreeOffsetBase::AvlTreeOffsetBase(
-  const AvlTreeOffsetBase & CLUE_UNUSED( from )
+  const AvlTreeOffsetBase & STLUTILS_UNUSED( from )
   )
 {
 }
@@ -66,6 +66,9 @@ AvlTreeOffsetBase::getVersion( bool withPrjVer ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/17 16:55:54  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.4  1997/07/19 10:15:35  houghton
 // Bug-Fix: changed off_t to AvlTreeOffsetBase::Loc.
 // Port(Sun5): Added static errStr to be used by both AvlTreeOffset and

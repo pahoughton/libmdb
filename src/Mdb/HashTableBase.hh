@@ -82,7 +82,7 @@ public:
   public:
 
     virtual ostream &	dumpNode( ostream & dest,
-				  Loc CLUE_UNUSED( node ) ) const {
+				  Loc STLUTILS_UNUSED( node ) ) const {
       return( dest );
     };
   };
@@ -235,6 +235,9 @@ operator >> ( istream & src, const HashTableBase & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/17 16:55:58  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.4  1997/07/19 10:20:43  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.

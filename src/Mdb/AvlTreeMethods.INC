@@ -568,7 +568,7 @@ ClassName::dumpNode(
 ostream &
 ClassName::dumpKey(
   ostream & dest,
-  const NodeDataType CLUE_UNUSED( node ) ) const
+  const NodeDataType STLUTILS_UNUSED( node ) ) const
 {
   return( dest );
 }
@@ -808,6 +808,9 @@ ClassName::balance(
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/09/17 16:55:53  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.5  1997/07/19 10:11:36  houghton
 // Bug-Fix: If the map base address changed durring the destroy, all the
 //     '* root' values in the stack would become invalid. Changed to take

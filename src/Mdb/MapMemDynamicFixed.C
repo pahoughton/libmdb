@@ -729,6 +729,9 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.18  1997/09/17 16:56:07  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.17  1997/07/28 16:50:24  houghton
 // Changed expand() to virtual and to take an 'size' arg.
 //
@@ -778,7 +781,7 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Added virtual destructor.
 //
 // Revision 2.4  1996/11/06 18:07:27  houghton
-// Renamed Clue.hh to ClueUtils.hh.
+// Renamed StlUtils.hh to StlUtilsUtils.hh.
 //
 // Revision 2.3  1996/03/04 11:38:38  houghton
 // Bug Fix: set baseAddr to base after remap in freeMem

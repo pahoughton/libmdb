@@ -21,7 +21,7 @@
 #include <MultiMemOffsetMapDynamic.hh>
 #include <TestConfig.hh>
 #include <LibTest.hh>
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 #include <functional>
 #include <set>
 
@@ -226,6 +226,9 @@ tHashTable01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 1.6  1997/09/17 16:56:13  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.5  1997/08/18 10:26:41  houghton
 // Commented out test code (not ready).
 //

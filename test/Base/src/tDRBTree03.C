@@ -21,7 +21,7 @@
 #include <MapMemDynamicDynamic.hh>
 #include <MultiMemOffsetMapDynamic.hh>
 
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 #include <LibTest.hh>
 
 #include <vector>
@@ -257,6 +257,9 @@ tDRBTree03( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/09/17 16:56:12  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.1  1997/07/22 19:46:39  houghton
 // Initial Version.
 //

@@ -66,7 +66,7 @@ SRC_DEFINES	=
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DMDB_DEFAULT=1
-DEBUG_DEFINES	= -DMDB_DEBUG=1 -DCLUE_DEBUG=1 	\
+DEBUG_DEFINES	= -DMDB_DEBUG=1 -DSTLUTILS_DEBUG=1 	\
 		  -DMDD_DEBUG=1 -DMDF_DEBUG=1 # -DRBT_TEST=1
 PROFILE_DEFINES	= -DMDB_PROFILE=1
 SHARED_DEFINES	= -DMDB_SHARED=1
@@ -114,7 +114,7 @@ SHARED_CXX_FLAGS	= $(cxx_shared) $(cxx_optimize)
 
 # **** S H A R E D   D E P   L I B S *****
 
-SHDEP_LIBS		= -L$(beta_libdir) -lClue_s -lCommon_s -lc
+SHDEP_LIBS		= -L$(beta_libdir) -lStlUtils_s -lCommon_s -lc
 
 # **** I N S T A L L ****
 
@@ -280,6 +280,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.15  1997/09/17 16:55:59  houghton
+# Changed for new library rename to StlUtils
+#
 # Revision 2.14  1997/09/02 13:24:35  houghton
 # Changed Version number.
 #

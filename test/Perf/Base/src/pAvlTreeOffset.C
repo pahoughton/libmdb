@@ -194,7 +194,7 @@ pFind(
 
 template< class Data, class List >
 pMapType( 
-  const Data &	    CLUE_UNUSED( x ),
+  const Data &	    STLUTILS_UNUSED( x ),
   int		    (*comp)( const Data & one, const Data & two ),
   Data &	    (*copy)( Data & dest, const Data & src ),
   List &	    dataList,
@@ -503,6 +503,9 @@ pAvlTreeOffset(
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/09/17 16:56:15  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.2  1997/07/14 10:53:10  houghton
 // Added recSize arg.
 // Added debugging info to log.

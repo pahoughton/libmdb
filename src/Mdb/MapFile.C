@@ -19,7 +19,7 @@
 #include "_MdbMemMap.hh"
 
 #include <Str.hh>
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 
 #include <cstring>
 
@@ -427,6 +427,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1997/09/17 16:56:00  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.13  1997/08/25 10:35:34  houghton
 // Changed so the noreplace (and other) ios::open_modes can be used when
 //     createding a map.
@@ -449,7 +452,7 @@ MapFile::dumpInfo(
 //
 // Revision 2.7  1997/06/05 11:19:10  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Added types size_type, MapAddr, MapMask and change to use them.
 // Added constructor that can create or open existing.
 // Added createMap and openMap methods.

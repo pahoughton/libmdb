@@ -11,7 +11,7 @@
 //
 // Notes:
 //
-//  This class was originally part of libClue1
+//  This class was originally part of libStlUtils1
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     11/18/94 10:06
@@ -235,6 +235,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/09/17 16:56:02  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.7  1997/07/13 11:18:01  houghton
 // Cleanup
 // Added owner.
@@ -244,7 +247,7 @@ private:
 //
 // Revision 2.5  1997/06/05 11:22:51  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Added type MapVersion.
 // Added constructor that can create or open existing.
 // Changed to use new MapFile types.

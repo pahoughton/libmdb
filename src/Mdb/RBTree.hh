@@ -313,7 +313,7 @@ public:
     };
 
     virtual ostream & dumpKey( ostream & dest,
-			       const Key & CLUE_UNUSED( key ) ) const {
+			       const Key & STLUTILS_UNUSED( key ) ) const {
       return( dest );
     };
       
@@ -480,6 +480,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/09/17 16:56:09  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.7  1997/08/17 01:39:45  houghton
 // Bug-Fix: const_iterator::operator * () changed to const method.
 // Added lower_bound

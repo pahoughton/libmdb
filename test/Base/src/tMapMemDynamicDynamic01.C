@@ -1,6 +1,6 @@
 //
 // File:        tMapMemDynamicDynamic01.C
-// Project:	Clue
+// Project:	StlUtils
 // Desc:        
 //
 //  Test for MapMemDynamicDynamic class
@@ -672,6 +672,9 @@ tMapMemDynamicDynamic01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/09/17 16:56:13  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.7  1997/08/18 10:27:55  houghton
 // Port(Sun5): had to rename the 'Data' structure. The sun compiler was
 //     using the same structure across .C files.

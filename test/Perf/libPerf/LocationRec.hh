@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 1.2  1997/09/17 16:56:22  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.1  1997/07/19 12:52:04  houghton
 // Initial Version (work in progess).
 //
@@ -47,7 +50,7 @@
 //
 
 #include <DateTime.hh>
-#include <Clue.hh>
+#include <StlUtils.hh>
 
 #include <TeleNum.hh>
 

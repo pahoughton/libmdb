@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/09/17 16:56:09  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.2  1997/04/04 01:36:54  houghton
 // Changed include stddef to stddef.h
 //
@@ -26,7 +29,7 @@
 //
 //
 
-#include <ClueConfig.hh>
+#include <StlUtilsConfig.hh>
 
 #include <stddef.h>
 

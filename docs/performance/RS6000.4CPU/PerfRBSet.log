@@ -1,6 +1,6 @@
 07/27/97 08:33:37 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > insert     asc          0  1000000 Times:  real: 206.703855 user: 64.310000 sys: 119.470000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -67,7 +67,7 @@ TimeIt:
 
 07/27/97 08:39:47 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > insert     asc          0  1000000 Times:  real: 209.098993 user: 65.400000 sys: 120.390000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -134,7 +134,7 @@ TimeIt:
 
 07/27/97 08:57:49 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > insert     asc          0  1000000 Times:  real: 209.169056 user: 65.090000 sys: 121.090000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -201,7 +201,7 @@ TimeIt:
 
 07/27/97 09:01:19 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > insert     asc          0  1000000 Times:  real: 209.684791 user: 64.460000 sys: 121.300000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -268,7 +268,7 @@ TimeIt:
 
 07/27/97 09:04:49 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > insert     asc          0  1000000 Times:  real: 208.915611 user: 64.360000 sys: 121.260000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -335,7 +335,7 @@ TimeIt:
 
 07/27/97 09:46:56 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 15.205386 user: 15.200000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -402,7 +402,7 @@ TimeIt:
 
 07/27/97 09:47:15 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 15.202736 user: 15.200000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -469,7 +469,7 @@ TimeIt:
 
 07/27/97 09:47:53 DEBUG LogPerfData.C:89 PerfRBSet   1 of  1 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.493348 user: 16.510000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -536,7 +536,7 @@ TimeIt:
 
 07/27/97 09:48:15 DEBUG LogPerfData.C:89 PerfRBSet   1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.459403 user: 16.460000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -561,7 +561,7 @@ TimeIt:
 
 07/27/97 09:48:31 DEBUG LogPerfData.C:89 PerfRBSet   2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.219933 user: 16.230000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -586,7 +586,7 @@ TimeIt:
 
 07/27/97 09:48:47 DEBUG LogPerfData.C:89 PerfRBSet   3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.171213 user: 16.180000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -611,7 +611,7 @@ TimeIt:
 
 07/27/97 09:49:03 DEBUG LogPerfData.C:89 PerfRBSet   4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.226893 user: 16.230000 sys: 0.010000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -636,7 +636,7 @@ TimeIt:
 
 07/27/97 09:49:20 DEBUG LogPerfData.C:89 PerfRBSet   5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       all    1000000  1000000 Times:  real: 16.185620 user: 16.180000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -703,7 +703,7 @@ TimeIt:
 
 07/27/97 09:49:59 DEBUG LogPerfData.C:89 PerfRBSet   1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.280041 user: 15.290000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -728,7 +728,7 @@ TimeIt:
 
 07/27/97 09:50:14 DEBUG LogPerfData.C:89 PerfRBSet   2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.950524 user: 14.960000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -753,7 +753,7 @@ TimeIt:
 
 07/27/97 09:50:29 DEBUG LogPerfData.C:89 PerfRBSet   3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.965910 user: 14.970000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -778,7 +778,7 @@ TimeIt:
 
 07/27/97 09:50:44 DEBUG LogPerfData.C:89 PerfRBSet   4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.968849 user: 14.990000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -803,7 +803,7 @@ TimeIt:
 
 07/27/97 09:50:58 DEBUG LogPerfData.C:89 PerfRBSet   5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.956143 user: 14.960000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -870,7 +870,7 @@ TimeIt:
 
 07/27/97 09:51:57 DEBUG LogPerfData.C:89 PerfRBSet   1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rev    1000000  1000000 Times:  real: 15.189145 user: 15.190000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -895,7 +895,7 @@ TimeIt:
 
 07/27/97 09:52:11 DEBUG LogPerfData.C:89 PerfRBSet   2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rev    1000000  1000000 Times:  real: 14.922890 user: 14.920000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -920,7 +920,7 @@ TimeIt:
 
 07/27/97 09:52:26 DEBUG LogPerfData.C:89 PerfRBSet   3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rev    1000000  1000000 Times:  real: 14.908535 user: 14.910000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -945,7 +945,7 @@ TimeIt:
 
 07/27/97 09:52:41 DEBUG LogPerfData.C:89 PerfRBSet   4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rev    1000000  1000000 Times:  real: 14.915516 user: 14.920000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -970,7 +970,7 @@ TimeIt:
 
 07/27/97 09:52:56 DEBUG LogPerfData.C:89 PerfRBSet   5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rev    1000000  1000000 Times:  real: 14.880619 user: 14.880000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -1037,7 +1037,7 @@ TimeIt:
 
 07/27/97 09:53:26 DEBUG LogPerfData.C:89 PerfRBSet   1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.466609 user: 0.470000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -1062,7 +1062,7 @@ TimeIt:
 
 07/27/97 09:53:28 DEBUG LogPerfData.C:89 PerfRBSet   2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.235394 user: 0.230000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -1087,7 +1087,7 @@ TimeIt:
 
 07/27/97 09:53:30 DEBUG LogPerfData.C:89 PerfRBSet   3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.232182 user: 0.230000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -1112,7 +1112,7 @@ TimeIt:
 
 07/27/97 09:53:33 DEBUG LogPerfData.C:89 PerfRBSet   4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.222471 user: 0.220000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$
@@ -1137,7 +1137,7 @@ TimeIt:
 
 07/27/97 09:53:35 DEBUG LogPerfData.C:89 PerfRBSet   5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.222566 user: 0.220000 sys: 0.000000
 TimeIt:
-@(#) libClue - 3.02.04
+@(#) libStlUtils - 3.02.04
     TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
     CVS Tag: PROD_3_02
     $Id$

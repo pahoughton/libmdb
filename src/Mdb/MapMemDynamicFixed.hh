@@ -241,6 +241,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.13  1997/09/17 16:56:08  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.12  1997/07/28 16:50:34  houghton
 // Changed expand() to virtual and to take an 'size' arg.
 //
@@ -280,7 +283,7 @@ private:
 // Added virtual destructor.
 //
 // Revision 2.2  1996/11/06 18:07:27  houghton
-// Renamed Clue.hh to ClueUtils.hh.
+// Renamed StlUtils.hh to StlUtilsUtils.hh.
 //
 // Revision 2.1  1995/11/10 12:42:31  houghton
 // Change to Version 2

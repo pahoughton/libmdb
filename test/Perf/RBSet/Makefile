@@ -62,7 +62,7 @@ SRC_DEFINES	=
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DPERFRBSET_DEFAULT=1
-DEBUG_DEFINES	= -DPERFRBSET_DEBUG=1 -DMDB_DEBUG=1 -DCLUE_DEBUG=1
+DEBUG_DEFINES	= -DPERFRBSET_DEBUG=1 -DMDB_DEBUG=1 -DSTLUTILS_DEBUG=1
 PROFILE_DEFINES	= -DPERFRBSET_PROFILE=1
 STATIC_DEFINES	= -DPERFRBSET_STATIC=1
 
@@ -137,9 +137,9 @@ DEBUG_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
-DEFAULT_LD_LIBS		= -lPerf -lMdb -lClue -lCommon -lGnuRegex	\
+DEFAULT_LD_LIBS		= -lPerf -lMdb -lStlUtils -lCommon -lGnuRegex	\
 			  $(ARCH_DEFAULT_LD_LIBS)
-DEBUG_LD_LIBS		= -lPerf_g -lMdb_g -lClue_g -lCommon -lGnuRegex	\
+DEBUG_LD_LIBS		= -lPerf_g -lMdb_g -lStlUtils_g -lCommon -lGnuRegex	\
 			  $(ARCH_DEFAULT_LD_LIBS)
 PROFILE_LD_LIBS		= $(DEFAULT_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
@@ -239,6 +239,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.4  1997/09/17 16:56:21  houghton
+# Changed for new library rename to StlUtils
+#
 # Revision 1.3  1997/07/28 16:52:20  houghton
 # Changed arch Makefile name.
 #

@@ -307,12 +307,12 @@ public:
       self( me ) {};
     
     virtual ostream &	dumpKey( ostream &	dest,
-				 const Key &	CLUE_UNUSED( key ) ) const {
+				 const Key &	STLUTILS_UNUSED( key ) ) const {
       return( dest );
     };
   
     virtual ostream &	dumpValue( ostream &	 dest,
-				   const Value & CLUE_UNUSED( value ) ) const {
+				   const Value & STLUTILS_UNUSED( value ) ) const {
       return( dest );
     };
 
@@ -457,6 +457,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/09/17 16:55:57  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.6  1997/07/25 15:58:44  houghton
 // Cleanup.
 // Reworked insert() and find() methods to use new findNode() method.

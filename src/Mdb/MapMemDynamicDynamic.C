@@ -1,6 +1,6 @@
 //
 // File:        MapMemDynamicDynamic.C
-// Project:	Clue
+// Project:	StlUtils
 // Desc:        
 //
 //  Compiled sources for MapMemDynamicDynamic
@@ -18,7 +18,7 @@
 #include "MapMemDynamicDynamic.hh"
 #include <Str.hh>
 #include <LibLog.hh>
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
@@ -863,6 +863,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.15  1997/09/17 16:56:03  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.14  1997/07/19 10:27:42  houghton
 // Bug-Fix: changed calls from getpagesize to MapFile::getPageSize().
 //
@@ -880,14 +883,14 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Changed to be part of libMdb.
 //
 // Revision 2.9  1997/06/18 14:14:36  houghton
-// Added include ClueUtils.
+// Added include StlUtilsUtils.
 //
 // Revision 2.8  1997/06/09 11:58:26  houghton
 // Bug-Fix: check if there is a _LibLog before I try to use it.
 //
 // Revision 2.7  1997/06/05 11:27:59  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Changed to be a subclass of MapMemDynamic (vs MapMem).
 // Added constructor that can create or open existing.
 // Changed to use new MapFile types.
@@ -911,7 +914,7 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision 2.3  1997/03/18 16:56:08  houghton
 // Bug-Fix: free p n x was not setting the next node's prev.
 // Added Lots of debug output using LibLog Levels App1 & App2. ifdef'd
-//     with CLUE1_DEBUG.
+//     with STLUTILS1_DEBUG.
 //
 // Revision 2.2  1997/03/13 02:24:37  houghton
 // Bug-Fix: change calls to getSize to getMapSize.

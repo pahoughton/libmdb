@@ -135,7 +135,7 @@ pFind(
 
 template< class Data, class List >
 pMapType( 
-  const Data &	    CLUE_UNUSED( x ),
+  const Data &	    STLUTILS_UNUSED( x ),
   List &	    dataList,
   MapMemDynamic &   dataMap,
   size_t	    initAllocNumRecs,
@@ -431,6 +431,9 @@ pRBSet(
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/09/17 16:56:16  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.2  1997/07/14 10:53:27  houghton
 // Added recSize arg.
 // Added debugging info to log.

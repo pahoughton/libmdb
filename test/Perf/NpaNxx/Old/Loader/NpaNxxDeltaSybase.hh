@@ -47,6 +47,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 1.2  1997/09/17 16:56:19  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.1  1997/07/19 12:52:43  houghton
 // Initial Version (work in progess).
 //
@@ -55,7 +58,7 @@
 //
 //
 
-#include <Clue.hh>
+#include <StlUtils.hh>
 #include <Str.hh>
 #include <DeltaSybase.hh>
 #include <TeleNum.hh>

@@ -19,7 +19,7 @@
 //  never have a variable that contains a pointer into the map. The
 //  best thing to do is always call getBase() to access the data.
 //
-//  This class was originally part of libClue1
+//  This class was originally part of libStlUtils1
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     11/11/94 06:46
@@ -400,6 +400,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/09/17 16:56:01  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.10  1997/07/25 13:47:42  houghton
 // Moved createMap to public.
 // Added documentation.
@@ -413,7 +416,7 @@ private:
 //
 // Revision 2.7  1997/06/05 11:17:35  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Added types size_type, MapAddr, MapMask and change to use them.
 // Added constructor that can create or open existing.
 // Moved inlines to new MapFile.ii file.

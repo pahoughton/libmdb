@@ -82,7 +82,7 @@ LDLIBS		= -L . \
 		  -lRating 	\
 		  -lIX		\
 		  -lConn	\
-		  -lClue 	\
+		  -lStlUtils 	\
 		  -lCommon 	\
                   -lmmalloc  	\
 		  -lSyboc	\
@@ -139,6 +139,9 @@ include .depend.prog
 
 # 
 # $Log$
+# Revision 1.2  1997/09/17 16:56:19  houghton
+# Changed for new library rename to StlUtils
+#
 # Revision 1.1  1997/07/19 12:52:42  houghton
 # Initial Version (work in progess).
 #

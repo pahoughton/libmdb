@@ -714,7 +714,7 @@ ostream &
 DavlTreeOffset<K,D>::dumpInfo(
   ostream &	dest,
   const char *  prefix,
-  bool		CLUE_UNUSED( showVer )
+  bool		STLUTILS_UNUSED( showVer )
   ) const
 {
   if( ! DavlTreeOffset<K,D>::good() )
@@ -1229,6 +1229,9 @@ DavlTreeOffset<K,D>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/09/17 16:55:56  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.3  1997/07/20 14:14:30  houghton
 // Changed to use the new destroyTree method in AvlTreeOffsetBase.
 //

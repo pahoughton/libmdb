@@ -21,7 +21,7 @@
 #include <MapMemDynamicDynamic.hh>
 #include <MultiMemOffsetMapDynamic.hh>
 
-#include <ClueUtils.hh>
+#include <StlUtilsMisc.hh>
 #include <LibTest.hh>
 
 #include <vector>
@@ -203,6 +203,9 @@ tDRBTree04( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/09/17 16:56:13  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.2  1997/08/18 10:26:25  houghton
 // Changed to test tree size.
 //

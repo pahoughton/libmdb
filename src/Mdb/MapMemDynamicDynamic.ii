@@ -141,6 +141,9 @@ MapMemDynamicDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.7  1997/09/17 16:56:06  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.6  1997/07/13 11:24:05  houghton
 // Removed getFreeSize & getChunkSize (now in .C).
 //
@@ -149,7 +152,7 @@ MapMemDynamicDynamic::mapInfo( void ) const
 //
 // Revision 2.4  1997/06/05 11:28:25  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Changed to use new MapFile types.
 // Removed addRef, getRefCount & delRef methods (now in base class).
 //

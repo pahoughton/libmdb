@@ -16,7 +16,7 @@
 //
 
 #include "AppParam.hh"
-#include <ClueUtils.hh>
+#include <StlUtilsUtils.hh>
 
 AppParam::AppParam(
   int &		mainArgc,
@@ -142,6 +142,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/09/17 16:56:16  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.2  1997/07/28 16:51:31  houghton
 // Changed to use default log file.
 // Changed to use IosModeToString() and IosModeFromString().

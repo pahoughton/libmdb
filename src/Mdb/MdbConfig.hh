@@ -21,7 +21,7 @@
 //  $Id$
 //
 
-#include <ClueConfig.hh>
+#include <StlUtilsConfig.hh>
 #include <MdbVersion.hh>
 
 #define MDB_TYPE_SIZE	    unsigned long
@@ -112,6 +112,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/09/17 16:56:08  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 2.2  1997/07/13 11:28:07  houghton
 // Added MDB_TYPE_SIZE, MDB_TYPE_LOC & MDB_TYPE_ADDR.
 //

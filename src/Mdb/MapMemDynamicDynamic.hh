@@ -324,6 +324,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.12  1997/09/17 16:56:05  houghton
+// Changed for new library rename to StlUtils
+//
 // Revision 1.11  1997/07/28 16:50:04  houghton
 // Changed expand() to virtual.
 //
@@ -339,11 +342,11 @@ private:
 // Major rework to speed up 'release'.
 //
 // Revision 1.7  1997/06/18 14:14:47  houghton
-// Removed include ClueUtils.
+// Removed include StlUtilsUtils.
 //
 // Revision 1.6  1997/06/05 11:27:20  houghton
 // Cleanup.
-// Change to be part of libMdb (vs Clue1).
+// Change to be part of libMdb (vs StlUtils1).
 // Changed to be a subclass of MapMemDynamic (vs MapMem).
 // Added constructor that can create or open existing.
 // Changed to use new MapFile types.
