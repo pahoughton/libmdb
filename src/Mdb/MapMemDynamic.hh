@@ -41,7 +41,7 @@ public:
 
   typedef MDB_TYPE_ADDR	    Addr;
   typedef MDB_TYPE_LOC	    Loc;
-  typedef MDB_S32_T	    KeyValue;
+  typedef MDB_S64_T	    KeyValue;
   
   // use this to create a new map or open an existing one
   MapMemDynamic( const char *	    fileName,
@@ -104,7 +104,7 @@ public:
     MDB_U32_T   allocCount;	    // allocated chunks
     MDB_U32_T   freeCount;	    // available chunks
     MDB_U32_T	keysUsed;	    // bitmask of keys in use
-    MDB_S32_T   keys[MMD_NUM_KEYS]; // general purpose values
+    KeyValue	keys[MMD_NUM_KEYS]; // general purpose values
   };
 
 protected:
@@ -299,6 +299,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/26 15:58:38  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //
