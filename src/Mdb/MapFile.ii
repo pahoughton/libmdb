@@ -1,0 +1,122 @@
+#ifndef _MapFile_ii_
+#define _MapFile_ii_
+//
+// File:        MapFile.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MapFile
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/19/97 05:22
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+MapFile::size_type
+MapFile::grow( size_type amount, caddr_t baseAddr )
+{
+  return( setSize( mapSize + amount, baseAddr ) ); 
+}
+
+inline
+MapFile::size_type
+MapFile::shrink( size_type amount, caddr_t baseAddr )
+{
+  return( setSize( mapSize - amount, baseAddr ) );
+}
+
+inline
+ios::open_mode
+MapFile::getMode( void ) const
+{
+  return( mapMode );
+}
+
+inline
+MapFile::size_type
+MapFile::getSize( void ) const
+{
+  return( mapSize );
+}
+
+inline
+caddr_t
+MapFile::getBase( void )
+{
+  return( mapBase );
+}
+
+inline
+const caddr_t
+MapFile::getBase( void ) const
+{
+  return( mapBase );
+}
+
+inline
+caddr_t
+MapFile::getEnd( void )
+{
+  return( ((char *)mapBase) + mapSize );
+}
+
+inline
+const caddr_t
+MapFile::getEnd( void ) const
+{
+  return( ((char *)mapBase) + mapSize );
+}
+
+inline
+long
+MapFile::addRef( void )
+{
+  return( ++ refCount );
+}
+
+inline
+long
+MapFile::getRefCount( void ) const
+{
+  return( refCount );
+}
+
+inline
+bool
+MapFile::delRef( void )
+{
+  return( (--refCount <= 0 ) ? true : false );
+}
+  
+inline
+DumpInfo< MapFile >
+MapFile::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< MapFile >( *this, prefix, showVer ) );
+}
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:19:23  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MapFile_ii_ 
