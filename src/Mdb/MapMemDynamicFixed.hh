@@ -1,16 +1,25 @@
-#ifndef _MapMemFixedDynamic_hh_
-#define _MapMemFixedDynamic_hh_
+#ifndef _MapMemDynamicFixed_hh_
+#define _MapMemDynamicFixed_hh_
 //
-// File:        MapMemFixedDynamic.hh
+// File:        MapMemDynamicFixed.hh
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+//
+//
+// Quick Start: - short example of class usage
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     11/18/94 10:09
 //
-// Revision History: (See Revision Log at end of file)
+// Revision History: (See end of file for Revision Log)
 //
-// 
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
 
 #include <MdbConfig.hh>
 #include <MapMemDynamic.hh>
@@ -25,7 +34,7 @@
 #define inline
 #endif
 
-class MapMemFixedDynamic : public MapMemDynamic
+class MapMemDynamicFixed : public MapMemDynamic
 {
 
 public:
@@ -40,7 +49,7 @@ public:
 
   
   // use this constructor to either create a new map or access an existing
-  MapMemFixedDynamic( const char *	fileName,
+  MapMemDynamicFixed( const char *	fileName,
 		      ios::open_mode	mode,
 		      bool		create,
 		      size_type		recSize = 0,
@@ -48,17 +57,17 @@ public:
 		      MapMask		permMask = 0777 );
   
   // use this constructor to create a new map file  
-  MapMemFixedDynamic( const char * 	fileName,
+  MapMemDynamicFixed( const char * 	fileName,
 		      size_type		recSize,
 		      size_type		numRecs = 0,
 		      MapMask		permMask = 0777 );
 
   // use this constructor to access an existing map file  
-  MapMemFixedDynamic( const char * 	fileName,
+  MapMemDynamicFixed( const char * 	fileName,
 		      ios::open_mode	mode = (ios::open_mode)(ios::in),
 		      bool		overrideOwner = false );
 
-  virtual ~MapMemFixedDynamic( void );
+  virtual ~MapMemDynamicFixed( void );
   
   Loc	    	    allocate( size_type size = 0 ); 
   void	    	    release( Loc loc ); 	
@@ -81,7 +90,7 @@ public:
   static const ClassVersion version;
 
   inline
-  DumpInfo< MapMemFixedDynamic >  dump( const char *	prefix = "    ",
+  DumpInfo< MapMemDynamicFixed >  dump( const char *	prefix = "    ",
 					bool		showVer = true ) const;
   struct FreeList
   {
@@ -93,23 +102,23 @@ protected:
 
 private:
 
-  MapMemFixedDynamic( const MapMemFixedDynamic & copyFrom );
-  MapMemFixedDynamic & operator=( const MapMemFixedDynamic & assignFrom );
+  MapMemDynamicFixed( const MapMemDynamicFixed & copyFrom );
+  MapMemDynamicFixed & operator=( const MapMemDynamicFixed & assignFrom );
 
-  void	createMapMemFixedDynamic( size_type recSize,
+  void	createMapMemDynamicFixed( size_type recSize,
 				  size_type numRecs );
 
-  void	openMapMemFixedDynamic( void );
+  void	openMapMemDynamicFixed( void );
   
-  struct MapFixedDynamicInfo : MapDynamicInfo
+  struct MapDynamicFixedInfo : MapDynamicInfo
   {
     unsigned long   recSize;	// record size
     unsigned long   chunkSize;	// records to allocate at a time
     struct FreeList freeList;	// head to list of free records
   };
 
-  inline MapFixedDynamicInfo *		mapInfo( void );
-  inline const MapFixedDynamicInfo *	mapInfo( void ) const;
+  inline MapDynamicFixedInfo *		mapInfo( void );
+  inline const MapDynamicFixedInfo *	mapInfo( void ) const;
   
   static const char * ErrorStrings[];
   
@@ -119,25 +128,101 @@ private:
 
 
 #if !defined( inline )
-#include <MapMemFixedDynamic.ii>
+#include <MapMemDynamicFixed.ii>
 #else
 #undef inline
 
 
 #endif
 
+
 //
-//              This software is the sole property of
-// 
-//                 The Williams Companies, Inc.
-//                        1 Williams Center
-//                          P.O. Box 2400
-//        Copyright (c) 1994 by The Williams Companies, Inc.
-// 
-//                      All Rights Reserved.  
-// 
+// Detail Documentation
+//
+//  Data Types: - data types defined by this header
+//
+//  	MapMemDynamicFixed	class
+//
+//  Constructors:
+//
+//  	MapMemDynamicFixed( );
+//
+//  Destructors:
+//
+//  Public Interface:
+//
+//	virtual ostream &
+//	write( ostream & dest ) const;
+//	    write the data for this class in binary form to the ostream.
+//
+//	virtual istream &
+//	read( istream & src );
+//	    read the data in binary form from the istream. It is
+//	    assumed it stream is correctly posistioned and the data
+//	    was written to the istream with 'write( ostream & )'
+//
+//	virtual ostream &
+//	toStream( ostream & dest ) const;
+//	    output class as a string to dest (used by operator <<)
+//
+//	virtual istream &
+//	fromStream( istream & src );
+//	    Set this class be reading a string representation from
+//	    src. Returns src.
+//
+//  	virtual Bool
+//  	good( void ) const;
+//  	    Return true if there are no detected errors associated
+//  	    with this class, otherwise false.
+//
+//  	virtual const char *
+//  	error( void ) const;
+//  	    Return a string description of the state of the class.
+//
+//  	virtual const char *
+//  	getClassName( void ) const;
+//  	    Return the name of this class (i.e. MapMemDynamicFixed )
+//
+//  	virtual const char *
+//  	getVersion( bool withPrjVer = true ) const;
+//  	    Return the version string of this class.
+//
+//	virtual ostream &
+//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
+//	    output detail info to dest. Includes instance variable
+//	    values, state info & version info.
+//
+//	static const ClassVersion version
+//	    Class and project version information. (see ClassVersion.hh)
+//
+//  Protected Interface:
+//
+//  Private Methods:
+//
+//  Associated Functions:
+//
+//  	ostream &
+//  	operator <<( ostream & dest, const MapMemDynamicFixed & src );
+//
+//	istream &
+//	operator >> ( istream & src, MapMemDynamicFixed & dest );
+//
+// Example:
+//
+// See Also:
+//
+// Files:
+//
+// Documented Ver:
+//
+// Tested Ver:
+//
+// Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/06/19 12:02:31  houghton
+// Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
+//
 // Revision 2.8  1997/06/18 14:15:26  houghton
 // Rework to use MapMemDynamic as base Class.
 // Rework to be part of libMdb.
@@ -177,5 +262,16 @@ private:
 // Revision 1.1  1995/02/13  16:08:50  houghton
 // New Style Avl an memory management. Many New Classes
 //
+// Copyright:
 //
-#endif // ! def _MapMemFixedDynamic_hh_ 
+//              This software is the sole property of
+// 
+//                 The Williams Companies, Inc.
+//                        1 Williams Center
+//                          P.O. Box 2400
+//        Copyright (c) 1994 by The Williams Companies, Inc.
+// 
+//                      All Rights Reserved.  
+// 
+//
+#endif // ! def _MapMemDynamicFixed_hh_ 

@@ -1,5 +1,5 @@
 //
-// File:        MapMemFixedDynamic.C
+// File:        MapMemDynamicFixed.C
 // Desc:        
 //              
 //
@@ -13,17 +13,19 @@
 //  Version:	    $Revision$
 //
 
-static const char * RcsId =
-"$Id$";
-
-#include "MapMemFixedDynamic.hh"
+#include "MapMemDynamicFixed.hh"
 #include <ClueUtils.hh>
 #include <Str.hh>
 #include <iomanip>
 #include <cstring>
 
-CLUE_VERSION(
-  MapMemFixedDynamic,
+#if defined( MDB_DEBUG )
+#include "MapMemDynamicFixed.ii"
+#endif
+
+
+MDB_VERSION(
+  MapMemDynamicFixed,
   "$Id$");
 
 //
@@ -31,7 +33,7 @@ CLUE_VERSION(
 //
 
 const char *
-MapMemFixedDynamic::ErrorStrings[] =
+MapMemDynamicFixed::ErrorStrings[] =
   {
     ": ok",
     ": ",
@@ -39,7 +41,7 @@ MapMemFixedDynamic::ErrorStrings[] =
     0
   };
 
-MapMemFixedDynamic::MapMemFixedDynamic(
+MapMemDynamicFixed::MapMemDynamicFixed(
   const char *	    fileName,
   ios::open_mode    mode,
   bool		    create,
@@ -51,20 +53,20 @@ MapMemFixedDynamic::MapMemFixedDynamic(
 		   MDF_VERSION,
 		   mode,
 		   create,
-		   ( sizeof( MapFixedDynamicInfo ) +
+		   ( sizeof( MapDynamicFixedInfo ) +
 		     ( recSize * numRecs > (size_type)getpagesize()  ?
 		       (recSize * numRecs) :
 		       ((getpagesize() / recSize) + 1) * recSize ) ),
 		   permMask )
 {
   if( create )
-    createMapMemFixedDynamic( recSize, numRecs);
+    createMapMemDynamicFixed( recSize, numRecs);
   else
-    openMapMemFixedDynamic();
+    openMapMemDynamicFixed();
 }
 
   
-MapMemFixedDynamic::MapMemFixedDynamic(
+MapMemDynamicFixed::MapMemDynamicFixed(
   const char * 	    fileName,
   size_type	    recSize,
   size_type	    numRecs,
@@ -72,34 +74,34 @@ MapMemFixedDynamic::MapMemFixedDynamic(
   )
   : MapMemDynamic( fileName,
 		   MDF_VERSION,
-		   ( sizeof( MapFixedDynamicInfo ) +
+		   ( sizeof( MapDynamicFixedInfo ) +
 		     ( recSize * numRecs > (size_type)getpagesize()  ?
 		       (recSize * numRecs) :
 		       ((getpagesize() / recSize) + 1) * recSize ) ),
 		   permMask )
 {
-  createMapMemFixedDynamic( recSize, numRecs );
+  createMapMemDynamicFixed( recSize, numRecs );
 }
 
-MapMemFixedDynamic::MapMemFixedDynamic(
+MapMemDynamicFixed::MapMemDynamicFixed(
   const char * 	    fileName,
   ios::open_mode    mode,
   bool		    overrideOwner
   )
   : MapMemDynamic( fileName, MDF_VERSION, mode, overrideOwner )
 {
-  openMapMemFixedDynamic();
+  openMapMemDynamicFixed();
 }
 
 
-MapMemFixedDynamic::~MapMemFixedDynamic( void )
+MapMemDynamicFixed::~MapMemDynamicFixed( void )
 {
   if( mapInfo() && mapInfo()->owner == getpid() )
     mapInfo()->owner = 0;
 }
 
 off_t
-MapMemFixedDynamic::allocate( size_type size )
+MapMemDynamicFixed::allocate( size_type size )
 {
   if( ! good() ) return( 0 );
   
@@ -159,7 +161,7 @@ MapMemFixedDynamic::allocate( size_type size )
 //
 
 void
-MapMemFixedDynamic::release( Loc offset )
+MapMemDynamicFixed::release( Loc offset )
 {
 
   if( ! good() ) return;
@@ -230,7 +232,7 @@ MapMemFixedDynamic::release( Loc offset )
       
       off_t 	endOffset;
 
-      endOffset = ( DwordAlign( sizeof( MapFixedDynamicInfo ) ) +
+      endOffset = ( DwordAlign( sizeof( MapDynamicFixedInfo ) ) +
 		     ( (mapInfo()->chunkCount - 1)* mapInfo()->recSize ) );
 		     
       //
@@ -274,7 +276,7 @@ MapMemFixedDynamic::release( Loc offset )
 		  mapInfo()->size = getSize();
 		  mapInfo()->freeCount -= releaseRecs;
 		  mapInfo()->chunkCount -= releaseRecs;
-		  mapInfo()->freeList.prev = ( DwordAlign( sizeof( MapFixedDynamicInfo ) ) +
+		  mapInfo()->freeList.prev = ( DwordAlign( sizeof( MapDynamicFixedInfo ) ) +
 					  ( (mapInfo()->chunkCount - 1)* mapInfo()->recSize ) );
 
 		  struct FreeList * lastNode = (struct FreeList *)
@@ -288,9 +290,9 @@ MapMemFixedDynamic::release( Loc offset )
 }
 		
 bool
-MapMemFixedDynamic::valid( off_t offset ) const
+MapMemDynamicFixed::valid( off_t offset ) const
 {
-  off_t   first = DwordAlign( sizeof( MapFixedDynamicInfo ) );
+  off_t   first = DwordAlign( sizeof( MapDynamicFixedInfo ) );
 
   if( (offset - first) % mapInfo()->recSize )
     return( false );
@@ -307,7 +309,7 @@ MapMemFixedDynamic::valid( off_t offset ) const
 
 
 void
-MapMemFixedDynamic::expand( void )
+MapMemDynamicFixed::expand( void )
 {
 
   if( ! good() ) return;
@@ -332,7 +334,7 @@ MapMemFixedDynamic::expand( void )
   off_t	    prevFreeOffset = 0;
   struct FreeList * freeNode = 0;
 
-  freeAddr = baseAddr + ( DwordAlign( sizeof( MapFixedDynamicInfo )  ) +
+  freeAddr = baseAddr + ( DwordAlign( sizeof( MapDynamicFixedInfo )  ) +
 			  (mapInfo()->recSize * (mapInfo()->chunkCount) ) );
 
   if( mapInfo()->freeList.next == 0 )
@@ -373,19 +375,19 @@ MapMemFixedDynamic::expand( void )
 }
 
 const char *
-MapMemFixedDynamic::getClassName( void ) const
+MapMemDynamicFixed::getClassName( void ) const
 {
-  return( "MapMemFixedDynamic" );
+  return( "MapMemDynamicFixed" );
 }
 
 const char *
-MapMemFixedDynamic::getVersion( bool withPrjVer ) const
+MapMemDynamicFixed::getVersion( bool withPrjVer ) const
 {
   return( version.getVer( withPrjVer ) );
 }
 
 bool
-MapMemFixedDynamic::good( void ) const
+MapMemDynamicFixed::good( void ) const
 {
   return( mapInfo() != 0 &&
 	  errorNum == E_OK &&
@@ -393,12 +395,12 @@ MapMemFixedDynamic::good( void ) const
 }
 
 const char *
-MapMemFixedDynamic::error( void ) const
+MapMemDynamicFixed::error( void ) const
 {
   static Str errStr;
   errStr.reset();
 
-  errStr << MapMemFixedDynamic::getClassName();
+  errStr << MapMemDynamicFixed::getClassName();
   
   if( good() )
     {
@@ -430,18 +432,18 @@ MapMemFixedDynamic::error( void ) const
 }
 
 ostream &
-MapMemFixedDynamic::dumpInfo(
+MapMemDynamicFixed::dumpInfo(
   ostream &	dest,
   const char *	prefix,
   bool		showVer
   ) const
 {
   if( showVer )
-    dest << MapMemFixedDynamic::getClassName() << ":\n"
-	 << RcsId << '\n' ;
+    dest << MapMemDynamicFixed::getClassName() << ":\n"
+	 << MapMemDynamicFixed::getVersion() << '\n' ;
       
-  if( ! MapMemFixedDynamic::good() )
-    dest << prefix << "Error: " << MapMemFixedDynamic::error() << '\n';
+  if( ! MapMemDynamicFixed::good() )
+    dest << prefix << "Error: " << MapMemDynamicFixed::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
@@ -469,7 +471,7 @@ MapMemFixedDynamic::dumpInfo(
 }
 
 void
-MapMemFixedDynamic::createMapMemFixedDynamic(
+MapMemDynamicFixed::createMapMemDynamicFixed(
   size_type recSize,
   size_type numRecs
   )
@@ -491,7 +493,7 @@ MapMemFixedDynamic::createMapMemFixedDynamic(
       
       off_t  baseAddr = (off_t) mapInfo();
 
-      mapInfo()->freeList.next = DwordAlign( sizeof( MapFixedDynamicInfo ) );
+      mapInfo()->freeList.next = DwordAlign( sizeof( MapDynamicFixedInfo ) );
       
       off_t 	    	freeAddr = baseAddr + mapInfo()->freeList.next;
       off_t 	    	prevFreeOffset = 0;
@@ -527,7 +529,7 @@ MapMemFixedDynamic::createMapMemFixedDynamic(
 }
 
 void
-MapMemFixedDynamic::openMapMemFixedDynamic( void )
+MapMemDynamicFixed::openMapMemDynamicFixed( void )
 {
   if( mapInfo() == 0 || ! MapMemDynamic::good() )
     {
@@ -554,6 +556,9 @@ MapMemFixedDynamic::openMapMemFixedDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1997/06/19 12:02:28  houghton
+// Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
+//
 // Revision 2.13  1997/06/18 14:15:29  houghton
 // Rework to use MapMemDynamic as base Class.
 // Rework to be part of libMdb.

@@ -1,11 +1,11 @@
-#ifndef _MapMemFixedDynamic_ii_
-#define _MapMemFixedDynamic_ii_
+#ifndef _MapMemDynamicFixed_ii_
+#define _MapMemDynamicFixed_ii_
 //
-// File:        MapMemFixedDynamic.ii
+// File:        MapMemDynamicFixed.ii
 // Project:	Mdb
 // Desc:        
 //
-//  	Inline source for MapMemFixedDynamic
+//  	Inline source for MapMemDynamicFixed
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     06/18/97 06:14
@@ -25,32 +25,32 @@
 #endif
 
 inline
-MapMemFixedDynamic::size_type
-MapMemFixedDynamic::getRecSize( void ) const
+MapMemDynamicFixed::size_type
+MapMemDynamicFixed::getRecSize( void ) const
 {
-  return( base->recSize );
+  return( mapInfo()->recSize );
 }
 
 inline
-MapMemFixedDynamic::size_type
-MapMemFixedDynamic::getChunkSize( void ) const
+MapMemDynamicFixed::size_type
+MapMemDynamicFixed::getChunkSize( void ) const
 {
-  return( base->chunkSize );
+  return( mapInfo()->chunkSize );
 }
 
 inline
-MapMemFixedDynamic::MapFixedDynamicInfo *
-MapMemFixedDynamic::mapInfo( void )
+MapMemDynamicFixed::MapDynamicFixedInfo *
+MapMemDynamicFixed::mapInfo( void )
 {
-  return( (MapFixedDynammicInfo *)getBase() );
+  return( (MapDynamicFixedInfo *)getBase() );
 }
 
 
 inline
-const MapMemFixedDynamic::MapFixedDynamicInfo *
-MapMemFixedDynamic::mapInfo( void ) const
+const MapMemDynamicFixed::MapDynamicFixedInfo *
+MapMemDynamicFixed::mapInfo( void ) const
 {
-  return( (const MapFixedDynammicInfo *)getBase() );
+  return( (const MapDynamicFixedInfo *)getBase() );
 }
 
   
@@ -62,8 +62,11 @@ MapMemFixedDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/06/19 12:02:33  houghton
+// Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
+//
 // Revision 2.1  1997/06/18 14:13:55  houghton
 // Initial Version
 //
 //
-#endif // ! def _MapMemFixedDynamic_ii_ 
+#endif // ! def _MapMemDynamicFixed_ii_ 
