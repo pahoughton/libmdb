@@ -65,15 +65,6 @@ public:
 
   static const Hash  badHash;
   
-protected:
-
-  enum ErrorNum
-  {
-    E_OK,
-    E_VERSION,
-    E_UNDEFINED
-  };
-  
   struct Header
   {
     unsigned long   version;
@@ -86,6 +77,15 @@ protected:
     Loc	    prev;
   };
 
+protected:
+
+  enum ErrorNum
+  {
+    E_OK,
+    E_VERSION,
+    E_UNDEFINED
+  };
+  
   inline Header &	header( void );
   inline const Header &	header( void ) const;
   
@@ -219,6 +219,9 @@ operator >> ( istream & src, const HashTableBase & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/05 13:42:28  houghton
+// Changed for AIX: had to make HashNodeBase a public member.
+//
 // Revision 2.1  1997/06/05 11:29:11  houghton
 // Initial Version.
 //
