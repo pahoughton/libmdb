@@ -66,8 +66,8 @@ protected:
   
   DavlTreeOffsetBase();
 
-  virtual caddr_t   	getBaseData( void ) = 0;
-  virtual const caddr_t getBaseData( void ) const = 0;
+  virtual Addr   	getBaseData( void ) = 0;
+  virtual const Addr	getBaseData( void ) const = 0;
   
   inline void	initHist( Loc histOffset );
   void 	    	insertHist( Loc * firstHist, Loc newHist );
@@ -235,6 +235,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/19 10:22:02  houghton
+// Bug-Fix: changed caddr_t to Addr.
+//
 // Revision 2.4  1997/07/13 11:09:27  houghton
 // Cleanup.
 // Added const walk methods.
