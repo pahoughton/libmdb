@@ -24,11 +24,14 @@ MDB_SRC_INC	= -I$(PRJ_TOPDIR)/src/Mdb
 
 MDB_SRC_LDIR	= -L$(PRJ_TOPDIR)/src/Mdb
 
-ARCH_DEFAULT_LD_LIBS = -lStdC++
-ARCH_DEBUG_LD_LIBS = -lStdC++
+ARCH_DEFAULT_LD_LIBS = 
+ARCH_DEBUG_LD_LIBS = 
 
 #
 # $Log$
+# Revision 2.2  1999/11/04 17:27:14  houghton
+# Removed libStdC++ (not needed.).
+#
 # Revision 2.1  1997/09/21 19:21:43  houghton
 # Changed version to 2
 #
