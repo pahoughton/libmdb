@@ -24,6 +24,7 @@
 include Make/make.cfg.$(make_cfg_ver)
 
 include $(PROJECT_DIR)/support/.makeconfigs.configvars
+include $(config_vars_file)
 
 # Do NOT pass any var=value pairs on my command line to
 # the support tool builds.
@@ -35,7 +36,10 @@ setup_output	= >> $(EXTRACT_DIR)/$(PROJECT_DIR)/.setup.output 2>&1
 
 SUPPORT_DIRS		=	\
 	$(perlmods_build_dir)	\
-	$(tools_java_dir)
+	$(tools_java_dir)	\
+	$(libs_build_dir)	\
+	$(jars_build_dir)	\
+	$(tcl_build_dir)
 
 
 #

@@ -46,8 +46,9 @@ SUPPORT_MAKEFILES	=						\
 		$(PROJECT_DIR)/support/Support.$(var))
 
 
-$(PROJECT_DIR)/support/Support.Items.Makefile: 		\
-		$(PROJECT_DIR)/support/Support.Makefile	\
+$(PROJECT_DIR)/support/Support.Items.Makefile:			\
+		$(PROJECT_DIR)/support/Support.Makefile		\
+		$(PROJECT_DIR)/support/Support.Items.Header	\
 		$(SUPPORT_MAKEFILES)
 	$(hide) cat $(PROJECT_DIR)/support/Support.Items.Header > $@;	 \
 	        cat $(foreach makefile,$(SUPPORT_MAKEFILES),		 \
@@ -61,8 +62,8 @@ setup: $(PROJECT_DIR)/support/Support.Items.Makefile
 	$(hide) $(MAKE) -f $< $@			\
 		SUPPORT_ITEMS='$(SUPPORT_ITEMS)'	\
 		PROJECT_DIR=$(PROJECT_DIR)		\
-		support_vars_file=$(support_vars_file)
-
+		support_vars_file=$(support_vars_file)	\
+		config_vars_file=$(config_vars_file)
 
 #
 # Revision Log:
