@@ -88,10 +88,10 @@ $(INSTALL_SUPPORT_LIB_TARGETS):
 	    $(install_lib_exports)					\
 	    $($(@)_exports)						\
 	    INSTALL_INC_DIR=$(RUN_NO_DIR))
-	$(call make_subdirs,$(subst install_support_,,$@),		\
+	$(call make_subdirs,$(subst install_support_lib_,,$@),		\
 		$(PRJ_TOPDIR),						\
 		$(exports)						\
-		$($(subst install_support_,,$@)_exports))
+		$($(subst install_support_lib_,,$@)_exports))
 	$(call make_subdirs,$(subst _support,,$@),$(PRJ_TOPDIR),	\
 		$(exports)						\
 		$(install_lib_exports)					\
