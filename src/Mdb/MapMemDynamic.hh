@@ -94,6 +94,14 @@ public:
 
   static const unsigned short numKeys;
   
+  struct MapDynamicInfo : public MapInfo
+  {
+    long	    owner;	    // pid of owner (writer)
+    unsigned long   chunkCount;	    // allocated chunks
+    unsigned long   freeCount;	    // available chunks
+    long    	    keys[MMD_NUM_KEYS]; // general purpose values
+  };
+
 protected:
 
   enum ErrorNum
@@ -103,14 +111,6 @@ protected:
     E_UNDEFINED
   };
   
-  struct MapDynamicInfo : MapInfo
-  {
-    long	    owner;	    // pid of owner (writer)
-    unsigned long   chunkCount;	    // allocated chunks
-    unsigned long   freeCount;	    // available chunks
-    long    	    keys[MMD_NUM_KEYS]; // general purpose values
-  };
-
   ErrorNum	errorNum;
 
 private:
@@ -220,6 +220,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/05 13:43:28  houghton
+// Changed for AIX: had to make MapDynamicInfo a public member.
+//
 // Revision 2.1  1997/06/05 11:29:12  houghton
 // Initial Version.
 //
