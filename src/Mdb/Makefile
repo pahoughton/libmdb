@@ -134,6 +134,10 @@ CXX_C_SOURCES	=			\
 	ChunkMgr.C			\
 	HashTableBase.C			\
 	DashTableBase.C			\
+	MultiMem.C			\
+	MultiMemOffset.C		\
+	MultiMemOffsetMapFixed.C	\
+	MapMemFixedDynamic.C		\
 
 hold = \
 	MapMemDynamicDynamic.C		\
@@ -151,10 +155,19 @@ USER_HH_INCS	=			\
 	MapMem.hh			\
 	MapMemDynamic.hh		\
 	MapMemDynamicDynamic.hh		\
+	MapMemFixedDynamic.hh		\
 	HashTableBase.hh		\
 	DashTableBase.hh		\
 	DashTable.hh			\
 	Dash.hh				\
+	DavlTreeOffset.hh		\
+	AvlTreeOffset.hh		\
+	DavlTreeOffsetBase.hh		\
+	AvlTreeOffsetBase.hh		\
+	AvlTreeBase.hh			\
+	MultiMem.hh			\
+	MultiMemOffset.hh		\
+	MultiMemOffsetMapFixed.hh	\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
@@ -247,6 +260,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.3  1997/06/18 14:14:21  houghton
+# Added MultiMem classes and MapMemFixedDynamic.
+#
 # Revision 2.2  1997/06/05 13:44:02  houghton
 # Fixed up install values.
 #
