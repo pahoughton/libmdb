@@ -12,7 +12,10 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:48  houghton
+// Revision 1.2  1995/03/02 16:35:35  houghton
+// Linux ports & new Classes
+//
+// Revision 1.1  1995/02/13  16:08:48  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -125,6 +128,7 @@ MapFile::MapFile(
   map( fileName, baseAddr, mode );
 }
 
+inline
 MapFile::MapFile(
   const char * 	    fileName,
   size_t	    size,

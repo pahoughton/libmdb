@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:50  houghton
+// Revision 1.2  1995/03/02 16:35:35  houghton
+// Linux ports & new Classes
+//
+// Revision 1.1  1995/02/13  16:08:50  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -18,9 +21,6 @@ static const char * RcsId =
 
 #include "MapMemFixedDynamic.hh"
 #include "Str.hh"
-
-#define DWORD_ALIGN( _addr_ ) \
-  ( ((_addr_ % 4) == 0) ? _addr_ :  ( _addr_  + ( 4 - ( _addr_ % 4 ) ) ) )
 
 //
 // allocation chunks must be at least 1 page
@@ -52,6 +52,8 @@ MapMemFixedDynamic::MapMemFixedDynamic(
 	    permMask )
 {
   base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
+  
+  nextFreeRecOffset = 0;
   
   if( base != 0 && MapMem::good() )
     {      
@@ -327,7 +329,7 @@ MapMemFixedDynamic::expand( void )
     }
   else
     {
-      freeNode = (struct FreeList * ) baseAddr + base->freeList.prev;
+      freeNode = (FreeList * ) baseAddr + base->freeList.prev;
       freeNode->next = freeAddr - baseAddr;
       
       prevFreeOffset = base->freeList.prev;
@@ -337,7 +339,7 @@ MapMemFixedDynamic::expand( void )
 	freeAddr + base->recSize < (off_t)getEnd();
 	freeAddr += base->recSize )
     {
-      freeNode = (struct FreeList *)freeAddr;
+      freeNode = (FreeList *)freeAddr;
       
       freeNode->next    = ( freeAddr - baseAddr ) + base->recSize;
       freeNode->prev    = prevFreeOffset;
@@ -349,12 +351,91 @@ MapMemFixedDynamic::expand( void )
 
   // one to many, backup one
 
-  freeNode = (struct FreeList *)(baseAddr + prevFreeOffset);
+  freeNode = (FreeList *)(baseAddr + prevFreeOffset);
   
   freeNode->next = 0;
 
   base->freeList.prev = prevFreeOffset;
   
+}
+
+RecNumber
+MapMemFixedDynamic::first( void )
+{
+  if( base && base->freeCount != base->recCount )
+    {
+      off_t   first = DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) );
+
+      off_t     	baseAddr = (off_t)base;
+      off_t     	freeOffset;
+      
+      for( freeOffset = base->freeList.next;
+	   first == freeOffset;
+	   first += base->recSize,
+	   freeOffset = ((FreeList *)(baseAddr + freeOffset))->next );
+
+      nextFreeRecOffset = freeOffset;
+      
+      return( offset2RecNum( first ) );
+    }
+  return( 0 );  
+}
+	  
+Bool
+MapMemFixedDynamic::next( RecNumber & rec )
+{
+  
+  if( rec == 0 )
+    {
+      rec = first();
+      return( rec != 0 );
+    }
+  else
+    {
+      off_t nextRec = recNum2Offset( rec );
+
+      nextRec += base->recSize;
+
+      if( nextRec > getEnd() - getBase() )
+	{
+	  return( FALSE );
+	}
+      off_t 	baseAddr = (off_t)base;
+      
+      for( ; nextFreeRecOffset && nextRec > nextFreeRecOffset;
+	     nextFreeRecOffset =
+	       ((FreeList *)(baseAddr + nextFreeRecOffset))->next );
+
+      for( ; nextFreeRecOffset &&
+	       nextRec == nextFreeRecOffset;
+	     nextRec += base->recSize,
+	       nextFreeRecOffset =
+	       ((FreeList*)(baseAddr + nextFreeRecOffset))->next );
+
+      if( nextFreeRecOffset == 0 )
+	{
+	  return( FALSE );
+	}
+      else
+	{
+	  rec = offset2RecNum( nextRec );
+	  return( TRUE );
+	}
+    }
+}
+
+const char *
+MapMemFixedDynamic::getClassName( void ) const
+{
+  return( "MapMemFixedDynamic" );
+}
+
+Bool
+MapMemFixedDynamic::good( void ) const
+{
+  return( base != 0 &&
+	  mapFixedDynamicError == E_OK &&
+	  MapMem::good() );
 }
 
 const char *
@@ -419,11 +500,6 @@ MapMemFixedDynamic::getStats( ostream & dest ) const
 }
   
 
-ostream &
-operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
-{
-  return( mmf.getStats( dest ) );
-}
 
 
 //

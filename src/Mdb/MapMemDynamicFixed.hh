@@ -12,12 +12,17 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:50  houghton
+// Revision 1.2  1995/03/02 16:35:36  houghton
+// Linux ports & new Classes
+//
+// Revision 1.1  1995/02/13  16:08:50  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
 
 #include <MapMem.hh>
+#include <Record.hh>
+
 #include <iostream.h>
 
 #define MMF_VERSION 0x4d4d4601	// 'MMF1'
@@ -45,7 +50,7 @@ public:
 
   // use this constructor to access an existing map file  
   MapMemFixedDynamic( const char * 	fileName,
-	       ios::open_mode	mode = (ios::open_mode)(ios::in|ios::out) );
+		      ios::open_mode	mode = (ios::open_mode)(ios::in) );
 
   
   off_t	    	    getMem( size_t size = 0 );	// returns offset not addr!
@@ -63,14 +68,25 @@ public:
   long	    	    getKey( unsigned short key = 0) const;
   
   void 	    	    expand( void );
+
+  RecNumber   	    first( void );
+  Bool	    	    next( RecNumber & rec );
+  
+  off_t	    	    recNum2Offset( RecNumber recNum ) const;
+  RecNumber	    offset2RecNum( off_t offset ) const;
   
   virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual const char * 	getClassName( void ) const;
   virtual Bool	    	good( void ) const;
   virtual const char *	error( void ) const;
-  
-  friend ostream & operator<<( ostream & dest, const MapMemFixedDynamic & mmf );
+    
+protected:
+
+private:
+
+  MapMemFixedDynamic( const MapMemFixedDynamic & copyFrom );
+  MapMemFixedDynamic & operator=( const MapMemFixedDynamic & assignFrom );
   
   struct FreeList
   {
@@ -78,15 +94,6 @@ public:
     unsigned long prev;
   };
 
-protected:
-
-private:
-
-  static const char * ErrorStrings[];
-  
-  MapMemFixedDynamic( const MapMemFixedDynamic & copyFrom );
-  MapMemFixedDynamic & operator=( const MapMemFixedDynamic & assignFrom );
-  
   struct MapFixedDynamicInfo : MapInfo
   {
     unsigned long   recSize;	// record size
@@ -97,11 +104,15 @@ private:
     struct FreeList freeList;	// head to list of free records
   };
 
-  MapFixedDynamicError	    	mapFixedDynamicError;
-  struct MapFixedDynamicInfo * base;  
+  static const char * ErrorStrings[];
   
+  MapFixedDynamicError	    	mapFixedDynamicError;
+  struct MapFixedDynamicInfo * 	base;  
+
+  off_t	    nextFreeRecOffset;
 };
 
+// inline ostream & operator<<( ostream & dest, const MapMemFixedDynamic & mmf );
 
 //
 // Inline methods
@@ -116,7 +127,8 @@ MapMemFixedDynamic::MapMemFixedDynamic(
   : MapMem( fileName, MM_FIXED, MMF_VERSION, mode )
 {
   base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
-  
+  nextFreeRecOffset = 0;
+    
   if( base == 0 || ! MapMem::good() )
     {
       mapFixedDynamicError = E_MAPMEM;
@@ -205,19 +217,30 @@ MapMemFixedDynamic::setKey(
 }
 
 inline
-const char *
-MapMemFixedDynamic::getClassName( void ) const
+off_t
+MapMemFixedDynamic::recNum2Offset( RecNumber recNum ) const
 {
-  return( "MapMemFixedDynamic" );
+  off_t offset = DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) );
+
+  offset += (recNum - 1) * base->recSize;
+
+  return( offset );
 }
 
 inline
-Bool
-MapMemFixedDynamic::good( void ) const
+RecNumber
+MapMemFixedDynamic::offset2RecNum( off_t offset ) const
 {
-  return( base != 0 &&
-	  mapFixedDynamicError == E_OK &&
-	  MapMem::good() );
+
+  return( ( ( offset - DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) ) ) /
+	    base->recSize ) + 1 );
+}
+
+inline
+ostream &
+operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
+{
+  return( mmf.getStats( dest ) );
 }
 
 
