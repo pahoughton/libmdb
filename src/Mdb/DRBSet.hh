@@ -87,9 +87,8 @@ public:
     return( table.find( key, eff ) );
   };
 
-  inline const_iterator		lower_bound( const Key & key,
-					     EffDate eff ) const {
-    return( table.lower_bound( key, eff ) );
+  inline const_iterator		lower_bound( const Key & key ) const {
+    return( table.lower_bound( key ) );
   };
   
   inline bool			erase( const Key & key, EffDate eff ) {
@@ -422,6 +421,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/08/20 14:07:45  houghton
+// Chagned lower_bound() args, it did not use the effective date so,
+//     it no longer accepts the argument.
+//
 // Revision 2.5  1997/08/17 01:37:41  houghton
 // Added lower_bound.
 // Added effective.

@@ -303,7 +303,7 @@ public:
       }
   };
 
-  inline const_iterator	    lower_bound( const Key & key, EffDate eff ) const {
+  inline const_iterator	    lower_bound( const Key & key ) const {
     Loc node = findNode( key );
     if( node != headerLoc )
       {
@@ -760,6 +760,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/08/20 14:07:51  houghton
+// Chagned lower_bound() args, it did not use the effective date so,
+//     it no longer accepts the argument.
+//
 // Revision 2.7  1997/08/20 10:35:19  houghton
 // Bug-Fix: was allocating sizeof( DRBNode ) for hist
 //     (changed to sizeof(DRBHist ).
