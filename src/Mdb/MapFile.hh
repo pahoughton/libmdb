@@ -114,6 +114,8 @@ public:
   inline long	    getRefCount( void ) const;
   inline bool	    delRef( void );
 
+  static size_type  getTotalMapped( void );
+  
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual int		getErrno( void ) const;
@@ -131,6 +133,8 @@ public:
 
 protected:
 
+  static size_type	totalMapped;
+  
 private:
 
   MapFile( const MapFile & copyFrom );
@@ -406,6 +410,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.13  1999/03/02 12:58:15  houghton
+// Added totalMapped static variable.
+// Added getTotalMapped().
+//
 // Revision 2.12  1997/10/01 13:59:54  houghton
 // Changed to use portable multi platform data types.
 // Added sync().
