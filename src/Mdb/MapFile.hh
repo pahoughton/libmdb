@@ -2,16 +2,242 @@
 #define _MapFile_hh_
 //
 // File:        MapFile.hh
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+//
+//
+// Quick Start: - short example of class usage
+//
+// Notes:
+//
+//  This class was originally part of libClue1
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     11/11/94 06:46
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// 
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+#include <MdbConfig.hh>
+
+#include <FileStat.hh>
+#include <DumpInfo.hh>
+
+#include <sys/types.h>
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+class MapFile
+{
+
+public:
+
+  typedef unsigned long	    size_type;
+  
+  typedef caddr_t	    MapAddr;
+  typedef unsigned short    MapMask;	// map permision mask (i.e. umask)
+  
+  // use this constructor to create a new file or open an existing one
+  MapFile( const char *	    fileName,
+	   MapAddr	    baseAddr,
+	   ios::open_mode   mode,
+	   bool		    create,
+	   size_type	    size,
+	   MapMask	    permMask = 0777 );
+
+  // use this constructor to create a new file
+  MapFile( const char *     fileName,
+	   size_type   	    size,
+ 	   MapAddr   	    baseAddr = 0,
+	   MapMask	    permMask = 0777 );
+
+  // use this constructor to open an existing file
+  MapFile( const char *     fileName,
+	   MapAddr   	    baseAddr = 0,
+	   ios::open_mode   mode = ios::in );
+
+  MapFile( void );
+  
+  virtual ~MapFile( void );
+
+  size_type    	    map( const char * 	fileName,
+			 MapAddr      	baseAddr = 0,
+			 ios::open_mode	mode = ios::in );
+
+  void		    unmap( void );
+  
+  size_type		setSize( size_type amount, MapAddr baseAddr );
+  inline size_type	grow( size_type amount, MapAddr baseAddr );
+  inline size_type      shrink( size_type amount, MapAddr baseAddr );
+
+  const char *		getFileName( void ) const;
+  const char *		getAccess( void ) const;
+  inline ios::open_mode	getMode( void ) const;
+  inline size_type	getSize( void ) const;
+  inline MapAddr	getBase( void );
+  inline const MapAddr getBase( void ) const;
+  inline MapAddr	getEnd( void );
+  inline const MapAddr	getEnd( void ) const;
+  static size_type	getPageSize( void  );
+
+  // reference counting
+  inline long	    addRef( void );
+  inline long	    getRefCount( void ) const;
+  inline bool	    delRef( void );
+
+  virtual bool	    	good( void ) const;
+  virtual const char * 	error( void ) const;
+  virtual int		getErrno( void ) const;
+  virtual const char * 	getClassName( void ) const;
+  virtual const char *  getVersion( bool withPrjVer = true ) const;  
+  virtual ostream &	dumpInfo( ostream &	dest = cerr,
+				  const char *	prefix = "    ",
+				  bool		showVer = false ) const;
+  
+  static const ClassVersion version;
+
+  inline
+  DumpInfo< MapFile >	dump( const char *  prefix = "    ",
+			      bool	    showVer = true ) const;
+  
+protected:
+
+private:
+
+  MapFile( const MapFile & copyFrom );
+  MapFile & operator=( const MapFile & assignFrom );
+
+  void	createMap( const char * fileName,
+		   MapAddr	baseAddr,
+		   size_type	size,
+		   MapMask	mask );
+  
+  FileStat  	    fileStat;
+
+  int	    	    mapFd;
+  ios::open_mode    mapMode;
+  size_type    	    mapSize;
+  MapAddr    	    mapBase;
+
+  long		    refCount;
+  
+  size_type    	    pageSize;
+
+  int	    	    osErrno;
+
+};
+
+
+
+#if !defined( inline )
+#include <MapFile.ii>
+#else
+#undef inline
+
+
+#endif
+
+
+//
+// Detail Documentation
+//
+//  Data Types: - data types defined by this header
+//
+//  	MapFile	class
+//
+//  Constructors:
+//
+//  	MapFile( );
+//
+//  Destructors:
+//
+//  Public Interface:
+//
+//	virtual ostream &
+//	write( ostream & dest ) const;
+//	    write the data for this class in binary form to the ostream.
+//
+//	virtual istream &
+//	read( istream & src );
+//	    read the data in binary form from the istream. It is
+//	    assumed it stream is correctly posistioned and the data
+//	    was written to the istream with 'write( ostream & )'
+//
+//	virtual ostream &
+//	toStream( ostream & dest ) const;
+//	    output class as a string to dest (used by operator <<)
+//
+//	virtual istream &
+//	fromStream( istream & src );
+//	    Set this class be reading a string representation from
+//	    src. Returns src.
+//
+//  	virtual Bool
+//  	good( void ) const;
+//  	    Return true if there are no detected errors associated
+//  	    with this class, otherwise false.
+//
+//  	virtual const char *
+//  	error( void ) const;
+//  	    Return a string description of the state of the class.
+//
+//  	virtual const char *
+//  	getClassName( void ) const;
+//  	    Return the name of this class (i.e. MapFile )
+//
+//  	virtual const char *
+//  	getVersion( bool withPrjVer = true ) const;
+//  	    Return the version string of this class.
+//
+//	virtual ostream &
+//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
+//	    output detail info to dest. Includes instance variable
+//	    values, state info & version info.
+//
+//	static const ClassVersion version
+//	    Class and project version information. (see ClassVersion.hh)
+//
+//  Protected Interface:
+//
+//  Private Methods:
+//
+//  Associated Functions:
+//
+//  	ostream &
+//  	operator <<( ostream & dest, const MapFile & src );
+//
+//	istream &
+//	operator >> ( istream & src, MapFile & dest );
+//
+// Example:
+//
+// See Also:
+//
+// Files:
+//
+// Documented Ver:
+//
+// Tested Ver:
+//
+// Revision Log:
+//
 // $Log$
+// Revision 2.7  1997/06/05 11:17:35  houghton
+// Cleanup.
+// Change to be part of libMdb (vs Clue1).
+// Added types size_type, MapAddr, MapMask and change to use them.
+// Added constructor that can create or open existing.
+// Moved inlines to new MapFile.ii file.
+//
 // Revision 2.6  1997/04/21 12:12:16  houghton
 // Added getErrno.
 //
@@ -40,168 +266,7 @@
 // Revision 1.1  1995/02/13  16:08:48  houghton
 // New Style Avl an memory management. Many New Classes
 //
-//
-
-#include <ClueConfig.hh>
-
-#include <FileStat.hh>
-
-#include <sys/types.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <iostream.h>
-#include <errno.h>
-
-class MapFile
-{
-
-public:
-
-  // use this constructor to create a new file
-  MapFile( const char *     fileName,
-	   size_t   	    size,
- 	   caddr_t   	    baseAddr = 0,
-	   unsigned short   permMask = 0);
-
-  // use this constructor to open an existing file
-  MapFile( const char *     fileName,
-	   caddr_t   	    baseAddr = 0,
-	   ios::open_mode   mode = ios::in );
-
-  MapFile();
-  
-  virtual ~MapFile( void );
-
-  size_t    	    map( const char * 	fileName,
-			 caddr_t      	baseAddr = 0,
-			 ios::open_mode	mode = ios::in );
-
-  inline void	    unmap( void );
-  
-  size_t	    setSize( size_t amount, caddr_t baseAddr );
-  size_t    	    grow( size_t amount, caddr_t baseAddr );
-  size_t    	    shrink( size_t amount, caddr_t baseAddr );
-
-  const char *	    getFileName( void ) const;
-  const char * 	    getAccess( void ) const;
-  size_t    	    getSize( void ) const;
-  caddr_t    	    getBase( void ) const;
-  caddr_t    	    getEnd( void ) const;
-  size_t    	    getPageSize( void  ) const;
-
-  virtual ostream & 	getStats( ostream & dest ) const;
-
-  virtual const char * 	getClassName( void ) const { return "MapFile"; };
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual int		getErrno( void ) const;
-  
-  virtual ostream &	dumpInfo( ostream &	dest,
-				  const char *	prefix = "    ",
-				  bool		showVer = false ) const;
-  
-  friend inline ostream & operator<<( ostream & dest, const MapFile & map );
-  
-protected:
-
-private:
-
-  MapFile( const MapFile & copyFrom );
-  MapFile & operator=( const MapFile & assignFrom );
-
-  FileStat  	    fileStat;
-
-  int	    	    mapFd;
-  ios::open_mode    mapMode;
-  size_t    	    mapSize;
-  caddr_t    	    mapBase;
-
-  size_t    	    pageSize;
-
-  int	    	    osErrno;
-
-};
-
-
-//
-// Inline methods
-//
-
-inline
-void
-MapFile::unmap( void )
-{
-  
-  if( mapBase != 0 && mapSize != 0 )
-    {
-      munmap( mapBase, mapSize );
-    }
-
-  if( mapFd != 0 )
-    {
-      close( mapFd );
-    }
-}
-
-
-inline
-size_t
-MapFile::grow(
-  size_t    amount,
-  caddr_t   baseAddr
-  )
-{
-  return( setSize( mapSize + amount, baseAddr ) ); 
-}
-
-inline
-size_t
-MapFile::shrink(
-  size_t    amount,
-  caddr_t   baseAddr
-  )
-{
-  return( setSize( mapSize - amount, baseAddr ) );
-}
-
-
-inline
-size_t
-MapFile::getSize( void ) const
-{
-  return( mapSize );
-}
-
-inline
-caddr_t
-MapFile::getBase( void ) const
-{
-  return( mapBase );
-}
-
-inline
-caddr_t
-MapFile::getEnd( void ) const
-{
-  return( ((char *)mapBase) + mapSize );
-}
-
-inline
-size_t
-MapFile::getPageSize( void ) const
-{
-  return( pageSize );
-}
-
-inline
-ostream &
-operator<<( ostream & dest, const MapFile & map )
-{
-  return( map.getStats( dest ) );
-}
-
-#endif // ! def _MapFile_hh_ 
+// Copyright:
 //
 //              This software is the sole property of
 // 
@@ -213,3 +278,4 @@ operator<<( ostream & dest, const MapFile & map )
 //                      All Rights Reserved.  
 // 
 //
+#endif // ! def _MapFile_hh_ 
