@@ -152,6 +152,12 @@ public:
     endPos += sizeof( value_type );
     return( tmp );
   };
+
+
+  inline const_reference    operator [] ( size_type rec ) const {
+    return( *(begin() + rec) );
+  };
+  
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -241,6 +247,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/08/31 10:17:30  houghton
+// Added operator [] to retreive a specific record.
+//
 // Revision 2.3  1997/08/17 01:38:39  houghton
 // Bug-Fix: MapMask is part of MapFile
 // Bug-Fix: endPos is not a function :)
