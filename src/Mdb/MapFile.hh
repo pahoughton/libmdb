@@ -49,10 +49,12 @@ class MapFile
 
 public:
 
-  typedef MDB_TYPE_SIZE	    size_type;
+  typedef MDB_U32_T	    size_type;
   
   typedef MDB_TYPE_ADDR	    MapAddr;
   typedef unsigned short    MapMask;	// map permision mask (i.e. umask)
+
+  static const size_type    npos;
   
   // use this constructor to create a new file or open an existing one
   MapFile( const char *	    fileName,
@@ -87,7 +89,11 @@ public:
 			 ios::open_mode	mode = ios::in );
 
   void		    unmap( void );
-  
+
+  bool		    sync( size_type	beg = 0,
+			  size_type	len = npos,
+			  bool		async = false ); 
+			  
   size_type		setSize( size_type size, MapAddr baseAddr );
   inline size_type	grow( size_type amount, MapAddr baseAddr );
   inline size_type      shrink( size_type amount, MapAddr baseAddr );
@@ -400,6 +406,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1997/10/01 13:59:54  houghton
+// Changed to use portable multi platform data types.
+// Added sync().
+//
 // Revision 2.11  1997/09/17 16:56:01  houghton
 // Changed for new library rename to StlUtils
 //
