@@ -5,11 +5,34 @@
 // Project:	Mdb
 // Desc:        
 //
+//  This class is intended for creating and/or accessing a file
+//  containing a collection of fixed records.
 //
+// Quick Start: a short example of class usage
 //
-// Quick Start: - short example of class usage
+//  struct Rec {
+//    long  a;
+//    long  b;
+//    char  c[50];
+//  };
+//
+//  MapBatch<Rec>   batch( "abc.bin" );
+//
+//  for( MapBatch<Rec>::iterator them = batch.begin();
+//	 them != batch.end();
+//	 ++ them )
+//    {
+//	 ...
+//    }
+//
+// Notes:
+//
+//  You should only use a structure or  other base type (i.e. long,
+//  char ...) as `T'. Classes may contain function pointers which
+//  would be no be valid in a file.
 //
 // Author:      Charles B. Reeves - (charles.reeves@wcom.com)
+//		Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     07/28/97 19:25
 //
 // Revision History: (See end of file for Revision Log)
@@ -24,15 +47,8 @@
 #include <MdbConfig.hh>
 #include <MapFile.hh>
 #include <DumpInfo.hh>
-#include <ClueUtils.hh>
 #include <iostream>
 #include <Str.hh>
-
-
-
-#if defined( MDB_DEBUG )
-#define inline
-#endif
 
 template <class T>
 class MapBatch
@@ -40,150 +56,124 @@ class MapBatch
 
 public:
 
-  typedef T* iterator;
-  typedef const T* const_iterator;
-  typedef T value_type;
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef T & reference;
-  typedef const T & const_reference;
+  typedef T *		iterator;
+  typedef const T *	const_iterator;
+  typedef T		value_type;
+  typedef MDB_TYPE_SIZE	size_type;
+  typedef ptrdiff_t	difference_type;
+  typedef T &		reference;
+  typedef const T &	const_reference;
   
-
-  // Use this to open an existing file
-  MapBatch( const char * filename)
-  : map(filename)
-    {
-      endPos = map.getEnd();
-    };
+  typedef reverse_bidirectional_iterator< const_iterator,
+    value_type, const_reference, difference_type >	const_reverse_iterator;
+  
+  typedef reverse_bidirectional_iterator< iterator,
+    value_type, reference, difference_type >		reverse_iterator;
 
   
-  // This one will create a new file
-  //  MapBatch( const char * filename, int  s=0);
-
-  iterator append(void)
-    {
-      if ( endPos + sizeof(value_type) >= map.getEnd() )
-	{
-	  if (! map.grow( sizeof(value_type) , 0 ))
-	    {
-	      return(iterator(0));
-	    }
-	  if ( endPos + sizeof(value_type) >= map.getEnd() )
-	    {
-	      return(iterator(0));
-	    }
-	}
-      iterator tmp((iterator)endPos);
-      endPos += sizeof(value_type);
-      return(tmp);
-    };
+  inline MapBatch( const char *	    fileName,
+		   ios::open_mode   mode = ios::in,
+		   bool		    create = false,
+		   MapMask	    permMask = 02 );
   
-  virtual ~MapBatch( void )
-    {
-      if (  (map.getMode() & ios::out) && endPos)
-	{
-	  size_type realSize = endPos - map.getBase();
-	  map.unmap();
-	  truncate(map.getFileName(), realSize);
-	}
+  virtual ~MapBatch( void );
+
+  inline const_iterator		begin( void ) const {
+    return( (const_iterator)map.getBase() );
+  };
+  
+  inline const_iterator		end( void ) const {
+    return( (const_iterator)endPos(void) );
+  };
+  
+  inline const_reverse_iterator	rbegin( void ) const {
+    return( const_reverse_iterator( end() ) );
+  };
+  
+  inline const_reverse_iterator	rend( void ) const {
+    return( const_reverse_iterator( begin() ) );
+  };
+
+  inline const_reference    front( void ) const {
+    return( *begin() );
+  };
+
+  inline const_reference    back( void ) const {
+    return( *(end() - 1) );
+  };
+  
+  
+  inline iterator	    begin( void ) {
+    return( (iterator)map.getBase() );
+  };
+  
+  inline iterator	    end( void ) {
+    return( (iterator)endPos );
+  };
+  
+  inline reverse_iterator   rbegin( void ) {
+    return( reverse_iterator( end() ) );
+  };
+  
+  inline reverse_iterator   rend( void ) {
+    return( reverse_iterator( begin() ) );
+  };
+
+  inline reference	    front( void ) {
+    return( *begin() );
+  };
+
+  inline reference	    back( void ) {
+    return( *(end() - 1) );
+  };
+  
+  inline size_type	size( void ) const {
+    return( size_type( end() - begin() ) );
+  };
+
+  inline size_type	capacity( void ) const {
+    return( size_type(((const_iterator)map.getEnd()) - begin()) );
+  }
+
+  bool			reserve( size_type n ) {
+    if( capacity() < n ) {
+      if( ! map.grow( sizeof( value_type ) * (n - capacity()), 0 ) )
+	return( false );
     }
-
-
-  const_iterator begin(void) const
-    {
-      return ( (const_iterator)map.getBase() );
-    };
-  const_iterator end(void) const
-    {
-      return ( (iterator)map.getEnd() );
-    };
+    return( true );
+  };
   
-  iterator begin(void)
-    {
-      return ( (iterator) map.getBase() );
-    };
-  iterator end(void)
-    {
-      return ( (iterator) map.getEnd() );
-    }; 
+  inline iterator	append( void ) {
+    if( endPos + sizeof( value_type ) >= map.getEnd() ) {
+      if( ! map.grow( sizeof( value_type ), 0 ) )
+	return( end() );
+    }
+    iterator tmp( end() );
+    endPos += sizeof( value_type );
+    return( tmp );
+  };
   
-  
- 
-  virtual bool	    	good( void ) const
-    {
-      return( true );
-    };
-
-  virtual const char * 	error( void ) const
-    {
-//       static string errStr;
-//       errStr = MapBatch<T>::getClassName();
-//       if( good() )
-// 	{
-// 	  errStr += ": ok";
-// 	}
-//       else
-// 	{
-//       	  size_t eSize = errStr.size();
-	  
-//       	  if( eSize == errStr.size() )
-//       	    {
-// 	      errStr << ": unknown error";
-//    	    }
-//    	}
-//       return( errStr.c_str() );
-    };
-
-  virtual const char *	getClassName( void ) const
-    {
-      return( "MapBatch" );
-    };
-  
-  virtual const char *  getVersion( bool withPrjVer = true ) const
-    {
-      // return( version.getVer( withPrjVer ) );
-    };
-  
+  virtual bool	    	good( void ) const;
+  virtual const char * 	error( void ) const;
+  virtual const char *	getClassName( void ) const;
   virtual ostream &     dumpInfo( ostream &	dest = cerr,
 				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const
-    {
-      if( showVer )
-	dest << MapBatch::getClassName() << ":\n"
-	     << MapBatch::getVersion() << '\n';
+                                  bool          showVer = true ) const;
 
-      if( ! MapBatch::good() )
-	dest << prefix << "Error: " << MapBatch::error() << '\n';
-      else
-	dest << prefix << "Good" << '\n';            
-      return( dest );
-    };
-
- 
- 
-  static const ClassVersion version;
+  inline
+  DumpInfo< MapBatch<T> >   dump( const char *	prefix = "    ",
+				  bool		showVer = true ) const;
+    
+protected:
+  
+  MapFile	    map;
+  MapFile::MapAddr  endPos;
 
 private:
   
-  MapFile map;
-  
-  MapFile::MapAddr  endPos;
-
 };
 
-#if !defined( inline )
 #include <MapBatch.ii>
-#else
-#undef inline
-
-ostream &
-operator << ( ostream & dest, const MapBatch & src );
-
-istream &
-operator >> ( istream & src, const MapBatch & dest );
-
-
-#endif
 
 
 //
@@ -200,25 +190,6 @@ operator >> ( istream & src, const MapBatch & dest );
 //  Destructors:
 //
 //  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
 //
 //  	virtual Bool
 //  	good( void ) const;
@@ -270,6 +241,11 @@ operator >> ( istream & src, const MapBatch & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/08/10 20:31:58  houghton
+// Cleanup.
+// Added some methods.
+// Removed some of the definitions (now in MapBatch.ii).
+//
 // Revision 2.1  1997/08/10 19:46:47  houghton
 // Initial Version (by Charlie Reeves).
 //
