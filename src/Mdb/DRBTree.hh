@@ -482,7 +482,22 @@ public:
 	return( false );
       }
   }
-	    
+
+  inline size_type	histSize( void ) const {
+    size_type count( 0 );
+    
+    for( const_iterator them = begin();
+	 them != end();
+	 them.nextkey() )
+      {
+	for( Loc h = drbNode( them.node ).hist; h ; h = history( h ).next )
+	  {
+	    ++ count;
+	  }
+      }
+    return( count );
+  };
+    
     
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -506,16 +521,32 @@ public:
     return( dest );
   };
 
-  ostream & dumpHist( ostream & dest, const_iterator it ) const {
-    dest << "node:     " << it.node << '\n';
+  ostream & dumpHist( ostream &		dest,
+		      const_iterator	it,
+		      const char *	prefix = "   ",
+		      int		nameWidth = 0,
+		      bool		locs = false ) const {
+    if( locs )
+      dest << prefix
+	   << setw( nameWidth ) << "node"
+	   << ": '" << it.node << "'\n";
 
     for( Loc h = drbNode( it.node ).hist; h ; h = history( h ).next )
       {
-	dest << "    hist:   " << h << '\n'
-	     << "    when:   " << history( h ).when << '\n'
-	     << "    del:    " << history( h ).del << '\n'
-	     << '\n'
+	if( locs )
+	  dest << prefix << setw( nameWidth ) << "hist"
+	       << ": '" << h << "'\n";
+
+	dest << prefix
+	     << setw( nameWidth ) << "when"
+	     << ": '" << DateTime( history( h ).when ) << "'\n"
+	     << prefix
+	     << setw( nameWidth ) << "del"
+	     << ": '" << (history( h ).del ? 'Y' : 'N') << "'\n"
 	  ;
+	
+	if( ! history( h ).del )
+	  dest << history( h ).value << '\n';
       }
     return( dest );
   };
@@ -847,6 +878,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1999/11/04 17:26:57  houghton
+// Added histSize().
+// Changed output of dumpHist().
+//
 // Revision 2.13  1999/03/02 12:56:10  houghton
 // Added lower_bound().
 //

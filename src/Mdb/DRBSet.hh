@@ -137,8 +137,9 @@ public:
   inline const_reverse_iterator	rbegin( void ) const {return(table.rbegin());};
   inline const_reverse_iterator	rend( void ) const {return(table.rend());};
 
-  inline size_type		size( void ) const { return( table.size() ); };
-  inline bool			empty( void ) const { return(table.empty()); };
+  inline size_type	size( void ) const { return( table.size() ); };
+  inline size_type	histSize( void ) const { return( table.histSize() ); };
+  inline bool		empty( void ) const { return(table.empty()); };
 
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -155,8 +156,12 @@ public:
     return( DumpInfo< DRBSet< Key, LessKey > >( *this, prefix, showVer ) );
   };
 
-  ostream & dumpHist( ostream & dest, const_iterator it ) const {
-    return( table.dumpHist( dest, it ) );
+  ostream & dumpHist( ostream &		dest,
+		      const_iterator	it,
+		      const char *	prefix = "   ",
+		      int		nameWidth = 0,
+		      bool		locs = false ) const {
+    return( table.dumpHist( dest, it, prefix, nameWidth, locs ) );
   };
 
 protected:
@@ -433,6 +438,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1999/11/04 17:26:52  houghton
+// Added histSize().
+// Changed output of dumpHist().
+//
 // Revision 2.9  1999/03/02 12:56:04  houghton
 // Added lower_bound().
 //
