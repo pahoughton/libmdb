@@ -107,13 +107,13 @@ public:
     
     inline iterator(
       DashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
-      HashTableBase::Hash   aHash,
-      HashTableBase::Loc    aNode )
+      HashTableBase::HashValue  aHash,
+      HashTableBase::Loc	aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
     
     DashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
-    HashTableBase::Hash	    hash;
-    HashTableBase::Loc	    node;
+    HashTableBase::HashValue	hash;
+    HashTableBase::Loc		node;
   };
 
   class const_iterator
@@ -174,13 +174,13 @@ public:
     
     inline const_iterator(
       const DashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
-      HashTableBase::Hash   aHash,
-      HashTableBase::Loc    aNode )
+      HashTableBase::HashValue  aHash,
+      HashTableBase::Loc	aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
     
     const DashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
-    HashTableBase::Hash	    hash;
-    HashTableBase::Loc	    node;
+    HashTableBase::HashValue    hash;
+    HashTableBase::Loc		node;
   };
 
   typedef reverse_bidirectional_iterator< const_iterator,
@@ -202,8 +202,8 @@ public:
   virtual ~DashTable( void ) {};
 
   inline iterator		find( const Key & key ) {
-    Hash    hash = hashFunct( key );
-    Loc	    node = HashTableBase::find( hash );
+    HashValue   hash = hashFunct( key );
+    Loc		node = HashTableBase::find( hash );
     for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
 	  ! lessKey( keyOf( value( node ) ), key ) )
@@ -213,8 +213,8 @@ public:
   };
 
   inline const_iterator		find( const Key & key ) const {
-    Hash    hash = hashFunct( key );
-    Loc	    node = HashTableBase::find( hash );
+    HashValue   hash = hashFunct( key );
+    Loc		node = HashTableBase::find( hash );
     for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
 	  ! lessKey( keyOf( value( node ) ), key ) )
@@ -253,7 +253,7 @@ public:
   inline pair_iterator_bool	insert( const Key &	key,
 					EffDate	effDate,
 					const Value &	rec ) {
-    Loc	    node = mgr.allocate( sizeof( DashNode ) );
+    Loc	    node = mgr->allocate( sizeof( DashNode ) );
     if( node ) {
       value( node ) = rec;
       iterator it = find( key );
@@ -266,7 +266,7 @@ public:
 				      true ) );
       }
     }
-    mgr.release( node );
+    mgr->release( node );
     return( pair_iterator_bool( iterator( this, endHash(), 0 ), false ) );    
   };
 
@@ -291,7 +291,7 @@ public:
 #endif
   
   inline const_iterator	    begin( void ) const {
-    Hash    hash = first();
+    HashValue    hash = first();
     return( const_iterator( this, hash, hashLoc( hash ) ) );
   };
   
@@ -300,7 +300,7 @@ public:
   };
 
   inline iterator	    begin( void ) {
-    Hash    hash = first();
+    HashValue    hash = first();
     return( iterator( this, hash, hashLoc( hash ) ) );
   };
   
@@ -345,21 +345,21 @@ protected:
   friend iterator;
   friend const_iterator;
 
-  inline Loc	next( Hash & hash, Loc & node ) const {
+  inline Loc	next( HashValue & hash, Loc & node ) const {
     return( DashTableBase::next( hash, node ) );
   };
 
-  inline Loc	prev( Hash & hash, Loc & node ) const {
+  inline Loc	prev( HashValue & hash, Loc & node ) const {
     return( DashTableBase::prev( hash, node ) );
   };
 
   
   inline referance	    value( Loc node ) {
-    return( ((DashNode *)mgr.address( node ))->value );
+    return( ((DashNode *)mgr->address( node ))->value );
   };
   
   inline const_referance    value( Loc node ) const {
-    return( ((const DashNode *)(mgr.address( node )))-> value );
+    return( ((const DashNode *)(mgr->address( node )))-> value );
   };
 
   
@@ -465,6 +465,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/22 19:43:10  houghton
+// Cleanup.
+// Changed: HashTableBase::Hash was renamed to HashValue.
+//
 // Revision 2.3  1997/07/13 11:04:14  houghton
 // Added rbegin() & rend().
 // Changed constructor args.
