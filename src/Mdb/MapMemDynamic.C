@@ -33,13 +33,13 @@ const unsigned short MapMemDynamic::numKeys( MMD_NUM_KEYS );
 
 MapMemDynamic::MapMemDynamic(
   const char *	    fileName,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   ios::open_mode    mode,
   bool		    create,
   size_type	    size,
   MapMask	    permMask
   )
-  : MapMem( fileName, MM_DYNAMIC, version, mode, create, 0, size, permMask )
+  : MapMem( fileName, MM_DYNAMIC, mapVersion, mode, create, 0, size, permMask )
 {
   if( create )
     createMapMemDynamic();
@@ -49,22 +49,22 @@ MapMemDynamic::MapMemDynamic(
 
 MapMemDynamic::MapMemDynamic(
   const char *	    fileName,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   size_type	    size,
   MapMask	    permMask
   )
-  : MapMem( fileName, 0, MM_DYNAMIC, version, size, permMask )
+  : MapMem( fileName, 0, MM_DYNAMIC, mapVersion, size, permMask )
 {
   createMapMemDynamic();
 }
 
 MapMemDynamic::MapMemDynamic(
   const char *	    fileName,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   ios::open_mode    mode,
   bool		    overrideOwner
   )
-  : MapMem( fileName, MM_DYNAMIC, version, mode, overrideOwner )
+  : MapMem( fileName, MM_DYNAMIC, mapVersion, mode, overrideOwner )
 {
   openMapMemDynamic();
 }
@@ -183,6 +183,9 @@ MapMemDynamic::openMapMemDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/07/19 10:26:55  houghton
+// Port(Sun5): renamed local variables to eliminate compiler warnings.
+//
 // Revision 2.5  1997/07/13 11:19:38  houghton
 // Cleanup
 // Removed owner (now in MapMem).

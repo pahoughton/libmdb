@@ -18,6 +18,8 @@
 #include "MapMem.hh"
 #include "Str.hh"
 
+#include <unistd.h>
+
 #ifdef Linux
 #include <fcntl.h>
 #endif
@@ -56,7 +58,7 @@ const char * MapMem::TypeStrings[] =
 MapMem::MapMem(
   const char *	    fileName,
   MapType	    type,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   ios::open_mode    mode,
   bool		    create,
   MapAddr	    baseAddr,
@@ -68,9 +70,9 @@ MapMem::MapMem(
     osErrno( 0 )
 {
   if( create )
-    createMapMem( type, version, baseAddr );
+    createMapMem( type, mapVersion, baseAddr );
   else
-    openMapMem( fileName, type, version, mode, false );
+    openMapMem( fileName, type, mapVersion, mode, false );
 }
 
   
@@ -81,13 +83,13 @@ MapMem::MapMem(
   const char * 	    fileName,
   MapAddr	    baseAddr,
   MapType   	    type,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   size_type	    size,
   MapMask	    permMask
   )
   : MapFile( fileName, size, baseAddr, permMask )
 {
-  createMapMem( type, version, baseAddr );
+  createMapMem( type, mapVersion, baseAddr );
 }
 
 
@@ -95,13 +97,13 @@ MapMem::MapMem(
 MapMem::MapMem(
   const char *	    fileName,
   MapType   	    type,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   ios::open_mode    mode,
   bool		    overrideOwner
   )
   : MapFile( fileName, 0, mode )
 {
-  openMapMem( fileName, type, version, mode, overrideOwner );
+  openMapMem( fileName, type, mapVersion, mode, overrideOwner );
 }
 
 MapMem::~MapMem( void )
@@ -232,14 +234,14 @@ MapMem::dumpInfo(
 }
 
 void
-MapMem::createMapMem( MapType type, MapVersion version, MapAddr baseAddr )
+MapMem::createMapMem( MapType type, MapVersion mapVersion, MapAddr baseAddr )
 {
   osErrno = 0;
   
   if( mapInfo() != 0 )
     {
       mapInfo()->type	    = type;
-      mapInfo()->version    = version;
+      mapInfo()->version    = mapVersion;
       mapInfo()->base	    = (unsigned long)baseAddr;      
       mapInfo()->size	    = getSize();
       mapInfo()->owner	    = getpid();
@@ -255,7 +257,7 @@ void
 MapMem::openMapMem(
   const char *	    fileName,
   MapType   	    type,
-  MapVersion	    version,
+  MapVersion	    mapVersion,
   ios::open_mode    mode,
   bool		    overrideOwner
   )
@@ -281,7 +283,7 @@ MapMem::openMapMem(
       return;
     }
 
-  if( info->version != version )
+  if( info->version != mapVersion )
     {
       errorNum = E_VERSION;
       unmap();
@@ -312,6 +314,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/07/19 10:26:35  houghton
+// Port(Sun5): renamed local variables to eliminate compiler warnings.
+//
 // Revision 2.8  1997/07/13 11:17:48  houghton
 // Cleanup
 // Added owner.
