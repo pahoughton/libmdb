@@ -1,0 +1,51 @@
+#
+# Title:        Setup.cfg.src
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul Houghton - (paul.houghton@wcom.com)
+# Created:	11/08/99 10:21
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+INSTALL_INC_DIR	= %INSTALL_INC_DIR%
+INSTALL_LIB_DIR = %INSTALL_LIB_DIR%
+INSTALL_MAN_DIR = %INSTALL_MAN_DIR%
+
+
+help_config:
+	@ echo ;							      \
+	echo "+ The following configuration variables are available:" ;       \
+	echo ;								      \
+	echo "    INSTALL_INC_DIR=$(INSTALL_INC_DIR)" ;			      \
+	echo "    INSTALL_LIB_DIR=$(INSTALL_LIB_DIR)" ;			      \
+	echo "    INSTALL_MAN_DIR=$(INSTALL_MAN_DIR)" ;			      \
+	echo "    show_commands=$(show_commands)" ;			      \
+	echo "    check_install=$(check_install)" ;			      \
+	echo ;								      \
+
+
+
+
+
+#
+# $Log$
+# Revision 1.1  1999/11/09 10:54:26  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:makefile
+# End:
