@@ -165,7 +165,7 @@ RBTreeBase::ConstNodeBase::prev( void )
 
 inline
 RBTreeBase::NodeBase::NodeBase( MultiMemOffset & memMgr, Loc nodeLoc )
-  : ConstNodeBase( memMgr, nodeLoc ),
+  : RBTreeBase::ConstNodeBase( memMgr, nodeLoc ),
     mgr( memMgr )
 {
 }
@@ -444,6 +444,9 @@ RBTreeBase::maximum( const NodeBase & node )
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/14 10:42:01  houghton
+// Port(AIX): had to be more explicid in constructor.
+//
 // Revision 2.2  1997/07/13 11:34:04  houghton
 // Cleanup.
 // Added size() & empty().
