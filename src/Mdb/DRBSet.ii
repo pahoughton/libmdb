@@ -1,0 +1,129 @@
+#ifndef _DRBSet_ii_
+#define _DRBSet_ii_
+//
+// File:        DRBSet.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DRBSet
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/16/97 07:35
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+template< class Key, class LessKey >
+inline
+DRBSet< Key, LessKey >::DRBSet(
+  MultiMemOffset *	memMgr,
+  unsigned short	treeKey,
+  bool			create
+  )
+  : table( memMgr, treeKey, create )
+{
+}
+
+template< class Key, class LessKey >
+inline
+DRBSet< Key, LessKey >::DRBSet(
+  MultiMemOffset *	memMgr,
+  MultiMemOffset *	histMemMgr,
+  unsigned short	treeKey,
+  bool			create
+  )
+  : table( memMgr, histMemMgr, treeKey, create )
+{
+}
+
+template< class Key, class LessKey >
+inline
+DRBSet< Key, LessKey >::~DRBSet( void )
+{
+}
+
+template< class Key, class LessKey >
+inline
+bool
+DRBSet< Key, LessKey >::good( void ) const
+{
+  return( table.good() );
+}
+
+
+template< class Key, class LessKey >
+inline
+const char * 
+DRBSet< Key, LessKey >::error( void ) const
+{
+  return( table.error() );
+}
+
+
+template< class Key, class LessKey >
+inline
+const char * 
+DRBSet< Key, LessKey >::getClassName( void ) const
+{
+  return( "DRBSet< Key, LessKey >" );
+}
+
+template< class Key, class LessKey >
+inline
+const char *
+DRBSet< Key, LessKey >::getVersion( bool withPrjVer ) const
+{
+  return( table.getVersion( withPrjVer ) );
+}
+
+template< class Key, class LessKey >
+inline
+ostream &
+DRBSet< Key, LessKey >::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( showVer )
+    dest << DRBSet< Key, LessKey >::getClassName() << ":\n"
+	 << DRBSet< Key, LessKey >::getVersion() << '\n';
+
+  if( ! DRBSet< Key, LessKey >::good() )
+    dest << prefix << "Error: " << DRBSet< Key, LessKey >::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << "table:";
+  table.dumpInfo( dest, pre, false );
+  
+  return( dest );
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/16 16:36:59  houghton
+// Initial Version (work in progress).
+//
+//
+#endif // ! def _DRBSet_ii_ 

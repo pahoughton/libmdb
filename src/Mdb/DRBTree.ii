@@ -1,0 +1,119 @@
+#ifndef _DRBTree_ii_
+#define _DRBTree_ii_
+//
+// File:        DRBTree.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DRBTree
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     07/16/97 05:51
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+DRBTree< Key, Value, KeyOfValue, LessKey >::DRBTree(
+  MultiMemOffset *  memMgr,
+  unsigned short    treeKey,
+  bool		    create
+  )
+  : RBTreeBase( memMgr, treeKey, create ),
+    histMgr( memMgr )
+{
+}
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+DRBTree< Key, Value, KeyOfValue, LessKey >::DRBTree(
+  MultiMemOffset *  memMgr,
+  MultiMemOffset *  histMemMgr,
+  unsigned short    treeKey,
+  bool		    create
+  )
+  : RBTreeBase( memMgr, treeKey, create ),
+    histMgr( histMemMgr )
+{
+}
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+DRBTree< Key, Value, KeyOfValue, LessKey >::~DRBTree( void )
+{
+}
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+bool
+DRBTree< Key, Value, KeyOfValue, LessKey >::good( void ) const
+{
+  return( RBTreeBase::good() && histMgr && histMgr->good() );
+}
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+const char * 
+DRBTree< Key, Value, KeyOfValue, LessKey >::error( void ) const
+{
+  static Str errStr;
+
+  errStr = DRBTree<Key, Value, KeyOfValue, LessKey>::getClassName();
+
+  if( good() )
+    {
+       errStr += ": ok";
+    }
+  else
+    {
+      size_t eSize = errStr.size();
+
+      if( ! RBTreeBase::good() )
+	errStr << ": " << RBTreeBase::error();
+
+      if( ! histMgr )
+	errStr << ": no hist mem mgr.";
+
+      if( histMgr && ! histMgr->good() )
+	errStr << ": histMgr: " << histMgr->error();
+      
+      if( eSize == errStr.size() )
+        errStr << ": unknown error";
+    }
+
+  return( errStr.c_str() );
+}
+
+template< class Key, class Value, class KeyOfValue, class LessKey >
+inline
+const char * 
+DRBTree< Key, Value, KeyOfValue, LessKey >::getClassName( void ) const
+{
+  return( "DRBTree<>" );
+}
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/07/16 16:37:07  houghton
+// Initial Version (work in progress).
+//
+//
+#endif // ! def _DRBTree_ii_ 
