@@ -21,9 +21,8 @@
 
 
 
-template< class Key,
-	  class HashFunct,
-	  class LessKey >
+template< class Key, class HashFunct, class LessKey >
+inline
 Dash< Key, HashFunct, LessKey >::Dash(
   ChunkMgr &		chunkMgr,
   const char *		indexFileName,
@@ -35,10 +34,30 @@ Dash< Key, HashFunct, LessKey >::Dash(
 {
 }
 
+template< class Key, class HashFunct, class LessKey >
+inline
+bool
+Dash< Key, HashFunct, LessKey >::good( void ) const
+{
+  return( table.good() );
+}
+
+template< class Key, class HashFunct, class LessKey >
+inline
+const char *
+Dash< Key, HashFunct, LessKey >::error( void ) const
+{
+  return( table.error() );
+}
+
+
 
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/06/25 12:51:15  houghton
+// Added good() and error().
+//
 // Revision 2.1  1997/06/05 11:29:08  houghton
 // Initial Version.
 //

@@ -128,6 +128,9 @@ public:
 
   inline size_type	    size( void ) const { return( table.size() ); };
   inline bool		    empty( void ) const { return( table.empty() ); };
+
+  inline bool		    good( void ) const;
+  inline const char *	    error( void ) const;
   
 protected:
 
@@ -229,6 +232,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/06/25 12:51:03  houghton
+// Added good() and error().
+//
 // Revision 2.2  1997/06/05 13:39:39  houghton
 // Commented out copy constructor and operator = private delarations.
 //
