@@ -64,7 +64,7 @@ inline
 const char * 
 DRBTree< Key, Value, KeyOfValue, LessKey >::error( void ) const
 {
-  static Str errStr;
+  // static Str errStr;
 
   errStr = DRBTree<Key, Value, KeyOfValue, LessKey>::getClassName();
 
@@ -103,6 +103,10 @@ DRBTree< Key, Value, KeyOfValue, LessKey >::getClassName( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/08/18 10:24:52  houghton
+// Port(Sun5): had to remove static errStr from error() and put it in the
+//     base class (RBTReeBase). The sun compiler gets a dup symbol error.
+//
 // Revision 2.2  1997/07/28 16:49:25  houghton
 // Bug-Fix: should never define 'inline'.
 //
