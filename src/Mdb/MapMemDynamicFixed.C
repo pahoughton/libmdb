@@ -143,7 +143,7 @@ MapMemFixedDynamic::MapMemFixedDynamic(
     {
       if( base->owner && ! overrideOwner )
 	{
-	   mapFixedDynamicError = E_OWNER;
+	  mapFixedDynamicError = E_OWNER;
 	  return;
 	}
 
@@ -640,6 +640,9 @@ MapMemFixedDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/04/21 12:12:40  houghton
+// Cleanup.
+//
 // Revision 2.9  1997/04/04 20:50:19  houghton
 // Cleanup.
 // Added map owner to prevent to progs from opening the map in write
