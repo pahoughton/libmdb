@@ -66,7 +66,8 @@ SRC_DEFINES	=
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DMDB_DEFAULT=1
-DEBUG_DEFINES	= -DMDB_DEBUG=1 -DCLUE_DEBUG=1 -DMDD_DEBUG=1
+DEBUG_DEFINES	= -DMDB_DEBUG=1 -DCLUE_DEBUG=1 	\
+		  -DMDD_DEBUG=1 -DMDF_DEBUG=1 -DRBT_TEST=1
 PROFILE_DEFINES	= -DMDB_PROFILE=1
 SHARED_DEFINES	= -DMDB_SHARED=1
 
@@ -131,18 +132,14 @@ CXX_C_SOURCES	=			\
 	MapMem.C			\
 	MapMemDynamic.C			\
 	MapMemDynamicDynamic.C		\
-	ChunkMgr.C			\
-	HashTableBase.C			\
-	DashTableBase.C			\
-	MultiMem.C			\
-	MultiMemOffset.C		\
-	MultiMemOffsetMapFixed.C	\
 	MapMemDynamicFixed.C		\
+	MultiMemOffset.C		\
+	MultiMemOffsetMapDynamic.C	\
 	AvlTreeOffsetBase.C		\
 	DavlTreeOffsetBase.C		\
-
-hold = \
-	MapMemDynamicDynamic.C		\
+	HashTableBase.C			\
+	DashTableBase.C			\
+	RBTreeBase.C			\
 	$(ARCH_CXX_C_SOURCES)           \
 
 
@@ -150,15 +147,19 @@ USER_H_INCS	=			\
 	$(ARCH_USER_H_INCS)             \
 
 USER_HH_INCS	=			\
-	ChunkMgr.hh                     \
 	MdbConfig.hh                    \
 	MdbVersion.hh                   \
+	MdbUtils.hh			\
 	MapFile.hh			\
 	MapMem.hh			\
 	MapMemDynamic.hh		\
 	MapMemDynamicDynamic.hh		\
 	MapMemDynamicFixed.hh		\
+	MultiMemOffset.hh		\
+	MultiMemOffsetMapDynamic.hh	\
 	HashTableBase.hh		\
+	HashTable.hh			\
+	Hash.hh				\
 	DashTableBase.hh		\
 	DashTable.hh			\
 	Dash.hh				\
@@ -167,22 +168,31 @@ USER_HH_INCS	=			\
 	DavlTreeOffsetBase.hh		\
 	AvlTreeOffsetBase.hh		\
 	AvlTreeBase.hh			\
-	MultiMem.hh			\
-	MultiMemOffset.hh		\
-	MultiMemOffsetMapFixed.hh	\
+	RBTreeBase.hh			\
+	RBTree.hh			\
+	RBSet.hh			\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
-	ChunkMgr.ii                     \
 	MapFile.ii			\
 	MapMem.ii			\
 	MapMemDynamic.ii		\
 	MapMemDynamicDynamic.ii		\
 	MapMemDynamicFixed.ii		\
 	HashTableBase.ii		\
+	HashTable.ii			\
+	Hash.ii				\
 	DashTableBase.ii		\
 	DashTable.ii			\
 	Dash.ii				\
+	AvlTreeOffsetBase.ii		\
+	AvlTreeOffset.ii		\
+	DavlTreeOffset.ii		\
+	MultiMemOffset.ii		\
+	MultiMemOffsetMapDynamic.ii	\
+	RBTreeBase.ii			\
+	RBTree.ii			\
+	RBSet.ii			\
 	$(ARCH_USER_II_INCS)            \
 
 USER_INCLUDES	=		\
@@ -263,6 +273,10 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.6  1997/07/13 11:14:33  houghton
+# Cleanup
+# Removed ChunkMgr.
+#
 # Revision 2.5  1997/06/27 12:14:47  houghton
 # Added MDD_DEBUG flag.
 #
