@@ -29,8 +29,6 @@
 #define inline
 #endif
 
-class MapMemDynamic;
-
 class MultiMemOffsetMapDynamic : public MultiMemOffset
 {
 
@@ -47,8 +45,11 @@ public:
   virtual Addr		getBase( void );
   virtual const Addr	getBase( void ) const;
 
-  virtual long		getKey( unsigned short key ) const;
-  virtual long		setKey( unsigned short key, long value );
+  virtual bool		reserveKey( unsigned short key );
+  virtual bool		setNewKey( unsigned short key, KeyValue value );
+  
+  virtual bool		setKey( unsigned short key, KeyValue value );
+  virtual KeyValue	getKey( unsigned short key ) const;
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -165,6 +166,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/10/01 14:03:05  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.1  1997/07/11 17:37:41  houghton
 // Initial Version.
 //

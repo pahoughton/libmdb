@@ -33,7 +33,7 @@
 
 #include <iostream>
 
-#define MDD_VERSION 0x4d444405	// 'MDD5'
+#define MDD_VERSION 0x4d444406	// 'MDD6'
 
 #if defined( MDB_DEBUG )
 #define inline
@@ -105,17 +105,16 @@ public:
   
   struct Node
   {
-    long	next;
-    long	prev;
+    Loc	    next;
+    Loc	    prev;
   };
 
   struct FreeNode : public Node
   {
-    long	nextFree;
-    long	prevFree;
+    Loc	    nextFree;
+    Loc	    prevFree;
   };
   
-
 protected:
 
   inline FreeNode &	    freeNode( Loc f );
@@ -146,13 +145,14 @@ private:
 
   // do NOT use this it is only public because Sun can't handle it
   // being private.
-public:  
+public:
+  
   struct MapDynamicDynamicInfo : public MapDynamicInfo
   {
-    unsigned long   minChunkSize;   // minimum chunk size
-    unsigned long   allocSize;	    // bytes to allocate at a time
-    unsigned long   chunkSize;	    // total allocated size
-    unsigned long   freeSize;	    // total available size;
+    size_type   minChunkSize;   // minimum chunk size
+    size_type   allocSize;	    // bytes to allocate at a time
+    size_type   chunkSize;	    // total allocated size
+    size_type   freeSize;	    // total available size;
     struct FreeNode freeList;	    // head to list of free chunks
   };
 private:
@@ -324,6 +324,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/10/01 14:02:52  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.1  1997/09/21 19:21:34  houghton
 // Changed version to 2
 //

@@ -24,8 +24,13 @@
 #include <StlUtilsConfig.hh>
 #include <MdbVersion.hh>
 
-#define MDB_TYPE_SIZE	    unsigned long
-#define MDB_TYPE_LOC	    long
+#define MDB_U16_T	    STLUTILS_SHORT_U16_T
+#define MDB_S16_T	    STLUTILS_SHORT_S16_T
+#define MDB_U32_T	    STLUTILS_LONG_U32_T
+#define MDB_S32_T	    STLUTILS_LONG_S32_T
+
+#define MDB_TYPE_SIZE	    MDB_U32_T
+#define MDB_TYPE_LOC	    MDB_S32_T
 #define MDB_TYPE_ADDR	    char *
 
 //
@@ -112,6 +117,11 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/10/01 14:02:57  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.3  1997/09/17 16:56:08  houghton
 // Changed for new library rename to StlUtils
 //

@@ -73,7 +73,22 @@ MultiMemOffsetMapDynamic::getKey( unsigned short key ) const
   return( mem->getKey( key ) );
 }
 
-long
+bool
+MultiMemOffsetMapDynamic::reserveKey( unsigned short  key )
+{
+  return( mem->reserveKey( key ) );
+}
+
+bool
+MultiMemOffsetMapDynamic::setNewKey( 
+  unsigned short    key,
+  long		    value
+  )
+{
+  return( mem->setNewKey( key, value ) );
+}
+	    
+bool
 MultiMemOffsetMapDynamic::setKey(
   unsigned short    key,
   long		    value
@@ -168,6 +183,11 @@ MultiMemOffsetMapDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/10/01 14:03:02  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.1  1997/07/11 17:37:39  houghton
 // Initial Version.
 //

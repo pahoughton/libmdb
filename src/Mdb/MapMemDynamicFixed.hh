@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#define MDF_VERSION 0x4d444604	// 'MDF4'
+#define MDF_VERSION 0x4d444605	// 'MDF5'
 
 #if defined( MDB_DEBUG )
 #define inline
@@ -136,6 +136,7 @@ public:
     size_type   allocNumRecs;   // records to allocate at a time
     FreeNode	freeList;	    // head to list of free records
   };
+  
 private:
   
   inline MapDynamicFixedInfo *		mapInfo( void );
@@ -241,6 +242,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1997/10/01 14:02:55  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.13  1997/09/17 16:56:08  houghton
 // Changed for new library rename to StlUtils
 //

@@ -32,7 +32,7 @@
 #define inline
 #endif
 
-#define MMD_NUM_KEYS	16
+#define MMD_NUM_KEYS	32
 
 class MapMemDynamic : public MapMem
 {
@@ -41,6 +41,7 @@ public:
 
   typedef MDB_TYPE_ADDR	    Addr;
   typedef MDB_TYPE_LOC	    Loc;
+  typedef MDB_S32_T	    KeyValue;
   
   // use this to create a new map or open an existing one
   MapMemDynamic( const char *	    fileName,
@@ -67,14 +68,17 @@ public:
   virtual Loc		allocate( size_type size ) = 0;
   virtual void		release( Loc loc ) = 0;
 
-  virtual bool		 expand( size_type minAmount ) = 0;
+  virtual bool		expand( size_type minAmount ) = 0;
 
   inline Addr		address( Loc loc );
   inline const Addr	address( Loc loc ) const;
   inline Loc		location( const Addr addr ) const;
 
-  inline long		setKey( unsigned short key, long value );
-  inline long		getKey( unsigned short key ) const;
+  inline bool		reserveKey( unsigned short key );
+  inline bool		setNewKey( unsigned short key, KeyValue value );
+  
+  inline bool		setKey( unsigned short key, KeyValue value );
+  inline KeyValue	getKey( unsigned short key ) const;
 
   inline unsigned long	getAllocCount( void ) const;
   inline unsigned long	getFreeCount( void ) const;
@@ -97,9 +101,10 @@ public:
   
   struct MapDynamicInfo : public MapInfo
   {
-    unsigned long   allocCount;	    // allocated chunks
-    unsigned long   freeCount;	    // available chunks
-    long    	    keys[MMD_NUM_KEYS]; // general purpose values
+    MDB_U32_T   allocCount;	    // allocated chunks
+    MDB_U32_T   freeCount;	    // available chunks
+    MDB_U32_T	keysUsed;	    // bitmask of keys in use
+    MDB_S32_T   keys[MMD_NUM_KEYS]; // general purpose values
   };
 
 protected:
@@ -294,6 +299,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/10/01 14:02:45  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.4  1997/07/28 16:49:43  houghton
 // Added expand.
 //

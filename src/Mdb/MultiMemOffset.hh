@@ -22,6 +22,7 @@
 //
 
 #include <MdbConfig.hh>
+#include <MapMemDynamic.hh>
 #include <cstddef>
 #include <iostream>
 
@@ -39,6 +40,9 @@ public:
   typedef MDB_TYPE_SIZE	    size_type;
   typedef MDB_TYPE_ADDR	    Addr;
   
+  typedef MapMemDynamic::KeyValue	KeyValue;
+  
+  
   MultiMemOffset( void );
   
   virtual ~MultiMemOffset( void );
@@ -49,8 +53,11 @@ public:
   virtual Addr		getBase( void ) = 0;
   virtual const Addr	getBase( void ) const = 0;
 
-  virtual long		getKey( unsigned short key ) const = 0;
-  virtual long		setKey( unsigned short key, long value ) = 0;
+  virtual bool		reserveKey( unsigned short key ) = 0;
+  virtual bool		setNewKey( unsigned short key, KeyValue value ) = 0;
+  
+  virtual bool		setKey( unsigned short key, KeyValue value ) = 0;
+  virtual KeyValue	getKey( unsigned short key ) const = 0;
   
   inline Addr		address( Loc loc );
   inline const Addr	address( Loc loc ) const;
@@ -168,6 +175,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/10/01 14:03:00  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.6  1997/07/13 11:28:54  houghton
 // Cleanup.
 // Added getKey & setKey.

@@ -46,23 +46,70 @@ MapMemDynamic::location( const Addr addr ) const
 }
 
 inline
-long
-MapMemDynamic::setKey( unsigned short key, long value )
+bool
+MapMemDynamic::reserveKey( unsigned short key )
 {
   if( mapInfo() && ( getMode() & ios::out ) && key < numKeys )
     {
-      long orig = getKey( key );
-      mapInfo()->keys[ key ] = value;
-      return( orig );
+      Bitmask   used( mapInfo()->keysUsed );
+
+      if( ! used[ key ] )
+	{
+	  used.set( key );
+	  mapInfo()->keysUsed = used.to_ulong();
+	  return( true );
+	}
+      else
+	{
+	  return( false );
+	}
     }
   else
     {
-      return( -1 );
+      return( false );
     }
 }
 
 inline
-long
+bool
+MapMemDynamic::setNewKey( unsigned short key, KeyValue value )
+{
+  if( reserveKey( key ) )
+    {
+      mapInfo()->keys[ key ] = value;
+      return( true );
+    }
+  else
+    {
+      return( false );
+    }
+}
+    
+inline
+bool
+MapMemDynamic::setKey( unsigned short key, KeyValue value )
+{
+  if( mapInfo() && ( getMode() & ios::out ) && key < numKeys )
+    {
+      Bitmask	used( mapInfo()->keysUsed );
+      if( used[ key ] )
+	{
+	  mapInfo()->keys[ key ] = value;
+	  return( true );
+	}
+      else
+	{
+	  return( false );
+	}
+    }
+  else
+    {
+      return( false );
+    }
+}
+
+inline
+MapMemDynamic::KeyValue
 MapMemDynamic::getKey( unsigned short key ) const
 {
   return( mapInfo() ? mapInfo()->keys[ key ] : -1 );
@@ -111,6 +158,11 @@ MapMemDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/10/01 14:02:49  houghton
+// Chaged so that 'keys' have to be reserved to be set.
+// Increased the number of keys from 16 to 32.
+// Changed to use portable multi platform types.
+//
 // Revision 2.2  1997/07/13 11:20:07  houghton
 // Cleanup
 // Removed owner (now in MapMem).
