@@ -15,6 +15,7 @@
 //  Version:	    $Revision$
 //
 
+#include "Perf.hh"
 #include <LibLog.hh>
 #include <TimeIt.hh>
 #include <iostream>
@@ -23,68 +24,73 @@
 void
 LogPerfData(
   ostream &	    dest,
+  const char *	    appName,
+  long		    passNum,
+  long		    passes,
   const char *	    mapType,
+  long		    initSize,
+  long		    allocSize,
+  long		    recSize,
   const char *	    className,
   const char *	    method,
   const char *	    order,
-  long		    initAlloc,
-  long		    recSize,
+  long		    startSize,
   long		    quantity,
   const TimeIt &    timer
   )
 {
-  dest.setf( ios::left, ios::adjustfield );
-  dest << setw(20) << mapType
-       << " "
-       << setw(20) << className
-       << " "
+  Str entry;
+  
+  entry.setf( ios::left, ios::adjustfield );
+  entry << setw(10) << appName
+	<< ' '
     ;
   
-  dest.setf( ios::internal, ios::adjustfield );
-  dest << setw( 5 ) << initAlloc
-       << " "
-       << setw( 4 ) << recSize
-       << " "
-       << setw( 8 ) << quantity
-       << " "
+  entry.setf( ios::internal, ios::adjustfield );
+  entry << setw(2) << passNum + 1  << " of " << setw(2) << passes 
+	<< ' '
     ;
-  dest.setf( ios::left, ios::adjustfield );
-  dest << setw(10) << method
-       << " "
-       << setw(5) <<  order
-       << " "
+  
+  entry.setf( ios::left, ios::adjustfield );
+  entry << setw(5) << mapType
+	<< ' '
     ;
-  dest.setf( ios::internal, ios::adjustfield );
-  dest << timer
-       << endl;
+  
+  entry.setf( ios::internal, ios::adjustfield );
+  entry << setw( 5 ) << initSize
+	<< ' '
+	<< setw( 4) << allocSize
+	<< ' '
+	<< setw( 4 ) << recSize
+	<< ' '
+    ;
 
+  entry.setf( ios::left, ios::adjustfield );
+  entry << setw( 20 ) << className
+	<< ' '
+	<< setw( 10 ) << method
+	<< ' '
+	<< setw( 5 ) << order
+	<< ' '
+    ;
+  
+  entry.setf( ios::internal, ios::adjustfield );
+  entry << setw( 8 ) << startSize
+	<< ' '
+	<< setw( 8 ) << quantity
+	<< ' '
+    ;
+  
+  entry.setf( ios::internal, ios::adjustfield );
+
+  dest << entry << timer << endl;
+
+  
   _LLg( LogLevel::Debug );
 
   if( _LibLog && _LibLog->willOutput( LogLevel::Debug ) )
     {
-      (*_LibLog).setf( ios::left, ios::adjustfield );
-      (*_LibLog) << setw(20) << mapType
-		 << " "
-		 << setw(20) << className
-		 << " "
-	;
-      (*_LibLog).setf( ios::internal, ios::adjustfield );
-      (*_LibLog) << setw( 5 ) << initAlloc
-		 << " "
-		 << setw( 4 ) << recSize
-		 << " "
-		 << setw( 8 ) << quantity
-		 << " "
-	;
-      (*_LibLog).setf( ios::left, ios::adjustfield );
-      (*_LibLog) << setw(10) << method
-		 << " "
-		 << setw(5) <<  order
-		 << " "
-	;
-      (*_LibLog).setf( ios::internal, ios::adjustfield );
-      (*_LibLog) << timer.dump()
-		 << endl;
+      (*_LibLog) << entry << timer << '\n' << timer.dump() << endl;
     }
       
 }
@@ -93,6 +99,9 @@ LogPerfData(
 // Revision Log:
 //
 // $Log$
+// Revision 1.4  1997/07/25 13:51:18  houghton
+// Reworked to ouptut more detail.
+//
 // Revision 1.3  1997/07/21 10:27:08  houghton
 // Changed to use LibLog for debug loging.
 //
