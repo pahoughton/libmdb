@@ -2,16 +2,183 @@
 #define _MultiMemOffsetMapFixed_hh_
 //
 // File:        MultiMemOffsetMapFixed.hh
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+//
+//
+// Quick Start: - short example of class usage
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     01/09/95 10:07
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// 
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+#include <MdbConfig.hh>
+#include <MultiMemOffset.hh>
+#include <MapMemDynamicFixed.hh>
+#include <iostream>
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+class MultiMemOffsetMapFixed : public MultiMemOffset
+{
+
+public:
+
+  typedef MapMemDynamic::MapMask	MapMask;
+  
+  MultiMemOffsetMapFixed( const char * 	    fileName,
+			  ios::open_mode    mode = ios::in );
+
+  MultiMemOffsetMapFixed( const char *	    fileName,
+			  size_type    	    recSize,
+			  size_type    	    numRec = 0,
+			  MapMask	    permMask = 0777 );
+
+  virtual ~MultiMemOffsetMapFixed( void );
+
+  virtual Loc		allocate( size_type size = 0 );
+  virtual void		release( Loc loc );
+
+  virtual Addr		address( Loc offset );
+  virtual const Addr	address( Loc offset ) const;
+  
+  virtual Loc		location( const Addr addr );
+  
+  virtual void *	getBase( void );
+  virtual const void *  getBase( void ) const;
+
+  MapMemDynamicFixed &     getMap( void );
+
+  virtual bool	    	good( void ) const;
+  virtual const char * 	error( void ) const;
+  virtual const char *	getClassName( void ) const;
+  virtual const char *  getVersion( bool withPrjVer = true ) const;
+  virtual ostream &     dumpInfo( ostream &	dest = cerr,
+				  const char *  prefix = "    ",
+                                  bool          showVer = true ) const;
+
+  static const ClassVersion version;
+
+protected:
+
+private:
+
+  MultiMemOffsetMapFixed( const MultiMemOffsetMapFixed & from );
+  MultiMemOffsetMapFixed & operator =( const MultiMemOffsetMapFixed & from );
+
+  MapMemDynamicFixed	    mem;
+  
+};
+
+#if !defined( inline )
+#include <MultiMemOffsetMapFixed.ii>
+#else
+#undef inline
+
+
+#endif
+
+
+//
+// Detail Documentation
+//
+//  Data Types: - data types defined by this header
+//
+//  	MultiMemOffsetMapFixed	class
+//
+//  Constructors:
+//
+//  	MultiMemOffsetMapFixed( );
+//
+//  Destructors:
+//
+//  Public Interface:
+//
+//	virtual ostream &
+//	write( ostream & dest ) const;
+//	    write the data for this class in binary form to the ostream.
+//
+//	virtual istream &
+//	read( istream & src );
+//	    read the data in binary form from the istream. It is
+//	    assumed it stream is correctly posistioned and the data
+//	    was written to the istream with 'write( ostream & )'
+//
+//	virtual ostream &
+//	toStream( ostream & dest ) const;
+//	    output class as a string to dest (used by operator <<)
+//
+//	virtual istream &
+//	fromStream( istream & src );
+//	    Set this class be reading a string representation from
+//	    src. Returns src.
+//
+//  	virtual Bool
+//  	good( void ) const;
+//  	    Return true if there are no detected errors associated
+//  	    with this class, otherwise false.
+//
+//  	virtual const char *
+//  	error( void ) const;
+//  	    Return a string description of the state of the class.
+//
+//  	virtual const char *
+//  	getClassName( void ) const;
+//  	    Return the name of this class (i.e. MultiMemOffsetMapFixed )
+//
+//  	virtual const char *
+//  	getVersion( bool withPrjVer = true ) const;
+//  	    Return the version string of this class.
+//
+//	virtual ostream &
+//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
+//	    output detail info to dest. Includes instance variable
+//	    values, state info & version info.
+//
+//	static const ClassVersion version
+//	    Class and project version information. (see ClassVersion.hh)
+//
+//  Protected Interface:
+//
+//  Private Methods:
+//
+//  Associated Functions:
+//
+//  	ostream &
+//  	operator <<( ostream & dest, const MultiMemOffsetMapFixed & src );
+//
+//	istream &
+//	operator >> ( istream & src, MultiMemOffsetMapFixed & dest );
+//
+// Example:
+//
+// See Also:
+//
+// Files:
+//
+// Documented Ver:
+//
+// Tested Ver:
+//
+// Revision Log:
+//
 // $Log$
+// Revision 2.5  1997/06/19 12:03:51  houghton
+// Changed to be part of libMdb.
+// Cleanup.
+//
 // Revision 2.4  1997/06/18 14:15:57  houghton
 // Rework to use allocate and release.
 //
@@ -33,156 +200,6 @@
 //
 //
 
-#include <ClueConfig.hh>
-
-#include <MultiMemOffset.hh>
-#include <MapMemFixedDynamic.hh>
-
-class MultiMemOffsetMapFixed : public MultiMemOffset
-{
-
-public:
-
-  MultiMemOffsetMapFixed( const char * 	    fileName,
-			  ios::open_mode    mode = ios::in );
-
-  MultiMemOffsetMapFixed( const char *	    fileName,
-			  size_t    	    recSize,
-			  size_t    	    numRec = 0 );
-
-  virtual ~MultiMemOffsetMapFixed( void ) { };
-
-  virtual off_t	    getMem( size_t size = 0 );
-  virtual void 	    freeMem( off_t offset );
-
-  virtual void *	getAddr( off_t offset );
-  virtual off_t		getOffset( void * addr );
-  
-  virtual void *	getBase( void );
-  virtual const void *  getBase( void ) const;
-
-  MapMemFixedDynamic &     getMap( void );
-
-  virtual ostream & 	getStats( ostream & dest ) const;
-
-  virtual bool	    	good( void ) const;
-  virtual const char *	error( void ) const;
-
-  virtual const char *	getClassName( void ) const;
-  virtual ostream &	dumpInfo( ostream &	dest = cerr,
-				  const char *	prefix = "    ",
-				  bool		showVer = false ) const;
-  
-  friend inline ostream & operator<<( ostream & dest, const MultiMemOffsetMapFixed & mmo );
-  
-protected:
-
-private:
-
-  MultiMemOffsetMapFixed( const MultiMemOffsetMapFixed & copyFrom );
-  MultiMemOffsetMapFixed & operator=( const MultiMemOffsetMapFixed & assignFrom );
-
-  MapMemFixedDynamic	    mem;
-  
-};
-
-
-//
-// Inline methods
-//
-
-inline
-MultiMemOffsetMapFixed::MultiMemOffsetMapFixed(
-  const char * 	    fileName,
-  ios::open_mode    mode
-  )
-  : mem( fileName, mode )
-{
-  ;
-}
-
-inline
-MultiMemOffsetMapFixed::MultiMemOffsetMapFixed(
-  const char * 	    fileName,
-  size_t    	    recSize,
-  size_t    	    numRecs
-  )
-  : mem( fileName, recSize, numRecs )
-{
-  ;
-}
-
-inline
-off_t
-MultiMemOffsetMapFixed::getMem( size_t size )
-{
-  return( mem.allocate( size ) );
-}
-
-inline
-void 
-MultiMemOffsetMapFixed::freeMem( off_t offset )
-{
-  mem.release( offset );
-}
-
-inline
-void *
-MultiMemOffsetMapFixed::getAddr( off_t offset )
-{
-  return( mem.address( offset ) );
-}
-
-inline
-off_t
-MultiMemOffsetMapFixed::getOffset( void * addr )
-{
-  return( mem.location( addr ) );
-}
-
-inline
-void *
-MultiMemOffsetMapFixed::getBase( void )
-{
-  return( mem.getBase() );
-}
-
-inline
-const void *
-MultiMemOffsetMapFixed::getBase( void ) const
-{
-  return( mem.getBase() );
-}
-
-inline
-MapMemFixedDynamic &
-MultiMemOffsetMapFixed::getMap( void )
-{
-  return( mem );
-}
-
-inline
-const char *
-MultiMemOffsetMapFixed::getClassName( void ) const
-{
-  return( "MultiMemOffsetMapFixed" );
-}
-
-inline
-bool
-MultiMemOffsetMapFixed::good( void ) const
-{
-  return( mem.good() );
-}
-
-inline
-ostream &
-operator<<( ostream & dest, const MultiMemOffsetMapFixed & mmof )
-{
-  return( mmof.getStats( dest ) );
-}
-
-#endif // ! def _MultiMemOffsetMapFixed_hh_ 
 //
 //              This software is the sole property of
 // 
@@ -194,3 +211,5 @@ operator<<( ostream & dest, const MultiMemOffsetMapFixed & mmof )
 //                      All Rights Reserved.  
 // 
 //
+#endif // ! def _MultiMemOffsetMapFixed_hh_ 
+
