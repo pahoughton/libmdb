@@ -9,8 +9,8 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.2  1995/11/05 12:04:42  houghton
-// Fixed bug in truncate size
+// Revision 1.3  1995/11/05 16:23:49  houghton
+// Added Old Clue classes
 //
 // Revision 1.1  1995/02/13  16:08:48  houghton
 // New Style Avl an memory management. Many New Classes
@@ -81,7 +81,7 @@ MapFile::map(
 
   if( ! fileStat( fileName ).good() )
     {
-      osErrno = fileStat.getErrno();
+      osErrno = fileStat.getSysError();
       return( 0 );
     }
 

@@ -12,7 +12,10 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:52  houghton
+// Revision 1.2  1995/11/05 16:23:55  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:52  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -45,7 +48,7 @@ public:
   virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual const char *	getClassName( void ) const;
-  virtual Bool	    	good( void ) const;
+  virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;
 
   friend inline ostream & operator<<( ostream & dest, const MultiMemOffsetMapFixed & mmo );
@@ -130,7 +133,7 @@ MultiMemOffsetMapFixed::getClassName( void ) const
 }
 
 inline
-Bool
+bool
 MultiMemOffsetMapFixed::good( void ) const
 {
   return( mem.good() );

@@ -12,7 +12,10 @@
 //
 // 
 // $Log$
-// Revision 1.2  1995/03/02 16:35:35  houghton
+// Revision 1.3  1995/11/05 16:23:50  houghton
+// Added Old Clue classes
+//
+// Revision 1.2  1995/03/02  16:35:35  houghton
 // Linux ports & new Classes
 //
 // Revision 1.1  1995/02/13  16:08:48  houghton
@@ -21,7 +24,6 @@
 //
 
 #include <FileStat.hh>
-#include <Common.h>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -74,7 +76,7 @@ public:
   virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual const char * 	getClassName( void ) const { return "MapFile"; };
-  virtual Bool	    	good( void ) const;
+  virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
 
   friend inline ostream & operator<<( ostream & dest, const MapFile & map );
@@ -272,7 +274,7 @@ MapFile::getPageSize( void ) const
 }
 
 inline
-Bool
+bool
 MapFile::good( void ) const
 {
   return( osErrno == 0 );

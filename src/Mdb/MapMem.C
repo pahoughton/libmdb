@@ -9,8 +9,8 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.2  1995/07/27 16:18:40  ichudov
-// A bug corrected in the constructor of DateTime class.
+// Revision 1.3  1995/11/05 16:23:50  houghton
+// Added Old Clue classes
 //
 // Revision 1.1  1995/02/13  16:08:49  houghton
 // New Style Avl an memory management. Many New Classes
@@ -96,11 +96,6 @@ MapMem::MapMem(
   if( info.version != version )
     {
       mapError = E_BADVER;
-
-//!!!!
-cout << "Map version ERROR on " << fileName << ": " << info.version 
-     << " != " << version << endl;
-
       return;
     }
 

@@ -12,8 +12,8 @@
 //
 // 
 // $Log$
-// Revision 1.3  1995/07/21 15:43:18  ichudov
-// DAVLs
+// Revision 1.4  1995/11/05 16:23:52  houghton
+// Added Old Clue classes
 //
 // Revision 1.2  1995/03/02  16:35:36  houghton
 // Linux ports & new Classes
@@ -23,12 +23,13 @@
 //
 //
 
+#include <Clue.hh>
 #include <MapMem.hh>
 #include <Record.hh>
 
 #include <iostream.h>
 
-#define MMF_VERSION 0x4d4d4601	// 'MMF1'
+#define MMF_VERSION 0x4d4d4602	// 'MMF2'
 
 #define NUM_KEYS    16
 
@@ -73,7 +74,7 @@ public:
   void 	    	    expand( void );
 
   RecNumber   	    first( void );
-  Bool	    	    next( RecNumber & rec );
+  bool	    	    next( RecNumber & rec );
   
   off_t	    	    recNum2Offset( RecNumber recNum ) const;
   RecNumber	    offset2RecNum( off_t offset ) const;
@@ -81,7 +82,7 @@ public:
   virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual const char * 	getClassName( void ) const;
-  virtual Bool	    	good( void ) const;
+  virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;
     
   struct FreeList
@@ -223,7 +224,7 @@ inline
 off_t
 MapMemFixedDynamic::recNum2Offset( RecNumber recNum ) const
 {
-  off_t offset = DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) );
+  off_t offset = DwordAlign( sizeof( MapFixedDynamicInfo ) );
 
   offset += (recNum - 1) * base->recSize;
 
@@ -235,7 +236,7 @@ RecNumber
 MapMemFixedDynamic::offset2RecNum( off_t offset ) const
 {
 
-  return( ( ( offset - DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) ) ) /
+  return( ( ( offset - DwordAlign( sizeof( MapFixedDynamicInfo ) ) ) /
 	    base->recSize ) + 1 );
 }
 

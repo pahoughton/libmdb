@@ -12,8 +12,8 @@
 //
 // 
 // $Log$
-// Revision 1.2  1995/09/25 19:16:33  ichudov
-// Added hasHistory function to DavlTreeOffset.
+// Revision 1.3  1995/11/05 16:23:43  houghton
+// Added Old Clue classes
 //
 // Revision 1.1  1995/02/13  16:08:36  houghton
 // New Style Avl an memory management. Many New Classes
@@ -55,7 +55,6 @@ public:
   off_t	    	find( const K & key, time_t when = LONG_MAX );
   D *    	findData( const K & key, time_t when = LONG_MAX );
   Bool	    	del( const K & key, time_t when );
-  Bool 		hasHistory( const K & );
   
   Bool	    	walk( time_t when = LONG_MAX, 
 		      Bool (* action)( K & key, time_t  when,D & data ) = 0 );
@@ -439,16 +438,6 @@ DavlTreeOffset<K,D>::find( const K & key, time_t when )
 	}
     }
   return( 0 );
-}
-
-// hasHistory - check if ANYTHING (including deletions) is 
-// in the davl for this key - ichudov
-template<class K,class D>
-inline
-Bool
-DavlTreeOffset<K,D>::hasHistory( const K & key )
-{
-  return( findNode( getTree()->root, &key ) != 0 );
 }
 
 // findData - find data and return a D pointer

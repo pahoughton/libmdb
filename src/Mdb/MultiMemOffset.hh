@@ -12,15 +12,17 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:51  houghton
+// Revision 1.2  1995/11/05 16:23:55  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:51  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
 
-#include <Clue.hh>
-#include <iostream.h>
+#include <iostream>
+#include <cstddef>
 #include <sys/types.h>
-#include <stdlib.h>
 
 class MultiMemOffset
 {
@@ -40,7 +42,7 @@ public:
   virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual const char * 	getClassName( void ) const;
-  virtual Bool	        good( void ) const;
+  virtual bool	        good( void ) const;
   virtual const char *	error( void ) const;
 
   friend inline ostream & operator<<( ostream & dest, const MultiMemOffset & mmo );
@@ -66,54 +68,6 @@ inline
 MultiMemOffset::MultiMemOffset( void )
 {
   oserrno = 0;
-}
-
-inline
-off_t
-MultiMemOffset::getMem( size_t size )
-{
-  void * mem = malloc( size );
-  if( ! mem )
-    {
-      oserrno = errno;
-    }
-  
-  return( (off_t)mem );
-}
-
-inline
-void
-MultiMemOffset::freeMem( off_t offset )
-{
-  free( (void *)offset );
-}
-
-inline
-void *
-MultiMemOffset::getAddr( off_t offset )
-{
-  return( (void *)offset );
-}
-
-inline
-void *
-MultiMemOffset::getBase( void )
-{
-  return( (void *)0 );
-}
-
-inline
-const char *
-MultiMemOffset::getClassName( void ) const
-{
-  return( "MultiMemOffset" );
-}
-
-inline
-Bool
-MultiMemOffset::good( void ) const
-{
-  return( oserrno == 0 );
 }
 
 

@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:36  houghton
+// Revision 1.2  1995/11/05 16:23:44  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:36  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -21,7 +24,8 @@ static const char * RcsId =
 void
 DavlTreeOffsetBase::insertHist( off_t * firstHist, off_t newHist )
 {
-  for( off_t * h = firstHist;
+  off_t * h = firstHist;
+  for( ;
       *h != 0 && hist( *h )->when > hist( newHist )->when;
       h = &( hist(*h)->next ) );
   
@@ -29,7 +33,7 @@ DavlTreeOffsetBase::insertHist( off_t * firstHist, off_t newHist )
   *h = newHist;
 }
 
-Bool
+bool
 DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when )
 {
   for( off_t h = node(root)->hist;
@@ -40,14 +44,14 @@ DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when )
 	{
 	  if( walkKeyHistAction( root, h ) )
 	    {
-	      return( TRUE );
+	      return( true );
 	    }
 	}
     }
-  return( FALSE );
+  return( false );
 }
 
-Bool
+bool
 DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when, void * closure )
 {
   for( off_t h = node(root)->hist;
@@ -58,11 +62,11 @@ DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when, void * closure )
 	{
 	  if( walkKeyHistAction( root, h, closure ) )
 	    {
-	      return( TRUE );
+	      return( true );
 	    }
 	}
     }
-  return( FALSE );
+  return( false );
 }
 
   
@@ -75,7 +79,7 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when )
   // come up with!
   //
   
-  trimDelete = FALSE;
+  trimDelete = false;
 
   //
   // this STINKS! I have to keep triming the tree until
@@ -85,11 +89,11 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when )
   for(;;)
     {
       trimNode( root, when );
-      if( trimDelete == FALSE )
+      if( trimDelete == false )
 	{
 	  return;
 	}
-      trimDelete = FALSE;
+      trimDelete = false;
     }
 }
   
@@ -102,7 +106,7 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when, void * closure )
   // come up with!
   //
   
-  trimDelete = FALSE;
+  trimDelete = false;
 
   //
   // this STINKS! I have to keep triming the tree until
@@ -112,15 +116,15 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when, void * closure )
   for(;;)
     {
       trimNode( root, when, closure );
-      if( trimDelete == FALSE )
+      if( trimDelete == false )
 	{
 	  return;
 	}
-      trimDelete = FALSE;
+      trimDelete = false;
     }
 }
 
-Bool
+bool
 DavlTreeOffsetBase::walkNode( off_t root )
 {
   for( off_t h = node(root)->hist;
@@ -133,7 +137,7 @@ DavlTreeOffsetBase::walkNode( off_t root )
 	    {
 	      if( walkAllHistAction( root, h ) )
 		{
-		  return( TRUE );
+		  return( true );
 		}
 	    }
 	  else
@@ -144,15 +148,15 @@ DavlTreeOffsetBase::walkNode( off_t root )
 		}
 	      else
 		{
-		  return( FALSE );
+		  return( false );
 		}
 	    }	  
 	}
     }
-  return( FALSE );
+  return( false );
 }
 
-Bool
+bool
 DavlTreeOffsetBase::walkNode( off_t root, void * closure )
 {
   for( off_t h = node(root)->hist;
@@ -165,7 +169,7 @@ DavlTreeOffsetBase::walkNode( off_t root, void * closure )
 	    {
 	      if( walkAllHistAction( root, h, closure ) )
 		{
-		  return( TRUE );
+		  return( true );
 		}
 	    }
 	  else
@@ -176,12 +180,12 @@ DavlTreeOffsetBase::walkNode( off_t root, void * closure )
 		}
 	      else
 		{
-		  return( FALSE );
+		  return( false );
 		}
 	    }	  
 	}
     }
-  return( FALSE );
+  return( false );
 }
 
 			  
@@ -203,7 +207,8 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 
   if( dec == 0 )
     {
-      for( off_t * h = &(node( *root )->hist);
+      off_t * h = &(node( *root )->hist);
+      for( ;
 	  *h != 0 && hist(*h)->when > when;
 	  h = &( hist(*h)->next ) );
 	
@@ -228,7 +233,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 	      // node from the tree
 	      //
 
-	      trimDelete = TRUE;
+	      trimDelete = true;
 	      
 	      off_t 	origRoot = *root;
 
@@ -304,7 +309,8 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 
   if( dec == 0 )
     {
-      for( off_t * h = &(node( *root )->hist);
+      off_t * h = &(node( *root )->hist);
+      for( ;
 	  *h != 0 && hist(*h)->when > when;
 	  h = &( hist(*h)->next ) );
 	
@@ -329,7 +335,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 	      // node from the tree
 	      //
 
-	      trimDelete = TRUE;
+	      trimDelete = true;
 	      
 	      off_t origRoot = *root;
 

@@ -31,12 +31,13 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:31  houghton
+// Revision 1.2  1995/11/05 16:23:41  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:31  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
-
-#include <Clue.hh>
 
 class AvlTreeBase
 {

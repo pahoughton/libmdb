@@ -12,8 +12,8 @@
 //
 // 
 // $Log$
-// Revision 1.3  1995/07/27 16:18:39  ichudov
-// A bug corrected in the constructor of DateTime class.
+// Revision 1.4  1995/11/05 16:23:45  houghton
+// Added Old Clue classes
 //
 // Revision 1.1  1995/02/13  16:08:37  houghton
 // New Style Avl an memory management. Many New Classes
@@ -21,7 +21,7 @@
 //
 
 #include <AvlTreeOffsetBase.hh>
-#include <limits.h>
+#include <climits>
 
 class DavlTreeOffsetBase : public AvlTreeOffsetBase
 {
@@ -44,7 +44,7 @@ public:
   {
     time_t  when;
     off_t   next;
-    Bool    deleted;
+    bool    deleted;
   };
 
 protected:
@@ -58,26 +58,26 @@ protected:
   void 	    	insertHist( off_t * firstHist, off_t newHist );
   off_t	    	findHist( off_t histOffset, time_t when );  
 
-  Bool	    	walkTree( off_t root, time_t when );
-  Bool	    	walkTree( off_t root, time_t when, void * closure );
+  bool	    	walkTree( off_t root, time_t when );
+  bool	    	walkTree( off_t root, time_t when, void * closure );
   
-  Bool	    	walkTreeHist( off_t root, time_t when );
-  Bool	    	walkTreeHist( off_t root, time_t when, void * closure );
+  bool	    	walkTreeHist( off_t root, time_t when );
+  bool	    	walkTreeHist( off_t root, time_t when, void * closure );
 
-  Bool	    	walkKeyHist( off_t node, time_t when );
-  Bool	    	walkKeyHist( off_t node, time_t when, void * closure );
+  bool	    	walkKeyHist( off_t node, time_t when );
+  bool	    	walkKeyHist( off_t node, time_t when, void * closure );
   
   void 	    	trimTree( off_t * root, time_t when );
   void 	    	trimTree( off_t * root, time_t when, void * closure );
   
-  virtual Bool 	walkHistAction( off_t root, off_t hist ) = 0;
-  virtual Bool 	walkHistAction( off_t root, off_t hist, void * closure ) = 0;
+  virtual bool 	walkHistAction( off_t root, off_t hist ) = 0;
+  virtual bool 	walkHistAction( off_t root, off_t hist, void * closure ) = 0;
 
-  virtual Bool 	walkAllHistAction( off_t root, off_t hist ) = 0;
-  virtual Bool 	walkAllHistAction( off_t root, off_t hist, void * closure ) = 0;
+  virtual bool 	walkAllHistAction( off_t root, off_t hist ) = 0;
+  virtual bool 	walkAllHistAction( off_t root, off_t hist, void * closure ) = 0;
 
-  virtual Bool	walkKeyHistAction( off_t root, off_t hist ) = 0;
-  virtual Bool  walkKeyHistAction( off_t root, off_t hist, void * closure ) = 0;
+  virtual bool	walkKeyHistAction( off_t root, off_t hist ) = 0;
+  virtual bool  walkKeyHistAction( off_t root, off_t hist, void * closure ) = 0;
   
   virtual void	trimHistAction( off_t root, off_t hist ) = 0;
   virtual void	trimHistAction( off_t root, off_t hist, void * closure ) = 0;
@@ -90,8 +90,8 @@ private:
   HistData *	hist( off_t data );
   HistNode * 	node( off_t root );
   
-  Bool	 	walkNode( off_t	root );  
-  Bool	 	walkNode( off_t	root, void * closure );
+  bool	 	walkNode( off_t	root );  
+  bool	 	walkNode( off_t	root, void * closure );
 
   short	    	trimNode( off_t * root, time_t when );
   short	    	trimNode( off_t * root, time_t when, void * closure );
@@ -104,10 +104,10 @@ private:
 
   caddr_t   baseDataAddr;
 
-  Bool	    walkHist;
+  bool	    walkHist;
   time_t    walkWhen;
   
-  Bool 	    trimDelete;
+  bool 	    trimDelete;
 };
 
 
@@ -166,10 +166,9 @@ DavlTreeOffsetBase::findHist(
   off_t	    histOffset,
   time_t    when
   )
-{  
-  for( off_t h = histOffset;
-      h != 0;
-      h = hist(h)->next )
+{
+  off_t h = histOffset;
+  for( ; h != 0; h = hist(h)->next )
     {
       if( hist(h)->when <= when )
 	{
@@ -184,41 +183,41 @@ DavlTreeOffsetBase::findHist(
 }
 
 inline
-Bool
+bool
 DavlTreeOffsetBase::walkTree( off_t root, time_t when )
 {
   walkWhen = when;
-  walkHist = FALSE;
+  walkHist = false;
 
   return( AvlTreeOffsetBase::walkTree( root ) );
 }
 
 inline
-Bool
+bool
 DavlTreeOffsetBase::walkTree( off_t root, time_t when, void * closure )
 {
   walkWhen = when;
-  walkHist = FALSE;
+  walkHist = false;
 
   return( AvlTreeOffsetBase::walkTree( root, closure ) );
 }
 
 inline
-Bool
+bool
 DavlTreeOffsetBase::walkTreeHist( off_t root, time_t when )
 {
   walkWhen = when;
-  walkHist = TRUE;
+  walkHist = true;
 
   return( AvlTreeOffsetBase::walkTree( root ) );
 }
 
 inline
-Bool
+bool
 DavlTreeOffsetBase::walkTreeHist( off_t root, time_t when, void * closure )
 {
   walkWhen = when;
-  walkHist = TRUE;
+  walkHist = true;
 
   return( AvlTreeOffsetBase::walkTree( root, closure ) );
 }

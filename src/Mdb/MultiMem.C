@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:50  houghton
+// Revision 1.2  1995/11/05 16:23:53  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:50  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -17,6 +20,7 @@ static const char * RcsId =
 "$Id$";
 
 #include "MultiMem.hh"
+#include <cstdlib>
 
 void *
 MultiMem::getMem( size_t size )

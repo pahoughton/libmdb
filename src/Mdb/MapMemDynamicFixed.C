@@ -9,11 +9,8 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.4  1995/11/05 12:05:55  houghton
-// Fixed bug in freeMem.
-//
-// Revision 1.3  1995/07/21  15:43:15  ichudov
-// DAVLs
+// Revision 1.5  1995/11/05 16:23:51  houghton
+// Added Old Clue classes
 //
 // Revision 1.2  1995/03/02  16:35:35  houghton
 // Linux ports & new Classes
@@ -26,7 +23,8 @@ static const char * RcsId =
 "$Id$";
 
 #include "MapMemFixedDynamic.hh"
-#include "Str.hh"
+#include <Clue.hh>
+#include <Str.hh>
 
 //
 // allocation chunks must be at least 1 page
@@ -63,7 +61,7 @@ MapMemFixedDynamic::MapMemFixedDynamic(
   
   if( base != 0 && MapMem::good() )
     {      
-      base->recSize = DWORD_ALIGN( max( recSize, sizeof( struct FreeList ) ) );
+      base->recSize = DwordAlign( max( recSize, sizeof( struct FreeList ) ) );
 
       if( base->recSize * numRecs > getPageSize() )
 	{
@@ -83,7 +81,7 @@ MapMemFixedDynamic::MapMemFixedDynamic(
       
       off_t  baseAddr = (off_t) base;
 
-      base->freeList.next = DWORD_ALIGN( sizeof( MapFixedDynamicInfo )  );      
+      base->freeList.next = DwordAlign( sizeof( MapFixedDynamicInfo )  );      
       base->freeCount = 0;
       
       off_t 	    	freeAddr = baseAddr + base->freeList.next;
@@ -92,7 +90,7 @@ MapMemFixedDynamic::MapMemFixedDynamic(
       
       
       for( ;
-	  freeAddr + base->recSize < (off_t)getEnd();
+	  (off_t)(freeAddr + base->recSize) < (off_t)getEnd();
 	  freeAddr += base->recSize )
 	{
 	  freeNode = (struct FreeList *)freeAddr;
@@ -210,8 +208,9 @@ MapMemFixedDynamic::freeMem(
     {
       struct FreeList * firstNode= (struct FreeList *)(baseAddr +
 						       base->freeList.next);
-      
-      for( struct FreeList * nextNode = firstNode ;
+
+      struct FreeList * nextNode = firstNode ;
+      for( ;
 	   nextNode < freeNode && nextNode->next != 0;
 	   nextNode = (struct FreeList *)((off_t)baseAddr + nextNode->next) );
 
@@ -256,7 +255,7 @@ MapMemFixedDynamic::freeMem(
       
       off_t 	endOffset;
 
-      endOffset = ( DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) ) +
+      endOffset = ( DwordAlign( sizeof( MapFixedDynamicInfo ) ) +
 		     ( (base->recCount - 1)* base->recSize ) );
 		     
       //
@@ -295,7 +294,7 @@ MapMemFixedDynamic::freeMem(
 		  base->size = getSize();
 		  base->freeCount -= releaseRecs;
 		  base->recCount -= releaseRecs;
-		  base->freeList.prev = ( DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) ) +
+		  base->freeList.prev = ( DwordAlign( sizeof( MapFixedDynamicInfo ) ) +
 					  ( (base->recCount - 1)* base->recSize ) );
 
 		  struct FreeList * lastNode = (struct FreeList *)
@@ -337,7 +336,7 @@ MapMemFixedDynamic::expand( void )
   off_t	    prevFreeOffset = 0;
   struct FreeList * freeNode = 0;
 
-  freeAddr = baseAddr + ( DWORD_ALIGN( sizeof( MapFixedDynamicInfo )  ) +
+  freeAddr = baseAddr + ( DwordAlign( sizeof( MapFixedDynamicInfo )  ) +
 			  (base->recSize * (base->recCount) ) );
 
   if( base->freeList.next == 0 )
@@ -382,7 +381,7 @@ MapMemFixedDynamic::first( void )
 {
   if( base && base->freeCount != base->recCount )
     {
-      off_t   first = DWORD_ALIGN( sizeof( MapFixedDynamicInfo ) );
+      off_t   first = DwordAlign( sizeof( MapFixedDynamicInfo ) );
 
       off_t     	baseAddr = (off_t)base;
       off_t     	freeOffset;
@@ -399,7 +398,7 @@ MapMemFixedDynamic::first( void )
   return( 0 );  
 }
 	  
-Bool
+bool
 MapMemFixedDynamic::next( RecNumber & rec )
 {
   
@@ -434,12 +433,12 @@ MapMemFixedDynamic::next( RecNumber & rec )
       if( nextFreeRecOffset == 0 )
 	{
 	  rec = 0;
-	  return( FALSE );
+	  return( false );
 	}
       else
 	{
 	  rec = offset2RecNum( nextRec );
-	  return( TRUE );
+	  return( true );
 	}
     }
 }
@@ -450,7 +449,7 @@ MapMemFixedDynamic::getClassName( void ) const
   return( "MapMemFixedDynamic" );
 }
 
-Bool
+bool
 MapMemFixedDynamic::good( void ) const
 {
   return( base != 0 &&

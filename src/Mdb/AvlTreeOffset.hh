@@ -14,7 +14,10 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:32  houghton
+// Revision 1.2  1995/11/05 16:23:42  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:32  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -43,18 +46,18 @@ public:
   off_t	    	add( const T & rec );
   off_t	    	find( const T & key );
   T * 	    	findData( const T & key );
-  Bool		del( const T & key );
+  bool		del( const T & key );
   
-  Bool 	    	walk( Bool (*action)( T & rec ) = 0 );
-  Bool 	    	walk( void * closure,
-		      Bool (*action)( T & rec, void * closure ) = 0 );
+  bool 	    	walk( bool (*action)( T & rec ) = 0 );
+  bool 	    	walk( void * closure,
+		      bool (*action)( T & rec, void * closure ) = 0 );
 
   void 	    	destroy( void (*action)( T & rec ) = 0 );
   void 	    	destroy( void * closure,
 			 void (*action)( T & rec, void * closure ) = 0 );
 			 
-  void 	    	setWalk( Bool (* action)( T & rec ) );
-  void 	    	setWalk( Bool (* action)( T & rec, void * closure ) );
+  void 	    	setWalk( bool (* action)( T & rec ) );
+  void 	    	setWalk( bool (* action)( T & rec, void * closure ) );
   void 	    	setDestroy( void (* action)( T & rec ) );
   void      	setDestroy( void (* action)( T & rec, void * closure ) );
   
@@ -71,7 +74,7 @@ public:
   const MultiMemOffset *    getMemMgr( void ) const;
 
   virtual const char * 	getClassName( void ) const { return "AvlTreeOffset"; };
-  virtual Bool	    	good( void ) const;
+  virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   
 protected:
@@ -128,11 +131,11 @@ protected:
   virtual T & 	copy( T & dest, const T & src );
   T &	(* copyRec)( T & dest, const T & src );
   
-  inline Bool 	walkNode( off_t root );
-  Bool	(*walkAction)( T & rec );
+  inline bool 	walkNode( off_t root );
+  bool	(*walkAction)( T & rec );
 
-  inline Bool 	walkNode( off_t root, void * closure );
-  Bool	(*walkActionClosure)( T & rec, void * closure );
+  inline bool 	walkNode( off_t root, void * closure );
+  bool	(*walkActionClosure)( T & rec, void * closure );
 
   inline void	destroyNode( off_t root );
   void 	(*destroyAction)( T & rec );
@@ -283,7 +286,7 @@ AvlTreeOffset<T>::findData( const T & key )
 // del - remove a node from the tree
 template<class T>
 inline
-Bool
+bool
 AvlTreeOffset<T>::del( const T & key )
 {
   //
@@ -320,8 +323,8 @@ AvlTreeOffset<T>::del( const T & key )
 // walk - execute user function for each node in the tree
 template<class T>
 inline
-Bool
-AvlTreeOffset<T>::walk( Bool (*action)( T & rec ) )
+bool
+AvlTreeOffset<T>::walk( bool (*action)( T & rec ) )
 {
   AVLTREE_CHECK( 0 );
 
@@ -335,8 +338,8 @@ AvlTreeOffset<T>::walk( Bool (*action)( T & rec ) )
 // walk - execute user function for each node in the tree
 template<class T>
 inline
-Bool
-AvlTreeOffset<T>::walk( void * closure, Bool (*action)( T & rec, void * closure ) )
+bool
+AvlTreeOffset<T>::walk( void * closure, bool (*action)( T & rec, void * closure ) )
 {
   AVLTREE_CHECK( 0 );
 
@@ -418,7 +421,7 @@ AvlTreeOffset<T>::operator []( off_t dataOffset )
 template<class T>
 inline
 void
-AvlTreeOffset<T>::setWalk( Bool (* action)( T & rec ) )
+AvlTreeOffset<T>::setWalk( bool (* action)( T & rec ) )
 {
   walkAction = action;
 }
@@ -427,7 +430,7 @@ AvlTreeOffset<T>::setWalk( Bool (* action)( T & rec ) )
 template<class T>
 inline
 void
-AvlTreeOffset<T>::setWalk( Bool (* action)( T & rec, void * closure ) )
+AvlTreeOffset<T>::setWalk( bool (* action)( T & rec, void * closure ) )
 {
   walkActionClosure = action;
 }
@@ -504,10 +507,10 @@ AvlTreeOffset<T>::getClassName( void ) const
   return( "AvlTreeOffset<T>" );
 }
 
-// good - return TRUE if no detected error otherwize FALSE
+// good - return true if no detected error otherwize false
 template<class T>
 inline
-Bool
+bool
 AvlTreeOffset<T>::good( void ) const
 {
   return( tree != 0 && mem->good() );
@@ -640,10 +643,10 @@ AvlTreeOffset<T>::copy( T & dest, const T & src )
 // walkNode - execute user function at each node
 template<class T>
 inline
-Bool
+bool
 AvlTreeOffset<T>::walkNode( off_t root )
 {
-  Bool abort = TRUE;
+  bool abort = true;
   if( walkAction )
     {
       abort = walkAction( getNodeData( root ) );
@@ -656,10 +659,10 @@ AvlTreeOffset<T>::walkNode( off_t root )
 // walkNode - execute user function at each node
 template<class T>
 inline
-Bool
+bool
 AvlTreeOffset<T>::walkNode( off_t root, void * closure )
 {
-  Bool abort = TRUE;
+  bool abort = true;
   if( walkActionClosure )
     {
       abort = walkActionClosure( getNodeData( root ), closure );

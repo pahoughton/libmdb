@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:51  houghton
+// Revision 1.2  1995/11/05 16:23:54  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:51  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -20,6 +23,48 @@ static const char * RcsId =
 #include "Str.hh"
 
 MultiMemOffset MultiMemOffsetMalloc;
+
+off_t
+MultiMemOffset::getMem( size_t size )
+{
+  void * mem = malloc( size );
+  if( ! mem )
+    {
+      oserrno = errno;
+    }
+  
+  return( (off_t)mem );
+}
+
+void
+MultiMemOffset::freeMem( off_t offset )
+{
+  free( (void *)offset );
+}
+
+void *
+MultiMemOffset::getAddr( off_t offset )
+{
+  return( (void *)offset );
+}
+
+void *
+MultiMemOffset::getBase( void )
+{
+  return( (void *)0 );
+}
+
+const char *
+MultiMemOffset::getClassName( void ) const
+{
+  return( "MultiMemOffset" );
+}
+
+bool
+MultiMemOffset::good( void ) const
+{
+  return( oserrno == 0 );
+}
 
 const char *
 MultiMemOffset::error( void ) const

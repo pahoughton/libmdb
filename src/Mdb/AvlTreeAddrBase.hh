@@ -59,18 +59,18 @@
 //  	    no match is found.
 //  	    Returns the change in tree balance caused by deleting the node.
 //
-//  	Bool
+//  	bool
 //  	walkTree( Node * root );
-//  	Bool
+//  	bool
 //  	walkTree( const Node * root ) cosnt;
 //  	    Walk the entire tree in accending order (left to right) and
 //  	    execute a user function at each node.
 //  	    Returns FALSE if the entire tree was walked. TRUE
 //  	    will be returned if the walk was aborted buy 'walkNode'
 //
-//  	Bool
+//  	bool
 //  	walkTree( Node * root, void * closure );
-//  	Bool
+//  	bool
 //  	walkTree( const Node * root, void * closure ) const;
 //  	    Walk the entire tree in accending order (left to right) and
 //  	    execute a user function at each node. 'closure' is passed
@@ -126,10 +126,10 @@
 //  	    self.'closure' is the value passed as closure to 'dumpTree'.
 //
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( Node * node ) = 0;
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( const Node * node ) const = 0;
 //  	    This pure virtual function must be defined by all sub classes.
 //  	    'walkNode' is called by 'walkTree' for each node in the tree.
@@ -137,10 +137,10 @@
 //  	    Return TRUE if you want to abort the walk.
 //  	    
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( Node * node, void * closure ) = 0;
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( const Node * node, void * closure ) const = 0;
 //  	    This pure virtual function must be defined by all sub classes.
 //  	    'walkNode' is called by 'walkTree' for each node in the
@@ -188,16 +188,19 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:31  houghton
+// Revision 1.2  1995/11/05 16:23:40  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:31  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
 
-#include <sys/types.h>
-#include <iostream.h>
-#include <Common.h>
 
 #include <AvlTreeBase.hh>
+#include <sys/types.h>
+#include <iostream.h>
+
 
 
 class AvlTreeAddrBase : public AvlTreeBase
@@ -210,21 +213,20 @@ protected:
   struct Node
   {
     struct Node *  subTree[2];
-    Bool	    bal;
+    short	    bal;
   };
 
   AvlTreeAddrBase( void ) {};
-  AvlTreeAddrBase( const AvlTreeAddrBase & copyFrom ) {};
   
   short	    	insertNode( Node ** root, Node ** newNode );
   Node *	findNode( Node * root, const void * key );
   const Node *	findNode( const Node * root, const void * key ) const;
   short	    	deleteNode( Node ** root, Node ** key, int minMax = 0);
 
-  Bool	    	walkTree( Node * root );
-  Bool	    	walkTree( const Node * root ) const;
-  Bool	    	walkTree( Node * root, void * closure );
-  Bool	    	walkTree( const Node * root, void * closure ) const;
+  bool	    	walkTree( Node * root );
+  bool	    	walkTree( const Node * root ) const;
+  bool	    	walkTree( Node * root, void * closure );
+  bool	    	walkTree( const Node * root, void * closure ) const;
 
   void	    	initNode( Node * node );
   
@@ -236,10 +238,10 @@ protected:
   virtual int	compareNode( const Node * one, const Node *two) const = 0;
   virtual int	compareFind( const void * one, const Node * two) const = 0;
 
-  virtual Bool  walkNode( Node * node ) = 0;
-  virtual Bool  walkNode( const Node * node ) const = 0;
-  virtual Bool  walkNode( Node * node, void * closure ) = 0;  
-  virtual Bool  walkNode( const Node * node, void * closure ) const = 0;
+  virtual bool  walkNode( Node * node ) = 0;
+  virtual bool  walkNode( const Node * node ) const = 0;
+  virtual bool  walkNode( Node * node, void * closure ) = 0;  
+  virtual bool  walkNode( const Node * node, void * closure ) const = 0;
   
   virtual void  destroyNode( Node * node ) = 0;
   virtual void  destroyNode( Node * node, void * closure ) = 0;

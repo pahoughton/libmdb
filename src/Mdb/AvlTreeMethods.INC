@@ -51,7 +51,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.2  1995/02/13 16:15:39  houghton
+// Revision 1.3  1995/11/05 16:23:41  houghton
+// Added Old Clue classes
+//
+// Revision 1.2  1995/02/13  16:15:39  houghton
 // Fix comment character
 //
 // # Revision 1.1  1995/02/13  16:08:31  houghton
@@ -61,8 +64,9 @@
 static const char * IncRcsId =
 "$Id$";
 
-#include <stdlib.h>
-#include <iomanip.h>
+#include <algorithm>
+#include <iomanip>
+#include <cstdlib>
 
 // **********************************************************************
 // insertNode - insert a new node into the tree
@@ -315,16 +319,16 @@ ClassName::deleteNode(
 
 // **********************************************************************
 // walkTree - execute 'walkNode' at each node in the tree
-//  	Returns FALSE if the entire tree was walked
-//  	Returns TRUE if the walk was aborted
+//  	Returns false if the entire tree was walked
+//  	Returns true if the walk was aborted
 // **********************************************************************
-Bool
+bool
 ClassName::walkTree(
   NodeDataType	root
   )
 {
 
-  Bool	abort = FALSE;
+  bool	abort = false;
   
   if( root == 0 )
     {
@@ -353,17 +357,17 @@ ClassName::walkTree(
 
 // **********************************************************************
 // walkTree - execute 'walkNode' at each node in the tree
-//  	Returns FALSE if the entire tree was walked
-//  	Returns TRUE if the walk was aborted
+//  	Returns false if the entire tree was walked
+//  	Returns true if the walk was aborted
 // **********************************************************************
-Bool
+bool
 ClassName::walkTree(
   NodeDataType	root,
   void *    	closure
   )
 {
 
-  Bool	abort = FALSE;
+  bool	abort = false;
   
   if( root == 0 )
     {
@@ -392,16 +396,16 @@ ClassName::walkTree(
 #if defined( AVL_ADDRESSES )
 // **********************************************************************
 // walkTree - execute 'walkNode' at each node in the tree
-//  	Returns FALSE if the entire tree was walked
-//  	Returns TRUE if the walk was aborted
+//  	Returns false if the entire tree was walked
+//  	Returns true if the walk was aborted
 // **********************************************************************
-Bool
+bool
 ClassName::walkTree(
   const NodeDataType	root
   ) const
 {
 
-  Bool	abort = FALSE;
+  bool	abort = false;
   
   if( root == 0 )
     {
@@ -430,17 +434,17 @@ ClassName::walkTree(
 
 // **********************************************************************
 // walkTree - execute 'walkNode' at each node in the tree
-//  	Returns FALSE if the entire tree was walked
-//  	Returns TRUE if the walk was aborted
+//  	Returns false if the entire tree was walked
+//  	Returns true if the walk was aborted
 // **********************************************************************
-Bool
+bool
 ClassName::walkTree(
   const NodeDataType	root,
   void *    	closure
   ) const
 {
 
-  Bool	abort = FALSE;
+  bool	abort = false;
   
   if( root == 0 )
     {
@@ -642,8 +646,8 @@ ClassName::rotateTwice(
   NODE( origOther )->subTree[ dir ] 	= NODE( *root )->subTree[ other ];
   NODE( *root )->subTree[ other ]   	= origOther;
 
-  NODE( NODE( *root )->subTree[ LEFT ] )->bal	= -max( NODE( *root )->bal, 0 );
-  NODE( NODE( *root )->subTree[ RIGHT ] )->bal	= -min( NODE( *root )->bal, 0 );
+  NODE( NODE( *root )->subTree[ LEFT ] )->bal	= -max( NODE( *root )->bal, (short)0 );
+  NODE( NODE( *root )->subTree[ RIGHT ] )->bal	= -min( NODE( *root )->bal, (short)0 );
   NODE( *root )->bal  	    	    	    	= 0;
 
 }
@@ -671,19 +675,25 @@ ClassName::rotateOnce(
   SubTree   	other 	    = (dir == RIGHT) ? LEFT : RIGHT;
   NodeDataType	origRoot    = *root;
 
-  Bool	    	unChanged;
+  bool	    	unChanged;
 
-  unChanged = ( NODE( NODE( *root )->subTree[ other ] )->bal ) ? FALSE : TRUE;
+  unChanged = ( NODE( NODE( *root )->subTree[ other ] )->bal ) ? false : true;
 
   *root = NODE( *root )->subTree[ other ];
 
   NODE( origRoot )->subTree[ other ] 	= NODE( *root )->subTree[ dir ];
   NODE( *root )->subTree[ dir ]     	= origRoot;
 
+#if !defined( NEW_WAY )
   NODE( origRoot )->bal = -( (dir == LEFT) ?
 			     --( NODE( *root )->bal ) :
 			     ++( NODE( *root )->bal ) );
-
+#else
+  NODE( *root )->bal += (( dir == LEFT ) ? -1 : 1 );
+  
+  NODE( origRoot )->bal = NODE( *root )->bal * -1;
+#endif
+  
   return( unChanged );
 }
 
@@ -697,7 +707,7 @@ ClassName::balance(
   )
 {
 
-  Bool	    special = FALSE;
+  bool	    special = false;
 
   if( NODE( *root )->bal < LEFT_HEAVY )
     {
@@ -725,7 +735,7 @@ ClassName::balance(
 	}
       else
 	{
-	  special = TRUE;
+	  special = true;
 	}
     }
   return( (special) ? 0 : 1 );

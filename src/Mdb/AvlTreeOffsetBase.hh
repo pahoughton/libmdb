@@ -57,14 +57,14 @@
 //  	    no match is found.
 //  	    Returns the change in tree balance caused by deleting the node.
 //
-//  	Bool
+//  	bool
 //  	walkTree( off_t root );
 //  	    Walk the entire tree in accending order (left to right) and
 //  	    execute a user function at each node.
 //  	    Returns FALSE if the entire tree was walked. TRUE
 //  	    will be returned if the walk was aborted buy 'walkNode'
 //
-//  	Bool
+//  	bool
 //  	walkTree( off_t root, void * closure );
 //  	    Walk the entire tree in accending order (left to right) and
 //  	    execute a user function at each node. 'closure' is passed
@@ -120,7 +120,7 @@
 //  	    self.'closure' is the value passed as closure to 'dumpTree'.
 //
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( off_t node ) = 0;
 //  	    This pure virtual function must be defined by all sub classes.
 //  	    'walkNode' is called by 'walkTree' for each node in the tree.
@@ -128,7 +128,7 @@
 //  	    Return TRUE if you want to abort the walk.
 //  	    
 //  	vitual
-//  	Bool
+//  	bool
 //  	walkNode( off_t node, void * closure ) = 0;
 //  	    This pure virtual function must be defined by all sub classes.
 //  	    'walkNode' is called by 'walkTree' for each node in the
@@ -184,16 +184,18 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:32  houghton
+// Revision 1.2  1995/11/05 16:23:43  houghton
+// Added Old Clue classes
+//
+// Revision 1.1  1995/02/13  16:08:32  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
 
+#include <AvlTreeBase.hh>
 #include <sys/types.h>
 #include <iostream.h>
-#include <Common.h>
 
-#include <AvlTreeBase.hh>
 
 
 class AvlTreeOffsetBase : public AvlTreeBase
@@ -207,8 +209,8 @@ public:
   
   struct Node
   {
-    off_t	    subTree[2];
-    Bool	    bal;
+    off_t    subTree[2];
+    short    bal;
   };
 
 protected:
@@ -223,8 +225,8 @@ protected:
   off_t 	findNode( off_t root, const void * key );
   short	    	deleteNode( off_t * root, off_t * key, int minMax = 0);
 
-  Bool	    	walkTree( off_t  root );
-  Bool	    	walkTree( off_t  root, void * closure );
+  bool	    	walkTree( off_t  root );
+  bool	    	walkTree( off_t  root, void * closure );
 
   void	    	initNode( off_t node );
   
@@ -239,8 +241,8 @@ protected:
   virtual void  destroyNode( off_t root ) = 0;
   virtual void  destroyNode( off_t root, void * closure ) = 0;
 
-  virtual Bool  walkNode( off_t root ) = 0;
-  virtual Bool  walkNode( off_t root, void * closure ) = 0;
+  virtual bool  walkNode( off_t root ) = 0;
+  virtual bool  walkNode( off_t root, void * closure ) = 0;
   
   NodeType  	    getNodeType( off_t  root );
 
