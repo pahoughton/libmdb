@@ -6,13 +6,18 @@
 // Desc:        
 //
 //  MapFile uses the operating system's mapped memory functions
-//  (mmap(2) & munmap(2)) to map a file to memory. A file can be to a
-//  specific memory address or the operating system can select the address
-//  to map the file to (See libMdb/docs/design/MapFile.txt for more info).
-//
-// Quick Start: - short example of class usage
+//  (mmap(2) & munmap(2)) to map a file to memory. A file can be
+//  mapped to a specific memory address or the operating system can
+//  select the address to use (See libMdb/docs/design/MapFile.txt
+//  for more info).
 //
 // Notes:
+//
+//  When using dynamicly addressed maps (baseAddr == 0). The values
+//  returned by 'getBase()' and 'getEnd()' can change any time
+//  'setSize()', 'grow()' or 'shrink()' is called. So, it is best to
+//  never have a variable that contains a pointer into the map. The
+//  best thing to do is always call getBase() to access the data.
 //
 //  This class was originally part of libClue1
 //
@@ -72,16 +77,22 @@ public:
   
   virtual ~MapFile( void );
 
+  size_type	    createMap( const char * fileName,
+			       MapAddr	    baseAddr,
+			       size_type    size,
+			       MapMask	    permMask = 02 );
+  
   size_type    	    map( const char * 	fileName,
 			 MapAddr      	baseAddr = 0,
 			 ios::open_mode	mode = ios::in );
 
   void		    unmap( void );
   
-  size_type		setSize( size_type amount, MapAddr baseAddr );
+  size_type		setSize( size_type size, MapAddr baseAddr );
   inline size_type	grow( size_type amount, MapAddr baseAddr );
   inline size_type      shrink( size_type amount, MapAddr baseAddr );
 
+  const FileStat &	getFileStat( void ) const;
   const char *		getFileName( void ) const;
   const char *		getAccess( void ) const;
   inline ios::open_mode	getMode( void ) const;
@@ -106,12 +117,12 @@ public:
 				  const char *	prefix = "    ",
 				  bool		showVer = false ) const;
   
-  static const ClassVersion version;
-
   inline
   DumpInfo< MapFile >	dump( const char *  prefix = "    ",
 			      bool	    showVer = true ) const;
   
+  static const ClassVersion version;
+
 protected:
 
 private:
@@ -119,11 +130,6 @@ private:
   MapFile( const MapFile & copyFrom );
   MapFile & operator=( const MapFile & assignFrom );
 
-  void	createMap( const char * fileName,
-		   MapAddr	baseAddr,
-		   size_type	size,
-		   MapMask	mask );
-  
   FileStat  	    fileStat;
 
   int	    	    mapFd;
@@ -156,6 +162,10 @@ private:
 //
 //  	MapFile	class
 //
+//	MapFile::size_type
+//	MapFile::MapAddr
+//	MapFile::MapMask
+//
 //  Constructors:
 //
 //  	MapFile( const char *	    fileName,
@@ -164,7 +174,9 @@ private:
 //		 bool		    create,
 //		 size_type	    size,
 //		 MapMask	    permMask = 02 )
-//	    Create a new map or open an existing one.
+//	    Create a new map or open an existing one. If create is true
+//	    and 'fileName' already exists, it will be removed before the
+//	    map is created.
 //		'fileName' is the full name of the file to use.
 //		'baseAddr' is the base address to map the file to. 0
 //		    should be use to allow the OS to select the best
@@ -184,7 +196,8 @@ private:
 //		 size_type	    size,
 //		 MapAddr	    baseAddr = 0,
 //		 MapMask	    permMask = 02 )
-//	    Create a new map.
+//	    Create a new map. Note, if 'fileName' already exist, it will be
+//	    removed before the map is created.
 //		'fileName' is the full name of the file to use.
 //		'baseAddr' is the base address to map the file to. 0
 //		    should be use to allow the OS to select the best
@@ -209,28 +222,145 @@ private:
 //		    with (ios::in | ios::out).
 //
 //	MapFile( void )
-//	    Instanciate a MapFile. Use 'map()' to open/create a map.
+//	    Instanciate a MapFile. Use 'createMap()' or 'map()' to create
+//	    or open a map.
 //
 //  Public Interface:
 //
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
+//	size_type
+//	createMap( const char *	fileName,
+//		   MapAddr	baseAddr,
+//		   size_type    size,
+//		   MapMask	permMask = 02 );
+//	    This method will 'unmap()' the any existing map and create a
+//	    new map file.  Note, if 'fileName' already exist, it will be
+//	    removed before the map is created.
+//		'fileName' is the full name of the file to use.
+//		'baseAddr' is the base address to map the file to. 0
+//		    should be use to allow the OS to select the best
+//		    address.
+//		'size' is the minumum initial size of the map.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
+//	    The size of the new map is returned or 0 if an error occured.
 //
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
+//	size_type
+//	map( const char *   fileName,
+//	     MapAddr	    baseAddr,
+//	     ios::open_mode mode = ios::in )
+//	    Open an existing map.
+//		'fileName' is the full name of the file to use.
+//		'baseAddr' is the base address to map the file to. 0
+//		    should be use to allow the OS to select the best
+//		    address.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write (note if create == true
+//		    the mode argument is ignored and the file is opened
+//		    with (ios::in | ios::out).
+//	    The size of the map is returned or 0 if an error occured.
 //
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
+//	void
+//	unmap( void )
+//	    Unmap the current map file.
 //
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
+//	size_type
+//	setSize( size_type size, MapAddr baseAddr )
+//	    Change the size of the map file to 'size'. 'baseAddr' is
+//	    the address to remap the file to. Since the map
+//	    file MUST be page aligned, the new size is returned. It will
+//	    be either 'size' or a greater value (up to the next page).
+//	    If an error occures, 0 is returned.
+//
+//	inline
+//	size_type
+//	grow( size_type amount, MapAddr baseAddr )
+//	    Increase the map's size by at least 'amount' bytes. 'baseAddr'
+//	    is the address to remap the file to. Since the map
+//	    file MUST be page aligned, the new size is returned. 
+//	    If an error occures, 0 is returned.
+//
+//	inline
+//	size_type
+//	shrink( size_type amount, MapAddr baseAddr )
+//	    Reduce the map's size by 'amount' bytes. 'baseAddr'
+//	    is the address to remap the file to. Since the map
+//	    file MUST be page aligned, the new size is returned. 
+//	    If an error occures, 0 is returned.
+//
+//	const FileStat &
+//	getFileStat( void ) const
+//	    Return the 'FileStat(3)' for the map file. Note, this is only
+//	    updated by calls to 'map()' and 'createMap()' and the
+//	    constructors, so it may accurately represent the values
+//	    for the map file.
+//
+//	const char *
+//	getFileName( void ) const
+//	    Return the file name of the map file.
+//
+//	const char *
+//	getAccess( void ) const
+//	    Return the maps access capablilties. This will be one of:
+//	    "RW", "R", or "W", depending on the mode used to open the
+//	    map file.
+//
+//	inline
+//	ios::open_mode
+//	getMode( void ) const
+//	    Return the mode used to open the map. Note, newly created
+//	    maps will have a mode of (ios::in|ios::out).
+//
+//	inline
+//	size_type
+//	getSize( void ) const
+//	    Return the map file's size.
+//
+//	inline
+//	MapAddr
+//	getBase( void )
+//	    Return the map's base address.
+//
+//	inline
+//	const MapAddr
+//	getBase( void ) const
+//	    Return the map's base address as a const pointer.
+//
+//	inline
+//	MapAddr
+//	getEnd( void )
+//	    Return the map's end address. This is 'getBase() + getSize()'.
+//	    It is the first INVALID address beyond the map's range.
+//
+//	inline
+//	const MapAddr
+//	getEnd( void )
+//	    Return the map's end address as a const pointer. This is
+//	    'getBase() + getSize()'. It is the first INVALID address
+//	    beyond the map's range.
+//
+//	static
+//	size_type
+//	getPageSize( void )
+//	    Return the number of bytes in a page. This come directly
+//	    the operating system being used.
+//
+//	inline
+//	long
+//	addRef( void )
+//	    This can be used for referance counting. The referance counter
+//	    is initialzed to 0 by the constructors.
+//
+//	inline
+//	long
+//	getRefCount( void ) const
+//	    Return the current referance count value.
+//
+//	inline
+//	bool
+//	delRef( void )
+//	    This can be used for referance counting. It will return
+//	    true when the referance count reaches 0.
 //
 //  	virtual Bool
 //  	good( void ) const;
@@ -257,31 +387,23 @@ private:
 //	static const ClassVersion version
 //	    Class and project version information. (see ClassVersion.hh)
 //
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const MapFile & src );
-//
-//	istream &
-//	operator >> ( istream & src, MapFile & dest );
-//
 // Example:
 //
 // See Also:
 //
 // Files:
 //
-// Documented Ver:
+// Documented Ver: 2.10
 //
-// Tested Ver:
+// Tested Ver: 2.10
 //
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/07/25 13:47:42  houghton
+// Moved createMap to public.
+// Added documentation.
+//
 // Revision 2.9  1997/07/13 11:15:10  houghton
 // Cleanup
 // Added documentation.
