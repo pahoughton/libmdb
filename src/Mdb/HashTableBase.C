@@ -85,6 +85,7 @@ HashTableBase::HashTableBase(
 
 HashTableBase::~HashTableBase( void )
 {
+  if( index ) delete index;
 }
 
 bool
@@ -325,6 +326,9 @@ HashTableBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2003/08/12 21:58:46  houghton
+// Bug-Fix: was not delete'ing index in destructor
+//
 // Revision 4.2  2003/08/09 12:43:23  houghton
 // Changed ver strings.
 //
