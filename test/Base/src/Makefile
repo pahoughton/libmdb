@@ -1,23 +1,47 @@
-# -*- makefile -*- for Test
 #
-# Created: 5/8/97 using MakeConfigs 5.01.00.a.09
+# Title:        make.cfg.template.prog
+# Project:	Test
+# Desc:
+# 
+#   Makefile for Test.
+# 
+# Notes:
+# 
+#   This Makefile requres MakeConfig and GNU's make version 3.75
 #
-# $Id$
+#   Try 'make help' for a list of standard targets.
+# 
+# Author:	Paul Houghton (paul.houghton@wcom.com)
+# Created:	10/20/98 using MakeConfigs 5.05.00.b.05
 #
-# (see end of file for Log info)
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
 
 #
-# Do not modifiy 'makefile_type'
-makefile_type = prog
-# This is the make.cfg version that will be used
-make_cfg_ver	= 5.02
-# Default target type
+# The following variables control the behavior of MakeConfigs.
+#   makefile_type   is the type of object being build (do NOT change)
+#   make_cfg_ver    is the version of MakeConfigs to use
+#   make_target	    is the default target to build
+#   show_commands   if this is true, the commands  will be output
+#   proto_dep	    if this is true, the proto header will be rebuild when
+#		    one of it's dependancies changes (ie a .c source)
+#   check_install   if this is true, install and install_all will NOT
+#		    overwrite an installed version.
+#
+
+makefile_type   = prog
+make_cfg_ver	= 5.06
 make_target	= default
-# Uncomment 'show_commands' to output compile command.
-# Comment out proto_dep (or set to any value but true) to prevent
-#     regen of proto header
-show_commands = # true
-proto_dep       = true
+show_commands 	= # true
+proto_dep	= true
+check_install	= true
+
 
 # Include standard MakeConfig configuration for GNU make required
 include Make/make.cfg.$(make_cfg_ver)
@@ -31,7 +55,11 @@ include Make/make.cfg.$(make_cfg_ver)
 
 NAME		= Test
 
-INSTALL_BINDIR	= $(LOCAL_BIN_DIR)
+PRJ_TOPDIR		= ../../..
+PRJ_BINDIR		= $(PRJ_TOPDIR)/bin
+
+INSTALL_BASE_DIR	= $(PRJ_TOPDIR)
+INSTALL_BIN_DIR		= $(INSTALL_BASE_DIR)/bin
 
 VER_MAJOR	= 1
 VER_MINOR	= 00
@@ -40,11 +68,11 @@ VERSION		= $(VER_MAJOR).$(VER_MINOR).$(VER_RELEASE)
 
 PROGRAM_DEFAULT	= $(NAME)
 PROGRAM_DEBUG	= $(NAME)_g
+PROGRAM_TEST	= $(NAME)_tg
 PROGRAM_PROFILE	= $(NAME)_pg
 PROGRAM_STATIC	= $(NAME)_static
+PROGRAM_SHARED	= $(NAME)_s
 
-
-PRJ_TOPDIR	= ../../..
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
@@ -58,13 +86,15 @@ VPATH		= $(ARCH_VPATH):.
 #
 
 
-SRC_DEFINES	= 
-PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
+SRC_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
+PRJ_DEFINES	=
 
 DEFAULT_DEFINES = -DTEST_DEFAULT=1
 DEBUG_DEFINES	= -DTEST_DEBUG=1 -DMDB_DEBUG=1 -DRDB_TEST=1 -DSTLUTILS_DEBUG=1
+TEST_DEFINES	= -DTEST_TEST=1 $(DEBUG_DEFINES)
 PROFILE_DEFINES	= -DTEST_PROFILE=1
 STATIC_DEFINES	= -DTEST_STATIC=1
+SHARED_DEFINES	= -DTEST_SHARED=1
 
 ######  I N C L U D E S #####
 #
@@ -74,11 +104,12 @@ STATIC_DEFINES	= -DTEST_STATIC=1
 #
 
 
-SRC_INC		= $(ARCH_INC) -I. 
-PRJ_INC		= $($($(make_target))_PRJ_INC) -I$(beta_incdir)
+SRC_INC		= $(ARCH_INC) -I. $($($(make_target))_PRJ_INC)
+PRJ_INC		= -I$(local_incdir)
 
 DEFAULT_PRJ_INC	= 
 DEBUG_PRJ_INC	= $(MDB_SRC_INC)
+TEST_PRJ_INC	= $(MDB_SRC_INC)
 PROFILE_PRJ_INC = $(MDB_SRC_INC)
 STATIC_PRJ_INC	= 
 
@@ -86,43 +117,51 @@ STATIC_PRJ_INC	=
 
 CPP_FLAGS		= $(ARCH_CPP_FLAGS)
 
+FLEX_FLAGS		=
+BISON_FLAGS		=
+
 ###### C O M P I L E / C P P #####
 #
 # Config flags available
 #
-# $(cc_optimize) $(cxx_optimize)
-# $(cc_debug)	 $(cxx_debug)
-# $(cc_profile)	 $(cxx_profile)
-# $(cc_warn)	 $(cxx_warn)
+# $(cc_optimize_flags) $(cxx_optimize_flags)
+# $(cc_debug_flags)    $(cxx_debug_flags)
+# $(cc_profile_flags)  $(cxx_profile_fllags)
+# $(cc_warn)           $(cxx_warn)
 #
 
 
-CC_FLAGS		= $(cc_warn_all) $(ARCH_CC_FLAGS)
+CC_FLAGS		= $(ARCH_CC_FLAGS) $(CC_OTHER)
 
-DEFAULT_CC_FLAGS	= $(cc_optimize)
-DEBUG_CC_FLAGS		= $(cc_debug)
-PROFILE_CC_FLAGS	= $(cc_profile)
-STATIC_CC_FLAGS		= $(cc_optimize)
+DEFAULT_CC_FLAGS	= $(cc_optimize_flags)
+DEBUG_CC_FLAGS		= $(cc_debug_flags)
+TEST_CC_FLAGS		= $(cc_debug_flags)
+PROFILE_CC_FLAGS	= $(cc_profile_flags)
+STATIC_CC_FLAGS		= $(cc_optimize_flags)
+SHARED_CC_FLAGS		= $(cc_shared_flags) $(cc_optimize_flags)
 
-CXX_FLAGS		= $(arch_cxx_flags) $(cxx_warn_all)
+CXX_FLAGS		= $(cxx_warn) $(ARCH_CXX_FLAGS) $(CXX_OTHER)
 
-DEFAULT_CXX_FLAGS	= $(cxx_optimize)
-DEBUG_CXX_FLAGS		= $(cxx_debug)
-PROFILE_CXX_FLAGS	= $(cxx_profile)
-STATIC_CXX_FLAGS	= $(cxx_optimize)
+DEFAULT_CXX_FLAGS	= $(cxx_optimize_flags)
+DEBUG_CXX_FLAGS		= $(cxx_debug_flags)
+TEST_CXX_FLAGS		= $(cxx_debug_flags)
+PROFILE_CXX_FLAGS	= $(cxx_profile_flags)
+STATIC_CXX_FLAGS	= $(cxx_optimize_flags)
+SHARED_CXX_FLAGS	= $(cxx_shared_flags) $(cxx_optimize_flags)
 
 # ##### I N S T A L L #####
 
-INSTALL_BIN_FLAGS	= 
+INSTALL_BIN_PERM	= 555
+INSTALL_BIN_FLAGS	= -m $(INSTALL_BIN_PERM)
 
 # ##### L I N K  /  L I B R A R I E S #####
 #
 # Config flags available
 #
-# $(ld_optimize)
-# $(ld_debug)
-# $(ld_profile)
-# $(ld_static)
+# $(ld_optimize_flags)
+# $(ld_debug_flags)
+# $(ld_profile_flags)
+# $(ld_static_flags)
 #
 # Config library directories available (need to use -L)
 #
@@ -130,30 +169,41 @@ INSTALL_BIN_FLAGS	=
 #
 
 
-LD_FLAGS		= $(ARCH_LD_FLAGS)
+LD_FLAGS		= $(ARCH_LD_FLAGS) $(LD_OTHER)
 
-DEFAULT_LD_FLAGS	= $(ld_optimize)
-DEBUG_LD_FLAGS		= $(ld_debug)
-PROFILE_LD_FLAGS	= $(ld_profile)
-STATIC_LD_FLAGS		= $(ld_static) $(ld_optimize)
+DEFAULT_LD_FLAGS	= $(ld_optimize_flags)
+DEBUG_LD_FLAGS		= $(ld_debug_flags)
+TEST_LD_FLAGS		= $(ld_debug_flags)
+PROFILE_LD_FLAGS	= $(ld_profile_flags)
+STATIC_LD_FLAGS		= $(ld_static_flags) $(ld_optimize_flags)
+SHARED_LD_FLAGS		= $(ld_shared_flags) $(ld_optimize_flags)
 
-DEFAULT_LD_LIBDIRS	= -L$(beta_libdir)
-DEBUG_LD_LIBDIRS	= $(MDB_SRC_LDIR) $(DEFAULT_LD_LIBDIRS)
-PRIFLE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
+DEFAULT_LD_LIBDIRS	= -L$(local_libdir)
+DEBUG_LD_LIBDIRS	= -L$(PRJ_TOPDIR)/src/Mdb -L$(local_libdir)
+TEST_LD_LIBDIRS		= $(DEBUG_LD_LIBDIRS)
+PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
+SHARED_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
-DEFAULT_LD_LIBS		= 
-DEBUG_LD_LIBS		= -lMdb_g -lStlUtils_g -lCommon_g -lGnuRegex \
+DEFAULT_LD_LIBS		= -lStlUtils -lCommon -lGnuRegex
+DEBUG_LD_LIBS		= -lMdb_g -lStlUtils_g 	\
+			  -lCommon -lGnuRegex	\
+			  -lm $(ARCH_DEBUG_LD_LIBS)
+TEST_LD_LIBS		= -lMdb_tg -lStlUtils_g \
+			  -lCommon -lGnuRegex	\
 			  -lm $(ARCH_DEBUG_LD_LIBS)
 PROFILE_LD_LIBS		= $(DEFAULT_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
+SHARED_LD_LIBS		= $(DEFAULT_LD_LIBS)
 
 # DEP_LIBS - rebuild target if DEP_LIBS newer than target
 
-DEFAULT_DEP_LIBS	=
+DEFAULT_DEP_LIBS	= 
 DEBUG_DEP_LIBS		= $(PRJ_TOPDIR)/src/Mdb/libMdb_g.a
-PROFILE_DEP_LIBS	=
-STATIC_DEP_LIBS		=
+TEST_DEP_LIBS		= $(PRJ_TOPDIR)/src/Mdb/libMdb_tg.a
+PROFILE_DEP_LIBS	= 
+STATIC_DEP_LIBS		= 
+SHARED_DEP_LIBS		= 
 
 #
 # =USE_CURRENT_MAKEFILE=
@@ -161,46 +211,75 @@ STATIC_DEP_LIBS		=
 
 # **** S O U R C E   F I L E S ****
 
+GENERATED_SOURCES	=			
+
+FLEX_C_SOURCES	=			
+BISON_C_SOURCES	=			
+FLEX_CXX_C_SOURCES	=			
+BISON_CXX_C_SOURCES	=			
+C_SOURCES	=			
 CXX_C_SOURCES	=			\
-	main.C				\
-	TestAvlTreeOffset.C		\
-	tMapFile.C			\
-	tMapFile01.C			\
-	tMapFile02.C			\
-	tMapFile03.C			\
-	tMapMemDynamicFixed.C		\
-	tMapMemDynamicFixed01.C		\
-	tMapMemDynamicDynamic.C		\
-	tMapMemDynamicDynamic01.C	\
-	tMapMemDynamicDynamic02.C	\
-	tAvlTreeOffset.C		\
-	tAvlTreeOffset01.C		\
-	tAvlTreeOffset02.C		\
-	tDavlTreeOffset.C		\
-	tDavlTreeOffset01.C		\
-	tHashTable.C			\
-	tHashTable01.C			\
-	tHashSet.C			\
-	tHashSet01.C			\
-	tDashSet.C			\
-	tDashSet01.C			\
-	tRBTree.C			\
-	tRBTree01.C			\
-	tRBTree02.C			\
-	tRBTree03.C			\
-	tRBSet.C			\
-	tDRBTree.C			\
-	tDRBTree01.C			\
-	tDRBTree02.C			\
-	tDRBTree03.C			\
-	tDRBTree04.C			\
+	GenTestAvlTreeOffsetData.C      \
+	TestAvlTreeOffset.C             \
+	main.C                          \
+	tAvlTreeOffset.C                \
+	tAvlTreeOffset01.C              \
+	tAvlTreeOffset02.C              \
+	tDRBTree.C                      \
+	tDRBTree01.C                    \
+	tDRBTree02.C                    \
+	tDRBTree03.C                    \
+	tDRBTree04.C                    \
+	tDashSet.C                      \
+	tDashSet01.C                    \
+	tDavlTreeOffset.C               \
+	tDavlTreeOffset01.C             \
+	tHashSet.C                      \
+	tHashSet01.C                    \
+	tHashTable.C                    \
+	tHashTable01.C                  \
+	tMapFile.C                      \
+	tMapFile01.C                    \
+	tMapFile02.C                    \
+	tMapFile03.C                    \
+	tMapMemDlist.C                  \
+	tMapMemDynamicDynamic.C         \
+	tMapMemDynamicDynamic01.C       \
+	tMapMemDynamicDynamic02.C       \
+	tMapMemDynamicFixed.C           \
+	tMapMemDynamicFixed01.C         \
+	tRBSet.C                        \
+	tRBTree.C                       \
+	tRBTree01.C                     \
+	tRBTree02.C                     \
+	tRBTree03.C                     \
 	$(ARCH_CXX_C_SOURCES)           \
 
+CXX_CC_SOURCES	=			
+CXX_CPP_SOURCES	=			
+
+USER_HH_INCS	=			\
+	TestAvlTreeOffset.hh            \
+	TestFunctProto.hh               \
+	$(ARCH_USER_HH_INCS)            \
+
+USER_II_INCS	=			\
+	TestAvlTreeOffset.ii            \
+	$(ARCH_USER_II_INCS)            \
 
 USER_INCLUDES	=		\
 	$(USER_H_INCS)		\
 	$(USER_HH_INCS)		\
 	$(USER_II_INCS)		\
+
+CXX_HEADERS	=			\
+	TestAvlTreeOffset.hh            \
+	TestFunctProto.hh               \
+	$(ARCH_CXX_HEADERS)             \
+
+CXX_INLINES	=			\
+	TestAvlTreeOffset.ii            \
+	$(ARCH_CXX_INLINES)             \
 
 
 
@@ -220,21 +299,44 @@ USER_INCLUDES	=		\
 
 include Make/make.cfg.targets.$(makefile_type).$(make_cfg_ver)
 
-default debug profile:: proto
+default debug test profile static shared:: $(generated_files)
 
 default:: $(PROGRAM_DEFAULT)
 
-debug prifle static::
+debug test profile static shared::
 	$(hide) $(MAKE) make_target=$@ $(PROGRAM_$($@))
 
-all::	default debug profile
+all::	default debug test profile shared
 
-install:: default $(INSTALL_DIR)/$(PROGRAM_DEFAULT)
+install:: install_$(make_target)
+	$(hide) echo + Installation Complete!
 
-test_debug: debug
-	$(PROGRAM_DEBUG) $(TEST)
+install_all:: 
 
-test:	default
+install_all:: install_default install_debug install_profile install_static
+	$(hide) echo + Installation Complete!
+
+install_default::
+	$(hide) $(MAKE) make_target=default			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_DEFAULT)
+install_debug::   
+	$(hide) $(MAKE) make_target=debug			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_DEBUG)
+install_test::    
+	$(hide) $(MAKE) make_target=test			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_TEST)
+install_profile:: 
+	$(hide) $(MAKE) make_target=profile			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_PROFILE)
+install_static::  
+	$(hide) $(MAKE) make_target=static			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_STATIC)
+install_shared::  
+	$(hide) $(MAKE) make_target=shared			\
+			$(INSTALL_BIN_DIR)/$(PROGRAM_SHARED)
+
+check: test
+	$(PROGRAM_TEST) $(TEST)
 
 #
 # include dependancies generated by 'make depend'
@@ -245,46 +347,13 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
-# Revision 2.2  1998/03/18 06:42:04  houghton
-# Added test_debug target.
-#
-# Revision 2.1  1997/09/21 19:21:58  houghton
-# Changed version to 2
-#
-# Revision 1.10  1997/09/17 16:56:11  houghton
-# Changed for new library rename to StlUtils
-#
-# Revision 1.9  1997/08/18 10:25:50  houghton
-# Changed to use MakeConfigs 5.02.
-#
-# Revision 1.8  1997/07/25 13:49:21  houghton
-# Changed: Dash was renamed to DashSet.
-# Changed: Hash was renamed to HashSet.
-#
-# Revision 1.7  1997/07/22 19:45:40  houghton
-# Added Dash test.
-#
-# Revision 1.6  1997/07/19 10:35:21  houghton
-# Moved define TEST_DATA_DIR to TestConfigs.hh.
-#
-# Revision 1.5  1997/07/16 16:38:20  houghton
-# Added MapFile & DRBTree tests.
-#
-# Revision 1.4  1997/07/14 10:44:20  houghton
-# Added ARCH_DEBUG_LD_LIBS to DEBUG_LD_LIBS.
-#
-# Revision 1.3  1997/07/13 11:35:00  houghton
-# Added many test.
-#
-# Revision 1.2  1997/06/27 12:15:59  houghton
-# Added tMapMemDynamicDynamic.
-#
-# Revision 1.1  1997/06/05 11:30:11  houghton
-# Initial Version.
+# Revision 2.3  1998/10/23 13:22:09  houghton
+# Added MapMemDList test.
 #
 #
 # =MAKEFILE_LOG=
 #
 
-
-
+# Local Variables:
+# mode:makefile
+# End:

@@ -40,6 +40,7 @@ LibTest::TestItem   TestList[] =
   { "HashTable", tHashTable },
   { "HashSet", tHashSet },
   { "DashSet", tDashSet },
+  { "MapMemDlist", tMapMemDlist },
   { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
   { 0, 0 }
@@ -65,6 +66,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1998/10/23 13:22:09  houghton
+// Added MapMemDList test.
+//
 // Revision 2.1  1997/09/21 19:21:59  houghton
 // Changed version to 2
 //

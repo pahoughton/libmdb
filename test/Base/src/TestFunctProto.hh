@@ -21,6 +21,7 @@
 //  $Id$
 //
 
+
 bool	tMapFile( LibTest & tester );
 bool	tMapMemDynamicFixed( LibTest & tester );
 bool	tMapMemDynamicDynamic( LibTest & tester );
@@ -34,9 +35,14 @@ bool	tDRBTree( LibTest & tester );
 
 bool tHashTable( LibTest & tester );
 
+bool	tMapMemDlist( LibTest & tester );
+
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1998/10/23 13:22:09  houghton
+// Added MapMemDList test.
+//
 // Revision 2.1  1997/09/21 19:21:59  houghton
 // Changed version to 2
 //
