@@ -77,6 +77,10 @@ public:
   
   void 	    	    expand( size_t minAmount );
 
+  inline long		    addRef( void );
+  inline long		    getRefCount( void ) const;
+  inline bool		    delRef( void );
+  
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -93,14 +97,17 @@ public:
   inline
   DumpInfo< MapMemDynamicDynamic >  dump( const char *	prefix = "    ",
 					  bool		showVer = true ) const;
-protected:
 
+  // FreeList should be protected but AIX can't deal with it.
+  
   struct FreeList
   {
     unsigned long   size;
     unsigned long   next;
     unsigned long   prev;
   };
+
+protected:
 
   inline FreeList *	    getFreeNode( off_t f );
   inline const FreeList *   getFreeNode( off_t f ) const ;
@@ -130,6 +137,8 @@ private:
   struct MapDynamicDynamicInfo *    base;
 
   off_t				    nextFree;
+
+  long				    refCount;
   
   MapMemDynamicDynamic( const MapMemDynamicDynamic & from );
   MapMemDynamicDynamic & operator =( const MapMemDynamicDynamic & from );
@@ -228,6 +237,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/03/13 02:25:21  houghton
+// Added refCount, addRef, getRefCount and delRef.
+//
 // Revision 1.2  1997/03/08 10:29:52  houghton
 // Initial partially tested version.
 //
