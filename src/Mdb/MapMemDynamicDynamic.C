@@ -72,7 +72,8 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 		   mode,
 		   create,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     DwordAlign( max( allocSize, (size_type)getpagesize())) ),
+		     DwordAlign( max( allocSize,
+				      MapFile::getPageSize())) ),
 		   permMask )
 {
   if( create )
@@ -90,7 +91,8 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   : MapMemDynamic( fileName,
 		   MDD_VERSION,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     DwordAlign( max( allocSize, (size_type)getpagesize())) ),
+		     DwordAlign( max( allocSize,
+				      MapFile::getPageSize())) ),
 		   permMask )
 {
   createMapMemDynamicDynamic( minChunkSize, allocSize );
@@ -817,7 +819,7 @@ MapMemDynamicDynamic::createMapMemDynamicDynamic(
 			 (size_type) sizeof( FreeNode) ) );
       
       mapInfo()->allocSize	= DwordAlign( max( allocSize,
-						   (size_type)getpagesize()) );
+						   MapFile::getPageSize()) );
       mapInfo()->chunkSize	= 0;
       mapInfo()->freeSize	= ( getMapSize() -
 				    DwordAlign(
@@ -861,6 +863,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1997/07/19 10:27:42  houghton
+// Bug-Fix: changed calls from getpagesize to MapFile::getPageSize().
+//
 // Revision 2.13  1997/07/13 11:23:29  houghton
 // Cleanup
 // Reorderd release test to first check if node is after last.
