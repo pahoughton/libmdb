@@ -5,16 +5,25 @@
 // Project:	Mdb
 // Desc:        
 //
+//  This class provides chunk management for a Dynamic mapped memory file.
+//  it allows you to allocate and release chunks from 1 to 'maxChunk' (~2 gig)
+//  in size. The operating system's mapped memory functions are used to
+//  map the chunks to a disk file.
 //
+//  See libMdb/docs/design/MapMemDynamcDynamc.txt for more info.
 //
 // Quick Start: - short example of class usage
 //
-// Author:      Paul Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     03/07/97 05:41
 //
 // Revision History: (See end of file for Revision Log)
 //
-// $Id$
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
 //
 
 #include <MdbConfig.hh>
@@ -24,7 +33,7 @@
 
 #include <iostream>
 
-#define MDD_VERSION 0x4d444404	// 'MDD4'
+#define MDD_VERSION 0x4d444405	// 'MDD5'
 
 #if defined( MDB_DEBUG )
 #define inline
@@ -50,13 +59,13 @@ public:
 			bool		create,
 			size_type	minChunkSize,
 			size_type	allocSize,
-			MapMask		permMask = 0777 );
+			MapMask		permMask = 02 );
   
   // use this constructor to create a new map file  
   MapMemDynamicDynamic( const char * 	fileName,
-			size_type	minChunkSize = 16,
+			size_type	minChunkSize,
 			size_type	allocSize = 0,
-			unsigned short	permMask = 0777 );
+			unsigned short	permMask = 02 );
 
   // use this constructor to access an existing map file  
   MapMemDynamicDynamic( const char * 	fileName,
@@ -66,12 +75,12 @@ public:
   virtual ~MapMemDynamicDynamic( void );
 
   virtual Loc	    allocate( size_type size );	// returns offset not addr!
-  virtual void 	    release( Loc  offset ); 	// needs offset not addr!
+  virtual void 	    release( Loc  loc ); 	// needs offset not addr!
   
-  inline unsigned long	    getChunkSize( void ) const;
-  inline unsigned long	    getFreeSize( void ) const;
+  unsigned long	    getChunkSize( void ) const;
+  unsigned long	    getFreeSize( void ) const;
   
-  void			    expand( size_type minAmount );
+  bool		    expand( size_type minAmount );
 
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -81,23 +90,24 @@ public:
 				  const char *  prefix = "    ",
                                   bool          showVer = true ) const;
 
-  static const ClassVersion version;
-
-  // debuging / testing methods
   inline
   DumpInfo< MapMemDynamicDynamic >  dump( const char *	prefix = "    ",
 					  bool		showVer = true ) const;
 
+  static const ClassVersion version;
+
+  // debuging / testing methods
   ostream &	dumpFreeList( ostream & dest ) const;
   ostream &	dumpNodes( ostream & dest ) const;
 
+  // Node & FreeNode should be protected but AIX can't deal with it.
+  
   struct Node
   {
     long	next;
     long	prev;
   };
 
-  // FreeNode should be protected but AIX can't deal with it.
   struct FreeNode : public Node
   {
     long	nextFree;
@@ -133,7 +143,7 @@ private:
 
   void	    openMapMemDynamicDynamic( void );
 
-  struct MapDynamicDynamicInfo : MapDynamicInfo
+  struct MapDynamicDynamicInfo : public MapDynamicInfo
   {
     unsigned long   minChunkSize;   // minimum chunk size
     unsigned long   allocSize;	    // bytes to allocate at a time
@@ -166,33 +176,91 @@ private:
 //  Data Types: - data types defined by this header
 //
 //  	MapMemDynamicDynamic	class
+//	    sub class of 'MapMemDynamic( 3 )'
 //
 //  Constructors:
 //
-//  	MapMemDynamicDynamic( );
+//	    Note: use 'good()' to verify there where no errors
+//		  after constructing an instance.
 //
-//  Destructors:
+//  	MapMemDynamicDynamic( const char *	fileName,
+//			      ios::open_mode	mode,
+//			      bool		create,
+//			      size_type		minChunkSize,
+//			      size_type		allocSize,
+//			      MapMask		permMask = 02 );
+//	    Construct a object that either opens an existing map or
+//	    creates a new one.
+//		'fileName' is the full name of the file.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write (note if create == true
+//		    the mode argument is ignored and the file is opened
+//		    with (ios::in | ios::out).
+//		'create' true == create a new map; false == access an
+//		    existing map.
+//		'minChunkSize' is the minimum size to use for allocating a
+//		    chunk.
+//		'allocSize' is the minumum number of bytes to allocate when
+//		    the file needs to be expanded. It is also the number of
+//		    bytes to leave free when the map is shrunk. Note: this
+//		    value will be aligned to the next full page.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
+//
+//  	MapMemDynamicDynamic( const char *  fileName,
+//			      size_type	    minChunkSize,
+//			      size_type	    allocSize,
+//			      MapMask	    permMask = 02 );
+//	    Construct a object that creates a new map.
+//	    creates a new one.
+//		'fileName' is the full name of the file.
+//		'minChunkSize' is the minimum size to use for allocating a
+//		    chunk.
+//		'allocSize' is the minumum number of bytes to allocate when
+//		    the file needs to be expanded. It is also the number of
+//		    bytes to leave free when the map is shrunk. Note: this
+//		    value will be aligned to the next full page.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
+//
+//  	MapMemDynamicDynamic( const char *	fileName,
+//			      ios::open_mode	mode,
+//			      bool		overrideOwner = false );
+//	    Construct a object that opens an existing map.
+//		'fileName' is the full name of the file.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write. 
+//		'overrideOwner' if this is true. The map's current owner
+//		    value will be overriden. See MapMem(3) for more info.
 //
 //  Public Interface:
 //
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
+//	virtual
+//	Loc
+//	allocate( size_type size )
+//	    allocate a chunk of at lease 'size' bytes and return it's 'loc'.
+//	    If an error occured, 0 will be returned.
 //
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
+//	virtual
+//	void
+//	release( Loc loc )
+//	    release a previously allocated chunk.
 //
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
+//	unsigned long
+//	getChunkSize( void ) const
+//	    return the total number of bytes allocated to all chunks.
 //
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
+//	unsigned long
+//	getFreeSize( void ) const
+//	    return the total free space available in the map. (i.e. the
+//	    number of bytes not allocated)
+//
+//	bool
+//	expand( size_type minAmount )
+//	    expand the map by at lease 'minAmount' bytes. The additional
+//	    space is not allocated, it is added to the free list.
 //
 //  	virtual Bool
 //  	good( void ) const;
@@ -216,6 +284,12 @@ private:
 //	    output detail info to dest. Includes instance variable
 //	    values, state info & version info.
 //
+//	inline
+//	DumpInfo< MapMemDynamicDynamic >
+//	dump( const char * previx, bool showVer = true )
+//	    return an object that can be passed to operator << ( ostream & )
+//	    that will generate the same output as 'dumpInfo'.
+//
 //	static const ClassVersion version
 //	    Class and project version information. (see ClassVersion.hh)
 //
@@ -225,25 +299,30 @@ private:
 //
 //  Associated Functions:
 //
-//  	ostream &
-//  	operator <<( ostream & dest, const MapMemDynamicDynamic & src );
-//
-//	istream &
-//	operator >> ( istream & src, MapMemDynamicDynamic & dest );
-//
 // Example:
 //
 // See Also:
 //
+//	MapMemDynamicFixed( 3 )
+//	MapMemDynamic( 3 )
+//	MapMem( 3 )
+//	MapFile( 3 )
+//	ChunkMgrLoc( 3 )
+//	ChunkMgr( 3 )
+//
 // Files:
 //
-// Documented Ver:
+// Documented Ver:  1.9
 //
-// Tested Ver:
+// Tested Ver:	1.9
 //
 // Revision Log:
 //
 // $Log$
+// Revision 1.9  1997/07/13 11:21:09  houghton
+// Cleanup
+// Added documentation.
+//
 // Revision 1.8  1997/06/27 12:15:31  houghton
 // Major rework to speed up 'release'.
 //
