@@ -76,14 +76,14 @@ inline
 const HashTableBase::HashNodeBase &
 HashTableBase::hashNode( Loc node ) const
 {
-  return( *( (const HashNodeBase *)(mgr.address( node )) ) );
+  return( *( (const HashNodeBase *)(mgr->address( node )) ) );
 }
 
 inline
 HashTableBase::HashNodeBase &
 HashTableBase::hashNode( Loc node )
 {
-  return( *( (HashNodeBase *)(mgr.address( node )) ) );
+  return( *( (HashNodeBase *)(mgr->address( node )) ) );
 }
 
 inline
@@ -93,7 +93,7 @@ HashTableBase::find( Hash hash ) const
   if( good() && hash < endHash() )
     return( hashLoc( hash ) );
   else
-    return( ChunkMgr::badLoc );
+    return( MultiMemOffset::badLoc );
 }
 
 
@@ -183,6 +183,9 @@ HashTableBase::endHash( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/13 11:14:15  houghton
+// Changed to use MultiMemOffset.
+//
 // Revision 2.2  1997/06/25 12:54:36  houghton
 // Added size() and empty().
 //
