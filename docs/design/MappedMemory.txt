@@ -1,0 +1,115 @@
+#
+#
+# Title:        MappedMemory.txt
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	07/28/97 12:55
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+Overview
+
+    Mapped memory is a service proviced by Unix that allow you to
+    access a regular file though a range of memory addresses.
+
+    Multiple processes can access a file that has been mapped to
+    memory. No matter how many processes are accessing the file, only
+    one copy is kept in real memory.
+
+    When working will mapped files, the operating system performs
+    operations a page (usually 4096 bytes) at a time.
+
+    Processes can mapped many different files at the same time. If the
+    total contents of all files is larger than available memory, only
+    the most recently used pages will be in real memory. Those pages
+    that are not in real memory are kept in the original file.
+
+    Note: most recently used is a complex algorithm that considers
+    both the frequency and age of access. So, the more often a page is
+    used, the more likely it is that the page will NOT be swapped out
+    to the file.
+
+    If a page that is not in real memory is accessed, a page fault
+    occures and the contents are read from the original file. The page
+    fault is NOT a application error, it just causes the application
+    to be suspended until the contents have been read from the disk by
+    the operating system.
+
+    When mapping a file to memory, you can ask the operating system to
+    use a specific address or let it pick one for you. Using a spcific
+    address slightly improves performance, but significantly reduces
+    flexibility. To use specific addresses, you must know the maximum
+    posible size for each file you plan on mapping.
+
+    If any of the data in a page of a mapped file is modified, it will
+    be written to disk on the next operating system 'sync'. This is
+    when the operating system makes all of its disk writes (usually
+    once a minute, but configurable).
+
+    
+    
+*** OLD JUNK TEXT ***
+    
+    If
+    multiple processes access the same file using mapped memory, only
+    
+
+     Any regular file
+    can be mapped to memory. 
+
+    The MapFile class provides a portable (across Unix systems)
+    interface to memory mapped files. 
+
+    A memroy mapped file is a regular file who's contents have been
+    mapped to a memory address range for a process. This allows the
+    process to access the contents of the file through a pointer
+    instead of reading and/or writing to the file. The memory range
+    and the file are kept in sync by the operation system.
+
+    If multiple processes map the same file to memory, only one copy
+    is kept in real memory. This copy is used by all processes
+    accessing the mapped file. If one process modifies the contents,
+    all other processes will get the modification instantaniously.
+
+    If the processes on a system have mapped more data than the
+    available real memory, the system will keep the most recently used
+    data in real memory and swap the rest to the orignal files. When a
+    process accesses a part of the mapped memeory that has be swapped
+    to the file, that part will be read back into real memory.
+
+    Most recently used is a complex algorithem that includes both the
+    frequency of access and how long ago the access occured.
+
+    
+
+    
+
+
+    
+
+
+
+
+#
+# $Log$
+# Revision 1.1  1997/08/09 14:47:20  houghton
+# Initial Version (work in progress).
+#
+#
+
+# Local Variables:
+# mode:indented-text
+# End:

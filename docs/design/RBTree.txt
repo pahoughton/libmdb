@@ -1,0 +1,52 @@
+#
+#
+# Title:        RBTree.txt
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	07/28/97 18:01
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+Overview
+
+
+Class Hierarchy
+
+
+Class Description
+
+
+Detail Design
+
+    Data Structures:
+
+
+    Primary Methods:
+    
+
+Performance Characteristics:
+
+
+#
+# $Log$
+# Revision 1.1  1997/08/09 14:47:25  houghton
+# Initial Version (work in progress).
+#
+#
+
+# Local Variables:
+# mode:indented-text
+# End:
