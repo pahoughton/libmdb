@@ -80,7 +80,7 @@ public:
   unsigned long	    getChunkSize( void ) const;
   unsigned long	    getFreeSize( void ) const;
   
-  bool		    expand( size_type minAmount );
+  virtual bool	    expand( size_type minAmount );
 
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -324,6 +324,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.11  1997/07/28 16:50:04  houghton
+// Changed expand() to virtual.
+//
 // Revision 1.10  1997/07/19 10:28:53  houghton
 // Port(Sun5): the compiler could not handle protected and/or private
 //     classes or structs.
