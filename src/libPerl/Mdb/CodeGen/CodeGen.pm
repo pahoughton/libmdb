@@ -853,11 +853,11 @@ sub gen_mdb_loader_C {
   while( <$in> ) {
     if( /%COPY_FIELDS%/ ) {
       foreach my $fld ( $rec->field_list() ) {
-	my $spc = ($hasEbcdic ? "E_SPACE" : " " );
+	my $spc = ($hasEbcdic ? "E_SPACE" : "' '" );
 	if( $rec->field_info( $fld )->len() ) {
 	  $out->print(
 "      FixedFieldCopy( rec.$fld, sizeof( rec.$fld ),
-                      (*them).$fld, sizeof((*them).$fld, $spc ) );
+                      (*them).$fld, sizeof((*them).$fld ), $spc );
 
 " );
 	} else {
