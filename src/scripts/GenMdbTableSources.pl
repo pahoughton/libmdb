@@ -110,6 +110,11 @@ our @Options =
 			"record layout report file",
 			"The record layout report to generate the table's"
 			." record structure from."],
+   [ "struct=s",	undef,
+			"FILE",	    opt",
+			"c struct file",
+			"The file containing the 'c' language struct"
+			." to generate the record structure from."],
    [ "prj=s",		undef,
 			"PROJECT",  "req",
 			"project name",
@@ -164,15 +169,25 @@ sub main {
   my $rec = new DataFile::Record;
 
   if( $opts->opt( "cb" ) ) {
-    $rec->parse_copy_book( new IO::File( $opts->opt( "cb" ), "r" ),
-			   $opts->opt( "prefix" ) );
+    my $fn = $opts->opt( "cb" );
+    my $in = new IO::File( $fn, "r" );
+    $in || die( "open '$fn' - $!" );
+    $rec->parse_copy_book( $in, $opts->opt( "prefix" ) );
+
   } elsif( $opts->opt( "rlr" ) ) {
-    if( ! -f $opts->opt( "rlr" ) ) {
-      die( $opts->opt("rlr"), " - not found." );
-    }
-    $rec->parse_record_layout_report( new IO::File( $opts->opt( "rlr" ),
-						    "r" ),
+    my $fn = $opts->opt( "rlr" );
+    my $in = new IO::File( $fn, "r" );
+    $in || die( "open '$fn' - $!" );
+    $rec->parse_record_layout_report( $in,
 				      $opts->opt( "prefix" ) );
+  } elsif( $opts->opt( "struct" ) ) {
+    my $fn = $opts->opt( "struct" );
+    my $in = new IO::File( $fn, "r" );
+    $in || die( "open '$fn' - $!" );
+    $rec->parse_c_struct( $in,
+			 $opts->opt( "prefix" ) );
+  } else {
+    die "no input specified, see --help";
   }
 
   my $gen = new Mdb::CodeGen( PROJECT	    => $opts->opt( "prj" ),
@@ -203,6 +218,9 @@ if( ! defined( $main::DontRun ) || $main::DontRun == 0 ) {
 # Revision Log:
 #
 # $Log$
+# Revision 1.2  2003/07/04 13:20:29  houghton
+# Added support to get from c struct souce file.
+#
 # Revision 1.1  2003/06/08 18:03:52  houghton
 # Initial Version
 #
