@@ -54,7 +54,7 @@ public:
   virtual Addr		address( Loc offset );
   virtual const Addr	address( Loc offset ) const;
   
-  virtual Loc		location( const Addr addr );
+  virtual Loc		location( const Addr addr ) const;
   
   virtual void *	getBase( void );
   virtual const void *  getBase( void ) const;
@@ -175,6 +175,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/06/19 13:35:52  houghton
+// Changed location to be a const method.
+//
 // Revision 2.5  1997/06/19 12:03:51  houghton
 // Changed to be part of libMdb.
 // Cleanup.

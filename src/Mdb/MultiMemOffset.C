@@ -68,7 +68,7 @@ MultiMemOffset::address( Loc offset ) const
 }
 
 MultiMemOffset::Loc
-MultiMemOffset::location( const Addr addr )
+MultiMemOffset::location( const Addr addr ) const
 {
   return( (Loc)addr );
 }
@@ -152,6 +152,9 @@ MultiMemOffset::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/06/19 13:35:51  houghton
+// Changed location to be a const method.
+//
 // Revision 2.5  1997/06/19 12:03:11  houghton
 // Changed to be part of libMdb.
 // Cleanup.

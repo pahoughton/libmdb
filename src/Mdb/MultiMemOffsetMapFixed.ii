@@ -55,7 +55,7 @@ MultiMemOffsetMapFixed::address( Loc loc ) const
 
 inline
 MultiMemOffsetMapFixed::Loc
-MultiMemOffsetMapFixed::location( const Addr addr )
+MultiMemOffsetMapFixed::location( const Addr addr ) const
 {
   return( mem.location( addr ) );
 }
@@ -89,6 +89,9 @@ MultiMemOffsetMapFixed::getMap( void )
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/06/19 13:35:52  houghton
+// Changed location to be a const method.
+//
 // Revision 2.1  1997/06/19 12:04:03  houghton
 // Initial Version.
 //

@@ -50,13 +50,10 @@ public:
   virtual Addr		address( Loc offset );
   virtual const Addr	address( Loc loc ) const;
   
-  virtual Loc		location( void * addr );
+  virtual Loc		location( const Addr addr ) const;
   
   virtual void *	getBase( void );
   virtual const void *	getBase( void ) const;
-
-  virtual ostream & 	getStats( ostream & dest ) const;
-
 
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -174,6 +171,9 @@ extern MultiMemOffset MultiMemOffsetMalloc;
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/06/19 13:35:51  houghton
+// Changed location to be a const method.
+//
 // Revision 2.4  1997/06/19 12:03:14  houghton
 // Changed to be part of libMdb.
 // Cleanup.
