@@ -1,9 +1,9 @@
 //
-// File:        tMapMemDynamicDynamic.C
+// File:        tMapMemDynamicDynamic01.C
 // Project:	Clue
 // Desc:        
 //
-//  Compiled sources for tMapMemDynamicDynamic
+//  Test for MapMemDynamicDynamic class
 //  
 // Author:      Paul A. Houghton - (houghton@cshore.wcom.com)
 // Created:     03/07/97 08:17
@@ -16,6 +16,7 @@
 //
 
 #include <MapMemDynamicDynamic.hh>
+#include "TestConfig.hh"
 #include <LibTest.hh>
 #include <LibLog.hh>
 
@@ -23,6 +24,12 @@
 #include <vector>
 #include <iomanip>
 #include <cstring>
+
+//
+// Note: #define MANUAL_REVIEW 1
+//
+//  to see detailed output after each operation.
+//
 
 struct Data
 {
@@ -34,8 +41,9 @@ struct Data
 typedef vector<Data> DataList;
 
 bool
-tMapMemDynamicDynamic( LibTest & tester )
+tMapMemDynamicDynamic01( LibTest & tester )
 {
+  
 #if defined( MANUAL_REVIEW )
   Log	    l( tester.getDump(), LogLevel::Test );
   
@@ -44,11 +52,10 @@ tMapMemDynamicDynamic( LibTest & tester )
   tester.getDump() << endl;
   
   {
-    MapMemDynamicDynamic    t( TEST_DATA_DIR "/mmdd.mdd",
+    MapMemDynamicDynamic    t( TEST_DATA_DIR "/tMMDD01.mdd",
 			       40,
-			       4096,
-			       0 );
-
+			       4096 );
+    
     TESTR( t.error(), t.good() );
 
     Data	d;
@@ -301,13 +308,11 @@ tMapMemDynamicDynamic( LibTest & tester )
 	  }
       }
   }
-#endif // defined( MANUAL_REVIEW )
-
+#else	// defined( MANUAL_REVIEW )  
   {
-    MapMemDynamicDynamic    t( TEST_DATA_DIR "/mmdd.mdd",
+    MapMemDynamicDynamic    t( TEST_DATA_DIR "/tMMDD01.mdd",
 			       40,
-			       4096,
-			       0 );
+			       4096 );
 
     TESTR( t.error(), t.good() );
 
@@ -419,13 +424,13 @@ tMapMemDynamicDynamic( LibTest & tester )
     data[rNode].loc = 0;
     
     // allocate last node
-    char *  chunk;
+    unsigned char *  chunk;
     
     d.size  = 7990;	data.push_back( d );	// 23
 
     data.back().loc = t.allocate( data.back().size );
     TESTR( t.error(), data.back().loc );
-    chunk = (char *)t.address( data.back().loc );
+    chunk = (unsigned char *)t.address( data.back().loc );
     TESTR( t.error(), chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
@@ -435,7 +440,7 @@ tMapMemDynamicDynamic( LibTest & tester )
 
     data.back().loc = t.allocate( data.back().size );
     TESTR( t.error(), data.back().loc );
-    chunk = (char *)t.address( data.back().loc );
+    chunk = (unsigned char *)t.address( data.back().loc );
     TESTR( t.error(), chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
@@ -444,7 +449,7 @@ tMapMemDynamicDynamic( LibTest & tester )
 
     data.back().loc = t.allocate( data.back().size );
     TESTR( t.error(), data.back().loc );
-    chunk = (char *)t.address( data.back().loc );
+    chunk = (unsigned char *)t.address( data.back().loc );
     TESTR( t.error(), chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
@@ -458,12 +463,9 @@ tMapMemDynamicDynamic( LibTest & tester )
 
     data.back().loc = t.allocate( data.back().size );
     TESTR( t.error(), data.back().loc );
-    chunk = (char *)t.address( data.back().loc );
+    chunk = (unsigned char *)t.address( data.back().loc );
     TESTR( t.error(), chunk != 0 );
     memset( chunk, 0xff, data.back().size );
-
-    t.dumpInfo( tester.getDump() );
-    t.dumpNodes( tester.getDump() );
 
     for( DataList::iterator them = data.begin();
 	 them != data.end();
@@ -471,12 +473,19 @@ tMapMemDynamicDynamic( LibTest & tester )
       {
 	if( (*them).loc )
 	  {
-	    tester.getDump() << "Allocated: " << setw(6) << (*them).loc
-			     << "  size: " << setw(6) << (*them).size
-			     << endl;
+	    chunk = (unsigned char *)t.address( (*them).loc );
+	    
+	    TESTR( t.error(), chunk != 0 );
+
+	    for( int c = 0; c < (*them).size; ++ c )
+	      {
+		TESTR( "bad value.", chunk[c] == 0xff );
+	      }
 	  }
       }
   }
+#endif // defined( MANUAL_REVIEW )
+
 
 #if 0
   vector< int > TestNodeSize;
@@ -656,6 +665,10 @@ tMapMemDynamicDynamic( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/13 11:35:44  houghton
+// Cleanup.
+// Rework.
+//
 // Revision 2.4  1997/06/27 12:16:22  houghton
 // Major rework.
 //
