@@ -223,6 +223,9 @@ tHashSet01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:45  houghton
+// Change Major Version to 4
+//
 // Revision 2.4  1997/07/25 13:49:45  houghton
 // Changed: Dash was renamed to DashSet.
 // Changed: Hash was renamed to HashSet.

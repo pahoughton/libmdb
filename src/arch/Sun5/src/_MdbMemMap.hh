@@ -113,6 +113,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:44  houghton
+// Change Major Version to 4
+//
 // Revision 2.2  2000/02/28 11:56:49  houghton
 // OS Update: with upgrade to 5.6 getpagesize is now correctly declared.
 //

@@ -175,6 +175,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.4  1997/07/19 10:18:49  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.

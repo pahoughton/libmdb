@@ -81,6 +81,9 @@ DashTableBase::prev( HashValue & hash, Loc & node ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.3  1997/07/19 10:19:01  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.

@@ -314,6 +314,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.11  1997/10/01 14:00:54  houghton
 // Changed to use portable multi platform data types.
 //

@@ -236,6 +236,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.6  1998/10/23 13:17:51  houghton
 // Changed include <projectn.h> to include <MdbUtils.h>.
 // Changed ident<> to MdbIdent<>.

@@ -424,6 +424,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.4  1997/07/25 13:44:49  houghton
 // Cleanup.
 // Class was renamed to DashSet (was Dash).

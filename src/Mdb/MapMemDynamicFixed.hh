@@ -242,6 +242,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.14  1997/10/01 14:02:55  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.

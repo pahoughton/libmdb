@@ -183,6 +183,9 @@ MapMemDynamic::openMapMemDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.6  1997/07/19 10:26:55  houghton
 // Port(Sun5): renamed local variables to eliminate compiler warnings.
 //

@@ -83,6 +83,9 @@ extern AppParam * App;
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 1.1  1999/06/10 11:47:09  houghton
 // Initial Version.
 //

@@ -283,6 +283,9 @@ install_shared::
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 4.1  2001/07/27 00:57:46  houghton
+# Change Major Version to 4
+#
 # Revision 1.1  1998/10/23 13:22:26  houghton
 # Initial Version.
 #

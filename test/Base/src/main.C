@@ -67,6 +67,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:45  houghton
+// Change Major Version to 4
+//
 // Revision 2.4  2000/07/31 13:06:44  houghton
 // Added MapBatch tests.
 //

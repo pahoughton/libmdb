@@ -369,6 +369,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.5  1997/07/19 10:16:42  houghton
 // Bug-Fix: changed destroyTree args from Log * to Loc (see log entry in
 //     AvlTreeMethods.INC for more info.

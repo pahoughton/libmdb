@@ -114,6 +114,9 @@ struct MdbIdent {
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.2  1997/07/22 19:43:56  houghton
 // Added non-const operator ().
 //

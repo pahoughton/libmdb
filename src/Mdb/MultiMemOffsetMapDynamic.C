@@ -208,6 +208,9 @@ MultiMemOffsetMapDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:44  houghton
+// Change Major Version to 4
+//
 // Revision 2.3  1999/10/28 14:22:21  houghton
 // Added allocCopyStr().
 //

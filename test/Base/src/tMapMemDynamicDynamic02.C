@@ -177,6 +177,9 @@ tMapMemDynamicDynamic02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:46  houghton
+// Change Major Version to 4
+//
 // Revision 2.3  1997/08/18 10:28:06  houghton
 // Port(Sun5): had to rename the 'Data' structure. The sun compiler was
 //     using the same structure across .C files.

@@ -548,6 +548,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.20  2000/07/31 13:06:05  houghton
 // Change Sun5 don't prewrite map files (os bug fixed).
 //

@@ -531,6 +531,9 @@ pAvlTreeOffset(
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:46  houghton
+// Change Major Version to 4
+//
 // Revision 2.2  2000/05/27 14:31:56  houghton
 // Port: Sun CC 5.0.
 //

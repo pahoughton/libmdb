@@ -41,6 +41,9 @@ bool	tMapMemDlist( LibTest & tester );
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:45  houghton
+// Change Major Version to 4
+//
 // Revision 2.3  2000/07/31 13:06:29  houghton
 // Added MapBatch tests.
 //

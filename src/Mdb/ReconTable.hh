@@ -174,6 +174,9 @@ operator >> ( istream & src, const ReconTable & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:44  houghton
+// Change Major Version to 4
+//
 // Revision 1.1  2000/08/02 11:03:47  houghton
 // Initial Version.
 //

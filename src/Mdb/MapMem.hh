@@ -247,6 +247,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.10  1999/05/09 17:32:11  houghton
 // Added long long support.
 //

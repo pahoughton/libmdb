@@ -37,6 +37,9 @@ tDRBTree( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:45  houghton
+// Change Major Version to 4
+//
 // Revision 2.3  1997/07/22 19:46:22  houghton
 // Added tDRBTree03 and tDRBTree04 test.
 //

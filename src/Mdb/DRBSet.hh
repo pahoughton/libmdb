@@ -438,6 +438,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.10  1999/11/04 17:26:52  houghton
 // Added histSize().
 // Changed output of dumpHist().

@@ -310,6 +310,9 @@ tAvlTreeOffset01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:45  houghton
+// Change Major Version to 4
+//
 // Revision 2.2  1997/07/19 10:36:14  houghton
 // Bug-Fix; added include <algorithm>
 //

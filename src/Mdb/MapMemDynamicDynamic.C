@@ -863,6 +863,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.16  1998/02/02 15:39:03  houghton
 // Cleanup test defines.
 //

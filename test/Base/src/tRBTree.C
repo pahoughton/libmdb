@@ -37,6 +37,9 @@ tRBTree( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:46  houghton
+// Change Major Version to 4
+//
 // Revision 2.2  1997/07/14 10:48:56  houghton
 // Added tRBTree01 test (but it is commented out).
 //

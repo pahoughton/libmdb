@@ -321,6 +321,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:44  houghton
+// Change Major Version to 4
+//
 // Revision 2.6  1997/10/01 14:03:33  houghton
 // Chaged to reserve 'keys' set.
 // Changed to use portable multi platform types.

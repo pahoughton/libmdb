@@ -729,6 +729,9 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:43  houghton
+// Change Major Version to 4
+//
 // Revision 2.18  1997/09/17 16:56:07  houghton
 // Changed for new library rename to StlUtils
 //

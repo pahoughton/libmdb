@@ -183,6 +183,9 @@ tMapMemDynamicFixed01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:46  houghton
+// Change Major Version to 4
+//
 // Revision 2.1  1997/07/11 17:39:24  houghton
 // Initial Version.
 //

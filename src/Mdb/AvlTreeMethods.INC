@@ -808,6 +808,9 @@ ClassName::balance(
 // Revision Log:
 //
 // $Log$
+// Revision 4.1  2001/07/27 00:57:42  houghton
+// Change Major Version to 4
+//
 // Revision 2.6  1997/09/17 16:55:53  houghton
 // Changed for new library rename to StlUtils
 //
