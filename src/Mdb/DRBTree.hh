@@ -197,6 +197,11 @@ public:
     RBTreeBase::Loc					hist;
   };
 
+  typedef reverse_bidirectional_iterator< const_iterator,
+    Value, const Value &, difference_type >	const_reverse_iterator;
+  typedef reverse_bidirectional_iterator< iterator,
+    Value, Value &, difference_type >		reverse_iterator;
+    
   typedef pair< iterator, bool >    pair_iterator_bool;
   
   inline DRBTree( MultiMemOffset *  memMgr,
@@ -291,46 +296,35 @@ public:
 	return( end() );
       }
   };
-  
+
   inline bool		    erase( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
 	! lessKeyObj( key, keyOf( nodeValue( node ) ) ) )
-      {
-	Loc * h = &(drbNode( node ).hist);
-	for( ; *h && history( *h ).when > eff ;
-	     h = &(history( *h ).next) );
-
-	if( *h && history( *h ).when == eff )
-	  {
-	    history( *h ).del = 1;
-	  }
-	else
-	  {
-	    Loc hist = histMgr->allocate( sizeof( DRBNode ) );
-    
-	    if( hist )
-	      {
-		++ header().count;
-		
-		keyOf( history( hist ).value )	= key;
-		history( hist ).when		= eff;
-		history( hist ).next		= 0;
-		history( hist ).del		= 1;
-		
-		history( hist ).next = *h;
-		*h = hist;
-	      }
-	    else
-	      {
-		return( false );
-	      }
-	  }
-	return( true );
-      }
-    return( false );
+      return( eraseNode( node, eff ) );
+    else
+      return( false );
+  };
+  
+  inline bool		    erase( const iterator & pos, EffDate eff ) {
+    if( pos.node != headerLoc )
+      return( eraseNode( pos.node, eff ) );
+    else
+      return( false );
   };
 
+  inline bool		    erase( const iterator & first,
+				   const iterator & last,
+				   EffDate	    eff ) {
+    for( Loc node = first.node; node != last.node; next( node ) ) {
+      if( ! eraseNode( node, eff ))
+	return( false );
+    }
+    return( true );
+  };
+    
+    
+    
   inline bool		    trim( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
@@ -367,6 +361,22 @@ public:
   
   inline iterator	    end( void ) {
     return( iterator( this, headerLoc, 0 ) );
+  };
+
+  inline const_reverse_iterator	rbegin( void ) const {
+    return( const_reverse_iterator( end() ) );
+  };
+
+  inline const_reverse_iterator rend( void ) const {
+    return( const_reverse_iterator( begin() ) );
+  };
+
+  inline reverse_iterator	rbegin( void ) {
+    return( reverse_iterator( end() ) );
+  };
+
+  inline reverse_iterator	rend( void ) {
+    return( reverse_iterator( begin() ) );
   };
 
   inline EffDate	    effective( const_iterator it ) {
@@ -540,6 +550,41 @@ protected:
     return( parent );
   };
 
+  inline bool		eraseNode( Loc node, EffDate eff ) {
+    Loc * h = &(drbNode( node ).hist);
+    for( ; *h && history( *h ).when > eff ;
+	 h = &(history( *h ).next) );
+    
+    if( *h && history( *h ).when == eff )
+      {
+	history( *h ).del = 1;
+      }
+    else
+      {
+	Loc hist = histMgr->allocate( sizeof( DRBNode ) );
+	
+	if( hist )
+	  {
+	    ++ header().count;
+	    
+	    keyOf( history( hist ).value )  =
+	      keyOf( history( drbNode( node ).hist ).value );
+	    
+	    history( hist ).when	    = eff;
+	    history( hist ).next	    = 0;
+	    history( hist ).del		    = 1;
+	    
+	    history( hist ).next = *h;
+	    *h = hist;
+	  }
+	else
+	  {
+	    return( false );
+	  }
+      }
+    return( true );
+  };
+
   inline bool		trimNode( Loc node, EffDate eff ) {
     
     Loc prevHist    = 0;
@@ -682,6 +727,14 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/25 15:57:43  houghton
+// Added const_reverse_iterator
+// Added reverse_iterator
+// Added eraseNode()
+// Added erase( const iterator & pos, EffDate eff )
+// Added erase( const iterator & first, const iterator & last,  EffDate eff )
+// Added rbegin(), rend(), rbegin() const, rend() const.
+//
 // Revision 2.4  1997/07/25 13:44:06  houghton
 // Bug-Fix: number of records was not being updated.
 //
