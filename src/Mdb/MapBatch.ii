@@ -94,6 +94,7 @@ MapBatch<T>::dumpInfo(
   map.dumpInfo( dest, pre, false );
 
   dest << prefix << "endpos:     " << endPos << '\n'
+       << prefix << "records:    " << size() << '\n'
     ;
   
   return( dest );
@@ -110,6 +111,9 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.6  1997/12/30 13:41:12  houghton
+// Added records to dumpInfo outpput.
+//
 // Revision 2.5  1997/12/23 12:10:45  houghton
 // Bug-Fix: was not truncating file if batch was empty.
 //
