@@ -27,7 +27,7 @@
 #include <DumpInfo.hh>
 
 #include <iterator>
-#include <pair>
+#include <utility>
 
 template< class Key,
           class Value,
@@ -457,6 +457,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1998/10/23 13:18:43  houghton
+// Changed include <pair> to include <utility>.
+//
 // Revision 2.7  1997/09/17 16:55:57  houghton
 // Changed for new library rename to StlUtils
 //
