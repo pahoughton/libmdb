@@ -83,7 +83,7 @@ public:
   };
   
   inline const_iterator		end( void ) const {
-    return( (const_iterator)endPos );
+    return( (const_iterator)(map.getBase() + endPos ));
   };
   
   inline const_reverse_iterator	rbegin( void ) const {
@@ -108,7 +108,7 @@ public:
   };
   
   inline iterator	    end( void ) {
-    return( (iterator)endPos );
+    return( (iterator)(map.getBase() + endPos ));
   };
   
   inline reverse_iterator   rbegin( void ) {
@@ -144,7 +144,7 @@ public:
   };
   
   inline iterator	append( void ) {
-    if( endPos + sizeof( value_type ) >= map.getEnd() ) {
+    if( endPos + sizeof( value_type ) >= map.getSize() ) {
       if( ! map.grow( sizeof( value_type ), 0 ) )
 	return( end() );
     }
@@ -172,8 +172,8 @@ public:
     
 protected:
   
-  MapFile	    map;
-  MapFile::MapAddr  endPos;
+  MapFile		map;
+  MapFile::size_type    endPos;
 
 private:
   
@@ -247,6 +247,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/09/02 13:25:53  houghton
+// Bug-Fix: endpos had the address which could change due to an
+//     append(). Changed so endpos is an offset and added to getBase() which
+//     allways has the correct base address.
+//
 // Revision 2.4  1997/08/31 10:17:30  houghton
 // Added operator [] to retreive a specific record.
 //

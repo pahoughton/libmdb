@@ -29,7 +29,7 @@ MapBatch<T>::MapBatch(
   MapFile::MapMask  permMask
   )
   : map( fileName, 0, mode, create, permMask ),
-    endPos( create ? map.getBase() : map.getEnd() ) 
+    endPos( create ? 0 : map.getSize() )
 {
 }
 
@@ -39,10 +39,9 @@ MapBatch<T>::~MapBatch( void )
 {
   if( (map.getMode() & ios::out ) && endPos )
     {
-      size_type	realSize = endPos - map.getBase();
       map.unmap();
       
-      truncate( map.getFileName(), realSize );
+      truncate( map.getFileName(), endPos );
     }
 }
 
@@ -94,7 +93,7 @@ MapBatch<T>::dumpInfo(
   pre << "map:";
   map.dumpInfo( dest, pre, false );
 
-  dest << prefix << "endpos:     " << (void*)endPos << '\n'
+  dest << prefix << "endpos:     " << endPos << '\n'
     ;
   
   return( dest );
@@ -111,6 +110,11 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/09/02 13:26:03  houghton
+// Bug-Fix: endpos had the address which could change due to an
+//     append(). Changed so endpos is an offset and added to getBase() which
+//     allways has the correct base address.
+//
 // Revision 2.3  1997/08/20 10:36:22  houghton
 // Port(AIX): changed dumpInfo class specifiers from MapBatch:: to
 //     MapBatch<T>::
