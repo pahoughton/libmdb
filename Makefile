@@ -55,6 +55,8 @@ BUILD_TARGETS		= $(BUILD_TYPE_LIST)
 INSTALL_LIB_TARGETS	= $(patsubst %,install_lib_%,$(BUILD_TYPE_LIST))
 INSTALL_TARGETS		= $(patsubst %,install_%,$(BUILD_TYPE_LIST))
 
+# cvs_tag		=
+
 SUBDIRS		= src doc test
 
 TARGETS		=		\
@@ -143,8 +145,8 @@ install_html install_man:
 		$(install_doc_exports)	\
 		$($(@)_exports))
 
-dist:
-	$(call make_dist_from_dim,infr_objs,mcmain,$(PROJECT_DIR))
+dist_source:
+	$(call make_dist_from_cvs,$(cvs_tag),$(PROJECT_DIR))
 
 dist_binary:
 	$(hide) $(MAKE) -C support -f Install.Makefile $@	\
@@ -173,6 +175,11 @@ realclean::
 #   force	    If this is not empty, force the rebuild of all
 #		    targets even if none of the dependencies are out
 #		    of date.
+#
+#   cvs_tag	    Use to specify the cvs TAG value for dist_sources.
+#		    This value must be specified on the command line
+#		    when building the 'dist_sources' target. For
+#		    exammple: make dist_sources cvs_tag=MY_PRJ_1_01
 #
 # Help variables
 #
