@@ -3,5 +3,6 @@
 .depend_profile
 PerfRBSet
 PerfRBSet_g
+PerfRBSet_g.perf
 objects
 rbset.perf
