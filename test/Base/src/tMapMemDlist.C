@@ -28,7 +28,7 @@ bool
 tMapMemDlist( LibTest & tester )
 {
   {
-    const char * TestFn = TEST_DATA_DIR "mdl01.mdl";
+    const char * TestFn = TEST_DATA_DIR "/mdl01.mdl";
     
     MapMemDynamicDynamic    dataMap( TestFn,
 				     (ios::open_mode)(ios::in|ios::out),
@@ -87,6 +87,9 @@ tMapMemDlist( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:31:10  houghton
+// Bug-Fix: was missing '/' in file name.
+//
 // Revision 2.1  1998/10/23 13:21:00  houghton
 // Initial Version.
 //
