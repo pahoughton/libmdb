@@ -193,7 +193,7 @@ MapMemDynamicDynamic::allocate( size_type size )
   size_type    chunkSize = max( DwordAlign( size + sizeof( Node ) ),
 				mapInfo()->minChunkSize );
 
-  ++ mapInfo()->chunkCount;
+  ++ mapInfo()->allocCount;
 
   Loc f;
   
@@ -226,11 +226,11 @@ MapMemDynamicDynamic::release( Loc offset )
   
   Loc		f = freeLoc( offset );
 
-  -- mapInfo()->chunkCount;
+  -- mapInfo()->allocCount;
 
   mapInfo()->chunkSize -= freeNodeSize( f );
   mapInfo()->freeSize  += freeNodeSize( f );
-  
+
   if( freeList().nextFree == 0 )
     {
       // no other free nodes, put this node into the free list
@@ -349,41 +349,41 @@ MapMemDynamicDynamic::release( Loc offset )
 	      if( freeNode( f ).next )
 		freeNode( freeNode( f ).next ).prev = - f;
 	      
-	      if( freeList().nextFree > f )
+	      if( freeList().prevFree < f )
 		{
-		  // 'f' is before the first free.
-		  freeNode( f ).prevFree = 0;
-		  freeNode( f ).nextFree = freeList().nextFree;
-
-		  freeNode( freeNode( f ).nextFree ).prevFree = f;
-
-		  freeList().nextFree = f;
+		  // 'f' is after the last free.
+		  
+		  freeNode( f ).prevFree = freeList().prevFree;
+		  freeNode( f ).nextFree = 0;
+		  
+		  freeNode( freeNode( f ).prevFree ).nextFree = f;
+		  
+		  freeList().prevFree = f;
 		  
 #if defined( MDD_DEBUG )
 		  _LLg( LogLevel::Test )
-		    << "release ( " << offset << " ) first."
+		    << "release ( " << offset << " ) Last."
 		    << endl;
-		  ++ relFirst;
+		  ++ relLast;
 #endif
 		}
 	      else
 		{
-		  if( freeList().prevFree < f )
+		  if( freeList().nextFree > f )
 		    {
-		      // 'f' is after the last free.
-
-		      freeNode( f ).prevFree = freeList().prevFree;
-		      freeNode( f ).nextFree = 0;
-
-		      freeNode( freeNode( f ).prevFree ).nextFree = f;
-
-		      freeList().prevFree = f;
+		      // 'f' is before the first free.
+		      freeNode( f ).prevFree = 0;
+		      freeNode( f ).nextFree = freeList().nextFree;
+		      
+		      freeNode( freeNode( f ).nextFree ).prevFree = f;
+		      
+		      freeList().nextFree = f;
 		      
 #if defined( MDD_DEBUG )
 		      _LLg( LogLevel::Test )
-			<< "release ( " << offset << " ) Last."
+			<< "release ( " << offset << " ) first."
 			<< endl;
-		      ++ relLast;
+		      ++ relFirst;
 #endif
 		    }
 		  else
@@ -491,12 +491,24 @@ MapMemDynamicDynamic::release( Loc offset )
     }
 }
 
+unsigned long
+MapMemDynamicDynamic::getChunkSize( void ) const
+{
+  return( mapInfo() ? mapInfo()->chunkSize : 0 );
+}
 
-void
+unsigned long
+MapMemDynamicDynamic::getFreeSize( void ) const
+{
+  return( mapInfo() ? mapInfo()->freeSize : 0 );
+}
+
+
+bool
 MapMemDynamicDynamic::expand( size_type minAmount )
 {
   if( ! good() )
-    return;
+    return( false );
 
   size_type	origSize = getMapSize();
   
@@ -533,7 +545,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
   if( grow( amount, (caddr_t)mapInfo()->base ) == 0 )
     {
       errorNum = E_MAPMEM;
-      return;
+      return( false );
     }
 
   mapInfo()->size = getSize();
@@ -621,7 +633,8 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
     }
 #endif
- 
+
+  return( true );
 }
 
 bool
@@ -848,6 +861,10 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.13  1997/07/13 11:23:29  houghton
+// Cleanup
+// Reorderd release test to first check if node is after last.
+//
 // Revision 2.12  1997/06/27 12:15:30  houghton
 // Major rework to speed up 'release'.
 //
