@@ -26,7 +26,7 @@ MapBatch<T>::MapBatch(
   const char *	    fileName,
   ios::open_mode    mode,
   bool		    create,
-  MapMask	    permMask
+  MapFile::MapMask  permMask
   )
   : map( fileName, 0, mode, create, permMask ),
     endPos( create ? map.getBase() : map.getEnd() ) 
@@ -77,7 +77,7 @@ MapBatch<T>::dumpInfo(
   ostream &	dest,
   const char *	prefix,
   bool		showVer
-  )
+  ) const
 {
   
   if( showVer )
@@ -111,6 +111,10 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/08/17 01:38:57  houghton
+// Bug-Fix: MapMask is part of MapFile
+// Bug-Fix: dump is a 'const' method.
+//
 // Revision 2.1  1997/08/10 20:33:01  houghton
 // Initial Version.
 //
