@@ -160,6 +160,10 @@ public:
     return( *(begin() + rec) );
   };
   
+  inline reference	    operator [] ( size_type rec ) {
+    return( *(begin() + rec) );
+  };
+  
 
   inline bool		sync( size_type	beg = 0,
 			      size_type	len = MapFile::npos,
@@ -256,6 +260,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/12/19 12:41:05  houghton
+// Added operator [].
+//
 // Revision 2.6  1997/10/01 14:03:56  houghton
 // Added typedef for Rec
 // Added sync().
