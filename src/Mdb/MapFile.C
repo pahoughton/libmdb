@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.4  1997/03/07 11:48:23  houghton
+// Add dumpInfo.
+//
 // Revision 2.3  1997/03/03 14:32:06  houghton
 // Moved construtors to .C from .hh (no longer inline).
 //
@@ -45,7 +48,9 @@ static const char * RcsId =
 #define MAP_VARIABLE  0
 #endif
 
+#if defined( Linux )
 extern "C" size_t getpagesize( void );
+#endif
 
 MapFile::MapFile()
 {
@@ -313,6 +318,31 @@ MapFile::getStats( ostream & dest ) const
   return( dest );
 }
 
+ostream &
+MapFile::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! MapFile::good() )
+    dest << prefix << "Error: " << MapFile::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  dest << prefix << "name:          " << fileStat.getName() << '\n'
+       << prefix << "perm:          " << fileStat.getModeString() << '\n'
+       << prefix << "owner/group:   " << fileStat.getUserName() << '/'
+       <<                                fileStat.getGroupName() << '\n'
+       << prefix << "access:        " << getAccess() << '\n'
+       << prefix << "map size:      " << getSize() << '\n'
+       << prefix << "base addr:     " << (void *)getBase() << '\n'
+       << prefix << "end addr:      " << (void *)getEnd() << '\n'
+       << prefix << "page size:     " << getPageSize() << endl
+    ;
+
+  return( dest );
+}
   
 
     

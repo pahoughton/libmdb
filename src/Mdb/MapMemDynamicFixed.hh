@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/03/07 11:49:33  houghton
+// Add dumpInfo.
+//
 // Revision 2.3  1997/03/03 14:32:47  houghton
 // Added virtual destructor.
 //
@@ -93,10 +96,12 @@ public:
   
   virtual ostream & 	getStats( ostream & dest ) const;
 
-  virtual const char * 	getClassName( void ) const;
   virtual bool	    	good( void ) const;
-  virtual const char *	error( void ) const;
-    
+  virtual const char *	error( void ) const;    
+  virtual const char * 	getClassName( void ) const;
+  virtual ostream &	dumpInfo( ostream &	dest,
+				  const char *  prefix = "    ",
+				  bool		showVer = false ) const;
   struct FreeList
   {
     unsigned long next;

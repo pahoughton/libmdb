@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1997/03/07 11:49:12  houghton
+// Add dumpInfo.
+//
 // Revision 2.2  1997/03/03 14:32:31  houghton
 // Added virtual destructor.
 //
@@ -179,7 +182,40 @@ MapMem::getStats( ostream & dest ) const
   return( MapFile::getStats( dest ) );
 }
   
-	
+ostream &
+MapMem::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! MapMem::good() )
+    dest << prefix << "Error: " << MapMem::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << MapFile::getClassName() << "::";
+
+  MapFile::dumpInfo( dest, pre, false );
+
+  if( mapInfo != 0 )
+    {
+      dest << prefix << "map Ver:  " << getVersion() << '\n'
+	   << prefix << "type:     " << getTypeName() << '\n'
+	   << prefix << "map to:   " << getMapToAddr() << '\n'
+	   << prefix << "map Size: " << getMapSize() << '\n'
+	;
+    }
+  else
+    {
+      dest << prefix << "No Map info available!" << '\n';
+    }
+
+  return( dest );
+}
+
 
 //
 //              This software is the sole property of

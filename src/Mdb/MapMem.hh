@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/07 11:49:01  houghton
+// Add dumpInfo.
+//
 // Revision 2.2  1997/03/03 14:32:34  houghton
 // Added virtual destructor.
 //
@@ -89,6 +92,10 @@ public:
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
 
+  virtual ostream &	dumpInfo( ostream &	dest,
+				  const char *	prefix = "    ",
+				  bool		showVer = false ) const;
+  
   friend inline ostream & operator<<( ostream & dest, const MapMem & mm );
   
 protected:

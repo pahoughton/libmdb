@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/03/07 11:48:41  houghton
+// Add dumpInfo.
+//
 // Revision 2.3  1997/03/03 14:32:22  houghton
 // Moved construtors to .C from .hh (no longer inline).
 // Added virtual destructor.
@@ -87,6 +90,10 @@ public:
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
 
+  virtual ostream &	dumpInfo( ostream &	dest,
+				  const char *	prefix = "    ",
+				  bool		showVer = false ) const;
+  
   friend inline ostream & operator<<( ostream & dest, const MapFile & map );
   
 protected:

@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.6  1997/03/07 11:49:46  houghton
+// Add dumpInfo.
+//
 // Revision 2.5  1997/03/03 14:32:42  houghton
 // Added virtual destructor.
 //
@@ -41,6 +44,7 @@ static const char * RcsId =
 #include "MapMemFixedDynamic.hh"
 #include <ClueUtils.hh>
 #include <Str.hh>
+#include <iomanip>
 #include <cstring>
 
 //
@@ -541,6 +545,49 @@ MapMemFixedDynamic::getStats( ostream & dest ) const
   return( MapMem::getStats( dest ) );
 }
   
+ostream &
+MapMemFixedDynamic::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! MapMemFixedDynamic::good() )
+    dest << prefix << "Error: " << MapMemFixedDynamic::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << MapMem::getClassName() << "::";
+
+  MapMem::dumpInfo( dest, pre, false );
+
+  if( base )
+    {
+      dest << prefix << "rec size:     " << getRecSize() << '\n'
+	   << prefix << "chunk size:   " << getChunkSize() << '\n'
+	   << prefix << "rec count:    " << getRecCount() << '\n'
+	   << prefix << "free count:   " << getFreeRecCount() << '\n'
+	;
+      
+      for( int k = 0; k < NUM_KEYS; k++ )
+	{
+	  if( getKey( k ) != 0 )
+	    {
+	      dest << prefix
+		   << "key(" << setw(2) << k << "):      " << getKey(k) << '\n'
+		;
+	    }
+	}
+    }
+  else
+    {
+      dest << prefix << "No Base Addr!\n";
+    }
+
+  return( dest );
+}
 
 
 
