@@ -12,6 +12,12 @@
 //
 // 
 // $Log$
+// Revision 2.5  1997/06/25 12:53:13  houghton
+// Changed dump to const.
+// Added get*Addr() const and get*Ref() const.
+// Added size().
+// Removed getDataBase & setDataBase.
+//
 // Revision 2.4  1997/06/23 12:55:20  houghton
 // Cleanup.
 //
@@ -138,28 +144,37 @@ public:
 					    D & data, bool deleted,
 					    void * closure ) );
   
-  ostream & 	dump( ostream & dest ) const;
+  inline ostream & 	dump( ostream & dest ) const;
+  inline ostream &	dumpKey( ostream & dest, const Loc keyOffset ) const;
   
   inline K *	getKeyAddr( Loc  keyOffset );
   inline D *	getDataAddr( Loc dataOffset );
+  
+  inline const K *	getKeyAddr( Loc keyOffset ) const;
   inline const D *	getDataAddr( Loc dataOffset ) const;
-  K &	    	getKeyRef( Loc  keyOffset );
-  D &	    	getDataRef( Loc dataOffset );
 
-  const D &	getDataRef( Loc dataOffset ) const;
+  inline K &	    	getKeyRef( Loc  keyOffset );
+  inline D &	    	getDataRef( Loc dataOffset );
+
+  inline const K &	getKeyRef( Loc keyOffset ) const;  
+  inline const D &	getDataRef( Loc dataOffset ) const;
   
   time_t    	getWhen( Loc dataOffset );
   
   static size_t	    getKeySize( void );
   static size_t     getDataSize( void );
-  unsigned long	    getCount( void );
-  unsigned long	    getHistCount( void );  
+  
+  size_type	    getCount( void ) const;
+  unsigned long	    getHistCount( void ) const;  
+
   Loc	    	    getTreeOffset( void );  
 
   MultiMemOffset *  	    getKeyMemMgr( void );
   const MultiMemOffset *    getKeyMemMgr( void ) const;
   MultiMemOffset *  	    getDataMemMgr( void );
   const MultiMemOffset *    getDataMemMgr( void ) const;
+
+  size_type		size( void ) const;
   
   virtual const char *	getClassName( void ) const;
   virtual bool	    	good( void ) const;
@@ -184,37 +199,45 @@ protected:
     Loc   	    	root;
   };
 
-  void setKeyBase( void ) {
-    setBase( keyMem->getBase() );
+  caddr_t	    getBase( void ) {
+    return( (caddr_t) keyMem->getBase() );
   };
 
-  void setDataBase( void ) {
-    setBaseData( dataMem->getBase() );
-  }
-  
+  const caddr_t	    getBase( void ) const {
+    return( (caddr_t) keyMem->getBase() );
+  };
+
+  caddr_t	    getBaseData( void ) {
+    return( (caddr_t) dataMem->getBase() );
+  };
+
+  const caddr_t	    getBaseData( void ) const {
+    return( (caddr_t) dataMem->getBase() );
+  };
+    
   Loc	getKeyMem( size_t sz = sizeof( DavlNode ) ) {
     Loc m = keyMem->allocate( sz );
-    setKeyBase();
     return( m );
   };
 
   void freeKeyMem( Loc keyOffset ) {
     keyMem->release( keyOffset );
-    setKeyBase();
   };
   
   Loc getDataMem( size_t sz = sizeof( DavlHist ) ) {
     Loc m = dataMem->allocate( sz );
-    setDataBase();
     return( m );
   };
 
   void freeDataMem( Loc dataOffset ) {
     dataMem->release( dataOffset );
-    setDataBase();
   };
   
   DavlNode * getNodeAddr( Loc nodeOffset ) {
+    return( (DavlNode *) (getBase() + nodeOffset ) );
+  };
+
+  const DavlNode *	getNodeAddr( Loc nodeOffset ) const {
     return( (DavlNode *) (getBase() + nodeOffset ) );
   };
 
@@ -227,6 +250,10 @@ protected:
   }
   
   K & getNodeKey( Loc nodeOffset ) {
+    return( getNodeAddr( nodeOffset )->key );
+  };
+
+  const K &	getNodeKey( Loc nodeOffset ) const {
     return( getNodeAddr( nodeOffset )->key );
   };
 
@@ -254,11 +281,11 @@ protected:
     return( getHistAddr( (dataOffset - sizeof( HistData ) ) ) );
   };
   
-  struct DavlTree * getTree( void ) {
+  DavlTree * getTree( void ) {
     return( (DavlTree *)( getBase() + tree ) );
   };
   
-  const struct DavlTree * getTree( void ) const {
+  const DavlTree * getTree( void ) const {
     return( (const DavlTree *)( ((caddr_t)keyMem->getBase()) + tree ) );
   };
   
@@ -307,7 +334,7 @@ protected:
   void	destroyHistAction( Loc root, Loc hist, void * closure );
   void 	(*destroyActionClosure)( K & key, time_t when,
 				 D & data, bool deleted, void * closure );
-  
+
 private:
 
   DavlTreeOffset( const DavlTreeOffset<K,D> & copyFrom );
@@ -810,6 +837,22 @@ DavlTreeOffset<K,D>::dump( ostream & dest ) const
   return( dumpTree( getTree()->root, dest ) );
 }
 
+template<class K, class D>
+inline
+ostream &
+DavlTreeOffset<K,D>::dumpKey(
+  ostream &		    dest,
+  const AvlTreeOffsetBase::Loc    keyLoc
+  ) const
+{
+  if( keyLoc )
+    dest << getNodeKey( keyLoc );
+  else
+    dest << "null" ;
+
+  return( dest );
+}
+
 // getKeyAddr - get a K pointer from a key offset
 template<class K, class D>
 inline
@@ -826,6 +869,15 @@ D *
 DavlTreeOffset<K,D>::getDataAddr( AvlTreeOffsetBase::Loc dataOffset )
 {
   return( (D *)(getBaseData() + dataOffset ) );
+}
+
+// getKeyAddr - get a K pointer from a key offset
+template<class K, class D>
+inline
+const K *
+DavlTreeOffset<K,D>::getKeyAddr( AvlTreeOffsetBase::Loc keyOffset ) const
+{
+  return( (K *)(getBase() + keyOffset ) );
 }
 
 // getDataAddr - get a D pointer from a data offset
@@ -855,7 +907,16 @@ DavlTreeOffset<K,D>::getDataRef( AvlTreeOffsetBase::Loc dataOffset )
   return( *getDataAddr( dataOffset ) );
 }
 
-// getDataAddr - get a D pointer from a data offset
+// getKeyRef - get a K pointer from a key offset
+template<class K, class D>
+inline
+const K &
+DavlTreeOffset<K,D>::getKeyRef( AvlTreeOffsetBase::Loc keyOffset ) const
+{
+  return( *getKeyAddr( keyOffset ) );
+}
+
+// getDataRef - get a D pointer from a data offset
 template<class K, class D>
 inline
 const D &
@@ -894,8 +955,8 @@ DavlTreeOffset<K,D>::getDataSize( void )
 // getCount - return number of keys in tree
 template<class K, class D>
 inline
-unsigned long
-DavlTreeOffset<K,D>::getCount( void )
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::getCount( void ) const
 {
   return( getTree()->count );
 }
@@ -903,8 +964,8 @@ DavlTreeOffset<K,D>::getCount( void )
 // getHistCount - return number of hist entries
 template<class K, class D>
 inline
-unsigned long
-DavlTreeOffset<K,D>::getHistCount( void )
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::getHistCount( void ) const
 {
   return( getTree()->histCount );
 }
@@ -954,6 +1015,13 @@ DavlTreeOffset<K,D>::getDataMemMgr( void ) const
   return( dataMem );
 }
 
+template<class K, class D>
+inline
+AvlTreeBase::size_type
+DavlTreeOffset<K,D>::size( void ) const
+{
+  return( getHistCount() );
+}
 
 // getClassName - return the class Name
 template<class K, class D>
@@ -1163,8 +1231,6 @@ DavlTreeOffset<K,D>::walkHistAction(
       abort = walkAction( getNodeKey( root ),
 			  getHistWhen( hist ),
 			  getHistData( hist ) );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1186,8 +1252,6 @@ DavlTreeOffset<K,D>::walkHistAction(
 				 getHistWhen( hist ),
 				 getHistData( hist ),
 				 closure );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1208,8 +1272,6 @@ DavlTreeOffset<K,D>::walkAllHistAction(
 			     getHistWhen( hist ),
 			     getHistData( hist ),
 			     getHistAddr( hist )->deleted );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1231,8 +1293,6 @@ DavlTreeOffset<K,D>::walkAllHistAction(
 				    getHistData( hist ),
 				    getHistAddr( hist )->deleted,
 				    closure );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1253,8 +1313,6 @@ DavlTreeOffset<K,D>::walkKeyHistAction(
 			     getHistWhen( hist ),
 			     getHistData( hist ),
 			     getHistAddr( hist )->deleted );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1277,8 +1335,6 @@ DavlTreeOffset<K,D>::walkKeyHistAction(
 				    getHistData( hist ),
 				    getHistAddr( hist )->deleted,
 				    closure );
-      setKeyBase();
-      setDataBase();
     }
   return( abort );			  
 }
@@ -1298,8 +1354,6 @@ DavlTreeOffset<K,D>::trimHistAction(
 	{
 	  trimAction( getNodeKey( root ), getHistWhen( hist ),
 		      getHistData( hist ), getHistAddr( hist )->deleted );
-	  setKeyBase();
-	  setDataBase();
 	}
       freeDataMem( hist );
     }
@@ -1326,8 +1380,6 @@ DavlTreeOffset<K,D>::trimHistAction(
 	  trimActionClosure( getNodeKey( root ), getHistWhen( hist ),
 		      getHistData( hist ), getHistAddr( hist )->deleted,
 		      closure );
-	  setKeyBase();
-	  setDataBase();
 	}
       freeDataMem( hist );
     }
@@ -1352,8 +1404,6 @@ DavlTreeOffset<K,D>::destroyHistAction(
 	{
 	  destroyAction( getNodeKey( root ), getHistWhen( hist ),
 			 getHistData( hist ), getHistAddr( hist )->deleted );
-	  setKeyBase();
-	  setDataBase();
 	}
       freeDataMem( hist );
     }
@@ -1379,8 +1429,6 @@ DavlTreeOffset<K,D>::destroyHistAction(
 	  destroyActionClosure( getNodeKey( root ), getHistWhen( hist ),
 				getHistData( hist ), getHistAddr( hist )->deleted,
 				closure );
-	  setKeyBase();
-	  setDataBase();
 	}
       freeDataMem( hist );
     }
@@ -1454,9 +1502,6 @@ DavlTreeOffset<K,D>::initTree(
   
   if( keyMem && keyMem->good() && dataMem && dataMem->good() )
     {
-      setKeyBase();
-      setDataBase();
-
       if( davlTree )
 	{
 	  tree = davlTree;
