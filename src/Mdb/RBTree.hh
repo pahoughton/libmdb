@@ -25,34 +25,319 @@
 #include <RBTreeBase.hh>
 #include <iostream>
 
-template< class K, class D >
+template< class Key, class Value, class KeyOfValue, class LessKey >
 class RBTree : public RBTreeBase
 {
 
 public:
-
-  typedef RBTreeBase::Loc   Loc;
+  typedef ptrdiff_t	    difference_type;
+  typedef const Value &	    const_referance;
+  typedef Value &	    referance;
   
   struct RBNode : public RBNodeBase
   {
-    K	key;
-    D	data;
+    Value   value;
   };
 
-  inline RBTree( ChunkMgr & mgr, Loc headerLoc = 0 );
+  class const_iterator;
+  class iterator
+    : public bidirectional_iterator< Value, difference_type >
+  {
+  public:
+
+    inline iterator( void )
+      : table( 0 ), node( 0 ) {};
+
+    inline iterator( const iterator & from )
+      : table( from.table ), node( from.node ) {} ;
+
+    inline iterator &	    operator ++ ( void ) {
+      if( table ) table->next( node );
+      return( *this );
+    };
+
+    inline iterator &	    operator -- ( void ) {
+      if( table ) table->prev( node );
+      return( *this );
+    };
+
+    inline iterator 	    operator ++ (int) {
+      iterator it( *this );
+      ++ *this;
+      return( it );
+    };
+
+    inline iterator	    operator -- (int) {
+      iterator it( *this );
+      -- *this;
+      return( it );
+    };
+
+    inline Value &	operator * ( void ) {
+      return( table->value( node ) );
+    };
+    
+    inline bool		operator == ( const iterator & rhs ) const {
+      return( table == rhs.table && node == rhs.node );
+    };
+    
+    inline iterator &	operator = ( const iterator & rhs ) {
+      table = rhs.table;
+      node = rhs.node;
+      return( *this );
+    };
+
+  protected:
+
+    friend class RBTree< Key, Value, KeyOfValue, LessKey >;
+    friend class const_iterator;
+
+    inline iterator(
+      RBTree< Key, Value, KeyOfValue, LessKey > *   aTable,
+      RBTreeBase::Loc				    aNode )
+      : table( aTable ), node( aNode ) {} ;
+
+    RBTree< Key, Value, KeyOfValue, LessKey > *	table;
+    RBTreeBase::Loc				node;
+  };
+
+  class const_iterator
+    : public bidirectional_iterator< Value, difference_type >
+  {
+  public:
+
+    inline const_iterator( void )
+      : table( 0 ), node( 0 ) {};
+
+    inline const_iterator( const const_iterator & from )
+      : table( from.table ), node( from.node ) {} ;
+
+    inline const_iterator( const iterator & from )
+      : table( from.table ), node( from.node ) {} ;
+
+    inline const_iterator &    operator ++ ( void ) {
+      if( table ) table->next( node );
+      return( *this );
+    };
+
+    inline const_iterator &    operator -- ( void ) {
+      if( table ) table->prev( node );
+      return( *this );
+    };
+
+    inline const_iterator    operator ++ (int) {
+      const_iterator it( *this );
+      ++ *this;
+      return( it );
+    };
+
+    inline const_iterator    operator -- (int) {
+      const_iterator it( *this );
+      -- *this;
+      return( it );
+    };
+
+    inline const Value &    operator * ( void ) {
+      return( table->value( node ) );
+    };
+    
+    inline bool		    operator == ( const const_iterator & rhs ) const {
+      return( table == rhs.table && node == rhs.node );
+    };
+    
+    inline bool		    operator == ( const iterator & rhs ) const {
+      return( table == rhs.table && node == rhs.node );
+    };
+    
+    inline const_iterator & operator = ( const const_iterator & rhs ) {
+      table = rhs.table;
+      node = rhs.node;
+      return( *this );
+    };
+
+    inline const_iterator & operator = ( const iterator & rhs ) {
+      table = rhs.table;
+      node = rhs.node;
+      return( *this );
+    };
+
+  protected:
+
+    friend class RBTree< Key, Value, KeyOfValue, LessKey >;
+
+    inline const_iterator(
+      const RBTree< Key, Value, KeyOfValue, LessKey > *   aTable,
+      RBTreeBase::Loc				    aNode )
+      : table( aTable ), node( aNode ) {} ;
+
+    const RBTree< Key, Value, KeyOfValue, LessKey > *	table;
+    RBTreeBase::Loc					node;
+  };
+
+  typedef reverse_bidirectional_iterator< const_iterator,
+    Value, const Value &, difference_type >	const_reverse_iterator;
+  typedef reverse_bidirectional_iterator< iterator,
+    Value, Value &, difference_type >		reverse_iterator;
+    
+  typedef pair< iterator, bool >    pair_iterator_bool;
+    
+  inline RBTree( MultiMemOffset *   memMgr,
+		 unsigned short	    treeKey = 0,
+		 bool		    create = false );
 
   inline ~RBTree( void );
 
-  inline Loc	    insert( K key, D data );
+  inline pair_iterator_bool	insert( const Value & rec ) {
+    Loc loc = mgr->allocate( sizeof( RBNode ) );
+    if( loc )
+      {
+	value( loc ) = rec;
+	Loc insLoc = RBTreeBase::insert( loc );
+	if( insLoc == loc )
+	  {
+	    return( pair_iterator_bool( iterator( this, loc ), true ) );
+	  }
+	else
+	  {
+	    mgr->release( loc );
+	    return( pair_iterator_bool( iterator( this, insLoc ), false ) );
+	  }
+      }
+    else
+      {
+	return( pair_iterator_bool( end(), false ) );
+      }
+  };
+
+  inline const_iterator	    find( const Key & key ) const {
+    const_iterator  found( this, findNode( key ) );
+    return( ( found == end() ||
+	      lessKeyObj( key, keyOf( *found ) ) ) ?
+	    end() : found );
+  };
+	    
+  inline iterator	    find( const Key & key ) {
+    iterator	found( this, findNode( key ) );
+    return( ( found == end() ||
+	      lessKeyObj( key, keyOf( *found ) ) ) ?
+	    end() : found );
+  };
+
+  inline bool		    erase( const iterator & pos ) {
+    if( RBTreeBase::erase( pos.node ) )
+      {
+	mgr->release( pos.node );
+	return( true );
+      }
+    return( false );
+  };
+  
+  inline bool		    erase( const Key & key ) {
+    iterator it = find( key );
+    if( it != end() )
+      return( erase( it ) );
+    else
+      return( false );
+  };
+
+  inline bool		    erase( iterator first, const iterator & last ) {
+    while( first != last )
+      if( ! erase( first ++ ) )
+	return( false );
+    return( true );
+  };
+    
+  inline iterator	    begin( void ) {
+    return( iterator( this, first() ) );
+  };
+  
+  inline iterator	    end( void ) {
+    return( iterator( this, headerLoc ) );
+  };
+
+  inline const_iterator	    begin( void ) const {
+    return( const_iterator( this, first() ) );
+  };
+  
+  inline const_iterator	    end( void ) const {
+    return( const_iterator( this, headerLoc ) );
+  };
+  
+  inline const_reverse_iterator	rbegin( void ) const {
+    return( const_reverse_iterator( end() ) );
+  };
+
+  inline const_reverse_iterator rend( void ) const {
+    return( const_reverse_iterator( begin() ) );
+  };
+
+  inline reverse_iterator	rbegin( void ) {
+    return( reverse_iterator( end() ) );
+  };
+
+  inline reverse_iterator	rend( void ) {
+    return( reverse_iterator( begin() ) );
+  };
+
+  inline const Value &	    value( Loc node ) const;
+  inline Value &	    value( Loc node );
+  
+  static size_type	    getNodeSize( void );
   
   ostream &	dumpTree( ostream & dest ) const;
-  
+
+  class DumpTreeMethods : public DumpMethods
+  {
+  public:
+    ostream & dumpNode( ostream & dest, const Loc node ) const {
+      return( dumpKey( dest, self->keyOf( self->value( node ) ) ) );
+    };
+
+    virtual ostream & dumpKey( ostream & dest, const Key & key ) const {
+      return( dest );
+    };
+      
+  private:
+    friend class RBTree< Key, Value, KeyOfValue, LessKey >;
+    
+    DumpTreeMethods( const RBTree< Key, Value, KeyOfValue, LessKey > * me ) 
+      : self( me ) {};
+
+    const RBTree< Key, Value, KeyOfValue, LessKey > * self;
+  };
+      
 protected:
 
-  inline bool	lessKey( Loc one, Loc two ) const;
+  inline Loc		findNode( const Key & key ) const {
+    Loc	    parent = headerLoc;
+    Loc	    node = root();
+
+    while( node )
+      {
+	if( lessKeyObj( keyOf( value( node ) ), key ) )
+	  {
+	    node = right( node ).loc();
+	  }
+	else
+	  {
+	    parent = node;
+	    node = left( node ).loc();
+	  }
+      }
+
+    return( parent );
+  };
+
+  inline bool	lessKey( Loc one, Loc two ) const {
+    return( lessKeyObj( keyOf( value( one ) ), keyOf( value( two ) ) ) );
+  };
+
+
+  LessKey	lessKeyObj;
+  KeyOfValue	keyOf;
   
 private:
-
+#if defined( FIXME )
   RBTree( const RBTree<K,D> & from );
   RBTree<K,D> & operator = ( const RBTree<K,D> & from );
 
@@ -60,7 +345,8 @@ private:
     return( (const RBNode *)mgr.address( loc ) ); };
   
   inline RBNode *	    nodeAddr( Loc loc ) {
-    return( (RBNode *)mgr.address( loc ) ); };  
+    return( (RBNode *)mgr.address( loc ) ); };
+#endif
 };
 
 #include <RBTree.ii>
@@ -150,6 +436,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:31:31  houghton
+// Cleanup.
+// Major rework.
+//
 // Revision 2.1  1997/06/05 11:29:13  houghton
 // Initial Version.
 //
