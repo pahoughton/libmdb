@@ -262,7 +262,7 @@ MapFile::sync(
   if( mapBase != 0 && mapSize != 0 )
     {
       // sync must begin and end on page boundries
-      caddr_t	syncBeg = mapBase + RoundDown( beg, pageSize );
+      caddr_t	syncBeg = mapBase + RoundDown( beg, (int)pageSize );
       size_t	syncLen = Align( (mapBase + beg) - syncBeg + len, pageSize );
       			      
       if( msync( syncBeg, syncLen, (async ? MS_ASYNC : MS_SYNC ) ) )
@@ -458,6 +458,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.16  1997/10/22 16:06:29  houghton
+// Cleanup.
+//
 // Revision 2.15  1997/10/01 14:00:10  houghton
 // Added sync().
 //

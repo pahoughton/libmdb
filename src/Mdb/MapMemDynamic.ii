@@ -92,7 +92,7 @@ MapMemDynamic::setKey( unsigned short key, KeyValue value )
   if( mapInfo() && ( getMode() & ios::out ) && key < numKeys )
     {
       Bitmask	used( mapInfo()->keysUsed );
-      if( used[ key ] )
+      if( used[ key ] == true )
 	{
 	  mapInfo()->keys[ key ] = value;
 	  return( true );
@@ -158,6 +158,9 @@ MapMemDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/10/22 16:06:46  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/10/01 14:02:49  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.
