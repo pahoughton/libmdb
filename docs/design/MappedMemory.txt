@@ -22,7 +22,7 @@
 
 Overview
 
-    Mapped memory is a service proviced by Unix that allow you to
+    Mapped memory is a service provided by Unix that allow you to
     access a regular file though a range of memory addresses.
 
     Multiple processes can access a file that has been mapped to
@@ -105,6 +105,9 @@ Overview
 
 #
 # $Log$
+# Revision 1.2  1997/08/10 20:31:20  houghton
+# Cleanup.
+#
 # Revision 1.1  1997/08/09 14:47:20  houghton
 # Initial Version (work in progress).
 #
