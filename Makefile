@@ -66,7 +66,7 @@ TARGETS		=		\
 	$(INSTALL_LIB_TARGETS)	\
 	html			\
 	man			\
-	dist			\
+	dist_source		\
 	dist_binary		\
 	dist_html		\
 	clean			\
@@ -146,7 +146,7 @@ install_html install_man:
 		$($(@)_exports))
 
 dist_source:
-	$(call make_dist_from_cvs,$(cvs_tag),$(PROJECT_DIR))
+        $(hide) $(call make_dist_from_cvs,cvs_tag,$(PROJECT_DIR))
 
 dist_binary:
 	$(hide) $(MAKE) -C support -f Install.Makefile $@	\
