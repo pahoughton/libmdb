@@ -188,14 +188,15 @@
 //
 // 
 // $Log$
-// Revision 1.2  1995/11/05 16:23:40  houghton
-// Added Old Clue classes
+// Revision 1.3  1995/11/05 16:32:24  houghton
+// Revised
 //
 // Revision 1.1  1995/02/13  16:08:31  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
 
+#include <ClueConfig.hh>
 
 #include <AvlTreeBase.hh>
 #include <sys/types.h>

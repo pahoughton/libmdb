@@ -12,13 +12,15 @@
 //
 // 
 // $Log$
-// Revision 1.3  1995/11/05 16:23:43  houghton
-// Added Old Clue classes
+// Revision 1.4  1995/11/05 16:32:27  houghton
+// Revised
 //
 // Revision 1.1  1995/02/13  16:08:36  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
+
+#include <ClueConfig.hh>
 
 #include <MultiMemOffset.hh>
 #include <DavlTreeOffsetBase.hh>

@@ -51,8 +51,8 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.3  1995/11/05 16:23:41  houghton
-// Added Old Clue classes
+// Revision 1.4  1995/11/05 16:32:25  houghton
+// Revised
 //
 // Revision 1.2  1995/02/13  16:15:39  houghton
 // Fix comment character

@@ -12,8 +12,8 @@
 //
 // 
 // $Log$
-// Revision 1.3  1995/11/05 16:23:50  houghton
-// Added Old Clue classes
+// Revision 1.4  1995/11/05 16:32:33  houghton
+// Revised
 //
 // Revision 1.2  1995/03/02  16:35:35  houghton
 // Linux ports & new Classes
@@ -22,6 +22,8 @@
 // New Style Avl an memory management. Many New Classes
 //
 //
+
+#include <ClueConfig.hh>
 
 #include <FileStat.hh>
 

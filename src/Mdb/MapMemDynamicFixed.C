@@ -9,8 +9,8 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.5  1995/11/05 16:23:51  houghton
-// Added Old Clue classes
+// Revision 1.6  1995/11/05 16:32:34  houghton
+// Revised
 //
 // Revision 1.2  1995/03/02  16:35:35  houghton
 // Linux ports & new Classes
