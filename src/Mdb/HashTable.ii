@@ -29,14 +29,26 @@ template< class Key,
           class LessKey >
 inline
 HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::HashTable(
-  ChunkMgr &	    chunkMgr,
+  MultiMemOffset *  memMgr,
   const char *	    indexFileName,
   ios::open_mode    mode,
-  unsigned short    permMask,
-  bool		    create
+  bool		    create,
+  unsigned short    permMask
   )
-  : HashTableBase( chunkMgr, indexFileName, mode, permMask, create )
+  : HashTableBase( memMgr, indexFileName, mode, create, permMask )
 {
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+HashTableBase::size_type
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::getNodeSize( void )
+{
+  return( sizeof( HashNode ) );
 }
 
 template< class Key,
@@ -50,7 +62,7 @@ HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
   HashTableBase::Loc node
   ) const
 {
-  return( ((const HashNode *)(mgr.address( node )))->value );
+  return( ((const HashNode *)(mgr->address( node )))->value );
 }
 
 template< class Key,
@@ -64,8 +76,96 @@ HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
   HashTableBase::Loc node
   )
 {
-  return( ((HashNode *)(mgr.address( node )))->value );
+  return( ((HashNode *)(mgr->address( node )))->value );
 }
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+bool
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::good( void ) const
+{
+  return( HashTableBase::good() );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const char *
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::error( void ) const
+{
+  return( HashTableBase::error() );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const char *
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::getClassName(
+  void
+  ) const
+{
+  return( "HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>" );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const char *
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::getVersion(
+  bool withPrjVer
+  ) const
+{
+  return( HashTableBase::getVersion( withPrjVer ) );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+ostream &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( showVer )
+    dest << HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::getClassName()
+	 << ":\n"
+	 << HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::getVersion()
+	 << '\n';
+
+  if( ! HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::good() )
+    dest << prefix << "Error: "
+	 << HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << HashTableBase::getClassName() << "::";
+
+  HashTableBase::dumpInfo( dest, pre, false );
+    
+  return( dest );
+}
+ 
+  
 
   
 #if 0
@@ -74,12 +174,12 @@ inline
 HashTableBase::Loc
 HashTable<T>::insert( HashTableBase::Key key, const T & rec )
 {
-  Loc recLoc = mgr.allocate( sizeof( T ) );
+  Loc recLoc = mgr->allocate( sizeof( T ) );
 
   if( recLoc == ChunkMgr::badLoc )
     return( recLoc );
 
-  *((T *)(mgr.address( recLoc ))) = rec;
+  *((T *)(mgr->address( recLoc ))) = rec;
 
   return( HashTableBase::insert( key, recLoc ) );
 }
@@ -139,7 +239,7 @@ inline
 const T &
 HashTable<T>::getRec( HashTableBase::Loc loc ) const
 {
-  return( *((const T *)mgr.address( loc ) ) );
+  return( *((const T *)mgr->address( loc ) ) );
 }
 
 template< class T >
@@ -147,7 +247,7 @@ inline
 T &
 HashTable<T>::getRec( HashTableBase::Loc loc )
 {
-  return( *((T *)mgr.address( loc ) ) );
+  return( *((T *)mgr->address( loc ) ) );
 }
 
 #endif
@@ -155,6 +255,10 @@ HashTable<T>::getRec( HashTableBase::Loc loc )
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:12:31  houghton
+// Changed to use MultiMemOffset.
+// Added getNodeSize().
+//
 // Revision 2.1  1997/06/05 11:29:10  houghton
 // Initial Version.
 //
