@@ -96,7 +96,7 @@ public:
   };
 
   inline bool			erase( const iterator & first,
-				       const iterator & lest,
+				       const iterator & last,
 				       EffDate		eff ) {
     return( table.erase( first, last, eff ) );
   };
@@ -414,6 +414,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/25 15:56:04  houghton
+// Bug-Fix: lest chaged to last.
+//
 // Revision 2.3  1997/07/25 13:43:15  houghton
 // Cleanup.
 // Added documentation.
