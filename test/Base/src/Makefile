@@ -56,6 +56,8 @@ include Make/make.cfg.$(make_cfg_ver)
 NAME		= Test
 
 PRJ_TOPDIR		= ../../..
+CFG_DIR			= $(PRJ_TOPDIR)/src/config
+
 PRJ_BINDIR		= $(PRJ_TOPDIR)/bin
 
 INSTALL_BASE_DIR	= $(PRJ_TOPDIR)
@@ -76,6 +78,8 @@ PROGRAM_SHARED	= $(NAME)_s
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
+
+include $(CFG_DIR)/00-Makefile.cfg
 
 VPATH		= $(ARCH_VPATH):.
 
@@ -105,7 +109,7 @@ SHARED_DEFINES	= -DTEST_SHARED=1
 
 
 SRC_INC		= $(ARCH_INC) -I. $($($(make_target))_PRJ_INC)
-PRJ_INC		= -I$(local_incdir)
+PRJ_INC		= $(PROJECT_INC_DIRS)
 
 DEFAULT_PRJ_INC	= 
 DEBUG_PRJ_INC	= $(MDB_SRC_INC)
@@ -178,11 +182,11 @@ PROFILE_LD_FLAGS	= $(ld_profile_flags)
 STATIC_LD_FLAGS		= $(ld_static_flags) $(ld_optimize_flags)
 SHARED_LD_FLAGS		= $(ld_shared_flags) $(ld_optimize_flags)
 
-DEFAULT_LD_LIBDIRS	= -L$(local_libdir)
-DEBUG_LD_LIBDIRS	= -L$(PRJ_TOPDIR)/src/Mdb -L$(local_libdir)
+DEFAULT_LD_LIBDIRS	= $(PROJECT_LIB_DIRS)
+DEBUG_LD_LIBDIRS	= -L$(PRJ_TOPDIR)/src/Mdb $(PROJECT_LIB_DIRS)
 TEST_LD_LIBDIRS		= $(DEBUG_LD_LIBDIRS)
-PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
-STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
+PROFILE_LD_LIBDIRS	= $(DEBUG_LD_LIBDIRS)
+STATIC_LD_LIBDIRS	= $(DEBUG_LD_LIBDIRS)
 SHARED_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
 DEFAULT_LD_LIBS		= -lStlUtils -lCommon -lGnuRegex
@@ -194,7 +198,9 @@ TEST_LD_LIBS		= -lMdb_tg -lStlUtils_g \
 			  -lm $(ARCH_DEBUG_LD_LIBS)
 PROFILE_LD_LIBS		= $(DEFAULT_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
-SHARED_LD_LIBS		= $(DEFAULT_LD_LIBS)
+SHARED_LD_LIBS		= -lMdb_s -lStlUtils_s		\
+			  -lCommon_s -lGnuRegex_s	\
+			  -lm $(ARCH_DEBUG_LD_LIBS)
 
 # DEP_LIBS - rebuild target if DEP_LIBS newer than target
 
@@ -347,6 +353,9 @@ check: test
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.4  1999/11/10 12:47:28  houghton
+# Changed to use 00-Makefile.cfg.
+#
 # Revision 2.3  1998/10/23 13:22:09  houghton
 # Added MapMemDList test.
 #
