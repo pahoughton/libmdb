@@ -38,6 +38,7 @@ ostream &
 operator << ( ostream & dest, const TestRec & obj )
 {
   dest << setw(4) << obj.h << ' ' << setw(2) << obj.v << ' ' << obj.data;
+  return( dest );
 }
 
 inline
@@ -63,7 +64,7 @@ public:
   bool	    operator () ( const TestRec & one, const TestRec & two ) const {
     return( one.h < two.h ? true :
 	    two.h < one.h ? false :
-	    one.v < two.v );
+	    bool( one.v < two.v ) );
   };
 };
 
@@ -211,7 +212,7 @@ tHash01( LibTest & tester )
 	    }
 	}
     }
-    t.dumpInfo( tester.getDump() );
+    // t.dumpInfo( tester.getDump() );
     
   }
 
@@ -222,6 +223,10 @@ tHash01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/14 10:47:05  houghton
+// Bug-Fix: added missing return statement.
+// Port(AIX): added bool constructor for the '?:' operator.
+//
 // Revision 2.1  1997/07/11 17:39:10  houghton
 // Initial Version.
 //
