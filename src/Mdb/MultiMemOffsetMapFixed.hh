@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/13 02:41:58  houghton
+// Added getOffset.
+//
 // Revision 2.2  1997/03/07 11:51:08  houghton
 // Add getBase() const.
 // Added dumpInfo.
@@ -49,7 +52,9 @@ public:
   virtual off_t	    getMem( size_t size = 0 );
   virtual void 	    freeMem( off_t offset );
 
-  virtual void *    getAddr( off_t offset );
+  virtual void *	getAddr( off_t offset );
+  virtual off_t		getOffset( void * addr );
+  
   virtual void *	getBase( void );
   virtual const void *  getBase( void ) const;
 
@@ -123,6 +128,13 @@ void *
 MultiMemOffsetMapFixed::getAddr( off_t offset )
 {
   return( mem.getAddr( offset ) );
+}
+
+inline
+off_t
+MultiMemOffsetMapFixed::getOffset( void * addr )
+{
+  return( mem.getOffset( addr ) );
 }
 
 inline
