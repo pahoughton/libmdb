@@ -1,0 +1,37 @@
+//
+// File:        tRBTreeBase.C
+// Project:	Mdb
+// Desc:        
+//
+//  Compiled sources for tRBTreeBase
+//  
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/08/97 12:45
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+
+#include <LibTest.hh>
+
+bool tRBTreeBase01( LibTest & tester );
+
+bool tRBTreeBase( LibTest & tester )
+{
+  TESTP( tRBTreeBase01( tester ) );
+  
+  
+  return( true );
+}
+
+
+// Revision Log:
+//
+// $Log$
+// Revision 1.1  1997/06/05 11:30:12  houghton
+// Initial Version.
+//
+//

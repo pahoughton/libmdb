@@ -1,0 +1,113 @@
+#ifndef _RBTree_ii_
+#define _RBTree_ii_
+//
+// File:        RBTree.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for RBTree
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/09/97 04:07
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+#include <iomanip>
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+template< class K, class D >
+inline
+RBTree<K,D>::RBTree( ChunkMgr & mgr, RBTreeBase::Loc headerLoc )
+  : RBTreeBase( mgr, headerLoc )
+{
+}
+
+template< class K, class D >
+inline
+RBTree<K,D>::~RBTree( void )
+{
+}
+
+template< class K, class D >
+inline
+RBTreeBase::Loc
+RBTree<K,D>::insert( K key, D data )
+{
+  Loc nodeLoc = mgr.alloc( sizeof( RBNode ) );
+
+  RBNode * node = nodeAddr( nodeLoc );
+
+  node->key = key;
+  node->data = data;
+
+  Loc insertLoc = RBTreeBase::insert( nodeLoc );
+
+  if( ! insertLoc )
+    mgr.release( nodeLoc );
+
+  return( insertLoc );
+}
+
+template< class K, class D >
+inline
+bool
+RBTree<K,D>::lessKey( RBTreeBase::Loc one, RBTreeBase::Loc two ) const
+{
+  const RBNode * nodeOne = nodeAddr( one );
+  const RBNode * nodeTwo = nodeAddr( two );
+
+  return( nodeOne->key < nodeTwo->key );
+}
+
+template< class K, class D >
+inline
+ostream &
+RBTree<K,D>::dumpTree( ostream & dest ) const
+{
+  ConstNodeBase	node( mgr, first() );
+
+  for( ; node.loc() != headerLoc; node.next() )
+    {
+      if( node.loc() == root() )
+	dest << "r ";
+      else
+	dest << "  ";
+      
+      dest << setw(6) << nodeAddr( node.loc() )->key << ' '
+	   << setw(6) << node.loc() << ' '
+	   << setw(6) << node.left() << ' '
+	   << setw(6) << node.right() << ' '
+	   << setw(6) << node.parent() << ' '
+	   << ( (node.color() == Red) ? "red" : "blk" )
+	   << endl;
+      
+    }
+
+  return( dest );
+}
+	    
+	      
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:13  houghton
+// Initial Version.
+//
+//
+#endif // ! def _RBTree_ii_ 

@@ -1,0 +1,393 @@
+#ifndef _RBTreeBase_ii_
+#define _RBTreeBase_ii_
+//
+// File:        RBTreeBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for RBTreeBase
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/08/97 03:02
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+// * * * ConstNodeBase * * *
+
+inline
+RBTreeBase::ConstNodeBase::ConstNodeBase(
+  const ChunkMgr &  chunkMgr,
+  Loc		    loc
+  )
+  : nodeLoc( loc ),
+    mgr( chunkMgr )
+{
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::loc( void ) const
+{
+  return( nodeLoc );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::parent( void ) const
+{
+  return( rbNode().parent );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::left( void ) const
+{
+  return( rbNode().left );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::right( void ) const
+{
+  return( rbNode().right );
+}
+
+inline
+RBTreeBase::Color
+RBTreeBase::ConstNodeBase::color( void ) const
+{
+  return( rbNode().color );
+}
+
+inline
+const RBTreeBase::RBNodeBase &
+RBTreeBase::ConstNodeBase::rbNode( void ) const
+{
+  return( *((const RBNodeBase *)(mgr.address( nodeLoc ))) );
+}
+
+inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator ++ ( void )
+{
+  next();
+  return( *this );
+}
+
+inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator -- ( void )
+{
+  prev();
+  return( *this );
+}
+
+inline
+void
+RBTreeBase::ConstNodeBase::next( void )
+{
+  if( right() )
+    {
+      nodeLoc = right();
+      while( left() )
+	{
+	  nodeLoc = left();
+	}
+    }
+  else
+    {
+      ConstNodeBase parentNode( mgr, parent() );
+	
+      while( nodeLoc == parentNode.right() )
+	{
+	  nodeLoc = parentNode.loc();
+	  parentNode.nodeLoc = parentNode.parent();
+	}
+
+      if( right() != parentNode.loc() )
+	{
+	  nodeLoc = parentNode.loc();
+	}
+    }
+}
+
+inline
+void
+RBTreeBase::ConstNodeBase::prev( void )
+{
+  ConstNodeBase parentNode( mgr, parent() );
+  
+  if( color() == Red && parentNode.parent() == nodeLoc )
+    {
+      nodeLoc = right();
+    }
+  else
+    {
+      if( left() )
+	{
+	  ConstNodeBase leftNode( mgr, left() );
+	  while( leftNode.right() )
+	    {
+	      leftNode.nodeLoc = leftNode.right();
+	    }
+	  nodeLoc = leftNode.loc();
+	}
+      else
+	{
+	  while( nodeLoc == parentNode.left() )
+	    {
+	      nodeLoc = parentNode.loc();
+	      parentNode.nodeLoc = parentNode.parent();
+	    }
+	  nodeLoc = parentNode.loc();
+	}
+    }
+}
+
+
+
+// * * * NodeBase * * * 
+
+inline
+RBTreeBase::NodeBase::NodeBase( ChunkMgr & chunkMgr, Loc nodeLoc )
+  : ConstNodeBase( chunkMgr, nodeLoc ),
+    mgr( chunkMgr )
+{
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::parent( void )
+{
+  return( rbNode().parent );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::left( void )
+{
+  return( rbNode().left );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::right( void )
+{
+  return( rbNode().right );
+}
+
+inline
+RBTreeBase::Color &
+RBTreeBase::NodeBase::color( void )
+{
+  return( rbNode().color );
+}
+
+inline
+void
+RBTreeBase::NodeBase::set( Loc p, Loc l, Loc r, Color c )
+{
+  parent() = p;
+  left() = l;
+  right() = r;
+  color() = c;
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator = ( Loc rhs )
+{
+  nodeLoc = rhs;
+  return( *this );
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator ++ ( void )
+{
+  next();
+  return( *this );
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator -- ( void )
+{
+  prev();
+  return( *this );
+}
+
+inline
+RBTreeBase::RBNodeBase &
+RBTreeBase::NodeBase::rbNode( void )
+{
+  return( *((RBNodeBase *)(mgr.address( nodeLoc ))) );
+}
+
+inline
+RBTreeBase::RBTreeHeader &
+RBTreeBase::header( void )
+{
+  return( *((RBTreeHeader *)(mgr.address( headerLoc )) ) );
+}
+
+inline
+const RBTreeBase::RBTreeHeader &
+RBTreeBase::header( void ) const
+{
+  return( *((const RBTreeHeader *)(mgr.address( headerLoc )) ) );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::root( void )
+{
+  return( header().parent );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::root( void ) const
+{
+  return( header().parent );
+}
+
+    
+inline
+RBTreeBase::Loc &
+RBTreeBase::first( void )
+{
+  return( header().left );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::first( void ) const
+{
+  return( header().left );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::last( void )
+{
+  return( header().right );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::last( void ) const
+{
+  return( header().right );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::parent( const ConstNodeBase & node )
+{
+  return( NodeBase( mgr, node.parent() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::parent( Loc loc )
+{
+  return( parent( ConstNodeBase( mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::parent( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( mgr, node.parent() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::parent( Loc loc ) const
+{
+  return( parent( ConstNodeBase( mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::left( const ConstNodeBase & node )
+{
+  return( NodeBase( mgr, node.left() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::left( Loc loc )
+{
+  return( left( ConstNodeBase( mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::left( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( mgr, node.left() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::left( Loc loc ) const
+{
+  return( left( ConstNodeBase( mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::right( const ConstNodeBase & node )
+{
+  return( NodeBase( mgr, node.right() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::right( Loc loc )
+{
+  return( right( ConstNodeBase( mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::right( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( mgr, node.right() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::right( Loc loc ) const
+{
+  return( right( ConstNodeBase( mgr, loc ) ) );
+}
+
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:14  houghton
+// Initial Version.
+//
+//
+#endif // ! def _RBTreeBase_ii_ 

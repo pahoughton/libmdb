@@ -1,0 +1,162 @@
+#ifndef _HashTable_ii_
+#define _HashTable_ii_
+//
+// File:        HashTable.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for HashTable
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/19/97 06:41
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::HashTable(
+  ChunkMgr &	    chunkMgr,
+  const char *	    indexFileName,
+  ios::open_mode    mode,
+  unsigned short    permMask,
+  bool		    create
+  )
+  : HashTableBase( chunkMgr, indexFileName, mode, permMask, create )
+{
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const Value &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
+  HashTableBase::Loc node
+  ) const
+{
+  return( ((const HashNode *)(mgr.address( node )))->value );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+Value &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
+  HashTableBase::Loc node
+  )
+{
+  return( ((HashNode *)(mgr.address( node )))->value );
+}
+
+  
+#if 0
+template< class T >
+inline
+HashTableBase::Loc
+HashTable<T>::insert( HashTableBase::Key key, const T & rec )
+{
+  Loc recLoc = mgr.allocate( sizeof( T ) );
+
+  if( recLoc == ChunkMgr::badLoc )
+    return( recLoc );
+
+  *((T *)(mgr.address( recLoc ))) = rec;
+
+  return( HashTableBase::insert( key, recLoc ) );
+}
+
+template< class T >
+inline
+bool
+HashTable<T>::erase( HashTableBase::Key key )
+{
+  return( HashTableBase::erase( key ) );
+}
+
+template< class T >
+inline
+HashTableBase::Loc
+HashTable<T>::find( HashTableBase::Key key ) const
+{
+  return( HashTableBase::find( key ) );
+}
+
+template< class T >
+inline
+const T & 
+HashTable<T>::get( HashTableBase::Key key ) const
+{
+  Loc recLoc = find( key );
+
+  if( recLoc != ChunkMgr::badLoc )    
+    return( getRec( recLoc ) );
+  else
+    return( noRec );
+}
+
+template< class T >
+inline
+T & 
+HashTable<T>::get( HashTableBase::Key key )
+{
+  Loc recLoc = find( key );
+
+  if( recLoc != ChunkMgr::badLoc )    
+    return( getRec( recLoc ) );
+  else
+    return( noRec );
+}
+
+template< class T >
+inline
+DumpInfo< HashTable<T> >
+HashTable<T>::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< HashTable<T> >( *this, prefix, showVer ) );
+}
+
+template< class T >
+inline
+const T &
+HashTable<T>::getRec( HashTableBase::Loc loc ) const
+{
+  return( *((const T *)mgr.address( loc ) ) );
+}
+
+template< class T >
+inline
+T &
+HashTable<T>::getRec( HashTableBase::Loc loc )
+{
+  return( *((T *)mgr.address( loc ) ) );
+}
+
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:10  houghton
+// Initial Version.
+//
+//
+#endif // ! def _HashTable_ii_ 

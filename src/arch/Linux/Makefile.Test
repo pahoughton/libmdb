@@ -1,0 +1,39 @@
+#
+# Title:        Makefile.Test
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	05/08/97 12:49
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/test
+MDB_SRC_INC	= -I$(PRJ_TOPDIR)/src/Mdb
+
+MDB_SRC_LDIR	= -L$(PRJ_TOPDIR)/src/Mdb
+
+
+
+
+#
+# $Log$
+# Revision 1.1  1997/06/05 11:29:27  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:makefile
+# End:

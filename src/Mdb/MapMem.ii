@@ -1,0 +1,69 @@
+#ifndef _MapMem_ii_
+#define _MapMem_ii_
+//
+// File:        MapMem.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MapMem
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/20/97 05:11
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+void *
+MapMem::getMapToAddr( void ) const
+{
+  return( (getMapInfo()) ? (void*)getMapInfo()->base : 0 );
+}
+
+inline
+MapMem::size_type
+MapMem::getMapSize( void ) const
+{
+  return( (getMapInfo()) ? getMapInfo()->size : 0 );
+}
+
+
+inline
+MapMem::MapInfo *
+MapMem::getMapInfo( void )
+{
+  return( (MapInfo *)MapFile::getBase() );
+}
+
+inline
+const MapMem::MapInfo *
+MapMem::getMapInfo( void ) const
+{
+  return( (const MapInfo *)MapFile::getBase() );
+}
+
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:11  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MapMem_ii_ 

@@ -1,0 +1,88 @@
+#ifndef _DashTableBase_ii_
+#define _DashTableBase_ii_
+//
+// File:        DashTableBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DashTableBase
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/02/97 08:43
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+const DashTableBase::DashNodeBase &
+DashTableBase::dashNode( Loc node ) const
+{
+  return( *( (const DashNodeBase *)(mgr.address( node )) ) );
+}
+
+inline
+DashTableBase::DashNodeBase &
+DashTableBase::dashNode( Loc node )
+{
+  return( *( (DashNodeBase *)(mgr.address( node )) ) );
+}
+
+inline
+HashTableBase::Loc
+DashTableBase::next( Hash & hash, Loc & node ) const
+{
+  if( dashNode( node ).nextEff )
+    {
+      node = dashNode( node ).nextEff;
+      return( node );
+    }
+  else
+    {
+      // rewind to the first node with the same key
+      for( Loc prevEff = dashNode( node ).prevEff;
+	   prevEff;
+	   node = prevEff, prevEff = dashNode( node ).prevEff );
+
+      return( HashTableBase::next( hash, node ) );
+    }
+}
+	  
+inline
+DashTableBase::Loc
+DashTableBase::prev( Hash & hash, Loc & node ) const
+{
+  if( dashNode( node ).prevEff )
+    {
+      node = dashNode( node ).prevEff;
+      return( node );
+    }
+  else
+    {
+      return( HashTableBase::prev( hash, node ) );
+    }
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:09  houghton
+// Initial Version.
+//
+//
+#endif // ! def _DashTableBase_ii_ 

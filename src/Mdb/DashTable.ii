@@ -1,0 +1,47 @@
+#ifndef _DashTable_ii_
+#define _DashTable_ii_
+//
+// File:        DashTable.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for DashTable
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/02/97 11:19
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+DashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::DashTable(
+  ChunkMgr &		chunkMgr,
+  const char *		indexFileName,
+  ios::open_mode	mode,
+  unsigned short	permMask,
+  bool			create
+  )
+  : DashTableBase( chunkMgr, indexFileName, mode, permMask, create )
+{
+}
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:08  houghton
+// Initial Version.
+//
+//
+#endif // ! def _DashTable_ii_ 

@@ -1,0 +1,176 @@
+#ifndef _HashTableBase_ii_
+#define _HashTableBase_ii_
+//
+// File:        HashTableBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for HashTableBase
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/19/97 06:14
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+HashTableBase::Header &
+HashTableBase::header( void )
+{
+  return( *((Header *)index->getBase()) );
+}
+
+inline
+const HashTableBase::Header &
+HashTableBase::header( void ) const
+{
+  return( *((const Header *)index->getBase()) );
+}
+
+
+inline
+const HashTableBase::Loc &
+HashTableBase::hashLoc( Hash hash ) const
+{
+  return( *( (const Loc *)( index->getBase() +
+			 sizeof( Header ) +
+			 ( hash * sizeof( Loc ) ) ) ) );
+}
+
+
+inline
+HashTableBase::Loc &
+HashTableBase::hashLoc( Hash hash )
+{
+  return( *( (Loc *)( index->getBase() +
+			 sizeof( Header ) +
+			 ( hash * sizeof( Loc ) ) ) ) );
+}
+
+inline
+const HashTableBase::HashNodeBase &
+HashTableBase::hashNode( Loc node ) const
+{
+  return( *( (const HashNodeBase *)(mgr.address( node )) ) );
+}
+
+inline
+HashTableBase::HashNodeBase &
+HashTableBase::hashNode( Loc node )
+{
+  return( *( (HashNodeBase *)(mgr.address( node )) ) );
+}
+
+inline
+HashTableBase::Loc
+HashTableBase::find( Hash hash ) const
+{
+  if( good() && hash < endHash() )
+    return( hashLoc( hash ) );
+  else
+    return( ChunkMgr::badLoc );
+}
+
+
+inline
+HashTableBase::Hash
+HashTableBase::first( void ) const
+{
+  if( ! good() )
+    return( badHash );
+
+  Hash hash;
+
+  for( hash = 0;
+       hash < endHash() && hashLoc(hash) == 0;
+       ++ hash );
+
+  return( hash );
+}
+
+inline
+HashTableBase::Loc
+HashTableBase::next( Hash & hash, Loc & node ) const
+{
+  if( hashNode( node ).next )
+    {
+      node = hashNode( node ).next;
+    }
+  else
+    {
+      for( ++ hash;
+	   hash < endHash() && hashLoc( hash ) == 0;
+	   ++ hash );
+
+      if( hash != endHash() )
+	node = hashLoc( hash );
+      else
+	node = 0;
+    }
+	  
+    
+  return( node );
+}
+
+inline
+HashTableBase::Loc
+HashTableBase::prev( Hash & hash, Loc & node ) const
+{
+  if( node && hashNode( node ).prev )
+    {
+      node = hashNode( node ).prev;
+    }
+  else
+    {
+      if( hash > 0 )
+	-- hash;
+      
+      for( ; hash && hashLoc( hash ) == 0; -- hash );
+      
+      if( hash <= 0 )
+	hash = first();
+      
+      for( node = hashLoc( hash );
+	   hashNode( node ).next;
+	   node = hashNode( node ).next );
+    }
+  
+  return( node );
+}
+      
+  
+inline
+HashTableBase::Hash
+HashTableBase::endHash( void ) const
+{
+  if( ! good() )
+    return( badHash );
+
+  return( (index->getSize() - sizeof( Header )) / sizeof( Loc ) );
+}
+
+
+  
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:11  houghton
+// Initial Version.
+//
+//
+#endif // ! def _HashTableBase_ii_ 

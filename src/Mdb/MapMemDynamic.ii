@@ -1,0 +1,125 @@
+#ifndef _MapMemDynamic_ii_
+#define _MapMemDynamic_ii_
+//
+// File:        MapMemDynamic.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MapMemDynamic
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     05/20/97 06:17
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+MapMemDynamic::Addr
+MapMemDynamic::address( Loc loc )
+{
+  return( getBase() ? (Addr)( getBase() + loc ) : 0 );
+}
+
+inline
+const MapMemDynamic::Addr
+MapMemDynamic::address( Loc loc ) const
+{
+  return( getBase() ? (const Addr)( getBase() + loc ) : 0 );
+}
+
+inline
+MapMemDynamic::Loc
+MapMemDynamic::location( const Addr addr ) const
+{
+  return( getBase() ? (Loc)addr - (Loc)getBase() : 0 );
+}
+
+inline
+long
+MapMemDynamic::setKey( unsigned short key, long value )
+{
+  if( getBase() && ( getMode() & ios::out ) && key < numKeys )
+    {
+      long orig = getKey( key );
+      mapInfo()->keys[ key ] = value;
+      return( orig );
+    }
+  else
+    {
+      return( -1 );
+    }
+}
+
+inline
+long
+MapMemDynamic::getKey( unsigned short key ) const
+{
+  return( getBase() ? mapInfo()->keys[ key ] : -1 );
+}
+
+inline
+long
+MapMemDynamic::getOwner( void ) const
+{
+  return( getBase() ? mapInfo()->owner : -1 );
+}
+
+inline
+unsigned long
+MapMemDynamic::getChunkCount( void ) const
+{
+  return( getBase() ? mapInfo()->chunkCount : 0 );
+}
+
+inline
+unsigned long
+MapMemDynamic::getFreeCount( void ) const
+{
+  return( getBase() ? mapInfo()->freeCount : 0 );
+}
+
+inline
+DumpInfo< MapMemDynamic >
+MapMemDynamic::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< MapMemDynamic >( *this, prefix, showVer ) );
+}
+
+inline
+MapMemDynamic::MapDynamicInfo *
+MapMemDynamic::mapInfo( void )
+{
+  return( (MapDynamicInfo *)getBase() );
+}
+
+inline
+const MapMemDynamic::MapDynamicInfo *
+MapMemDynamic::mapInfo( void ) const
+{
+  return( (const MapDynamicInfo *)getBase() );
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:12  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MapMemDynamic_ii_ 

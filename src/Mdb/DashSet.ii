@@ -1,0 +1,46 @@
+#ifndef _Dash_ii_
+#define _Dash_ii_
+//
+// File:        Dash.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for Dash
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     06/02/97 11:02
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+
+template< class Key,
+	  class HashFunct,
+	  class LessKey >
+Dash< Key, HashFunct, LessKey >::Dash(
+  ChunkMgr &		chunkMgr,
+  const char *		indexFileName,
+  ios::open_mode	mode,
+  unsigned short	permMask,
+  bool			create
+  )
+  : table( chunkMgr, indexFileName, mode, permMask, create )
+{
+}
+
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/06/05 11:29:08  houghton
+// Initial Version.
+//
+//
+#endif // ! def _Dash_ii_ 
