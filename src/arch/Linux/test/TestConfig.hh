@@ -23,9 +23,14 @@
 
 #include <MdbConfig.hh>
 
+#define TEST_DATA_DIR	"../data"
+
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/22 19:44:21  houghton
+// Added define TEST_DATA_DIR.
+//
 // Revision 1.1  1997/07/11 17:38:30  houghton
 // Initial Version.
 //
