@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/06/23 12:55:20  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/06/19 13:34:05  houghton
 // Changed include ClueConfig to include MdbConfig.
 // Cleanup.
@@ -312,10 +315,12 @@ private:
 
   inline void initTree( int (*cmp)( const K & one, const K & two ),
 			K & (*cpyKey)( K & dest, const K & src ),
+			D & (*cpyData)( D & dest, const D & src ) );
+
+  inline void initTree( int (*cmp)( const K & one, const K & two ),
+			K & (*cpyKey)( K & dest, const K & src ),
 			D & (*cpyData)( D & dest, const D & src ),
-			MultiMemOffset * keyMemMgr = 0,
-			MultiMemOffset * dataMemMgr = 0,
-			Loc davlTree = 0 );
+			Loc davlTree );
 
   enum DavlError
   {
@@ -375,23 +380,31 @@ DavlTreeOffset<K,D>::DavlTreeOffset(
   MultiMemOffset *  keyMemMgr,
   MultiMemOffset *  dataMemMgr
   )
+  : davlError( E_NOTREE ),
+    tree( 0 ),
+    keyMem( keyMemMgr ),
+    dataMem( dataMemMgr )
 {
-  initTree( compKey, keyCopy, dataCopy, keyMemMgr, dataMemMgr );
+  initTree( compKey, keyCopy, dataCopy );
 }
 
 // constructor - manage an existing tree
 template<class K, class D>
 inline
 DavlTreeOffset<K,D>::DavlTreeOffset(
-  AvlTreeOffsetBase::Loc	avlTree,
-  int	(* compKey)( const K & one, const K & two ),
-  K & 	(* keyCopy)( K & dest, const K & src ),
-  D & 	(* dataCopy)( D & dest, const D & src ),
-  MultiMemOffset *  keyMemMgr,
-  MultiMemOffset *  dataMemMgr
+  AvlTreeOffsetBase::Loc    avlTree,
+  int			    (* compKey)( const K & one, const K & two ),
+  K &			    (* keyCopy)( K & dest, const K & src ),
+  D &			    (* dataCopy)( D & dest, const D & src ),
+  MultiMemOffset *	    keyMemMgr,
+  MultiMemOffset *	    dataMemMgr
   )
+  : davlError( E_NOTREE ),
+    tree( 0 ),
+    keyMem( keyMemMgr ),
+    dataMem( dataMemMgr )
 {
-  initTree( compKey, keyCopy, dataCopy, keyMemMgr, dataMemMgr, avlTree );
+  initTree( compKey, keyCopy, dataCopy, avlTree );
 }
 
 // add - add a node and/or history to the tree
@@ -988,28 +1001,42 @@ DavlTreeOffset<K,D>::error( void ) const
 	  break;
 
 	case E_MEMMGR:
-	  if( keyMem->good() && dataMem->good() )
+	  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
 	    {
 	      errStr << ": unknown mem error";
 	    }
 	  break;
 
 	default:
-	  if( keyMem->good() && dataMem->good() )
+	  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
 	    {
 	      errStr << ": unknown error";
 	    }
 	  break;
 	}
 
-      if( ! keyMem->good() )
+      if( keyMem )
 	{
-	  errStr << ": " << keyMem->error();
+	  if( ! keyMem->good() )
+	    {
+	      errStr << ": " << keyMem->error();
+	    }
 	}
-      
-      if( ! dataMem->good() )
+      else
 	{
-	  errStr << ": " << dataMem->error();
+	  errStr << ": no key mem mgr.";
+	}
+
+      if( dataMem )
+	{
+	  if( ! dataMem->good() )
+	    {
+	      errStr << ": " << dataMem->error();
+	    }
+	}
+      else
+	{
+	  errStr << ": no data mem mgr.";
 	}
       
     }
@@ -1363,6 +1390,40 @@ DavlTreeOffset<K,D>::destroyHistAction(
     }
 }
       
+template<class K, class D>
+inline
+void
+DavlTreeOffset<K,D>::initTree(
+  int (*cmp)( const K & one, const K & two ),
+  K & (*cpyKey)( K & dest, const K & src ),
+  D & (*cpyData)( D & dest, const D & src )
+  )
+{
+  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
+    {
+      off_t newTree = getKeyMem( sizeof( DavlTree ) );
+
+      if( newTree )
+	{
+	  initTree( cmp, cpyKey, cpyData, newTree );
+	  
+	  if( davlError == E_OK )
+	    {
+	      getTree()->count = 0;
+	      getTree()->histCount = 0;
+	      getTree()->root = 0;
+	    }
+	}
+      else
+	{
+	  davlError = E_NOTREE;
+	}
+    }
+  else
+    {
+      davlError = E_MEMMGR;
+    }
+}
 
 template<class K, class D>
 inline
@@ -1371,13 +1432,10 @@ DavlTreeOffset<K,D>::initTree(
   int (*cmp)( const K & one, const K & two ),
   K & (*cpyKey)( K & dest, const K & src ),
   D & (*cpyData)( D & dest, const D & src ),
-  MultiMemOffset * keyMemMgr,
-  MultiMemOffset * dataMemMgr,
   AvlTreeOffsetBase::Loc davlTree
   )
 {
-  davlError = E_OK;
-  
+
   compareKey = cmp;
   copyKey = cpyKey;
   copyData = cpyData;
@@ -1392,31 +1450,27 @@ DavlTreeOffset<K,D>::initTree(
 
   destroyAction = 0;
   destroyActionClosure = 0;
- 
-  keyMem = (keyMemMgr) ? keyMemMgr : &MultiMemOffsetMalloc;
-  dataMem = (dataMemMgr ) ? dataMemMgr : &MultiMemOffsetMalloc;
 
-  setKeyBase();
-  setDataBase();
-
-  if( ! davlTree )
+  
+  if( keyMem && keyMem->good() && dataMem && dataMem->good() )
     {
-      tree = getKeyMem( sizeof( DavlTree ) );
+      setKeyBase();
+      setDataBase();
 
-      if( tree )
+      if( davlTree )
 	{
-	  getTree()->count = 0;
-	  getTree()->histCount = 0;
-	  getTree()->root = 0;
+	  tree = davlTree;
 	}
       else
 	{
 	  davlError = E_NOTREE;
+	  return;
 	}
     }
   else
     {
-      tree = davlTree;
+      davlError = E_MEMMGR;
+      return;
     }
 
 #if !defined( AVLTREE_FAST )
@@ -1427,11 +1481,6 @@ DavlTreeOffset<K,D>::initTree(
       return;
     }
 #endif // ! def AVLTREE_GLOBALFUNCT
-
-  if( ! keyMem->good() || ! dataMem->good() )
-    {
-      davlError = E_MEMMGR;
-    }
 #endif // ! def AVLTREE_FAST
 }      
 
