@@ -12,6 +12,10 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/03 14:32:22  houghton
+// Moved construtors to .C from .hh (no longer inline).
+// Added virtual destructor.
+//
 // Revision 2.2  1996/02/29 19:09:49  houghton
 // *** empty log message ***
 //
@@ -58,7 +62,7 @@ public:
 
   MapFile();
   
-  virtual ~MapFile( );
+  virtual ~MapFile( void );
 
   size_t    	    map( const char * 	fileName,
 			 caddr_t      	baseAddr = 0,
@@ -109,79 +113,6 @@ private:
 //
 // Inline methods
 //
-
-inline
-MapFile::MapFile()
-{
-  mapFd     	= 0;
-  mapMode   	= ios::in;
-  mapSize   	= 0;
-  mapBase   	= 0;
-  osErrno   	= ENOENT;
-  pageSize  	= getpagesize();  
-}
-
-inline
-MapFile::MapFile(
-  const char * 	    fileName,
-  caddr_t    	    baseAddr,
-  ios::open_mode    mode
-  )
-  : fileStat( fileName )
-{
-  osErrno = 0;
-  pageSize = getpagesize();
-  map( fileName, baseAddr, mode );
-}
-
-inline
-MapFile::MapFile(
-  const char * 	    fileName,
-  size_t	    size,
-  caddr_t    	    baseAddr,
-  unsigned short    permMask
-  )
-  : fileStat( fileName )
-{
-  mapMode = (ios::open_mode)(ios::in | ios::out);  
-  mapSize = 0;
-  mapBase = 0;
-  osErrno = 0;
-
-  pageSize = getpagesize();
-  
-  unsigned short origMask;
-
-  if( permMask != 0 )
-    {
-      origMask = umask( permMask );
-    }
-
-  unlink( fileName );
-
-  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
-    {
-      osErrno = errno;
-      return;
-    }
-
-  fileStat( mapFd, true );
-  
-  if( permMask != 0 )
-    {
-      umask( origMask );
-    }
-  
-  setSize( size, baseAddr );
-  
-}
-
-  
-inline
-MapFile::~MapFile()
-{
-  unmap();
-}
 
 inline
 void
