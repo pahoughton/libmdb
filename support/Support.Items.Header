@@ -30,6 +30,10 @@ include $(config_vars_file)
 # the support tool builds.
 MAKEOVERRIDES	=
 
+SUPPORT_SETUP_CONFIG_VARS	=			\
+	$(foreach var,$(CONFIG_VARS),			\
+	    $(if $($(var)),$(var)='$($(var))'))		\
+
 config_dir	= $(PROJECT_DIR)/src/config
 
 setup_output	= >> $(EXTRACT_DIR)/$(PROJECT_DIR)/.setup.output 2>&1

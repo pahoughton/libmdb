@@ -54,18 +54,15 @@ $(STLUTILS_target): $(tools_archive_dir)/$(STLUTILS_tar)
 	&& $(make_cmd) -f $(STLUTILS_BUILD_DIR)/Setup.Makefile	\
 		setup						\
 		TOOL_DIR=$(TOOL_DIR)				\
-		EXTRACT_DIR=$(STLUTILS_EXTRACT_DIR)		\
-		INSTALL_BASE_DIR=$(TOOL_DIR)			\
-		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+		$(SUPPORT_SETUP_CONFIG_VARS)			\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) depend_all	\
-		show_commands=$(show_commands)			\
-	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) check		\
-		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) install_all	\
+	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR)			\
+		depend_all					\
+		check						\
+		install_all					\
 		check_install=false				\
-		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR)/docs html	\
+		show_commands=$(show_commands)			\
+		force=$(force)					\
 		hide=$(hide)					\
 	&& [ -f $@ ]						\
 	&& touch $@						\

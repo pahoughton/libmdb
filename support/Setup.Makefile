@@ -38,6 +38,7 @@ support:
 		-f $(PROJECT_DIR)/support/Support.Makefile	\
 		setup						\
 		PROJECT_DIR=$(PROJECT_DIR)			\
+		CONFIG_VARS='$(CONFIG_VARS)'			\
 		support_vars_file=$(support_vars_file)		\
 		config_vars_file=$(config_vars_file)
 

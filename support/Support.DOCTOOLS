@@ -27,19 +27,25 @@ DOCTOOLS_NAME		= DocTools
 DOCTOOLS_VER		= 2
 DOCTOOLS_DOC_HTML	= $(WWW_TOOLS_ROOT)/DocTools
 
-DOCTOOLS_API_PKG_URI	= $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_build_dir)/docs/html/Devel/JavaApi
+DOCTOOLS_API_PKG_URI	= $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_BUILD_DIR)/docs/html/Devel/JavaApi
 DOCTOOLS_API_DOC_URI	= $(WWW_TOOLS_ROOT)/DocTools/Devel/JavaApi
 
 DOCTOOLS_DESC_CMD	= \
-	cat $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_build_dir)/src/config/.prjdesc.txt
+	cat $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_BUILD_DIR)/src/config/.prjdesc.txt
 DOCTOOLS_CLASSPATH	= \
 	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xml.Element-$(DOCTOOLS_VER).jar \
 	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xml-$(DOCTOOLS_VER).jar \
 	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xslt-$(DOCTOOLS_VER).jar \
 
-DOCTOOLS_SUPPORT_ITMES	= GZIP MAKE_CONFIGS JAVA ORO XERCES_JAVA XALAN ECS HTML_STREAM XML_WRITER POD_TREE
+DOCTOOLS_INC_DIRS	= 
+DOCTOOLS_LIB_DIRS	= 
+DOCTOOLS_LIBS		= 
+DOCTOOLS_DEP_INC_DIRS	= 
+DOCTOOLS_DEP_LIB_DIRS	= 
+DOCTOOLS_DEP_LIBS	= 
+DOCTOOLS_SUPPORT_ITMES	= GZIP MAKE_CONFIGS JAVA ORO XERCES_JAVA XALAN ECS HTML_STREAM XML_WRITER POD_TREE MLDBM
 DOCTOOLS_EXTRACT_DIR	= $(tools_build_dir)
-DOCTOOLS_build_dir	= $(DOCTOOLS_NAME)-$(DOCTOOLS_VER)
+DOCTOOLS_BUILD_DIR	= $(DOCTOOLS_NAME)-$(DOCTOOLS_VER)
 DOCTOOLS_tar		= $(DOCTOOLS_NAME)-$(DOCTOOLS_VER).tar.gz
 DOCTOOLS_target	= \
 	$(TOOL_DIR)/share/dtd/DocTools/contents.dtd
@@ -48,24 +54,28 @@ DOCTOOLS_target	= \
 $(DOCTOOLS_target): $(tools_archive_dir)/$(DOCTOOLS_tar)
 	$(hide) echo -n "+ Installing $(DOCTOOLS_NAME) ..."	\
 	&& cd $(DOCTOOLS_EXTRACT_DIR)				\
-	&& rm -rf $(DOCTOOLS_build_dir)				\
+	&& rm -rf $(DOCTOOLS_BUILD_DIR)				\
 	&& $(zcat_cmd) $< | tar xf -				\
-	&& $(make_cmd) -f $(DOCTOOLS_build_dir)/Setup.Makefile	\
+	&& $(make_cmd) -f $(DOCTOOLS_BUILD_DIR)/Setup.Makefile	\
 		setup						\
 		TOOL_DIR=$(TOOL_DIR)				\
-		EXTRACT_DIR=$(DOCTOOLS_EXTRACT_DIR)		\
-		INSTALL_BASE_DIR=$(TOOL_DIR)			\
-		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+		$(SUPPORT_SETUP_CONFIG_VARS)			\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(DOCTOOLS_build_dir) check		\
-		hide=$(hide)					\
-	&& $(make_cmd) -C $(DOCTOOLS_build_dir) install_all	\
+	&& $(make_cmd) -C $(DOCTOOLS_BUILD_DIR)		\
+		depend_all					\
+		check						\
+		install_all					\
 		check_install=false				\
+		show_commands=$(show_commands)			\
+		force=$(force)					\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(DOCTOOLS_build_dir)/docs html	\
 	&& [ -f $@ ]						\
 	&& touch $@						\
 	&& echo " Done -" `date`
+
+DOCTOOLS_rebuild_libs:
+
+
 
 
 
