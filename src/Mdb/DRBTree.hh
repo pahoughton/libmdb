@@ -139,6 +139,11 @@ public:
       return( *this );
     };
 
+    inline const_iterator & nextkey( void ) {
+      if( table ) table->nextkey( node, hist );
+      return( *this );
+    };
+		    
     inline const_iterator &    operator -- ( void ) {
       if( table ) table->prevHist( node, hist );
       return( *this );
@@ -156,7 +161,8 @@ public:
       return( it );
     };
 
-    inline const Value &    operator * ( void ) {
+      
+    inline const Value &    operator * ( void ) const {
       return( table->history( hist ).value );
     };
     
@@ -297,6 +303,26 @@ public:
       }
   };
 
+  inline const_iterator	    lower_bound( const Key & key, EffDate eff ) const {
+    Loc node = findNode( key );
+    if( node != headerLoc )
+      {
+	Loc hist = drbNode( node ).hist;
+	for( ; hist && history( hist ).when > eff;
+	     hist = history( hist ).next );
+	
+	if( hist )
+	  return( history( hist ).del ? end() :
+		  const_iterator( this, node, hist ) );
+	else
+	  return( end() );
+      }
+    else
+      {
+	return( end() );
+      }
+  };
+  
   inline bool		    erase( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
@@ -379,7 +405,7 @@ public:
     return( reverse_iterator( begin() ) );
   };
 
-  inline EffDate	    effective( const_iterator it ) {
+  inline EffDate	    effective( const const_iterator & it ) const {
     if( it.hist )
       return( history( it.hist ).when );
     else
@@ -437,17 +463,7 @@ protected:
     return( *((DRBNode *)mgr->address( node ) ) );
   };
   
-  inline Loc	nextHist( Loc & node, Loc & hist ) const {
-    if( history( hist ).next )
-      {
-	for( hist = history( hist ).next;
-	     history( hist ).del;
-	     hist = history( hist ).next );
-	
-	if( hist )
-	  return( hist );
-      }
-
+  inline Loc	nextkey(  Loc & node, Loc & hist ) const {
     for( next( node ); node != headerLoc; next( node ) )
       {
 	for( hist = drbNode( node ).hist;
@@ -460,6 +476,20 @@ protected:
 
     hist = 0;
     return( hist );
+  };
+    
+  inline Loc	nextHist( Loc & node, Loc & hist ) const {
+    if( history( hist ).next )
+      {
+	for( hist = history( hist ).next;
+	     history( hist ).del;
+	     hist = history( hist ).next );
+	
+	if( hist )
+	  return( hist );
+      }
+
+    return( nextkey( node, hist ) );
   };
 
   inline Loc	prevHist( Loc & node, Loc & hist ) const {
@@ -727,6 +757,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/08/17 01:38:06  houghton
+// Added lower_bound.
+// Added nextkey.
+//
 // Revision 2.5  1997/07/25 15:57:43  houghton
 // Added const_reverse_iterator
 // Added reverse_iterator
