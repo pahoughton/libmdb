@@ -183,16 +183,21 @@ public:
     HashTableBase::Loc	    node;
   };
 
+  typedef reverse_bidirectional_iterator< const_iterator,
+    Value, const Value &, difference_type >	const_reverse_iterator;
+  typedef reverse_bidirectional_iterator< iterator,
+    Value, Value &, difference_type >		reverse_iterator;
+    
   typedef pair< iterator, bool >    pair_iterator_bool;
 
 
   // * * * Methods * * * 
   
-  DashTable( ChunkMgr &		chunkMgr,
+  DashTable( MultiMemOffset *	memMgr,
 	     const char *	indexFileName,
 	     ios::open_mode	mode = ios::in,
-	     unsigned short	permMask = 0,
-	     bool		create = false );
+	     bool		create = false,
+	     unsigned short	permMask = 02 );
   
   virtual ~DashTable( void ) {};
 
@@ -303,6 +308,24 @@ public:
     return( iterator( this, endHash(), 0 ) );
   };
 
+  inline const_reverse_iterator	rbegin( void ) const {
+    return( const_reverse_iterator( end() ) );
+  };
+
+  inline const_reverse_iterator rend( void ) const {
+    return( const_reverse_iterator( begin() ) );
+  };
+
+  inline reverse_iterator	rbegin( void ) {
+    return( reverse_iterator( end() ) );
+  };
+
+  inline reverse_iterator	rend( void ) {
+    return( reverse_iterator( begin() ) );
+  };
+
+  static size_type		getNodeSize( void );
+  
 #if defined( FIXME )
   
   virtual bool	    	good( void ) const;
@@ -442,6 +465,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/13 11:04:14  houghton
+// Added rbegin() & rend().
+// Changed constructor args.
+//
 // Revision 2.2  1997/06/05 13:41:26  houghton
 // Changed for AIX: made iterator & const_iterator friends, added 'next'
 //     and 'prev' mehtods, and fixed copy constructor declaration.
