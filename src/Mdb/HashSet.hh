@@ -1,13 +1,19 @@
-#ifndef _Hash_hh_
-#define _Hash_hh_
+#ifndef _HashSet_hh_
+#define _HashSet_hh_
 //
-// File:        Hash.hh
+// File:        HashSet.hh
 // Project:	Mdb
 // Desc:        
 //
-//  This template class provides a mapped memory Hash index for a single
-//  data type (usually a struct). It stores the hash index in a
-//  MapFile (indexFile) and the data in the MultiMemOffset passed to it.
+//  This template class provides a hash index for a single data type
+//  (ususally a struct) that can use mapped memory for data storage and
+//  access. It's interaface conforms to the C++ Standard for container
+//  classes. It stores the hash index in a MapFile (indexFile) and the
+//  data in the MultiMemOffset passed to it.
+//
+// Notes:
+//
+//  The destructor does NOT delete the MultiMemOffset object.
 //
 //  Most of the functionallity provided comes from the HashTable class.
 //
@@ -32,7 +38,7 @@
 template< class Key,
 	  class HashFunct,
 	  class LessKey >
-class Hash
+class HashSet
 {
 
 public:
@@ -45,26 +51,26 @@ public:
   typedef Table::const_reverse_iterator	const_reverse_iterator;
   typedef Table::pair_iterator_bool	pair_iterator_bool;
 
-  inline Hash( MultiMemOffset *	memMgr,
-	       const char *	indexFileName,
-	       ios::open_mode	mode = ios::in,
-	       bool		create = false,
-	       unsigned short	permMask = 02 );
+  inline HashSet( MultiMemOffset *  memMgr,
+		  const char *	    indexFileName,
+		  ios::open_mode    mode = ios::in,
+		  bool		    create = false,
+		  unsigned short    permMask = 02 );
   
-  virtual ~Hash( void );
+  virtual ~HashSet( void );
 
   inline pair_iterator_bool	insert( const Key & key ) {
     return( table.insert( key ) );
+  };
+  
+  inline const_iterator		find( const Key & key ) const {
+    return( table.find( key ) );
   };
   
   inline iterator		find( const Key & key ) {
     return( table.find( key ) );
   };
 
-  inline const_iterator		find( const Key & key ) const {
-    return( table.find( key ) );
-  };
-  
   inline bool			erase( const Key & key ) {
     return( table.erase( key ) );
   };
@@ -78,20 +84,20 @@ public:
     return( table.erase( first, last ) );
   };
   
-  inline iterator	    begin( void ) { return( table.begin() ); };
-  inline iterator	    end( void ) { return( table.end() ); };
+  inline const_iterator		begin( void ) const { return(table.begin()); };
+  inline const_iterator		end( void ) const { return( table.end() ); };
+
+  inline iterator		begin( void ) { return( table.begin() ); };
+  inline iterator		end( void ) { return( table.end() ); };
   
-  inline const_iterator	    begin( void ) const { return( table.begin() ); };
-  inline const_iterator	    end( void ) const { return( table.end() ); };
+  inline const_reverse_iterator	rbegin( void ) const {return(table.rbegin());};
+  inline const_reverse_iterator	rend( void ) const {return(table.rend());};
 
   inline reverse_iterator	rbegin( void ) { return( table.rbegin() ); };
   inline reverse_iterator	rend( void ) { return( table.rend() ); };
 
-  inline const_reverse_iterator	rbegin( void ) const {return(table.rbegin());};
-  inline const_reverse_iterator	rend( void ) const {return(table.rend());};
-
-  inline size_type	    size( void ) const { return( table.size() ); };
-  inline bool		    empty( void ) const { return( table.empty() ); };
+  inline size_type		size( void ) const { return( table.size() ); };
+  inline bool			empty( void ) const { return(table.empty()); };
 
   static size_type	    getNodeSize( void ) {
     return( Table::getNodeSize() );
@@ -106,24 +112,24 @@ public:
                                   bool          showVer = true ) const;
 
   inline
-  DumpInfo< Hash< Key, HashFunct, LessKey > >
+  DumpInfo< HashSet< Key, HashFunct, LessKey > >
   dump( const char *  prefix = "    ",
 	bool	    showVer = true ) const {
-    return( DumpInfo< Hash< Key, HashFunct, LessKey> >(
+    return( DumpInfo< HashSet< Key, HashFunct, LessKey> >(
       *this, prefix, showVer ) );
   };
 
-  // Debug methods
+  // Debuging & Testing methods
   inline ostream &	dumpTable( ostream & dest ) const;
 
   virtual ostream &	dumpKey( ostream & dest, const Key & key ) const;
   virtual ostream &	dumpValue( ostream & dest, const Key & value ) const;
 
-  class HashDumpMethods : public Table::TableDumpMethods
+  class HashSetDumpMethods : public Table::TableDumpMethods
   {
   public:
-    HashDumpMethods( const Table & table,
-		     const Hash< Key, HashFunct, LessKey > & me ) :
+    HashSetDumpMethods( const Table & table,
+		     const HashSet< Key, HashFunct, LessKey > & me ) :
       Table::TableDumpMethods( table ), self( me ) {};
 
     ostream &  dumpKey( ostream & dest, const Key & key ) const {
@@ -135,30 +141,31 @@ public:
     };
 
   private:
-    const Hash< Key, HashFunct, LessKey > & self;
+    const HashSet< Key, HashFunct, LessKey > & self;
     
   };
   
 protected:
 
+  Table		table;
+  
 private:
 
   // HashTable will prevent these
   //
-  // Hash( const Hash & from );
-  // Hash & operator =( const Hash & from );
+  // HashSet( const HashSet & from );
+  // HashSet & operator =( const HashSet & from );
 
-  Table		table;
 };
 
-#include <Hash.ii>
+#include <HashSet.ii>
 
 //
 // Detail Documentation
 //
 //  Data Types:
 //
-//  	Hash< Key, HashFunct, LessKey >:	    template class
+//  	HashSet< Key, HashFunct, LessKey >:	    template class
 //
 //	    This is the primary template class defined by this header.
 //	    It uses the following three types:
@@ -166,8 +173,8 @@ private:
 //	    'Key' is the data type being indexed and stored. It should
 //		be struct. It must not contain a virtual table.
 //
-//	    'HashFunct' is a class that returns a 'HashTableBase::Hash'
-//		for a 'Key' value.
+//	    'HashFunct' is a class that returns a
+//		'HashTableBase::HashValue' for a 'Key' value.
 //
 //	    'LessKey' is a class that takes two 'Key' values and compares
 //		them. If the first is less that the second, true should
@@ -186,14 +193,13 @@ private:
 //
 //  Constructors:
 //
-//  	Hash( MultiMemOffset *	    memMgr,
-//	      const char *	    indexFileName,
-//	      ios::open_mode	    mode = ios::in,
-//	      bool		    create = false,
-//	      unsigned short	    permMask = 02 )
-//	    Construct a 'Hash' object that will either use existing
+//  	HashSet( MultiMemOffset *   memMgr,
+//	         const char *	    indexFileName,
+//	         ios::open_mode	    mode = ios::in,
+//	         bool		    create = false,
+//	         unsigned short	    permMask = 02 )
+//	    Construct a 'HashSet' object that will either use existing
 //	    data maps or create empty ones.
-//
 //		'memMgr' is the object used to store and manage the
 //		    'Key' ojects.
 //		'indexFileName' is the name of the MapFile to use for
@@ -210,7 +216,7 @@ private:
 //
 //  Destructors:
 //
-//	~Hash()
+//	~HashSet()
 //	    The destructor will close the indexFile, but it does NOT
 //	    delete (or do anything else with) the 'memMgr'.
 //
@@ -322,7 +328,7 @@ private:
 //
 //  	virtual const char *
 //  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. Hash )
+//  	    Return the name of this class (i.e. HashSet )
 //
 //  	virtual const char *
 //  	getVersion( bool withPrjVer = true ) const;
@@ -373,7 +379,7 @@ private:
 //	
 //	struct ExHashFunct
 //	{
-//	  HashTableBase::Hash	operator () ( const ExRec & rec ) const {
+//	  HashTableBase::HashValue operator () ( const ExRec & rec ) const {
 //	    return( rec.key );
 //	  };
 //	};
@@ -388,22 +394,23 @@ private:
 //	  };
 //	};
 //	
-//	typedef Hash< ExRec, ExHashFunct, ExLessKey >	ExTable;
+//	typedef HashSet< ExRec, ExHashFunct, ExLessKey >	ExTable;
 //
 //
 // See Also:
 //
 //	HashTable(3), HashTableBase(3),
-//	Dash(3), DashTable(3), DashTableBase(3),
+//	DashSet(3), DashTable(3), DashTableBase(3),
 //	MapFile(3), MultiMemOffset(3), MultiMemOffsetMapDynamic(3),
 //	MapMemDynamicDynamic(3), MapMemDynamicFixed(3)
 //
+//	libMdb/docs/design/HashSet.txt
 //	libMdb/docs/design/HashTable.txt
 //	libMdb/docs/design/HashTableBase.txt
 // 
 // Files:
 //
-//	Hash.hh, Hash.ii,
+//	HashSet.hh, HashSet.ii,
 //	HashTable.hh, HashTable.ii,
 //	HashTableBase.hh, HashTableBase.ii,
 //	MapFile.hh, MapFile.ii,
@@ -417,6 +424,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/25 13:44:49  houghton
+// Cleanup.
+// Class was renamed to DashSet (was Dash).
+//
 // Revision 2.3  1997/07/19 10:21:18  houghton
 // Cleanup.
 //
@@ -428,5 +439,5 @@ private:
 // Initial Version.
 //
 //
-#endif // ! def _Hash_hh_ 
+#endif // ! def _HashSet_hh_ 
 
