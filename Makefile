@@ -53,6 +53,9 @@ check								\
 install install_debug install_default install_lib_all:
 	$(call make_subdirs,$@,src,$($(@)_exports))
 
+rebuild_support_libs:
+	$(call rebuild_libs,$(SUPPORT_ITEMS))
+
 install_all_src:
 	$(call make_subdirs,install_all,src,$($(@)_exports))
 

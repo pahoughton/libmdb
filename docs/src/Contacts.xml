@@ -47,12 +47,18 @@
     <contact>&PRJ.XML.CONTACT;</contact>
   </dochead>
 
-  <contact-list>
+  <contact-list>      
     <who>
-      <role></role>
-      <name></name>
-      <email></email>
-      <phone></phone>
+      <role>Manager</role>
+      <name>Doyle Munday</name>
+      <email>doyle.munday@wcom.com</email>
+      <phone>214-561-5302</phone>
+    </who>
+    <who>
+      <role>Project Lead / Developer</role>
+      <name>Paul Houghton</name>
+      <email>paul.houghton@wcom.com</email>
+      <phone>719-527-7834</phone>
     </who>
   </contact-list>
   

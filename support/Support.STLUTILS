@@ -22,21 +22,25 @@
 #
 
 
+
 STLUTILS_SUPPORT_TYPE	= LIB
 STLUTILS_NAME		= StlUtils
 STLUTILS_VER		= 6
 STLUTILS_DOC_HTML	= $(WWW_OBJECT_REP_ROOT)/GenCxx/StlUtils
 
 STLUTILS_DESC_CMD	= \
-	cat $(STLUTILS_EXTRACT_DIR)/$(STLUTILS_build_dir)/src/config/.prjdesc.txt
+	cat $(STLUTILS_EXTRACT_DIR)/$(STLUTILS_BUILD_DIR)/src/config/.prjdesc.txt
 STLUTILS_CLASSPATH	= \
 
-STLUTILS_INC_DIRS	= $(INSTALL_INC_DIR)
-STLUTILS_LIB_DIRS	= $(INSTALL_LIB_DIR)
+STLUTILS_INC_DIRS	= $$(INSTALL_INC_DIR) 
+STLUTILS_LIB_DIRS	= $$(INSTALL_LIB_DIR) 
 STLUTILS_LIBS		= StlUtils
+STLUTILS_DEP_INC_DIRS	= 
+STLUTILS_DEP_LIB_DIRS	= 
+STLUTILS_DEP_LIBS	= Common m GnuRegex 
 STLUTILS_SUPPORT_ITMES	= GZIP MAKE_CONFIGS DOCTOOLS COMMON GNUREGEX
 STLUTILS_EXTRACT_DIR	= $(libs_build_dir)
-STLUTILS_build_dir	= $(STLUTILS_NAME)-$(STLUTILS_VER)
+STLUTILS_BUILD_DIR	= $(STLUTILS_NAME)-$(STLUTILS_VER)
 STLUTILS_tar		= $(STLUTILS_NAME)-$(STLUTILS_VER).tar.gz
 STLUTILS_target	= \
 	$(INSTALL_INC_DIR)/StlUtilsVersion.hh
@@ -45,24 +49,37 @@ STLUTILS_target	= \
 $(STLUTILS_target): $(tools_archive_dir)/$(STLUTILS_tar)
 	$(hide) echo -n "+ Installing $(STLUTILS_NAME) ..."	\
 	&& cd $(STLUTILS_EXTRACT_DIR)				\
-	&& rm -rf $(STLUTILS_build_dir)				\
+	&& rm -rf $(STLUTILS_BUILD_DIR)				\
 	&& $(zcat_cmd) $< | tar xf -				\
-	&& $(make_cmd) -f $(STLUTILS_build_dir)/Setup.Makefile	\
+	&& $(make_cmd) -f $(STLUTILS_BUILD_DIR)/Setup.Makefile	\
 		setup						\
 		TOOL_DIR=$(TOOL_DIR)				\
 		EXTRACT_DIR=$(STLUTILS_EXTRACT_DIR)		\
 		INSTALL_BASE_DIR=$(TOOL_DIR)			\
 		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_build_dir) check		\
+	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) depend_all	\
+		show_commands=$(show_commands)			\
+	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) check		\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_build_dir) install_all	\
+	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR) install_all	\
 		check_install=false				\
 		hide=$(hide)					\
-	&& $(make_cmd) -C $(STLUTILS_build_dir)/docs html	\
+	&& $(make_cmd) -C $(STLUTILS_BUILD_DIR)/docs html	\
+		hide=$(hide)					\
 	&& [ -f $@ ]						\
 	&& touch $@						\
 	&& echo " Done -" `date`
+
+STLUTILS_rebuild_libs:
+	$(hide) echo -n "+ Rebuilding libs for $(STLUTILS_NAME) ..."	\
+	&& cd $(STLUTILS_EXTRACT_DIR)/$(STLUTILS_BUILD_DIR)		\
+	&& $(make_cmd) rebuild_support_libs				\
+		show_commands=$(show_commands)				\
+	&& $(make_cmd) install_lib_all check_install=false		\
+		show_commands=$(show_commands)				\
+	&& echo " Done -" `date`
+
 
 #
 # Revision Log:

@@ -71,7 +71,7 @@ include Make/make.cfg.$(make_cfg_ver)
 
 # **** S U B D I R  T A R G E T S ****
 
-SUBDIR_TARGETS		= default all html man clean realcean
+SUBDIR_TARGETS		= default all html man
 
 # ****H E L P   V A R I A B L E S ****
 
