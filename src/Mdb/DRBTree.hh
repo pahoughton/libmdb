@@ -232,6 +232,8 @@ public:
 	  {
 	    mgr->release( node );
 	    
+	    ++ header().count;
+  
 	    Loc * h = &(drbNode( insLoc ).hist);
 	    for( ; *h && history( *h ).when > eff ;
 		 h = &(history( *h ).next) );
@@ -309,6 +311,8 @@ public:
     
 	    if( hist )
 	      {
+		++ header().count;
+		
 		keyOf( history( hist ).value )	= key;
 		history( hist ).when		= eff;
 		history( hist ).next		= 0;
@@ -316,6 +320,10 @@ public:
 		
 		history( hist ).next = *h;
 		*h = hist;
+	      }
+	    else
+	      {
+		return( false );
 	      }
 	  }
 	return( true );
@@ -563,6 +571,7 @@ protected:
 	  {
 	    nextHist = history( trimHist ).next;
 	    histMgr->release( trimHist );
+	    -- header().count;
 	  }
       }
     
@@ -673,6 +682,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/25 13:44:06  houghton
+// Bug-Fix: number of records was not being updated.
+//
 // Revision 2.3  1997/07/22 19:42:01  houghton
 // Cleanup.
 // Bug-Fix: Many.
