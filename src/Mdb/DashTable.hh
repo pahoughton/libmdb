@@ -159,7 +159,15 @@ public:
 
     inline bool		operator == ( const const_iterator & rhs ) const {
       return( table == rhs.table && hash == rhs.hash && node == rhs.node );
-    }
+    };
+    
+    inline bool		operator == ( const iterator & rhs ) const {
+      return( table == rhs.table && hash == rhs.hash && node == rhs.node );
+    };
+    
+    inline bool		operator != ( const iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    };
     
     inline const_iterator & operator = ( const const_iterator & rhs ) {
       table = rhs.table;
@@ -465,6 +473,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1998/10/23 13:18:26  houghton
+// Added const_iterator::operator == ( const iterator & rhs ) const;
+// Added const_iterator::operator != ( const iterator & rhs ) const;
+//
 // Revision 2.4  1997/07/22 19:43:10  houghton
 // Cleanup.
 // Changed: HashTableBase::Hash was renamed to HashValue.
