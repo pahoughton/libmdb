@@ -69,7 +69,7 @@ MapFile::MapFile(
   )
   : fileStat( fileName ),
     mapFd( 0 ),
-    mapMode( mode ),
+    mapMode( create ? (ios::open_mode)(ios::in | ios::out) : mode ),
     mapSize( 0 ),
     mapBase( 0 ),
     refCount( 0 ),
@@ -423,6 +423,9 @@ MapFile::createMap(
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/07/16 16:37:38  houghton
+// Bug-Fix: if create is true mode needs to be set to ios::in|ios::out.
+//
 // Revision 2.9  1997/07/15 20:21:37  houghton
 // Bug-Fix: Reset values to 0 in unmap.
 //
