@@ -261,11 +261,31 @@ MapFile::sync(
 {
   if( mapBase != 0 && mapSize != 0 )
     {
+      if( beg >= mapSize )
+	{
+	  osErrno = EINVAL;
+	  return( false );
+	}
+      
       // sync must begin and end on page boundries
-      caddr_t	syncBeg = mapBase + RoundDown( beg, (int)pageSize );
-      size_t	syncLen = Align( (mapBase + beg) - syncBeg + len, pageSize );
-      			      
-      if( msync( syncBeg, syncLen, (async ? MS_ASYNC : MS_SYNC ) ) )
+      size_t	syncStart = RoundDown( beg, (int)pageSize );
+      size_t	syncLen = 0;
+
+      if( len == npos || (beg + len) >= mapSize )
+	{
+	  syncLen = Align( mapSize - syncStart, pageSize );
+	}
+      else
+	{
+	  syncLen = Align( syncStart - beg + len, pageSize );
+
+	  if( syncStart + syncLen > mapSize )
+	    {
+	      syncLen = Align( mapSize - syncStart, pageSize );
+	    }
+	}
+      
+      if( msync( mapBase + syncStart, syncLen, (async ? MS_ASYNC : MS_SYNC ) ) )
 	{
 	  osErrno = errno;
 	  return( false );
@@ -458,6 +478,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.17  1998/01/09 10:42:41  houghton
+// Bug-Fix: sync() was not handling default args (len == npos) correctly.
+//
 // Revision 2.16  1997/10/22 16:06:29  houghton
 // Cleanup.
 //
