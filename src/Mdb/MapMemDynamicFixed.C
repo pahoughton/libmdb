@@ -365,7 +365,7 @@ MapMemFixedDynamic::valid( off_t offset ) const
   off_t     	freeOffset;
       
   for( freeOffset = base->freeList.next;
-       freeOffset < offset;
+       freeOffset && freeOffset < offset;
        freeOffset = ((FreeList *)(baseAddr + freeOffset))->next );
 
   return( freeOffset == offset ? false : true );
@@ -658,6 +658,10 @@ MapMemFixedDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1997/05/01 11:54:37  houghton
+// Bug-Fix: valid() would get in an infinite loop if the free list was
+//     empty.
+//
 // Revision 2.11  1997/04/25 22:25:27  houghton
 // Added valid( off_t ) - returns true if the off_t is a valid usable
 //     offset for this map.
