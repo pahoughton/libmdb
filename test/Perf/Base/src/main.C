@@ -31,6 +31,7 @@ MDB_FUNCT_VERSION(
 bool
 pAvlTreeOffset(
  const char *	fileName,
+ long		recSize,
  size_t		initAllocNumRecs,
  long		quantity,
  ostream &	perfLog
@@ -39,6 +40,7 @@ pAvlTreeOffset(
 bool
 pRBSet(
  const char *	fileName,
+ long		recSize,
  size_t		initAllocNumRecs,
  long		quantity,
  ostream &	perfLog
@@ -57,32 +59,60 @@ main( int argc, char * argv[] )
   if( ! App->good() || App->help() || ! App->allArgs() )
     App->abort( 1, true, __FILE__, __LINE__ );
 
-  
-  pAvlTreeOffset( "../data/avl.avl",          1,   1024, cout );
-  pAvlTreeOffset( "../data/avl.avl",          1,  10000, cout );
-  pAvlTreeOffset( "../data/avl.avl",          1, 100000, cout );
-  pAvlTreeOffset( "../data/avl.avl",          1, 500000, cout );
-  pAvlTreeOffset( "../data/avl.avl",   1024 / 2,   1024, cout );
-  pAvlTreeOffset( "../data/avl.avl",  10000 / 2,  10000, cout );
-  pAvlTreeOffset( "../data/avl.avl", 100000 / 2, 100000, cout );
-  pAvlTreeOffset( "../data/avl.avl", 500000 / 2, 500000, cout );
-  // pAvlTreeOffset( "../data/avl.avl", 1, 10000, cout );
-  remove( "../data/avl.avl" );
 
-  pRBSet( "../data/rbset.rbt",          1,   1024, cout );
-  pRBSet( "../data/rbset.rbt",          1,  10000, cout );
-  pRBSet( "../data/rbset.rbt",          1, 100000, cout );
-  pRBSet( "../data/rbset.rbt",          1, 500000, cout );
-  pRBSet( "../data/rbset.rbt",   1024 / 2,   1024, cout );
-  pRBSet( "../data/rbset.rbt",  10000 / 2,  10000, cout );
-  pRBSet( "../data/rbset.rbt", 100000 / 2, 100000, cout );
-  pRBSet( "../data/rbset.rbt", 500000 / 2, 500000, cout );
+  ofstream	perfLog( App->perfLogFn() );
+
+  if( ! perfLog.good() )
+    {
+      AppError << "Perf log: '" << App->perfLogFn() << "' - "
+	       << strerror( errno )
+	       << endl;
+      exit( 1 );
+    }
+
+  static long RecSize[] = { 4, 128, 512, 1024, -1 };
+  static long Quantity[] = { 1024, 10000, 100000, 500000, -1 };
+  
+  for( long rs = 0; RecSize[rs] > 0; ++ rs )
+    {
+      for( long qty = 0; Quantity[qty] > 0; ++ qty )
+	{
+	  pAvlTreeOffset( "../data/perf.test",
+			  RecSize[rs],
+			  1,
+			  Quantity[qty],
+			  perfLog );
+	  
+	  pAvlTreeOffset( "../data/perf.test",
+			  RecSize[rs],
+			  Quantity[qty] / 2,
+			  Quantity[qty],
+			  perfLog );
+  
+	  pRBSet( "../data/perf.test",
+		  RecSize[rs],
+		  1,
+		  Quantity[qty],
+		  perfLog );
+
+	  pRBSet( "../data/perf.test",
+		  RecSize[rs],
+		  Quantity[qty] / 2,
+		  Quantity[qty],
+		  perfLog );
+	}
+    }
+  
+  
   return( 0 );
 }
 //
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/14 10:52:29  houghton
+// Reworked test order and put into a loop. (Still needs more work)
+//
 // Revision 1.1  1997/07/13 11:36:40  houghton
 // Initial Version.
 //
