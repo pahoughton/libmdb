@@ -62,7 +62,7 @@ SRC_DEFINES	= -DTEST_DATA_DIR=\"../data/\"
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DTEST_DEFAULT=1
-DEBUG_DEFINES	= -DTEST_DEBUG=1 -DMDB_DEBUG=1
+DEBUG_DEFINES	= -DTEST_DEBUG=1 -DMDB_DEBUG=1 -DRDB_TEST=1
 PROFILE_DEFINES	= -DTEST_PROFILE=1
 STATIC_DEFINES	= -DTEST_STATIC=1
 
@@ -162,9 +162,23 @@ STATIC_DEP_LIBS		=
 
 CXX_C_SOURCES	=			\
 	main.C				\
+	TestAvlTreeOffset.C		\
+	tAvlTreeOffset.C		\
+	tAvlTreeOffset01.C		\
+	tAvlTreeOffset02.C		\
+	tDavlTreeOffset.C		\
+	tDavlTreeOffset01.C		\
+	tMapMemDynamicFixed.C		\
+	tMapMemDynamicFixed01.C		\
 	tMapMemDynamicDynamic.C		\
-	tHashTable.C                   \
-	tHashTable01.C                 \
+	tMapMemDynamicDynamic01.C	\
+	tMapMemDynamicDynamic02.C	\
+	tHash.C				\
+	tHash01.C			\
+	tRBTree.C			\
+	tRBTree01.C			\
+	tRBTree02.C			\
+	tRBTree03.C			\
 	$(ARCH_CXX_C_SOURCES)           \
 
 
@@ -214,6 +228,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.3  1997/07/13 11:35:00  houghton
+# Added many test.
+#
 # Revision 1.2  1997/06/27 12:15:59  houghton
 # Added tMapMemDynamicDynamic.
 #

@@ -21,13 +21,21 @@
 //  $Id$
 //
 
+bool	tMapMemDynamicFixed( LibTest & tester );
 bool	tMapMemDynamicDynamic( LibTest & tester );
+bool	tAvlTreeOffset( LibTest & tester );
+bool	tDavlTreeOffset( LibTest & tester );
+bool	tHash( LibTest & tester );
+bool	tRBTree( LibTest & tester );
 
 bool tHashTable( LibTest & tester );
 
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/07/13 11:35:05  houghton
+// Added many test.
+//
 // Revision 1.2  1997/06/27 12:16:04  houghton
 // Added tMapMemDynamicDynamic.
 //

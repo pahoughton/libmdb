@@ -18,7 +18,7 @@
 //
 
 #include <MdbConfig.hh>
-// #include <TestConfig.hh>
+#include <TestConfig.hh>
 #include <LibTest.hh>
 #include "TestFunctProto.hh"
 
@@ -31,8 +31,12 @@ MDB_FUNCT_VERSION(
 
 LibTest::TestItem   TestList[] =
 {
+  { "RBTree", tRBTree },
+  { "Hash", tHash },
+  { "AvlTreeOffset", tAvlTreeOffset },
+  { "DavlTreeOffset", tDavlTreeOffset },
+  { "MapMemDynamicFixed", tMapMemDynamicFixed },
   { "MapMemDynamicDynamic", tMapMemDynamicDynamic },
-  // { "HashTable", tHashTable },
   { 0, 0 }
 };
 
@@ -56,6 +60,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/07/13 11:35:10  houghton
+// Added many test.
+//
 // Revision 1.2  1997/06/27 12:16:06  houghton
 // Added tMapMemDynamicDynamic.
 //
