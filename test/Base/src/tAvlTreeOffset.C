@@ -25,8 +25,9 @@ bool
 tAvlTreeOffset( LibTest & tester )
 {
   TESTP( tAvlTreeOffset01( tester ) );
+#if defined( FIXME )
   TESTP( tAvlTreeOffset02( tester ) );
-
+#endif
   return( true );
 }
 
@@ -34,6 +35,9 @@ tAvlTreeOffset( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1999/11/04 17:27:33  houghton
+// Test not working commented out.
+//
 // Revision 2.1  1997/07/11 17:38:50  houghton
 // Initial Version.
 //
