@@ -35,115 +35,76 @@ const char * MapMemDynamicDynamic::ErrorStrings[] =
   ": ok",
   ": ",
   ": Bad size requested",
-  ": already owned by",
   0
 };
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
-  const char * 	    fileName,
-  size_t	    minChunkSize,
-  size_t	    allocSize,
-  unsigned short    permMask
-  
+  const char *	    fileName,
+  ios::open_mode    mode,
+  bool		    create,
+  size_type	    minChunkSize,
+  size_type	    allocSize,
+  MapMask	    permMask
   )
-  : MapMem( fileName,
-	    0,
-	    MM_DYNAMIC,
-	    MMD_VERSION,
-	    ( sizeof( MapDynamicDynamicInfo ) +
-	      DwordAlign( max( allocSize, (size_t)getpagesize() ) ) ),
-	    permMask ),
-  refCount( 0 )
+  : MapMemDynamic( fileName,
+		   MDD_VERSION,
+		   mode,
+		   create,
+		   ( sizeof( MapDynamicDynamicInfo ) +
+		     DwordAlign( max( allocSize, (size_type)getpagesize())) ),
+		   permMask )
 {
-  base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
-  
-  nextFree = 0;
-  
-  if( base != 0 && MapMem::good() )
-    {
-      base->owner	    = getpid();
-      base->minChunkSize    = DwordAlign( max( minChunkSize + sizeof( size_t ),
-					       sizeof( FreeList ) ));
-      base->allocSize	    = DwordAlign( max( allocSize,
-					       (size_t)getpagesize() ) );
-      base->chunkCount	    = 0;
-      base->chunkSize	    = 0;
-      base->freeCount	    = 1;
-      base->freeSize	    = ( getMapSize() -
-				DwordAlign( sizeof( MapDynamicDynamicInfo ) ));
-      
-      memset( base->keys, 0, sizeof( base->keys ) );      
-
-      base->freeList.next = DwordAlign( sizeof( MapDynamicDynamicInfo )  );
-      base->freeList.prev = base->freeList.next;
-      base->freeList.size = 0;
-
-      getFreeNode( base->freeList.next )->size = base->freeSize;
-      getFreeNode( base->freeList.next )->next = 0;
-      getFreeNode( base->freeList.next )->prev = 0;
-      
-      errorNum = E_OK;
-    }
+  if( create )
+    createMapMemDynamicDynamic( minChunkSize, allocSize);
   else
-    {
-      errorNum = E_MAPMEM;
-    }
+    openMapMemDynamicDynamic();
 }
+
+MapMemDynamicDynamic::MapMemDynamicDynamic(
+  const char * 	    fileName,
+  size_type	    minChunkSize,
+  size_type	    allocSize,
+  MapMask    permMask  
+  )
+  : MapMemDynamic( fileName,
+		   MDD_VERSION,
+		   ( sizeof( MapDynamicDynamicInfo ) +
+		     DwordAlign( max( allocSize, (size_type)getpagesize())) ),
+		   permMask )
+{
+  createMapMemDynamicDynamic( minChunkSize, allocSize );
+};
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
   ios::open_mode    mode,
   bool		    overrideOwner
   )
-  : MapMem( fileName, MM_DYNAMIC, MMD_VERSION, mode ),
-    refCount( 0 )
+  : MapMemDynamic( fileName, MDD_VERSION, mode, overrideOwner )
 {
-  base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
-    
-  if( base == 0 || ! MapMem::good() )
-    {
-      errorNum = E_MAPMEM;
-      return;
-    }
-
-  if( mode & ios::out )
-    {
-      if( base->owner && ! overrideOwner )
-	{
-	  errorNum = E_OWNER;
-	  return;
-	}
-
-      base->owner = getpid();
-	
-    }
-  
-  errorNum = E_OK;
-
+  openMapMemDynamicDynamic();
 }
 
 MapMemDynamicDynamic::~MapMemDynamicDynamic( void )
 {
-  if( base && base->owner == getpid() )
-    base->owner = 0;
 }
 
-off_t
-MapMemDynamicDynamic::getMem( size_t size )
+MapMemDynamicDynamic::Loc
+MapMemDynamicDynamic::allocate( size_type size )
 {
   if( ! good() )
     return( 0 );
 
-  size_t    chunkSize = max( DwordAlign( size + sizeof( size_t ) ),
-			     base->minChunkSize );
+  size_type    chunkSize = max( DwordAlign( size + sizeof( size_type ) ),
+			     mapInfo()->minChunkSize );
 
-  if( base->freeList.next == 0 )
+  if( mapInfo()->freeList.next == 0 )
     expand( chunkSize );
 
-  base->chunkCount++;
+  mapInfo()->chunkCount++;
   while( good() )
     {
-      for( off_t f = base->freeList.next;
+      for( off_t f = mapInfo()->freeList.next;
 	   f;
 	   f = getFreeNode( f )->next )
 	{
@@ -151,7 +112,7 @@ MapMemDynamicDynamic::getMem( size_t size )
 
 	  if( fnode->size >= chunkSize )
 	    {
-	      if( fnode->size >= (chunkSize + base->minChunkSize) )
+	      if( fnode->size >= (chunkSize + mapInfo()->minChunkSize) )
 		{
 		  // give part of this chunk
 		  FreeList * newFnode = getFreeNode( f + chunkSize );
@@ -166,17 +127,17 @@ MapMemDynamicDynamic::getMem( size_t size )
 		  // set this chunk's size
 		  setNodeSize( f, chunkSize );
 
-		  base->chunkSize += chunkSize;
-		  base->freeSize -= chunkSize;
+		  mapInfo()->chunkSize += chunkSize;
+		  mapInfo()->freeSize -= chunkSize;
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		  _LLg( LogLevel::App1 )
 		    << "getMem (partial): "
-		    << setw( 6 ) << f + sizeof( size_t )
+		    << setw( 6 ) << f + sizeof( size_type )
 		    << setw(6) << getNodeSize( f )
 		    << endl;
 #endif
-		  return( f + sizeof( size_t ) );
+		  return( f + sizeof( size_type ) );
 		}
 	      else
 		{
@@ -185,18 +146,18 @@ MapMemDynamicDynamic::getMem( size_t size )
 
 		  setNodeSize( f, fnode->size);
 		  
-		  base->chunkSize += fnode->size;
-		  base->freeSize -= fnode->size;
-		  base->freeCount --;
+		  mapInfo()->chunkSize += fnode->size;
+		  mapInfo()->freeSize -= fnode->size;
+		  mapInfo()->freeCount --;
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		  _LLg( LogLevel::App1 )
 		    << "getMem (node):    "
-		    << setw( 6 ) << f + sizeof( size_t )
+		    << setw( 6 ) << f + sizeof( size_type )
 		    << setw(6) << getNodeSize( f )
 		    << endl;
 #endif
-		  return( f + sizeof( size_t ) );
+		  return( f + sizeof( size_type ) );
 		}
 	    }
 	}
@@ -209,20 +170,20 @@ MapMemDynamicDynamic::getMem( size_t size )
 }
 
 void
-MapMemDynamicDynamic::freeMem( off_t offset )
+MapMemDynamicDynamic::release( Loc offset )
 {
   if( ! good() )
     return;
 
-  off_t	    node	= offset - sizeof( size_t );
+  off_t	    node	= offset - sizeof( size_type );
   off_t     nodeSize	= getNodeSize( node );
   
-  base->chunkCount--;
-  base->chunkSize -= nodeSize;
+  mapInfo()->chunkCount--;
+  mapInfo()->chunkSize -= nodeSize;
   
-  if( base->freeList.next == 0 )
+  if( mapInfo()->freeList.next == 0 )
     {
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
       _LLg( LogLevel::App1 )
 	<< "Free (empty):     "
 	<< setw( 6 ) << offset
@@ -230,8 +191,8 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	<< endl;
 #endif
       
-      base->freeList.next = node;
-      base->freeList.prev = node;
+      mapInfo()->freeList.next = node;
+      mapInfo()->freeList.prev = node;
       
       getFreeNode( node )->next = 0;
       getFreeNode( node )->prev = 0;
@@ -241,7 +202,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
     {
       // find loc to insert this node into
 
-      off_t nextNode  = base->freeList.next;
+      off_t nextNode  = mapInfo()->freeList.next;
 
       for( ; nextNode < node && getFreeNode( nextNode )->next != 0 ;
 	   nextNode = getFreeNode( nextNode )->next );
@@ -267,7 +228,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 		  if( (node + nodeSize) == nextNode )
 		    {
 		      // contigious nprev -> node -> next
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		      _LLg( LogLevel::App1 )
 			<< "Free (p n x):     "
 			<< setw( 6 ) << offset
@@ -291,11 +252,11 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 					getFreeNode( nextNode )->prev );
 		      
 		      node = 0;
-		      base->freeCount--;
+		      mapInfo()->freeCount--;
 		    }
 		  else
 		    {
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		      _LLg( LogLevel::App1 )
 			<< "Free (p n):       "
 			<< setw( 6 ) << offset
@@ -314,7 +275,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	      if( (node + nodeSize) == nextNode )
 		{
 		  // contigious node -> next
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		      _LLg( LogLevel::App1 )
 			<< "Free (n x):       "
 			<< setw( 6 ) << offset
@@ -332,7 +293,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 		}
 	      else
 		{
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 		  _LLg( LogLevel::App1 )
 		    << "Free (n):         "
 		    << setw( 6 ) << offset
@@ -346,7 +307,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 		  setPrevFnodeNext( node, node );
 		  setNextFnodePrev( node, node );
 		  
-		  base->freeCount++;
+		  mapInfo()->freeCount++;
 		}
 	    }
 	}
@@ -357,7 +318,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	  
 	  if( (off_t)(nextNode + getFreeNode( nextNode )->size ) ==  node )
 	    {
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 	      _LLg( LogLevel::App1 )
 		<< "Free (x l):       "
 		<< setw( 6 ) << offset
@@ -371,7 +332,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	    {
 	      // non contigious
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 	      _LLg( LogLevel::App1 )
 		<< "Free (l):         "
 		<< setw( 6 ) << offset
@@ -385,28 +346,31 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	      getFreeNode( node )->next = 0;
 	      getFreeNode( node )->size = nodeSize;
 
-	      base->freeList.prev = node;	  
-	      base->freeCount++;
+	      mapInfo()->freeList.prev = node;	  
+	      mapInfo()->freeCount++;
 	    }
 	}    
     }
 
-  base->freeSize += nodeSize;
+  mapInfo()->freeSize += nodeSize;
 
   {
     // now see if there is enough space at the end to shrink
 
-    if( ( base->freeList.prev + getFreeNode( base->freeList.prev )->size )
+    if( ( mapInfo()->freeList.prev +
+	  getFreeNode( mapInfo()->freeList.prev )->size )
 	  == getMapSize() &&
-	( getFreeNode( base->freeList.prev )->size > (base->allocSize * 2 ) ) )
+	( getFreeNode( mapInfo()->freeList.prev )->size >
+	  (mapInfo()->allocSize * 2 ) ) )
       {
 	// shrink by all but one alloc unit;
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 	_LLg( LogLevel::App1 ) << "SHRINK\n";
 	
 	_LLg( LogLevel::App2 )
-	  << "SHRINK: pre: " << ( getFreeNode( base->freeList.prev )->size -
-			     base->allocSize )
+	  << "SHRINK: pre: "
+	  << ( getFreeNode( mapInfo()->freeList.prev )->size -
+	       mapInfo()->allocSize )
 	  << '\n' << dump( " pre: " )
 	  << '\n' ;
 	
@@ -414,25 +378,24 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 	  dumpFreeList( *_LibLog ) << endl;
 #endif
 	  
-	size_t origSize = getMapSize();
+	size_type origSize = getMapSize();
 	
-	size_t newSize =
-	  shrink( ( getFreeNode( base->freeList.prev )->size -
-		    base->allocSize ),
-		  (caddr_t)(base->base) );
+	size_type newSize =
+	  shrink( ( getFreeNode( mapInfo()->freeList.prev )->size -
+		    mapInfo()->allocSize ),
+		  (caddr_t)(mapInfo()->base) );
 
-	base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
-  
-	base->size = getSize();
+	mapInfo()->size = getSize();
 	
-	base->freeSize -= (origSize - newSize);
+	mapInfo()->freeSize -= (origSize - newSize);
 		
-	getFreeNode( base->freeList.prev )->size -= (origSize - newSize);
+	getFreeNode( mapInfo()->freeList.prev )->size -= (origSize - newSize);
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
 	_LLg( LogLevel::App2 )
-	  << "SHRINK: post: " << ( getFreeNode( base->freeList.prev )->size -
-			     base->allocSize )
+	  << "SHRINK: post: "
+	  << ( getFreeNode( mapInfo()->freeList.prev )->size -
+	       mapInfo()->allocSize )
 	  << '\n' << dump( " pos: " )
 	  << '\n' ;
 	if( _LibLog->willOutput( LogLevel::App2 ) )
@@ -443,12 +406,12 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 }
 
 void
-MapMemDynamicDynamic::expand( size_t minSize )
+MapMemDynamicDynamic::expand( size_type minSize )
 {
   if( ! good() )
     return;
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
   _LLg( LogLevel::App1 ) << "EXPAND\n";
   _LLg( LogLevel::App2 )
     << "EXPAND: pre: " << minSize
@@ -459,30 +422,29 @@ MapMemDynamicDynamic::expand( size_t minSize )
   if( _LibLog->willOutput( LogLevel::App2 ) )
     dumpFreeList( *_LibLog ) << endl;
   
-  size_t amount = max( minSize, (size_t)(base->allocSize ));
+  size_type amount = max( minSize, (size_type)(mapInfo()->allocSize ));
 
-  size_t origSize = getMapSize();
+  size_type origSize = getMapSize();
   
-  if( grow( amount, (caddr_t)base->base ) == 0 )
+  if( grow( amount, (caddr_t)mapInfo()->base ) == 0 )
     {
       errorNum = E_MAPMEM;
       return;
     }
 
-  base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
-  
-  base->size = getSize();
+  mapInfo()->size = getSize();
 
   // now add these recs to the free list
 
-  if( ( base->freeList.prev + getFreeNode( base->freeList.prev )->size )
+  if( ( mapInfo()->freeList.prev +
+	getFreeNode( mapInfo()->freeList.prev )->size )
       == origSize )
     {       
-      getFreeNode( base->freeList.prev )->size += getMapSize() - origSize;
+      getFreeNode( mapInfo()->freeList.prev )->size += getMapSize() - origSize;
     }
   else
     {
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
       _LLg( LogLevel::App2 )
 	<< "EXPAND: post 1: "
 	<< '\n' << dump( " post: " )
@@ -492,20 +454,20 @@ MapMemDynamicDynamic::expand( size_t minSize )
 	dumpNodes( *_LibLog ) << endl;
 
       getFreeNode( origSize )->next = 0;
-      getFreeNode( origSize )->prev = base->freeList.prev;
+      getFreeNode( origSize )->prev = mapInfo()->freeList.prev;
       getFreeNode( origSize )->size = getMapSize() - origSize;
 
-      if( base->freeList.prev )
+      if( mapInfo()->freeList.prev )
 	{
-	  getFreeNode( base->freeList.prev )->next = origSize;
-	  base->freeList.prev = origSize;
+	  getFreeNode( mapInfo()->freeList.prev )->next = origSize;
+	  mapInfo()->freeList.prev = origSize;
 	}
       else
 	{
-	  base->freeList.next = origSize;
-	  base->freeList.prev = origSize;
+	  mapInfo()->freeList.next = origSize;
+	  mapInfo()->freeList.prev = origSize;
 	}
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
       _LLg( LogLevel::App2 )
 	<< "EXPAND: post 2: "
 	<< '\n' << dump( " post: " )
@@ -515,9 +477,9 @@ MapMemDynamicDynamic::expand( size_t minSize )
 	dumpNodes( *_LibLog ) << endl;
 #endif
     }
-  base->freeSize += getMapSize() - origSize;
+  mapInfo()->freeSize += getMapSize() - origSize;
 
-#if defined( CLUE1_DEBUG )
+#if defined( MDB_DEBUG )
   _LLg( LogLevel::App2 )
     << "EXPAND: post 3: "
     << '\n' << dump( " post: " )
@@ -532,9 +494,9 @@ MapMemDynamicDynamic::expand( size_t minSize )
 bool
 MapMemDynamicDynamic::good( void ) const
 {
-  return( base != 0 &&
+  return( mapInfo() != 0 &&
 	  errorNum == E_OK &&
-	  MapMem::good() );
+	  MapMemDynamic::good() );
 }
 
 const char *
@@ -550,18 +512,13 @@ MapMemDynamicDynamic::error( void ) const
     }
   else
     {
-      size_t eSize = errStr.size();
+      size_type eSize = errStr.size();
 
-      if( errorNum > E_MAPMEM &&
-	  errorNum < E_UNDEFINED )
-	{
-	  errStr << ErrorStrings[ errorNum ];
-	  
-	  if( errorNum == E_OWNER )
-	    errStr << " " << base->owner;
-	}
+      if( errorNum > E_MAPMEM && errorNum < E_UNDEFINED )
+	errStr << ErrorStrings[ errorNum ];
+
       
-      if( ! MapMem::good() )
+      if( ! MapMemDynamic::good() )
 	  errStr << ": " << MapMem::error();
 
       if( eSize == errStr.size() )
@@ -602,34 +559,19 @@ MapMemDynamicDynamic::dumpInfo(
 
   Str pre;
   pre = prefix;
-  pre << MapMem::getClassName() << "::";
+  pre << MapMemDynamic::getClassName() << "::";
 
-  MapMem::dumpInfo( dest, pre, false );
+  MapMemDynamic::dumpInfo( dest, pre, false );
 
-  dest << prefix << "refCount:     " << refCount << '\n';
-  
-  if( base )
+  if( mapInfo() )
     {
-      dest << prefix << "owner:        " << base->owner << '\n'
-	   << prefix << "minChunkSize: " << base->minChunkSize << '\n'
-	   << prefix << "allocSize:    " << base->allocSize << '\n'
-	   << prefix << "chunkCount:   " << base->chunkCount << '\n'
-	   << prefix << "chunkSize:    " << base->chunkSize << '\n'
-	   << prefix << "freeCount:    " << base->freeCount << '\n'
-	   << prefix << "freeSize:     " << base->freeSize << '\n'
-	   << prefix << "freeNext:     " << base->freeList.next << '\n'
-	   << prefix << "freePrev:     " << base->freeList.prev << '\n'
-	;
-      
-      for( int k = 0; k < NUM_KEYS; k++ )
-	{
-	  if( getKey( k ) != 0 )
-	    {
-	      dest << prefix
-		   << "key(" << setw(2) << k << "):      " << getKey(k) << '\n'
-		;
-	    }
-	}
+      dest << prefix << "minChunkSize: " << mapInfo()->minChunkSize << '\n'
+	   << prefix << "allocSize:    " << mapInfo()->allocSize << '\n'
+	   << prefix << "chunkSize:    " << mapInfo()->chunkSize << '\n'
+	   << prefix << "freeSize:     " << mapInfo()->freeSize << '\n'
+	   << prefix << "freeNext:     " << mapInfo()->freeList.next << '\n'
+	   << prefix << "freePrev:     " << mapInfo()->freeList.prev << '\n'
+	;      
     }
   else
     {
@@ -648,13 +590,13 @@ MapMemDynamicDynamic::dumpFreeList( ostream & dest ) const
       return( dest );
     }
   
-  dest << "FreeList Dump: count: " << base->freeCount
-       << " size: " << base->freeSize
-       << " first: " << base->freeList.next
-       << " last: " << base->freeList.prev << '\n' ;
+  dest << "FreeList Dump: count: " << mapInfo()->freeCount
+       << " size: " << mapInfo()->freeSize
+       << " first: " << mapInfo()->freeList.next
+       << " last: " << mapInfo()->freeList.prev << '\n' ;
   dest << "FreeList Nodes:    node    size    prev    next\n";
   
-  for( off_t f = base->freeList.next;
+  for( off_t f = mapInfo()->freeList.next;
        f;
        f = getFreeNode( f )->next )
     {
@@ -677,7 +619,7 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
   
   off_t  node = DwordAlign( sizeof( MapDynamicDynamicInfo )  );
   
-  for( off_t f = base->freeList.next;
+  for( off_t f = mapInfo()->freeList.next;
        f;
        f = getFreeNode( f )->next )
     {
@@ -721,9 +663,69 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
   return( dest );
 }
   
+void
+MapMemDynamicDynamic::createMapMemDynamicDynamic(
+  size_type	minChunkSize,
+  size_type	allocSize
+  )
+{
+  if( mapInfo() != 0 && MapMemDynamic::good() )
+    {
+      mapInfo()->minChunkSize	=
+	DwordAlign( max( (minChunkSize + sizeof( size_type) ),
+			 (size_type)sizeof( FreeList) ) );
+      mapInfo()->allocSize	= DwordAlign( max( allocSize,
+						   (size_type)getpagesize()) );
+      mapInfo()->chunkSize	= 0;
+      mapInfo()->freeSize	= ( getMapSize() -
+				    DwordAlign(
+				      sizeof( MapDynamicDynamicInfo ) ));
+      
+      mapInfo()->freeList.next = DwordAlign( sizeof( MapDynamicDynamicInfo ) );
+      mapInfo()->freeList.prev = mapInfo()->freeList.next;
+      mapInfo()->freeList.size = 0;
+
+      getFreeNode( mapInfo()->freeList.next )->size = mapInfo()->freeSize;
+      getFreeNode( mapInfo()->freeList.next )->next = 0;
+      getFreeNode( mapInfo()->freeList.next )->prev = 0;
+      
+      errorNum = E_OK;
+    }
+  else
+    {
+      errorNum = E_MAPMEM;
+    }
+}
+
+void
+MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
+{
+
+  if( mapInfo() == 0 || ! MapMemDynamic::good() )
+    {
+      errorNum = E_MAPMEM;
+      return;
+    }
+
+  errorNum = E_OK;
+
+}
+
+  
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/06/05 11:27:59  houghton
+// Cleanup.
+// Change to be part of libMdb (vs Clue1).
+// Changed to be a subclass of MapMemDynamic (vs MapMem).
+// Added constructor that can create or open existing.
+// Changed to use new MapFile types.
+// Removed addRef, getRefCount & delRef methods (now in base class).
+// Changed getMem to allocate.
+// Changed freeMem to release.
+// Added createMapMemDynamicDynamic and openMapMemDynamicDynamic methods.
+//
 // Revision 2.6  1997/04/22 10:34:39  houghton
 // Added a check to seek if someone is trying to free an already free'd
 //     node. If so, log a warning and return.

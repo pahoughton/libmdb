@@ -2,7 +2,7 @@
 #define _MapMemDynamicDynamic_hh_
 //
 // File:        MapMemDynamicDynamic.hh
-// Project:	Clue
+// Project:	Mdb
 // Desc:        
 //
 //
@@ -17,25 +17,22 @@
 // $Id$
 //
 
-#include <ClueConfig.hh>
-#include <MapMem.hh>
-#include <Record.hh>
+#include <MdbConfig.hh>
+#include <MapMemDynamic.hh>
 
 #include <ClueUtils.hh>
 #include <DumpInfo.hh>
 
 #include <iostream>
 
-#define MMD_VERSION 0x4d4d4403	// 'MMD3'
+#define MDD_VERSION 0x4d444404	// 'MDD4'
 
-#define NUM_KEYS    16
-
-#if defined( CLUE_DEBUG )
+#if defined( MDB_DEBUG )
 #define inline
 #endif
 
 
-class MapMemDynamicDynamic : public MapMem
+class MapMemDynamicDynamic : public MapMemDynamic
 {
 
 public:
@@ -45,15 +42,22 @@ public:
     E_OK,
     E_MAPMEM,
     E_BADSIZE,
-    E_OWNER,
     E_UNDEFINED
   };
-    
+
+  // use this constructor to either create a new map or access an existing
+  MapMemDynamicDynamic( const char *	fileName,
+			ios::open_mode	mode,
+			bool		create,
+			size_type	minChunkSize,
+			size_type	allocSize,
+			MapMask		permMask = 0777 );
+  
   // use this constructor to create a new map file  
   MapMemDynamicDynamic( const char * 	fileName,
-			size_t		minChunkSize = 16,
-			size_t		allocSize = 0,
-			unsigned short	permMask = 0 );
+			size_type	minChunkSize = 16,
+			size_type	allocSize = 0,
+			unsigned short	permMask = 0777 );
 
   // use this constructor to access an existing map file  
   MapMemDynamicDynamic( const char * 	fileName,
@@ -62,27 +66,14 @@ public:
 
   virtual ~MapMemDynamicDynamic( void );
 
-  off_t	    	    getMem( size_t size );	// returns offset not addr!
-  void	    	    freeMem( off_t  offset ); 	// needs offset not addr!
+  virtual Loc	    allocate( size_type size );	// returns offset not addr!
+  virtual void 	    release( Loc  offset ); 	// needs offset not addr!
   
-  inline const void *	    getAddr( off_t offset ) const;
-  inline void *    	    getAddr( off_t offset );
-  inline off_t	    	    getOffset( const void * addr ) const;
-
-  inline unsigned long	    getChunkCount( void ) const;
   inline unsigned long	    getChunkSize( void ) const;
-  inline unsigned long	    getFreeCount( void ) const;
   inline unsigned long	    getFreeSize( void ) const;
   
-  inline long	    setKey( long value, unsigned short key = 0 );
-  inline long	    getKey( unsigned short key = 0) const;
-  
-  void 	    	    expand( size_t minAmount );
+  void 	    	    expand( size_type minAmount );
 
-  inline long		    addRef( void );
-  inline long		    getRefCount( void ) const;
-  inline bool		    delRef( void );
-  
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -116,36 +107,36 @@ protected:
   inline bool		    setPrevFnodeNext( off_t f, off_t n );
   inline bool		    setNextFnodePrev( off_t f, off_t p );
 
-  inline size_t &   setNodeSize( off_t node, size_t nodeSize );
-  inline size_t &   getNodeSize( off_t node );
-  inline size_t     getNodeSize( off_t node ) const;
+  inline size_type &   setNodeSize( off_t node, size_type nodeSize );
+  inline size_type &   getNodeSize( off_t node );
+  inline size_type     getNodeSize( off_t node ) const;
 
 private:
 
-  struct MapDynamicDynamicInfo : MapInfo
+  MapMemDynamicDynamic( const MapMemDynamicDynamic & from );
+  MapMemDynamicDynamic & operator =( const MapMemDynamicDynamic & from );
+
+  void	    createMapMemDynamicDynamic( size_type   minChunkSize,
+					size_type   allocSize );
+
+  void	    openMapMemDynamicDynamic( void );
+
+  struct MapDynamicDynamicInfo : MapDynamicInfo
   {
-    long	    owner;	    // pid of owner (writer)
     unsigned long   minChunkSize;   // minimum chunk size
     unsigned long   allocSize;	    // bytes to allocate at a time
-    unsigned long   chunkCount;	    // allocated chunks
     unsigned long   chunkSize;	    // total allocated size
-    unsigned long   freeCount;	    // available chunks
     unsigned long   freeSize;	    // total available size;
-    long    	    keys[NUM_KEYS]; // general purpose values
     struct FreeList freeList;	    // head to list of free chunks
   };
 
+  inline MapDynamicDynamicInfo *	mapInfo( void );
+  inline const MapDynamicDynamicInfo *  mapInfo( void ) const;
+  
   static const char *	ErrorStrings[];
   
-  ErrorNum			    errorNum;
-  struct MapDynamicDynamicInfo *    base;
+  ErrorNum	    errorNum;
 
-  off_t				    nextFree;
-
-  long				    refCount;
-  
-  MapMemDynamicDynamic( const MapMemDynamicDynamic & from );
-  MapMemDynamicDynamic & operator =( const MapMemDynamicDynamic & from );
 };
 
 #if !defined( inline )
@@ -241,6 +232,17 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.6  1997/06/05 11:27:20  houghton
+// Cleanup.
+// Change to be part of libMdb (vs Clue1).
+// Changed to be a subclass of MapMemDynamic (vs MapMem).
+// Added constructor that can create or open existing.
+// Changed to use new MapFile types.
+// Removed addRef, getRefCount & delRef methods (now in base class).
+// Changed getMem to allocate.
+// Changed freeMem to release.
+// Added createMapMemDynamicDynamic and openMapMemDynamicDynamic methods.
+//
 // Revision 1.5  1997/04/04 20:50:14  houghton
 // Cleanup.
 // Added map owner to prevent to progs from opening the map in write
