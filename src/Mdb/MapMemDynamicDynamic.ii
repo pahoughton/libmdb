@@ -25,20 +25,6 @@
 #endif
 
 inline
-unsigned long
-MapMemDynamicDynamic::getChunkSize( void ) const
-{
-  return( mapInfo() ? mapInfo()->chunkSize : 0 );
-}
-
-inline
-unsigned long
-MapMemDynamicDynamic::getFreeSize( void ) const
-{
-  return( mapInfo() ? mapInfo()->freeSize : 0 );
-}
-
-inline
 MapMemDynamicDynamic::FreeNode &
 MapMemDynamicDynamic::freeNode( Loc f )
 {
@@ -155,6 +141,9 @@ MapMemDynamicDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.6  1997/07/13 11:24:05  houghton
+// Removed getFreeSize & getChunkSize (now in .C).
+//
 // Revision 2.5  1997/06/27 12:15:31  houghton
 // Major rework to speed up 'release'.
 //
