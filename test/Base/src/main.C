@@ -36,6 +36,7 @@ LibTest::TestItem   TestList[] =
   { "MapMemDynamicDynamic", tMapMemDynamicDynamic },
   { "RBTree", tRBTree },
   { "DRBTree", tDRBTree },
+  { "HashTable", tHashTable },
   { "Hash", tHash },
   { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
@@ -62,6 +63,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.6  1997/07/19 10:35:41  houghton
+// Added HashTable test.
+//
 // Revision 1.5  1997/07/16 16:38:28  houghton
 // Added MapFile & DRBTree tests.
 //
