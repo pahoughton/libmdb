@@ -24,6 +24,12 @@
 #   $Id$
 # 
 
+ENH Paul Houghton 08/18/97 08:02
+make sure the table tests (i.e. HashSet, DRBSet ... )
+include a set of tests that use largs (>128) data records.
+A core dump just occured because I was allocating the
+sizeof the wrong data type
+
 ENH Paul A. Houghton 07/11/97 09:17
 Write Performance test for all classes.
 
@@ -47,6 +53,9 @@ Write new AvlSetAddr< class Key, class Comp >
 
 #
 # $Log$
+# Revision 1.2  1997/08/20 10:36:33  houghton
+# *** empty log message ***
+#
 # Revision 1.1  1997/07/11 17:36:25  houghton
 # Initial Version.
 #
