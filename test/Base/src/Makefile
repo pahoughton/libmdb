@@ -225,12 +225,7 @@ FLEX_CXX_C_SOURCES	=
 BISON_CXX_C_SOURCES	=			
 C_SOURCES	=			
 CXX_C_SOURCES	=			\
-	GenTestAvlTreeOffsetData.C      \
-	TestAvlTreeOffset.C             \
 	main.C                          \
-	tAvlTreeOffset.C                \
-	tAvlTreeOffset01.C              \
-	tAvlTreeOffset02.C              \
 	tDRBTree.C                      \
 	tDRBTree01.C                    \
 	tDRBTree02.C                    \
@@ -238,8 +233,6 @@ CXX_C_SOURCES	=			\
 	tDRBTree04.C                    \
 	tDashSet.C                      \
 	tDashSet01.C                    \
-	tDavlTreeOffset.C               \
-	tDavlTreeOffset01.C             \
 	tHashSet.C                      \
 	tHashSet01.C                    \
 	tHashTable.C                    \
@@ -353,6 +346,10 @@ check: test
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.5  2000/02/28 11:57:58  houghton
+# OS Update: with upgrade to 5.6 AVL test are giving me trouble. skiping
+#     for now.
+#
 # Revision 2.4  1999/11/10 12:47:28  houghton
 # Changed to use 00-Makefile.cfg.
 #

@@ -41,7 +41,7 @@ LibTest::TestItem   TestList[] =
   { "HashSet", tHashSet },
   { "DashSet", tDashSet },
   { "MapMemDlist", tMapMemDlist },
-  { "AvlTreeOffset", tAvlTreeOffset },
+  // { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
   { 0, 0 }
 };
@@ -66,6 +66,10 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  2000/02/28 11:58:02  houghton
+// OS Update: with upgrade to 5.6 AVL test are giving me trouble. skiping
+//     for now.
+//
 // Revision 2.2  1998/10/23 13:22:09  houghton
 // Added MapMemDList test.
 //
