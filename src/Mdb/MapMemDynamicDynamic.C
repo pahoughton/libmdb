@@ -18,6 +18,7 @@
 #include "MapMemDynamicDynamic.hh"
 #include <Str.hh>
 #include <LibLog.hh>
+#include <ClueUtils.hh>
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
@@ -715,6 +716,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/06/18 14:14:36  houghton
+// Added include ClueUtils.
+//
 // Revision 2.8  1997/06/09 11:58:26  houghton
 // Bug-Fix: check if there is a _LibLog before I try to use it.
 //
