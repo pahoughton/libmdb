@@ -27,6 +27,8 @@ MDB_VERSION(
   RBTreeBase,
   "$Id$");
 
+Str RBTreeBase::errStr;
+
 #if defined( RBT_TEST )
 
 static long	ins_FIRST = 0;
@@ -961,36 +963,36 @@ RBTreeBase::good( void ) const
 const char *
 RBTreeBase::error( void ) const
 {
-  static Str errStr;
+  static Str myErrStr;
 
   errStr = RBTreeBase::getClassName();
 
   if( good() )
     {
-       errStr += ": ok";
+      myErrStr << ": ok";
     }
   else
     {
-      size_t eSize = errStr.size();
+      size_t eSize = myErrStr.size();
 
       if( mgr )
 	{
 	  if( ! mgr->good() )
-	    errStr << ": " << mgr->error();
+	    myErrStr << ": " << mgr->error();
 	}
       else
 	{
-	  errStr << ": no mgr";
+	  myErrStr << ": no mgr";
 	}
 
       if( errorNum != E_OK )
-	errStr << ": " << errorNum;
+	myErrStr << ": " << errorNum;
       
-      if( eSize == errStr.size() )
-        errStr << ": unknown error";
+      if( eSize == myErrStr.size() )
+        myErrStr << ": unknown error";
     }
 
-  return( errStr.c_str() );
+  return( myErrStr.c_str() );
 }
 
 const char *
@@ -1562,6 +1564,10 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/08/18 10:24:10  houghton
+// Port(Sun5): had to add static errStr to be used by template sub
+//     classes (DBTree). The sun compiler gets a dup symbol error.
+//
 // Revision 2.4  1997/07/25 13:48:40  houghton
 // Cleanup.
 //

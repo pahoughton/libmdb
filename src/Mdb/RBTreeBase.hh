@@ -23,6 +23,7 @@
 
 #include <MdbConfig.hh>
 #include <MultiMemOffset.hh>
+#include <Str.hh>
 #include <iostream>
 
 #if defined( MDB_DEBUG )
@@ -215,6 +216,7 @@ protected:
   Loc		    headerLoc;
   ErrorNum	    errorNum;
   
+  static Str errStr;
   
 private:
 
@@ -318,6 +320,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/08/18 10:23:57  houghton
+// Port(Sun5): had to add static errStr to be used by template sub
+//     classes (DBTree). The sun compiler gets a dup symbol error.
+//
 // Revision 2.3  1997/07/25 13:48:48  houghton
 // Cleanup.
 //
