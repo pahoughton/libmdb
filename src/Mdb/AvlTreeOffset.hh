@@ -14,6 +14,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/03/07 11:47:05  houghton
+// Chagned getCount() to counst.
+//
 // Revision 2.3  1997/03/03 14:31:36  houghton
 // Removed definition of getClassName - it is inlined at the decl.
 //
@@ -79,7 +82,7 @@ public:
   T &	    	operator []( off_t dataOffset );
 
   static size_t	    	    getNodeSize( void );
-  unsigned long	    	    getCount( void );
+  unsigned long	    	    getCount( void ) const;
   off_t	    	    	    getTreeOffset( void );
   MultiMemOffset *  	    getMemMgr( void );
   const MultiMemOffset *    getMemMgr( void ) const;
@@ -477,7 +480,7 @@ AvlTreeOffset<T>::getNodeSize( void )
 template<class T>
 inline
 unsigned long
-AvlTreeOffset<T>::getCount( void )
+AvlTreeOffset<T>::getCount( void ) const
 {
   return( getTree()->count );
 }
