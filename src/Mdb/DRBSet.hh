@@ -87,6 +87,11 @@ public:
     return( table.find( key, eff ) );
   };
 
+  inline const_iterator		lower_bound( const Key & key,
+					     EffDate eff ) const {
+    return( table.lower_bound( key, eff ) );
+  };
+  
   inline bool			erase( const Key & key, EffDate eff ) {
     return( table.erase( key, eff ) );
   };
@@ -109,6 +114,9 @@ public:
     return( table.trim( eff ) );
   };
 
+  inline EffDate		effective( const const_iterator & it ) const {
+    return( table.effective( it ) );
+  };
   
   inline const_iterator		begin( void ) const { return(table.begin()); };
   inline const_iterator		end( void ) const { return( table.end() ); };
@@ -414,6 +422,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/08/17 01:37:41  houghton
+// Added lower_bound.
+// Added effective.
+//
 // Revision 2.4  1997/07/25 15:56:04  houghton
 // Bug-Fix: lest chaged to last.
 //
