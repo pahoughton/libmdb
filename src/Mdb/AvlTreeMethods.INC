@@ -51,6 +51,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1997/06/25 12:49:52  houghton
+// Added dumpNode and reworked dumpTree to use it.
+//
 // Revision 2.2  1995/12/04 11:19:16  houghton
 // Changed to eliminate compile warnings.
 //
@@ -500,18 +503,42 @@ ClassName::dumpTree(
       dumpTree( NODE( root )->subTree[ RIGHT ], dest, level + 1 );
     }
 
-  dest << setw( (level * 5) + 1 ) << level;
-
-  long destFmtFlags = dest.setf(ios::showpos);
-
-  dest << ':' << NODE( root )->bal << '\n';
-
-  dest.setf( destFmtFlags );
-
+  dumpNode( dest, root, level ) << '\n';
+  
   if( NODE( root )->subTree[ LEFT ] != 0 )
     {
       dumpTree( NODE( root )->subTree[ LEFT ], dest, level + 1 );
     }
+
+  return( dest );
+}
+
+ostream &
+ClassName::dumpNode(
+  ostream & 	    	dest,
+  const NodeDataType 	root,
+  int	    	    	level
+  ) const
+{
+  if( root == 0 )
+    {
+      return( dest );
+    }
+  
+  dest << setw( (level * 5) + 1 ) << root << ' '
+       << level;
+
+  long destFmtFlags = dest.setf(ios::showpos);
+
+  dest << ':' << NODE( root )->bal << ' ';
+
+  dest.flags( destFmtFlags );
+  
+  dest << ' ' << setw(6) << NODE( root )->subTree[ RIGHT ]
+       << ' ' << setw(6) << NODE( root )->subTree[ LEFT ];
+
+  dest << " key: ";
+  dumpKey( dest, root );
 
   return( dest );
 }
