@@ -42,6 +42,15 @@ public:
   typedef MDB_U32_T	    MapVersion;
   typedef MDB_U32_T	    MapBaseAddr;
   typedef MDB_S32_T	    MapOwner;
+
+  typedef MapFile::s16	    s16;
+  typedef MapFile::u16	    u16;
+  typedef MapFile::s32	    s32;
+  typedef MapFile::u32	    u32;
+#if defined( MDB_HAVE_LONG_LONG )
+  typedef MapFile::s64	    s64;
+  typedef MapFile::u64	    u64;
+#endif
   
   enum MapType
   {
@@ -238,6 +247,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1999/05/09 17:32:11  houghton
+// Added long long support.
+//
 // Revision 2.9  1997/10/01 14:00:33  houghton
 // Changed to use portable multi platform data types.
 //

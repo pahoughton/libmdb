@@ -49,6 +49,16 @@ class MapFile
 
 public:
 
+  // helpers
+  typedef MDB_S16_T	s16;
+  typedef MDB_U16_T	u16;
+  typedef MDB_S32_T	s32;
+  typedef MDB_U32_T	u32;
+#if defined( MDB_HAVE_LONG_LONG )
+  typedef MDB_S64_T	s64;
+  typedef MDB_U64_T	u64;
+#endif
+  
   typedef MDB_U32_T	    size_type;
   
   typedef MDB_TYPE_ADDR	    MapAddr;
@@ -410,6 +420,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.14  1999/05/09 17:32:05  houghton
+// Added long long support.
+//
 // Revision 2.13  1999/03/02 12:58:15  houghton
 // Added totalMapped static variable.
 // Added getTotalMapped().

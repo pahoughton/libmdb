@@ -24,10 +24,19 @@
 #include <StlUtilsConfig.hh>
 #include <MdbVersion.hh>
 
-#define MDB_U16_T	    STLUTILS_SHORT_U16_T
-#define MDB_S16_T	    STLUTILS_SHORT_S16_T
-#define MDB_U32_T	    STLUTILS_LONG_U32_T
-#define MDB_S32_T	    STLUTILS_LONG_S32_T
+#if defined( STLUTILS_HAVE_LONG_LONG )
+#define MDB_HAVE_LONG_LONG 1
+#endif
+
+#define MDB_U16_T	    STLUTILS_U16_T
+#define MDB_S16_T	    STLUTILS_S16_T
+#define MDB_U32_T	    STLUTILS_U32_T
+#define MDB_S32_T	    STLUTILS_S32_T
+
+#if defined( MDB_HAVE_LONG_LONG )
+#define MDB_U64_T	    STLUTILS_U64_T
+#define MDB_S64_T	    STLUTILS_S64_T
+#endif
 
 #define MDB_TYPE_SIZE	    MDB_U32_T
 #define MDB_TYPE_LOC	    MDB_S32_T
@@ -117,6 +126,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1999/05/09 17:32:18  houghton
+// Added long long support.
+//
 // Revision 2.4  1997/10/01 14:02:57  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.
