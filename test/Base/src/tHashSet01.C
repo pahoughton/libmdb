@@ -21,6 +21,7 @@
 #include <Hash.hh>
 #include <LibTest.hh>
 #include <iomanip>
+#include <cstring>
 
 struct TestKey
 {
@@ -53,7 +54,7 @@ operator == ( const TestRec & one, const TestRec & two )
 class TestHashFunct
 {
 public:
-  HashTableBase::Hash	operator () ( const TestRec & key ) const {
+  HashTableBase::HashValue	operator () ( const TestRec & key ) const {
     return( key.h );
   };
 };
@@ -219,10 +220,13 @@ tHash01( LibTest & tester )
   return( true );
 }
 
-
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:39:08  houghton
+// Bug-Fix: added include <cstring>
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue.
+//
 // Revision 2.2  1997/07/14 10:47:05  houghton
 // Bug-Fix: added missing return statement.
 // Port(AIX): added bool constructor for the '?:' operator.
