@@ -176,7 +176,7 @@ install install_all: html
 	&& echo 'rm -f `cat .filelist`' > $(PROJECT_NAME)/rm_files.sh	\
 	&& chmod +x  $(PROJECT_NAME)/rm_files.sh			\
 	&& find $(PROJECT_NAME) |					\
-		cpio -pvdum $(INSTALL_DOC_HTML_DIR)/$(PROJECT_NAME)	\
+		cpio -pvdum $(INSTALL_DOC_HTML_DIR)			\
 	&& mv $(PROJECT_NAME) html					\
 	&& echo "+ Installed html documentation in"			\
 		"$(INSTALL_DOC_HTML_DIR)/$(PROJECT_NAME)"
