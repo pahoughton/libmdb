@@ -164,8 +164,8 @@ RBTreeBase::ConstNodeBase::prev( void )
 // * * * NodeBase * * * 
 
 inline
-RBTreeBase::NodeBase::NodeBase( MultiMemOffset & memMgr, Loc nodeLoc )
-  : RBTreeBase::ConstNodeBase( memMgr, nodeLoc ),
+RBTreeBase::NodeBase::NodeBase( MultiMemOffset & memMgr, Loc nLoc )
+  : RBTreeBase::ConstNodeBase( memMgr, nLoc ),
     mgr( memMgr )
 {
 }
@@ -444,6 +444,9 @@ RBTreeBase::maximum( const NodeBase & node )
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/07/19 10:30:19  houghton
+// Port(Sun5): changed local variable names to eliminate warnings.
+//
 // Revision 2.3  1997/07/14 10:42:01  houghton
 // Port(AIX): had to be more explicid in constructor.
 //
