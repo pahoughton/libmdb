@@ -203,9 +203,9 @@ MapMem::dumpInfo(
 
   if( getMapInfo() != 0 )
     {
-      dest << prefix << "map Ver:  " << getVersion() << '\n'
+      dest << prefix << "map Ver:  " << getMapVersion() << '\n'
 	   << prefix << "type:     " << getTypeName() << '\n'
-	   << prefix << "map to:   " << getMapToAddr() << '\n'
+	   << prefix << "map to:   " << (void *)getMapToAddr() << '\n'
 	   << prefix << "map Size: " << getMapSize() << '\n'
 	;
     }
@@ -283,6 +283,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/06/27 12:15:06  houghton
+// Cleanup dumpInfo output.
+//
 // Revision 2.6  1997/06/09 11:57:50  houghton
 // Bug-Fix: have to grab the base before I unmap.
 //

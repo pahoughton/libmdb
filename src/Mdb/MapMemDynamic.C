@@ -151,7 +151,7 @@ MapMemDynamic::dumpInfo(
 
   Str pre;
   pre = prefix;
-  pre << "::" << MapMem::getClassName();
+  pre << MapMem::getClassName() << "::" ;
 
   MapMem::dumpInfo( dest, pre, false );
 
@@ -211,6 +211,9 @@ MapMemDynamic::openMapMemDynamic(
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/06/27 12:15:12  houghton
+// Cleanup dumpInfo output.
+//
 // Revision 2.3  1997/06/25 12:55:04  houghton
 // Cleanup dumpInfo() output.
 //
