@@ -143,7 +143,8 @@ PRIFLE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
 DEFAULT_LD_LIBS		= 
-DEBUG_LD_LIBS		= -lMdb_g -lClue_g -lCommon_g -lGnuRegex -lm
+DEBUG_LD_LIBS		= -lMdb_g -lClue_g -lCommon_g -lGnuRegex \
+			  -lm $(ARCH_DEBUG_LD_LIBS)
 PROFILE_LD_LIBS		= $(DEFAULT_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
 
@@ -228,6 +229,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.4  1997/07/14 10:44:20  houghton
+# Added ARCH_DEBUG_LD_LIBS to DEBUG_LD_LIBS.
+#
 # Revision 1.3  1997/07/13 11:35:00  houghton
 # Added many test.
 #
