@@ -140,6 +140,15 @@ MapMemDynamicDynamic::setNextFnodePrev( off_t f, off_t p )
 
 inline
 size_t &
+MapMemDynamicDynamic::setNodeSize( off_t node, size_t nodeSize )
+{
+  
+  *( (size_t *)(getBase() + node )) = nodeSize;
+  return( getNodeSize( node ) );
+}
+
+inline
+size_t &
 MapMemDynamicDynamic::getNodeSize( off_t node )
 {
   return( *( (size_t *)(getBase() + node )) );
@@ -188,6 +197,9 @@ MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/03/18 16:57:00  houghton
+// Added setNodeSize().
+//
 // Revision 2.2  1997/03/13 02:38:58  houghton
 // Added addRef, getRefCount and delRef.
 //

@@ -114,6 +114,7 @@ protected:
   inline bool		    setPrevFnodeNext( off_t f, off_t n );
   inline bool		    setNextFnodePrev( off_t f, off_t p );
 
+  inline size_t &   setNodeSize( off_t node, size_t nodeSize );
   inline size_t &   getNodeSize( off_t node );
   inline size_t     getNodeSize( off_t node ) const;
 
@@ -237,6 +238,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.4  1997/03/18 16:56:37  houghton
+// Added setNodeSize().
+//
 // Revision 1.3  1997/03/13 02:25:21  houghton
 // Added refCount, addRef, getRefCount and delRef.
 //
