@@ -27,6 +27,8 @@
 #include <MdbConfig.hh>
 #include <RBTreeBase.hh>
 #include <iostream>
+#include <iterator>
+#include <pair>
 
 template< class Key, class Value, class KeyOfValue, class LessKey >
 class DRBTree : public RBTreeBase
@@ -503,6 +505,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:17:22  houghton
+// Bug-Fix: added include <pair> and <iterator>.
+//
 // Revision 2.1  1997/07/16 16:37:02  houghton
 // Initial Version (work in progress).
 //
