@@ -153,7 +153,8 @@ public:
     };
     
     inline const_referance	operator * ( void ) const {
-      return( table ? table->value( node ) : Value() );
+      return( table->value( node ) );
+      // return( table ? table->value( node ) : Value() );
     };
 
     inline bool		operator == ( const const_iterator & rhs ) const {
@@ -318,6 +319,18 @@ public:
   
 protected:
 
+  friend iterator;
+  friend const_iterator;
+
+  inline Loc	next( Hash & hash, Loc & node ) const {
+    return( DashTableBase::next( hash, node ) );
+  };
+
+  inline Loc	prev( Hash & hash, Loc & node ) const {
+    return( DashTableBase::prev( hash, node ) );
+  };
+
+  
   inline referance	    value( Loc node ) {
     return( ((DashNode *)mgr.address( node ))->value );
   };
@@ -326,14 +339,19 @@ protected:
     return( ((const DashNode *)(mgr.address( node )))-> value );
   };
 
+  
   KeyOfValue	    keyOf;
   LessKey	    lessKey;
   HashFunct	    hashFunct;
   
 private:
 
-  DashTable( const DashTable & from );
-  DashTable & operator =( const DashTable & from );
+  DashTable( const DashTable< Key, Value, KeyOfValue,
+	     HashFunct, LessKey > & from );
+  
+  DashTable< Key, Value, KeyOfValue, HashFunct, LessKey > &
+  operator =( const DashTable< Key, Value, KeyOfValue,HashFunct, LessKey > &
+	      from );
 
 };
 
@@ -424,6 +442,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/05 13:41:26  houghton
+// Changed for AIX: made iterator & const_iterator friends, added 'next'
+//     and 'prev' mehtods, and fixed copy constructor declaration.
+//
 // Revision 2.1  1997/06/05 11:29:08  houghton
 // Initial Version.
 //
