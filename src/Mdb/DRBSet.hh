@@ -54,31 +54,25 @@ public:
   virtual ~DRBSet( void );
 
   inline pair_iterator_bool	insert( const Key & key, EffDate eff ) {
-    return( table.insert( key ) );
+    return( table.insert( key, eff ) );
   };
   
   inline iterator		find( const Key & key, EffDate eff ) {
-    return( table.find( key ) );
+    return( table.find( key, eff ) );
   };
 
   inline const_iterator		find( const Key & key, EffDate eff ) const {
-    return( table.find( key ) );
+    return( table.find( key, eff ) );
   };
 
-#if defined( FIXME )
-  inline bool			erase( const Key & key ) {
-    return( table.erase( key ) );
+  inline bool			erase( const Key & key, EffDate eff ) {
+    return( table.erase( key, eff ) );
   };
 
-  inline bool			erase( const iterator & pos ) {
-    return( table.erase( pos ) );
+  inline bool			erase( const iterator & pos, EffDate eff ) {
+    return( table.erase( *pos, eff ) );
   };
 
-  inline bool			erase( const iterator & first,
-				       const iterator & last ) {
-    return( table.erase( first, last ) );
-  };
-#endif
   
   inline iterator	    begin( void ) { return( table.begin() ); };
   inline iterator	    end( void ) { return( table.end() ); };
@@ -207,6 +201,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/22 19:41:16  houghton
+// Cleanup.
+// Bug-Fix: fixed method args on some of the methods.
+//
 // Revision 2.1  1997/07/16 16:36:54  houghton
 // Initial Version (work in progress).
 //
