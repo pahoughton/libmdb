@@ -25,6 +25,7 @@
 #include <vector>
 #include <functional>
 #include <set>
+#include <algorithm>
 
 struct Rec
 {
@@ -478,6 +479,9 @@ tRBTree02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:40:47  houghton
+// Bug-Fix: added include <algorithm>
+//
 // Revision 2.2  1997/07/14 10:50:06  houghton
 // Bug-Fix: added if( ! empty ) to ERASE_TEST. Not supose to use
 //     iterators when a collection is empty!

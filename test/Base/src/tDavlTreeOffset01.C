@@ -22,6 +22,8 @@
 #include <Compare.hh>
 #include <LibTest.hh>
 
+#include <algorithm>
+
 static
 int
 compareLong( const long & one, const long & two )
@@ -327,6 +329,9 @@ tDavlTreeOffset01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:38:15  houghton
+// Bug-Fix: added include <algorithm>
+//
 // Revision 2.2  1997/07/14 10:46:03  houghton
 // Added debuging output. (THIS TEST IS CURRENTLY NOT WORKING.).
 //

@@ -24,6 +24,7 @@
 #include <LibTest.hh>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 typedef RBTree< long, long, MdbIdent< long, long >, less< long > >   Tree;
 typedef vector< long >	List;
@@ -381,6 +382,9 @@ tRBTree01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:40:32  houghton
+// Bug-Fix: added include <algorithm>
+//
 // Revision 2.1  1997/07/11 17:39:34  houghton
 // Initial Version.
 //
