@@ -26,6 +26,7 @@ bool
 tRBTree( LibTest & tester )
 {
   // test 01 is the same as 02, but generates bunches of debuging output.
+  // TESTP( tRBTree01( tester ) );
   TESTP( tRBTree02( tester ) );
   TESTP( tRBTree03( tester ) );
 
@@ -36,6 +37,9 @@ tRBTree( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/14 10:48:56  houghton
+// Added tRBTree01 test (but it is commented out).
+//
 // Revision 2.1  1997/07/11 17:39:31  houghton
 // Initial Version.
 //
