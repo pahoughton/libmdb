@@ -26,12 +26,17 @@
 void
 LogPerfData(
   ostream &	    dest,
+  const char *	    appName,
+  long		    passNum,
+  long		    passes,
   const char *	    mapType,
+  long		    initSize,
+  long		    allocSize,
+  long		    recSize,
   const char *	    className,
   const char *	    method,
   const char *	    order,
-  long		    initAlloc,
-  long		    recSize,
+  long		    startSize,
   long		    quantity,
   const TimeIt &    timer
   );
@@ -63,28 +68,60 @@ struct Rec_1024
 
 
 inline
+bool
 operator < ( const Rec_4 & a, const Rec_4 & b )
 {
   return( a.k < b.k );
 }
 
 inline
+bool
 operator < ( const Rec_128 & a, const Rec_128 & b )
 {
   return( a.k < b.k );
 }
 
 inline
+bool
 operator < ( const Rec_512 & a, const Rec_512 & b )
 {
   return( a.k < b.k );
 }
 
 inline
+bool
 operator < ( const Rec_1024 & a, const Rec_1024 & b )
 {
   return( a.k < b.k );
 }
+
+struct HashRec_4
+{
+  inline long operator () ( const Rec_4 & key ) const {
+    return( key.k );
+  };
+};
+
+struct HashRec_128
+{
+  inline long operator () ( const Rec_128 & key ) const {
+    return( key.k );
+  };
+};
+
+struct HashRec_512
+{
+  inline long operator () ( const Rec_512 & key ) const {
+    return( key.k );
+  };
+};
+
+struct HashRec_1024
+{
+  inline long operator () ( const Rec_1024 & key ) const {
+    return( key.k );
+  };
+};
 
 //
 // Detail Documentation
@@ -170,6 +207,10 @@ operator < ( const Rec_1024 & a, const Rec_1024 & b )
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/25 13:51:52  houghton
+// Changned LogPerfData() args.
+// Bug-Fix: operator < was missing return type.
+//
 // Revision 1.1  1997/07/13 11:36:39  houghton
 // Initial Version.
 //
