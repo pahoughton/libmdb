@@ -227,7 +227,7 @@ MapFile::map(
 
   mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
-  if( mapBase == (MapAddr)-1 )
+  if( mapBase == MAP_FAILED )
     {
       mapSize = 0;
       osErrno = errno;
@@ -409,7 +409,7 @@ MapFile::setSize(
     
   mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
-  if( mapBase == (MapAddr)-1 )
+  if( mapBase == MAP_FAILED )
     {
       mapSize = 0;
       osErrno = errno;
@@ -548,6 +548,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/26 15:58:05  houghton
+// Bug-Fix: use MAP_FAILED to detect mmap errros.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //
