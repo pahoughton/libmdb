@@ -31,14 +31,17 @@
 //  to see detailed output after each operation.
 //
 
-struct Data
+// interesting Sun5 problem, the static.allocater in vector<>
+// remembers 'Data' across sources, so it gets the size wrong.
+
+struct MMDD01Data
 {
-  Data( MapMemDynamicDynamic::Loc l = 0, long s = 0) : loc(l), size(s) {};
+  MMDD01Data( MapMemDynamicDynamic::Loc l = 0, long s = 0) : loc(l), size(s) {};
   MapMemDynamicDynamic::Loc	loc;
   long				size;
 };
 
-typedef vector<Data> DataList;
+typedef vector<MMDD01Data> DataList;
 
 bool
 tMapMemDynamicDynamic01( LibTest & tester )
@@ -58,7 +61,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
     
     TESTR( t.error(), t.good() );
 
-    Data	d;
+    MMDD01Data	d;
     DataList	data;
 
     d.loc = 0;
@@ -316,7 +319,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     TESTR( t.error(), t.good() );
 
-    Data	d;
+    MMDD01Data	d;
     DataList	data;
 
     d.loc = 0;
@@ -669,6 +672,10 @@ tMapMemDynamicDynamic01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/08/18 10:27:55  houghton
+// Port(Sun5): had to rename the 'Data' structure. The sun compiler was
+//     using the same structure across .C files.
+//
 // Revision 2.6  1997/07/14 10:47:48  houghton
 // Port(AIX): had to enclose for loop in '{}'.
 //

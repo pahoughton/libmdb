@@ -26,15 +26,18 @@
 
 #define MAX_VALUE_SIZE	256
 
-struct Data
+// interesting Sun5 problem, the static.allocater in vector<>
+// remembers 'Data' across sources, so it gets the size wrong.
+
+struct MMDD02Data
 {
-  Data( MapMemDynamicDynamic::Loc l = 0, long s = 0) : loc(l), size(s) {};
+  MMDD02Data( MapMemDynamicDynamic::Loc l = 0, long s = 0) : loc(l), size(s) {};
   MapMemDynamicDynamic::Loc	loc;
   long				size;
   unsigned char			value[ MAX_VALUE_SIZE + 1];  
 };
 
-typedef vector<Data> DataList;
+typedef vector<MMDD02Data> DataList;
 
 static const long  TotalChunks = 10000;
 
@@ -47,7 +50,7 @@ tMapMemDynamicDynamic02( LibTest & tester )
   DataIndex	dataIndex;
   
   {
-    Data d;
+    MMDD02Data d;
     d.loc = 0;
     
     for( int i = 0; i < TotalChunks; ++ i )
@@ -174,6 +177,10 @@ tMapMemDynamicDynamic02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/08/18 10:28:06  houghton
+// Port(Sun5): had to rename the 'Data' structure. The sun compiler was
+//     using the same structure across .C files.
+//
 // Revision 2.2  1997/07/19 10:40:08  houghton
 // Bug-Fix: added include <cstring>
 //
