@@ -8,35 +8,6 @@
 //	A 'Dash' is a hash table for a data type that includes an
 //      effecive date for each key value.
 //
-// Quick Start: - short example of class usage
-//
-//	struct Data
-//	{
-//	  long	    id;
-//	  long      value;
-//	};
-//
-//	class DataHashFunct
-//	{
-//	public:
-//
-//	  HashTableBase::Hash	operator()( const Data & data ) const {
-//	    return( data.id % 1000 );
-//	  };
-//	};
-//
-//	class LessData
-//	{
-//	public:
-//
-//	  bool	operator()( const Data & one, const Data & two ) const {
-//	    return( one.id < two.id );
-//	  };
-//	};
-//
-//	typedef Dash< Data, DataHashFunct, DataLess >    DataDash;
-//
-//
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     06/02/97 09:42
 //
@@ -72,17 +43,17 @@ public:
   typedef Table::size_type		size_type;
   typedef Table::iterator		iterator;
   typedef Table::const_iterator		const_iterator;
-  // typedef Table::reverse_iterator	reverse_iterator;
-  // typedef Table::const_reverse_iterator	const_reverse_iterator;
+  typedef Table::reverse_iterator	reverse_iterator;
+  typedef Table::const_reverse_iterator	const_reverse_iterator;
   typedef Table::pair_iterator_bool	pair_iterator_bool;
 
   typedef Table::EffDate		EffDate;
   
-  inline Dash( ChunkMgr &	chunkMgr,
+  inline Dash( MultiMemOffset *	memMgr,
 	       const char *	indexFileName,
 	       ios::open_mode	mode = ios::in,
-	       unsigned short	permMask = 0,
-	       bool		create = false );
+	       bool		create = false,
+	       unsigned short	permMask = 0 );
 
   virtual ~Dash( void ) {};
 
@@ -120,15 +91,19 @@ public:
   inline const_iterator	    begin( void ) const { return( table.begin() ); };
   inline const_iterator	    end( void ) const { return( table.end() ); };
 
-  // inline reverse_iterator	rbegin( void ) { return( table.rbegin() ); };
-  // inline reverse_iterator	rend( void ) { return( table.rend() ); };
+  inline reverse_iterator	rbegin( void ) { return( table.rbegin() ); };
+  inline reverse_iterator	rend( void ) { return( table.rend() ); };
 
-  // inline const_reverse_iterator	rbegin( void ) const {return(table.rbegin());};
-  // inline const_reverse_iterator	rend( void ) const {return(table.rend());};
+  inline const_reverse_iterator	rbegin( void ) const {return(table.rbegin());};
+  inline const_reverse_iterator	rend( void ) const {return(table.rend());};
 
   inline size_type	    size( void ) const { return( table.size() ); };
   inline bool		    empty( void ) const { return( table.empty() ); };
 
+  static size_type	    getNodeSize( void ) {
+    return( Table::getNodeSize() );
+  };
+    
   inline bool		    good( void ) const;
   inline const char *	    error( void ) const;
   
@@ -148,6 +123,35 @@ private:
 #include <Dash.ii>
 
 
+//
+// Quick Start: - short example of class usage
+//
+//	struct Data
+//	{
+//	  long	    id;
+//	  long      value;
+//	};
+//
+//	class DataHashFunct
+//	{
+//	public:
+//
+//	  HashTableBase::Hash	operator()( const Data & data ) const {
+//	    return( data.id % 1000 );
+//	  };
+//	};
+//
+//	class LessData
+//	{
+//	public:
+//
+//	  bool	operator()( const Data & one, const Data & two ) const {
+//	    return( one.id < two.id );
+//	  };
+//	};
+//
+//	typedef Dash< Data, DataHashFunct, DataLess >    DataDash;
+//
 //
 // Detail Documentation
 //
@@ -232,6 +236,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/13 11:03:11  houghton
+// Added rbgin() & rend().
+// Added getNodeSize().
+//
 // Revision 2.3  1997/06/25 12:51:03  houghton
 // Added good() and error().
 //
