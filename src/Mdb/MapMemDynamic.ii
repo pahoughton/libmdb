@@ -49,7 +49,7 @@ inline
 long
 MapMemDynamic::setKey( unsigned short key, long value )
 {
-  if( getBase() && ( getMode() & ios::out ) && key < numKeys )
+  if( mapInfo() && ( getMode() & ios::out ) && key < numKeys )
     {
       long orig = getKey( key );
       mapInfo()->keys[ key ] = value;
@@ -65,28 +65,21 @@ inline
 long
 MapMemDynamic::getKey( unsigned short key ) const
 {
-  return( getBase() ? mapInfo()->keys[ key ] : -1 );
-}
-
-inline
-long
-MapMemDynamic::getOwner( void ) const
-{
-  return( getBase() ? mapInfo()->owner : -1 );
+  return( mapInfo() ? mapInfo()->keys[ key ] : -1 );
 }
 
 inline
 unsigned long
-MapMemDynamic::getChunkCount( void ) const
+MapMemDynamic::getAllocCount( void ) const
 {
-  return( getBase() ? mapInfo()->chunkCount : 0 );
+  return( mapInfo() ? mapInfo()->allocCount : 0 );
 }
 
 inline
 unsigned long
 MapMemDynamic::getFreeCount( void ) const
 {
-  return( getBase() ? mapInfo()->freeCount : 0 );
+  return( mapInfo() ? mapInfo()->freeCount : 0 );
 }
 
 inline
@@ -118,6 +111,11 @@ MapMemDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:20:07  houghton
+// Cleanup
+// Removed owner (now in MapMem).
+// Changed getChunkCount to getAllocCount.
+//
 // Revision 2.1  1997/06/05 11:29:12  houghton
 // Initial Version.
 //
