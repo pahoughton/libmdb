@@ -1226,7 +1226,8 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
       return( false );
     }
 
-  bool	isRed = ( node.right() || node.left() ? node.color() == Red : false );
+  bool	isRed = ( node.right() || node.left() ?
+		  bool( node.color() == Red ) : false );
 
   {
     ConstNodeBase  p( *mgr, node.loc() );
@@ -1560,6 +1561,9 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/14 10:40:43  houghton
+// Port(AIX): added a bool constructor for the '? :' operator.
+//
 // Revision 2.2  1997/07/13 11:33:36  houghton
 // Cleanup.
 // Changed to use MultiMemOffset.
