@@ -98,6 +98,15 @@ FUNCT_NAME( ostream & perfDest )
       exit( 1 );
     }
   
+  if( App->initSize() && App->create() )
+    {
+      if( ! mmd->expand( App->initSize() * TABLENAME::getNodeSize() ) )
+	{
+	  AppError << mmd->error() << endl;
+	  return( false );
+	}
+    }
+  
   MultiMemOffsetMapDynamic  mmo( mmd, true );
 
   if( ! mmo.good() )
@@ -145,6 +154,9 @@ FUNCT_NAME( ostream & perfDest )
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/28 16:52:43  houghton
+// Added support for initial map size.
+//
 // Revision 1.1  1997/07/25 13:41:46  houghton
 // Initial Version.
 //
