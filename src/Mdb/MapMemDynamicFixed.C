@@ -141,8 +141,8 @@ MapMemDynamicFixed::allocate( size_type size )
   
       nextNode->prev = 0;
     }
-  
-  mapInfo()->freeCount--;
+
+  -- mapInfo()->freeCount;
 
   return( freeOffset );
 }
@@ -171,7 +171,7 @@ MapMemDynamicFixed::release( Loc offset )
   struct FreeList * freeNode = (struct FreeList *)(baseAddr + offset);
 
 
-  mapInfo()->freeCount++;
+  ++ mapInfo()->freeCount;
 
   freeNode->next = 0;
   freeNode->prev = 0;
@@ -339,7 +339,7 @@ MapMemDynamicFixed::expand( void )
 
   if( mapInfo()->freeList.next == 0 )
     {
-      mapInfo()->freeList.next = freeAddr - baseAddr;			          
+      mapInfo()->freeList.next = freeAddr - baseAddr;
       prevFreeOffset = 0;
     }
   else
@@ -494,6 +494,7 @@ MapMemDynamicFixed::createMapMemDynamicFixed(
       off_t  baseAddr = (off_t) mapInfo();
 
       mapInfo()->freeList.next = DwordAlign( sizeof( MapDynamicFixedInfo ) );
+      mapInfo()->freeCount = 0;
       
       off_t 	    	freeAddr = baseAddr + mapInfo()->freeList.next;
       off_t 	    	prevFreeOffset = 0;
@@ -520,6 +521,8 @@ MapMemDynamicFixed::createMapMemDynamicFixed(
       freeNode->next = 0;
       mapInfo()->freeList.prev = prevFreeOffset;
 
+      mapInfo()->chunkCount = mapInfo()->freeCount;
+      
       errorNum = E_OK;
     }
   else
@@ -556,6 +559,9 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.15  1997/06/25 12:56:13  houghton
+// Bug-Fix: chunkCount was not being updated correctly.
+//
 // Revision 2.14  1997/06/19 12:02:28  houghton
 // Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
 //
