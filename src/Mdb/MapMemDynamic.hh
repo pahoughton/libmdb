@@ -39,22 +39,22 @@ class MapMemDynamic : public MapMem
 
 public:
 
-  typedef off_t	    Loc;
-  typedef void *    Addr;
-
+  typedef MDB_TYPE_ADDR	    Addr;
+  typedef MDB_TYPE_LOC	    Loc;
+  
   // use this to create a new map or open an existing one
   MapMemDynamic( const char *	    fileName,
 		 MapVersion	    version,
 		 ios::open_mode	    mode,
 		 bool		    create,
 		 size_type	    size,
-		 MapMask	    permMask = 0777 );
+		 MapMask	    permMask = 02 );
 		 
   // use this to create a new map
   MapMemDynamic( const char * 	    fileName,
 		 MapVersion	    version,
 		 size_type	    size,
-		 MapMask	    permMask = 0777 );
+		 MapMask	    permMask = 02 );
 
   // use this to open an existing map
   MapMemDynamic( const char * 	    fileName,
@@ -74,8 +74,7 @@ public:
   inline long		setKey( unsigned short key, long value );
   inline long		getKey( unsigned short key ) const;
 
-  inline long		getOwner( void ) const;
-  inline unsigned long	getChunkCount( void ) const;
+  inline unsigned long	getAllocCount( void ) const;
   inline unsigned long	getFreeCount( void ) const;
   
   virtual bool	    	good( void ) const;
@@ -96,22 +95,12 @@ public:
   
   struct MapDynamicInfo : public MapInfo
   {
-    long	    owner;	    // pid of owner (writer)
-    unsigned long   chunkCount;	    // allocated chunks
+    unsigned long   allocCount;	    // allocated chunks
     unsigned long   freeCount;	    // available chunks
     long    	    keys[MMD_NUM_KEYS]; // general purpose values
   };
 
 protected:
-
-  enum ErrorNum
-  {
-    E_OK,
-    E_OWNER,
-    E_UNDEFINED
-  };
-  
-  ErrorNum	errorNum;
 
 private:
 
@@ -119,7 +108,7 @@ private:
   MapMemDynamic & operator =( const MapMemDynamic & from );
 
   void createMapMemDynamic( void );
-  void openMapMemDynamic( ios::open_mode mode, bool overrideOwner );
+  void openMapMemDynamic( void );
   
   inline MapDynamicInfo *	    mapInfo( void );
   inline const MapDynamicInfo *	    mapInfo( void ) const;
@@ -145,30 +134,106 @@ private:
 //
 //  Constructors:
 //
-//  	MapMemDynamic( );
+//  	MapMemDynamic( const char *	fileName,
+//		       MapVersion	version,      
+//		       ios::open_mode	mode,
+//		       bool		create,
+//		       size_type	size
+//		       MapMask		permMask = 02 );
+//	    Construct a object that either opens an existing map or
+//	    creates a new one.
+//		'fileName' is the full name of the file.
+//		'version' the map structure version.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write (note if create == true
+//		    the mode argument is ignored and the file is opened
+//		    with (ios::in | ios::out).
+//		'create' true == create a new map; false == access an
+//		    existing map.
+//		'size' is the minumum initial size of the map.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
 //
-//  Destructors:
+//  	MapMemDynamic( const char *  fileName,
+//		       MapVersion	version,      
+//		       ios::open_mode	mode,
+//		       bool		create,
+//		       size_type	size
+//		       MapMask		permMask = 02 );
+//	    Construct a object that creates a new map.
+//	    creates a new one.
+//		'fileName' is the full name of the file.
+//		'version' the map structure version.
+//		'size' is the minumum initial size of the map.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
+//
+//  	MapMemDynamic( const char *	fileName,
+//		       MapVersion	version,      
+//		       ios::open_mode	mode,
+//		       bool		overrideOwner = false );
+//	    Construct a object that opens an existing map.
+//		'fileName' is the full name of the file.
+//		'version' the map structure version.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write. 
+//		'overrideOwner' if this is true. The map's current owner
+//		    value will be overriden. See MapMem(3) for more info.
 //
 //  Public Interface:
 //
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
+//	virtual
+//	Loc
+//	allocate( size_type size ) = 0
+//	    allocate a chunk of at lease 'size' bytes and return it's 'loc'.
+//	    If an error occured, 0 will be returned.
 //
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
+//	virtual
+//	void
+//	release( Loc loc ) = 0
+//	    release a previously allocated chunk.
 //
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
+//	inline
+//	Addr
+//	address( Loc loc )
+//	    return a useable address for the 'loc'. This address is 
+//	    valid only until the next call to allocate or release.
 //
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
+//	inline
+//	const Addr
+//	address( Loc loc ) const
+//	    return a useable address for the 'loc'. This address is 
+//	    valid only until the next call to allocate or release.
+//
+//	inline
+//	Loc
+//	location( const Addr addr ) const
+//	    return the 'loc' for the 'addr'. The 'addr' must have been
+//	    obtained by a call to address() for the same map.
+//
+//	inline
+//	long
+//	setKey( unsigned short key, long value )
+//	    The map has room for 'maxKey' (16) key values in the header.
+//	    This method is use to store a specific value in one of them.
+//	    returns the previous value for the specific key.
+//
+//	inline
+//	long
+//	getKey( unsigned short key ) const
+//	    return the value stored at the specific key.
+//
+//	inline
+//	unsigned long
+//	getChunkCount( void ) const
+//	    return the total number of chunks allocated.
+//
+//	inline
+//	unsigned long
+//	getFreeCount( void ) const
+//	    return the total number of free chunks.
 //
 //  	virtual Bool
 //  	good( void ) const;
@@ -192,6 +257,12 @@ private:
 //	    output detail info to dest. Includes instance variable
 //	    values, state info & version info.
 //
+//	inline
+//	DumpInfo< MapMemDynamic >
+//	dump( const char * previx, bool showVer = true )
+//	    return an object that can be passed to operator << ( ostream & )
+//	    that will generate the same output as 'dumpInfo'.
+//
 //	static const ClassVersion version
 //	    Class and project version information. (see ClassVersion.hh)
 //
@@ -201,15 +272,16 @@ private:
 //
 //  Associated Functions:
 //
-//  	ostream &
-//  	operator <<( ostream & dest, const MapMemDynamic & src );
-//
-//	istream &
-//	operator >> ( istream & src, MapMemDynamic & dest );
-//
 // Example:
 //
 // See Also:
+//
+//	MapMemDynamicDynamic( 3 )
+//	MapMemDynamicFixed( 3 )
+//	MapMem( 3 )
+//	MapFile( 3 )
+//	ChunkMgrLoc( 3 )
+//	ChunkMgr( 3 )
 //
 // Files:
 //
@@ -220,6 +292,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/13 11:19:18  houghton
+// Cleanup
+// Removed owner (now in MapMem).
+// Added documentation.
+//
 // Revision 2.2  1997/06/05 13:43:28  houghton
 // Changed for AIX: had to make MapDynamicInfo a public member.
 //
