@@ -104,6 +104,31 @@ MultiMemOffsetMapDynamic::good( void ) const
   return( mem && mem->good() );
 }
 
+bool
+MultiMemOffsetMapDynamic::allocCopyStr( Loc & loc, const Str & src )
+{
+  bool	status( true );
+  
+  if( src.size() )
+    {
+      if( (loc = allocate( src.size() + 5 )) != 0 )
+	{
+	  char * tmp( address( loc ) );
+	  
+	  src.copy( tmp, Str::npos );
+	}
+      else
+	{
+	  status = false;
+	}
+    }
+  else
+    {
+      loc = 0;
+    }
+  
+  return( status );
+}  
 const char *
 MultiMemOffsetMapDynamic::error( void ) const
 {
@@ -183,6 +208,9 @@ MultiMemOffsetMapDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1999/10/28 14:22:21  houghton
+// Added allocCopyStr().
+//
 // Revision 2.2  1997/10/01 14:03:02  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.

@@ -51,6 +51,9 @@ public:
   virtual bool		setKey( unsigned short key, KeyValue value );
   virtual KeyValue	getKey( unsigned short key ) const;
   
+  virtual bool		allocCopyStr( MultiMemOffset::Loc & loc,
+				      const Str &	    src );
+  
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -166,6 +169,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1999/10/28 14:22:17  houghton
+// Added allocCopyStr().
+//
 // Revision 2.2  1997/10/01 14:03:05  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.
