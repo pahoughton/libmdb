@@ -323,7 +323,7 @@ DavlTreeOffset<K,D>::destroy(
   DAVLTREE_CHECK_NORET();
     
   if( action ) destroyAction = action;
-  destroyTree( &(getTree()->root) );
+  getTree()->root = destroyTree( getTree()->root );
 }
 
 // destroy - remove all data from the tree
@@ -339,7 +339,7 @@ DavlTreeOffset<K,D>::destroy(
   DAVLTREE_CHECK_NORET();
     
   if( action ) destroyActionClosure = action;
-  destroyTree( &(getTree()->root), closure );
+  getTree()->root = destroyTree( getTree()->root, closure );
 }
 
 // setWalk - specifiy the user function to execute for a walk
@@ -1229,6 +1229,9 @@ DavlTreeOffset<K,D>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/20 14:14:30  houghton
+// Changed to use the new destroyTree method in AvlTreeOffsetBase.
+//
 // Revision 2.2  1997/07/19 10:23:56  houghton
 // Port(Sun5): errStr is now declared in AvlTreeOffsetBase. The Sun5
 //     compile could not handle the local static variable.
