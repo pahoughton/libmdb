@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.2  1996/02/29 19:09:25  houghton
+// Added case to return from mmap call.
+//
 // Revision 2.1  1995/11/10 12:42:28  houghton
 // Change to Version 2
 //
@@ -107,7 +110,7 @@ MapFile::map(
       mapType |= MAP_FIXED;
     }
 
-  mapBase = mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
+  mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
   if( mapBase == (caddr_t)-1 )
     {
@@ -186,7 +189,7 @@ MapFile::setSize(
       mapProt |= PROT_WRITE;
     }
     
-  mapBase = mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
+  mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
   if( mapBase == (caddr_t)-1 )
     {
