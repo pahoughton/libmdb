@@ -31,7 +31,7 @@ Class Description
 
     The MapMemDynamicDynamic class provides dynamic chunk management for a
     mapped memory file. It allow an application to allocate and
-    release chunks of the map from 1 to ~2 gig in size.
+    release chunks of the map from 1 to ~2 gig bytes in size.
 
     This map will try to stay as small as possible. Chunks are
     allocated from the begining of the map to the end. Whenever the
@@ -145,36 +145,39 @@ Detail Design
 	    4040    free    3000    0	    2048    0	     
 
 
-    allocate( size_type s )
+    Primary Methods:
+    
+	allocate( size_type s )
 
-	Search the free list for the first node that is at least
-	(sizeof( Node ) + s) bytes in size.
+	    Search the free list for the first node that is at least
+	    (sizeof( Node ) + s) bytes in size.
 
-	If none is found, expand the map and use the last free
-	node 'header.prevFree'.
+	    If none is found, expand the map and use the last free
+	    node 'header.prevFree'.
 
-	Once a node is found, check to see if it is big enough to
-	split into the allocated node and a new free node. The node is
-	big enough to split if its size is greater than:
+	    Once a node is found, check to see if it is big enough to
+	    split into the allocated node and a new free node. The
+	    node is big enough to split if its size is greater than:
 
-	    (minChunkSize + sizeof( Node ) + s )
+		(minChunkSize + sizeof( Node ) + s )
 
-	Remove it from the free list.
+	    Remove it from the free list.
 
-	Return the node's 'Loc'. This is the node's offset +
-	sizeof(	Node ).
+	    Return the node's 'Loc'. This is the node's offset +
+	    sizeof( Node ).
 
 
-    release( Loc loc )
+	release( Loc loc )
 
-	Put the node at 'loc' back into the free list. Free nodes are
-	joined, so if the node before and/or after this one is free,
-	they will be joined to create a sinlge larger free node.
+	    Put the node at 'loc' back into the free list. Free nodes
+	    are joined, so if the node before and/or after this one is
+	    free, they will be joined to create a sinlge larger free
+	    node.
 
-	If the node cannot be joined, insert it into the free list,
-	maintaining first to last ordering.
-	
-Performanc Characteristics:
+	    If the node cannot be joined, insert it into the free
+	    list, maintaining first to last ordering.
+
+Performance Characteristics:
 
     allocate( size_type s )
 
@@ -216,6 +219,9 @@ Performanc Characteristics:
 
 #
 # $Log$
+# Revision 1.2  1997/07/25 13:40:30  houghton
+# Cleanup.
+#
 # Revision 1.1  1997/07/11 17:36:29  houghton
 # Initial Version.
 #
