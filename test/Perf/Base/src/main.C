@@ -71,12 +71,11 @@ main( int argc, char * argv[] )
     }
 
   static long RecSize[] = { 4, 128, 512, 1024, -1 };
-  static long Quantity[] = { // 1024, 10000, 100000, 
-    500000, -1 };
+  static long Quantity[] = { 1024, 10000, 100000, 500000, -1 };
   
-  for( long rs = 0; RecSize[rs] > 0; ++ rs )
+  for( long qty = 0; Quantity[qty] > 0; ++ qty )
     {
-      for( long qty = 0; Quantity[qty] > 0; ++ qty )
+      for( long rs = 0; RecSize[rs] > 0; ++ rs )
 	{
 	  pAvlTreeOffset( "../data/perf.test",
 			  RecSize[rs],
@@ -111,6 +110,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.4  1997/07/19 19:55:14  houghton
+// Reorederd loops.
+//
 // Revision 1.3  1997/07/16 19:20:51  houghton
 // *** empty log message ***
 //
