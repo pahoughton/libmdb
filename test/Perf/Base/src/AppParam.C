@@ -18,7 +18,8 @@
 #include "AppParam.hh"
 
 AppParam::AppParam( int & argc, char ** argv, const char * ver )
-  : Param( argc, argv, ver, true, "ERROR | WARN | INFO" )
+  : Param( argc, argv, ver, true, "ERROR | WARN | INFO" ),
+    perfLogFnV( "perf.info" )
 {
   parseArgs();
 }
@@ -40,7 +41,9 @@ AppParam::parseArgs( void )
 {
   bool status = Param::parseArgs();
 
-  // status &= argStr( varV, "desc", "argid", "envVar" );
+  status &= argStr( perfLogFnV,
+		    "perf info output file name",
+		    "o" );
 
   return( status );
 }
@@ -48,6 +51,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/14 10:50:45  houghton
+// Added perfLogFn arg.
+//
 // Revision 1.1  1997/07/13 11:36:39  houghton
 // Initial Version.
 //

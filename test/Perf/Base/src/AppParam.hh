@@ -20,7 +20,7 @@
 //
 
 #include <Param.hh>
-#include <Str.hh>
+#include <FilePath.hh>
 
 class AppParam : public Param
 {
@@ -31,17 +31,17 @@ public:
 
   ~AppParam( void );
 
+  const FilePath &  perfLogFn( void ) const { return( perfLogFnV ); };
+  
   bool		parseArgs( void );
   bool		parseArgs( int argc, char * argv[] );
-
-  const Str &  argFile( void ) const { return( argFileV ); };
 
 protected:
 
 private:
 
-  Str	argFileV;
-
+  FilePath  perfLogFnV;
+  
   AppParam( const AppParam & copyFrom );
   AppParam & operator=( const AppParam & assignFrom );
 
@@ -87,6 +87,9 @@ extern AppParam * App;
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/14 10:50:53  houghton
+// Added perfLogFn arg.
+//
 // Revision 1.1  1997/07/13 11:36:39  houghton
 // Initial Version.
 //
