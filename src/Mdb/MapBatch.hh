@@ -64,6 +64,8 @@ public:
   typedef T &		reference;
   typedef const T &	const_reference;
   
+  typedef T		Rec;
+  
   typedef reverse_bidirectional_iterator< const_iterator,
     value_type, const_reference, difference_type >	const_reverse_iterator;
   
@@ -158,6 +160,13 @@ public:
     return( *(begin() + rec) );
   };
   
+
+  inline bool		sync( size_type	beg = 0,
+			      size_type	len = MapFile::npos,
+			      bool	async = false ) {
+    return( map.sync( beg, len, async ) );
+  };
+  
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -247,6 +256,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/10/01 14:03:56  houghton
+// Added typedef for Rec
+// Added sync().
+//
 // Revision 2.5  1997/09/02 13:25:53  houghton
 // Bug-Fix: endpos had the address which could change due to an
 //     append(). Changed so endpos is an offset and added to getBase() which
