@@ -2,7 +2,7 @@
 #define _MapMemDynamicDynamic_ii_
 //
 // File:        MapMemDynamicDynamic.ii
-// Project:	Clue
+// Project:	Mdb
 // Desc:        
 //
 //  	Inline source for MapMemDynamicDynamic
@@ -20,82 +20,24 @@
 //
 
 
-#if defined( CLUE_DEBUG )
+#if defined( MDB_DEBUG )
 #define inline
 #endif
-
-inline
-const void *
-MapMemDynamicDynamic::getAddr( off_t offset ) const
-{
-  return( (const void *) (getBase() + offset ));
-}
-
-inline
-void *
-MapMemDynamicDynamic::getAddr( off_t offset )
-{
-  return( (void *) ((caddr_t)base + offset ));
-}
-
-inline
-off_t
-MapMemDynamicDynamic::getOffset( const void * addr ) const
-{
-  return( (off_t)addr - (off_t)base );
-}
-
-inline
-unsigned long
-MapMemDynamicDynamic::getChunkCount( void ) const
-{
-  return( good() ? base->chunkCount : 0 );
-}
 
 inline
 unsigned long
 MapMemDynamicDynamic::getChunkSize( void ) const
 {
-  return( good() ? base->chunkSize : 0 );
-}
-
-inline
-unsigned long
-MapMemDynamicDynamic::getFreeCount( void ) const
-{
-  return( good() ? base->freeCount : 0 );
+  return( mapInfo() ? mapInfo()->chunkSize : 0 );
 }
 
 inline
 unsigned long
 MapMemDynamicDynamic::getFreeSize( void ) const
 {
-  return( good() ? base->freeSize : 0 );
+  return( mapInfo() ? mapInfo()->freeSize : 0 );
 }
 
-
-inline
-long
-MapMemDynamicDynamic::setKey( long value, unsigned short key )
-{
-  if( ! base || key >= NUM_KEYS )
-    return(0);
-  
-  long old = getKey( key );
-  
-  base->keys[key] = value;
-
-  return( old );
-}
-
-inline
-long
-MapMemDynamicDynamic::getKey( unsigned short key ) const
-{
-  return( ( base && key < NUM_KEYS ) ?  base->keys[key] : 0 );
-}
-
-    
 inline
 MapMemDynamicDynamic::FreeList *
 MapMemDynamicDynamic::getFreeNode( off_t f )
@@ -119,7 +61,7 @@ MapMemDynamicDynamic::setPrevFnodeNext( off_t f, off_t n )
   if( prev )
     getFreeNode( prev )->next = n;
   else
-    base->freeList.next = n;
+    mapInfo()->freeList.next = n;
   
   return( true );
 }
@@ -133,53 +75,31 @@ MapMemDynamicDynamic::setNextFnodePrev( off_t f, off_t p )
   if( next )
     getFreeNode( next )->prev = p;
   else
-    base->freeList.prev = p;
+    mapInfo()->freeList.prev = p;
   
   return( true );
 }
 
 inline
-size_t &
-MapMemDynamicDynamic::setNodeSize( off_t node, size_t nodeSize )
+MapMemDynamicDynamic::size_type &
+MapMemDynamicDynamic::setNodeSize( off_t node, size_type nodeSize )
 {
-  
-  *( (size_t *)(getBase() + node )) = nodeSize;
+  *( (size_type *)(getBase() + node )) = nodeSize;
   return( getNodeSize( node ) );
 }
 
 inline
-size_t &
+MapMemDynamicDynamic::size_type &
 MapMemDynamicDynamic::getNodeSize( off_t node )
 {
-  return( *( (size_t *)(getBase() + node )) );
+  return( *( (size_type *)(getBase() + node )) );
 }
 
 inline
-size_t 
+MapMemDynamicDynamic::size_type 
 MapMemDynamicDynamic::getNodeSize( off_t node ) const
 {
-  return( *( (size_t *)(getBase() + node )) );
-}
-
-inline
-long
-MapMemDynamicDynamic::addRef( void )
-{
-  return( ++refCount );
-}
-
-inline
-long
-MapMemDynamicDynamic::getRefCount( void ) const
-{
-  return( refCount );
-}
-
-inline
-bool
-MapMemDynamicDynamic::delRef( void )
-{
-  return( (--refCount <= 0 ) ? true : false );
+  return( *( (size_type *)(getBase() + node )) );
 }
 
 inline
@@ -189,7 +109,22 @@ MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
   return( DumpInfo<MapMemDynamicDynamic>( *this, prefix, showVer ) );
 }
 
-	  
+
+inline
+MapMemDynamicDynamic::MapDynamicDynamicInfo *
+MapMemDynamicDynamic::mapInfo( void )
+{
+  return( (MapDynamicDynamicInfo *)getBase() );
+}
+
+inline
+const MapMemDynamicDynamic::MapDynamicDynamicInfo *
+MapMemDynamicDynamic::mapInfo( void ) const
+{
+  return( (const MapDynamicDynamicInfo *)getBase() );
+}
+
+
 #if defined( inline )
 #undef inline
 #endif
@@ -197,6 +132,12 @@ MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/06/05 11:28:25  houghton
+// Cleanup.
+// Change to be part of libMdb (vs Clue1).
+// Changed to use new MapFile types.
+// Removed addRef, getRefCount & delRef methods (now in base class).
+//
 // Revision 2.3  1997/03/18 16:57:00  houghton
 // Added setNodeSize().
 //
