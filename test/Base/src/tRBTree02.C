@@ -100,39 +100,40 @@ typedef vector< long >	KeyList;
         t.dumpTree( tester.getDump() ) << '\n';				      \
 	TEST( false );							      \
       }									      \
-    {									      \
-      long b = (*recSet.begin()).k;					      \
-      long e = (*recSet.rbegin()).k;					      \
-      long fc = 0;							      \
-      long nc = 0;							      \
-      Rec  f;								      \
-      for( b -= 1, e += 1; b <= e ; ++ b )				      \
-	{								      \
-	  f.k = b;							      \
-	  if( recSet.find( f ) != recSet.end() )			      \
-	    {								      \
-	      TESTR( "find", t.find( f ) != t.end() );			      \
-	      TESTR( "k", (*t.find( f )).k == b );			      \
-	      TESTR( "v", (*t.find( f )).v == ( b * 2 ) );		      \
-	      ++ fc;							      \
-	    }								      \
-	  else								      \
-	    {								      \
-	      TESTR( "! find", t.find( f ) == t.end() );		      \
-	      ++ nc;							      \
-	    }								      \
-	}								      \
-      TESTR( "fc", fc == t.size() );					      \
-      TESTR( "nc", nc > 1 );						      \
-      TESTR( "size", t.size() == recSet.size() );			      \
-    }									      \
+    if( ! t.empty() )							      \
+      {									      \
+	long b = (*recSet.begin()).k;					      \
+	long e = (*recSet.rbegin()).k;					      \
+	long fc = 0;							      \
+	long nc = 0;							      \
+	Rec  f;								      \
+	for( b -= 1, e += 1; b <= e ; ++ b )				      \
+	  {								      \
+	    f.k = b;							      \
+	    if( recSet.find( f ) != recSet.end() )			      \
+	      {								      \
+		TESTR( "find", t.find( f ) != t.end() );		      \
+		TESTR( "k", (*t.find( f )).k == b );			      \
+		TESTR( "v", (*t.find( f )).v == ( b * 2 ) );		      \
+		++ fc;							      \
+	      }								      \
+	    else							      \
+	      {								      \
+		TESTR( "! find", t.find( f ) == t.end() );		      \
+		++ nc;							      \
+	      }								      \
+	  }								      \
+	TESTR( "fc", fc == t.size() );					      \
+	TESTR( "nc", nc > 1 );						      \
+	TESTR( "size", t.size() == recSet.size() );			      \
+      }									      \
   }
     
 bool
 tRBTree02( LibTest & tester )
 {
   Set	  recSet;
-    
+
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree02.rbt",
 				  (ios::open_mode)(ios::in|ios::out),
@@ -151,6 +152,8 @@ tRBTree02( LibTest & tester )
 
     Rec	  i;
     
+    TESTP( true );
+    tester.getDump() << "insert";
     INSERT_TEST( 15 );
     INSERT_TEST( 11 );
     {
@@ -168,6 +171,7 @@ tRBTree02( LibTest & tester )
 	}
     }
 
+    TESTP( true );
     {
       for( long k = 9; k >= 0; -- k )
 	{
@@ -175,6 +179,7 @@ tRBTree02( LibTest & tester )
 	}
     }
 
+    TESTP( true );
     {
       KeyList randKeys;
       
@@ -207,6 +212,8 @@ tRBTree02( LibTest & tester )
 
     TESTR( t.error(), t.good() );
 
+    TESTP( true );
+    tester.getDump() << "find";
     {
       // find( const Key & key ) const
       Tree::const_iterator  it;
@@ -221,6 +228,8 @@ tRBTree02( LibTest & tester )
 	}
     }
 
+    TESTP( true );
+    tester.getDump() << "begin";
     {
       // begin() const
       // end() const
@@ -242,6 +251,8 @@ tRBTree02( LibTest & tester )
       TEST( cnt == t.size() );
     }
 
+    TESTP( true );
+    tester.getDump() << "rbegin";
     {
       // rbegin() const
       // rend() const
@@ -279,6 +290,8 @@ tRBTree02( LibTest & tester )
 
     TESTR( t.error(), t.good() );
 
+    TESTP( true );
+    tester.getDump() << "erease";
     // t.dumpTree( tester.getDump() ) << '\n';
     ERASE_TEST( 69 );	// last
     ERASE_TEST( 0 );	// first
@@ -303,6 +316,7 @@ tRBTree02( LibTest & tester )
     ERASE_TEST( 8 );
     ERASE_TEST( 2 );
     
+    TESTP( true );
     {
       KeyList erList;
       
@@ -464,6 +478,10 @@ tRBTree02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/14 10:50:06  houghton
+// Bug-Fix: added if( ! empty ) to ERASE_TEST. Not supose to use
+//     iterators when a collection is empty!
+//
 // Revision 2.1  1997/07/11 17:39:38  houghton
 // Initial Version.
 //
