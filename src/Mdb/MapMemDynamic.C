@@ -39,13 +39,12 @@ MapMemDynamic::MapMemDynamic(
   size_type	    size,
   MapMask	    permMask
   )
-  : MapMem( fileName, MM_DYNAMIC, version, mode, create, 0, size, permMask ),
-    errorNum( E_OK )
+  : MapMem( fileName, MM_DYNAMIC, version, mode, create, 0, size, permMask )
 {
   if( create )
     createMapMemDynamic();
   else
-    openMapMemDynamic( mode, false );
+    openMapMemDynamic();
 }
 
 MapMemDynamic::MapMemDynamic(
@@ -54,8 +53,7 @@ MapMemDynamic::MapMemDynamic(
   size_type	    size,
   MapMask	    permMask
   )
-  : MapMem( fileName, 0, MM_DYNAMIC, version, size, permMask ),
-    errorNum( E_OK )
+  : MapMem( fileName, 0, MM_DYNAMIC, version, size, permMask )
 {
   createMapMemDynamic();
 }
@@ -66,22 +64,19 @@ MapMemDynamic::MapMemDynamic(
   ios::open_mode    mode,
   bool		    overrideOwner
   )
-  : MapMem( fileName, MM_DYNAMIC, version, mode ),
-    errorNum( E_OK )
+  : MapMem( fileName, MM_DYNAMIC, version, mode, overrideOwner )
 {
-  openMapMemDynamic( mode, overrideOwner );
+  openMapMemDynamic();
 }
 
 MapMemDynamic::~MapMemDynamic( void )
 {
-  if( mapInfo() && mapInfo()->owner == getpid() )
-    mapInfo()->owner = 0;
 }
 
 bool
 MapMemDynamic::good( void ) const
 {
-  return( errorNum == E_OK && MapMem::good() );
+  return( MapMem::good() );
 }
 
 const char *
@@ -93,7 +88,7 @@ MapMemDynamic::error( void ) const
 
   if( good() )
     {
-       errStr += ": ok";
+      errStr << ": ok";
     }
   else
     {
@@ -101,17 +96,6 @@ MapMemDynamic::error( void ) const
 
       if( ! MapMem::good() )
 	errStr << ": " << MapMem::error();
-
-      switch( errorNum )
-	{
-	case E_OWNER:
-	  errStr << ": already owned by "
-		 << ( mapInfo() ? mapInfo()->owner : -1 );
-	  break;
-	  
-	default:
-	  break;
-	}
 
       if( eSize == errStr.size() )
         errStr << ": unknown error";
@@ -157,8 +141,7 @@ MapMemDynamic::dumpInfo(
 
   if( mapInfo() )
     {
-      dest << prefix << "owner:        " << mapInfo()->owner << '\n'
-	   << prefix << "chunkCount:   " << mapInfo()->chunkCount << '\n'
+      dest << prefix << "allocCount:   " << mapInfo()->allocCount << '\n'
 	   << prefix << "freeCount:    " << mapInfo()->freeCount << '\n'
 	;
       
@@ -184,33 +167,26 @@ MapMemDynamic::dumpInfo(
 void
 MapMemDynamic::createMapMemDynamic( void )
 {
-  mapInfo()->owner = getpid();
-  mapInfo()->chunkCount = 0;
-  mapInfo()->freeCount = 0;
-  memset( mapInfo()->keys, 0, sizeof( mapInfo()->keys ) );
-};
+  if( mapInfo() )
+    {
+      mapInfo()->allocCount = 0;
+      mapInfo()->freeCount = 0;
+      memset( mapInfo()->keys, 0, sizeof( mapInfo()->keys ) );
+    }
+}
 
 void
-MapMemDynamic::openMapMemDynamic(
-  ios::open_mode    mode,
-  bool		    overrideOwner
-  )
+MapMemDynamic::openMapMemDynamic( void )
 {
-  
-  if( mode & ios::out )
-    {
-      if( mapInfo()->owner && ! overrideOwner )
-	{
-	  errorNum = E_OWNER;
-	  return;
-	}
-      mapInfo()->owner = getpid();
-    }
 }  
   
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/13 11:19:38  houghton
+// Cleanup
+// Removed owner (now in MapMem).
+//
 // Revision 2.4  1997/06/27 12:15:12  houghton
 // Cleanup dumpInfo output.
 //
