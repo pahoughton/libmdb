@@ -1,0 +1,5 @@
+2003-04-08  Paul Houghton 719-527-7834  <paul.houghton@wcom.com>
+
+	* CodeGen.pm: original version; created by h2xs 1.21 with options
+	-Xn Mdb::CodeGen
+
