@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.6  1997/04/21 12:12:16  houghton
+// Added getErrno.
+//
 // Revision 2.5  1997/04/04 20:49:02  houghton
 // Cleanup.
 //
@@ -92,7 +95,8 @@ public:
   virtual const char * 	getClassName( void ) const { return "MapFile"; };
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
-
+  virtual int		getErrno( void ) const;
+  
   virtual ostream &	dumpInfo( ostream &	dest,
 				  const char *	prefix = "    ",
 				  bool		showVer = false ) const;

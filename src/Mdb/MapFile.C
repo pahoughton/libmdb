@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.6  1997/04/21 12:11:59  houghton
+// Added getErrno.
+//
 // Revision 2.5  1997/04/04 20:48:54  houghton
 // Cleanup.
 //
@@ -332,6 +335,12 @@ MapFile::error( void ) const
       errStr << ": " << fileStat.getName() << " - " << strerror( osErrno );
     }
   return( errStr.cstr() );
+}
+
+int
+MapFile::getErrno( void ) const
+{
+  return( osErrno );
 }
 
 ostream &
