@@ -33,6 +33,9 @@
 #include <MdbConfig.hh>
 
 #include <AvlTreeBase.hh>
+
+#include <Str.hh>
+
 #include <iostream>
 
 #if defined( MDB_DEBUG )
@@ -70,8 +73,8 @@ protected:
 			    Loc * delNode,
 			    int minMax = 0);
 
-  void	    	destroyTree( Loc * root );
-  void	    	destroyTree( Loc * root, void * closure );
+  Loc	    	destroyTree( Loc root );
+  Loc	    	destroyTree( Loc root, void * closure );
 
   bool	    	walkTree( Loc  root );
   bool	    	walkTree( Loc  root, void * closure );
@@ -108,6 +111,8 @@ protected:
   virtual bool  walkNode( Loc root, void * closure ) = 0;
   
   virtual bool  walkNode( Loc root, void * closure ) const = 0;
+  
+  static Str errStr;
   
 private:
 
@@ -364,6 +369,13 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/19 10:16:42  houghton
+// Bug-Fix: changed destroyTree args from Log * to Loc (see log entry in
+//     AvlTreeMethods.INC for more info.
+// Port(Sun5): Added static errStr to be used by both AvlTreeOffset and
+//     DavlTreeOffset. The Sun5 compiler could not handle the static
+//     local variable in the template class error() methods.
+//
 // Revision 2.4  1997/07/13 11:02:07  houghton
 // Cleanup.
 //
