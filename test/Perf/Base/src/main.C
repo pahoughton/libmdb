@@ -71,7 +71,8 @@ main( int argc, char * argv[] )
     }
 
   static long RecSize[] = { 4, 128, 512, 1024, -1 };
-  static long Quantity[] = { 1024, 10000, 100000, 500000, -1 };
+  static long Quantity[] = { // 1024, 10000, 100000, 
+    500000, -1 };
   
   for( long rs = 0; RecSize[rs] > 0; ++ rs )
     {
@@ -110,6 +111,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/07/16 19:20:51  houghton
+// *** empty log message ***
+//
 // Revision 1.2  1997/07/14 10:52:29  houghton
 // Reworked test order and put into a loop. (Still needs more work)
 //
