@@ -66,12 +66,22 @@ public:
   
   typedef T		Rec;
   
+#if defined( STLTUTILS_STD_ITERATORS )
+
+  typedef std::reverse_iterator< iterator,
+    random_access_iterator_tag,
+    value_type >					    reverse_iterator;
+  typedef std::reverse_iterator< const_iterator,
+    random_access_iterator_tag,
+    const value_type >				    const_reverse_iterator;
+  
+#else
   typedef reverse_bidirectional_iterator< const_iterator,
     value_type, const_reference, difference_type >	const_reverse_iterator;
   
   typedef reverse_bidirectional_iterator< iterator,
     value_type, reference, difference_type >		reverse_iterator;
-
+#endif
   
   inline MapBatch( const char *	    fileName,
 		   ios::open_mode   mode = ios::in );
@@ -295,6 +305,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  2000/07/31 13:05:06  houghton
+// Port(Sun CC 5.0) changes to support Sun Workshop 5.0.
+//
 // Revision 2.10  1999/06/24 10:26:29  houghton
 // Added getFileName().
 //
