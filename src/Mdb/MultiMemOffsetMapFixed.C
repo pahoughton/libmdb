@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1997/03/13 02:41:24  houghton
+// Cleanup dumpInfo output.
+//
 // Revision 2.2  1997/03/07 11:51:18  houghton
 // Add getBase() const.
 // Added dumpInfo.
@@ -71,7 +74,7 @@ MultiMemOffsetMapFixed::dumpInfo(
 
   Str pre;
   pre = prefix;
-  pre << "mem";
+  pre << "mem:";
 
   mem.dumpInfo( dest, pre, false );
 
