@@ -31,18 +31,6 @@ CFG_DIR		= $(PRJ_TOPDIR)/src/config
 
 include $(CFG_DIR)/00-Makefile.cfg
 
-INSTALL_BIN_DIR	= $(local_bindir)
-INSTALL_INC_DIR = $(local_incdir)
-INSTALL_LIB_DIR = $(local_libdir)
-INSTALL_MAN_DIR = $(local_mandir)
-
-exports	    = 					\
-	INSTALL_BIN_DIR=$(INSTALL_BIN_DIR)	\
-	INSTALL_INC_DIR=$(INSTALL_INC_DIR)	\
-	INSTALL_LIB_DIR=$(INSTALL_LIB_DIR)	\
-	INSTALL_MAN_DIR=$(INSTALL_MAN_DIR)	\
-	show_commands=$(show_commands)		\
-	check_install=$(check_install)		\
 
 depend depend_all depend_test depend_default depend_debug:
 	$(hide) $(MAKE) -C Mdb $@ $(exports)
@@ -67,6 +55,9 @@ install_docs:
 install_all install install_default install_debug: install_docs
 	$(hide) $(MAKE) -C Mdb $@ $(exports)
 
+install_lib_all:
+	$(hide) $(MAKE) -C Mdb install_all $(exports)
+
 
 
 
@@ -74,6 +65,9 @@ install_all install install_default install_debug: install_docs
 
 #
 # $Log$
+# Revision 1.3  1999/11/09 10:54:00  houghton
+# Changed to use Setup.cfg.
+#
 # Revision 1.2  1999/10/30 11:50:28  houghton
 # Changed (complete rework) to support setup and other new targets.
 #
