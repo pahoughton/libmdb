@@ -25,7 +25,8 @@
 
 template <class T, class U>
 struct MdbIdent {
-    const U & operator()(const T & x) const { return x; }
+    const U & operator() (const T & x) const { return x; }
+    U & operator() (T & x) { return x; }
 };
 
 
@@ -113,6 +114,9 @@ struct MdbIdent {
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/22 19:43:56  houghton
+// Added non-const operator ().
+//
 // Revision 2.1  1997/07/11 17:37:36  houghton
 // Initial Version.
 //
