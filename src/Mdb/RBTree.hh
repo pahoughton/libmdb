@@ -26,7 +26,7 @@
 #include <RBTreeBase.hh>
 #include <iostream>
 #include <iterator>
-#include <pair>
+#include <utility>
 
 template< class Key, class Value, class KeyOfValue, class LessKey >
 class RBTree : public RBTreeBase
@@ -150,6 +150,10 @@ public:
     
     inline bool		    operator == ( const iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node );
+    };
+
+    inline bool		    operator != ( const iterator & rhs ) const {
+      return( ! (*this == rhs) );
     };
     
     inline const_iterator & operator = ( const const_iterator & rhs ) {
@@ -480,6 +484,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1998/10/23 13:19:41  houghton
+// Changed include <pair> to <utility>.
+// Added const_iterator::operator != ( const iterator & rhs ) const;
+//
 // Revision 2.8  1997/09/17 16:56:09  houghton
 // Changed for new library rename to StlUtils
 //
