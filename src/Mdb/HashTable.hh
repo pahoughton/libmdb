@@ -23,11 +23,11 @@
 
 #include <MdbConfig.hh>
 #include <HashTableBase.hh>
-#include <MultiMemOffset.hh>
 
 #include <DumpInfo.hh>
 
 #include <iterator>
+#include <pair>
 
 template< class Key,
           class Value,
@@ -104,12 +104,12 @@ public:
     
     inline iterator(
       HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
-      HashTableBase::Hash   aHash,
+      HashTableBase::HashValue   aHash,
       HashTableBase::Loc    aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
     
     HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
-    HashTableBase::Hash	    hash;
+    HashTableBase::HashValue	    hash;
     HashTableBase::Loc	    node;
   };
 
@@ -170,12 +170,12 @@ public:
     
     inline const_iterator(
       const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
-      HashTableBase::Hash   aHash,
+      HashTableBase::HashValue   aHash,
       HashTableBase::Loc    aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
     
     const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
-    HashTableBase::Hash	    hash;
+    HashTableBase::HashValue	    hash;
     HashTableBase::Loc	    node;
   };
 
@@ -198,7 +198,7 @@ public:
     Loc	    node = mgr->allocate( sizeof( HashNode ) );
     if( node )
       {
-	Hash    hash = hashFunct( keyOf( rec ) );
+	HashValue    hash = hashFunct( keyOf( rec ) );
 	if( HashTableBase::insert( hash, node ) )
 	  {
 	    value( node ) = rec;
@@ -214,7 +214,7 @@ public:
   };
     
   inline const_iterator	    find( const Key & key ) const {
-    Hash    hash = hashFunct( key );
+    HashValue    hash = hashFunct( key );
     Loc	    node = HashTableBase::find( hash );
     for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
@@ -225,7 +225,7 @@ public:
   }
     
   inline iterator	    find( const Key & key ) {
-    Hash    hash = hashFunct( key );
+    HashValue    hash = hashFunct( key );
     Loc	    node = HashTableBase::find( hash );
     for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
@@ -248,7 +248,7 @@ public:
   };
 
   inline const_iterator	    begin( void ) const {
-    Hash    hash = first();
+    HashValue    hash = first();
     return( const_iterator( this, hash, hashLoc( hash ) ) );
   };
   
@@ -257,7 +257,7 @@ public:
   };
 
   inline iterator	    begin( void ) {
-    Hash    hash = first();
+    HashValue    hash = first();
     return( iterator( this, hash, hashLoc( hash ) ) );
   };
   
@@ -343,11 +343,11 @@ protected:
   friend class const_iterator;
   friend class TableDumpMethods;
   
-  inline Loc	nextNode( Hash & hash, Loc & node  ) const {
+  inline Loc	nextNode( HashValue & hash, Loc & node  ) const {
     return( next( hash, node ) );
   };
   
-  inline Loc	prevNode( Hash & hash, Loc & node ) const {
+  inline Loc	prevNode( HashValue & hash, Loc & node ) const {
     return( prev( hash, node ) );
   };
   
@@ -452,6 +452,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:20:03  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+// Bug-Fix: added include <MutliMemOffset.hh>
+//
 // Revision 2.3  1997/07/14 10:38:40  houghton
 // Port(AIX): iterator could not access the protected next & prev
 //     methods. So I wrote nextNode & prevNode wrappers to provide access.
