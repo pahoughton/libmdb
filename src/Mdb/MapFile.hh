@@ -5,7 +5,10 @@
 // Project:	Mdb
 // Desc:        
 //
-//
+//  MapFile uses the operating system's mapped memory functions
+//  (mmap(2) & munmap(2)) to map a file to memory. A file can be to a
+//  specific memory address or the operating system can select the address
+//  to map the file to (See libMdb/docs/design/MapFile.txt for more info).
 //
 // Quick Start: - short example of class usage
 //
@@ -41,9 +44,9 @@ class MapFile
 
 public:
 
-  typedef unsigned long	    size_type;
+  typedef MDB_TYPE_SIZE	    size_type;
   
-  typedef caddr_t	    MapAddr;
+  typedef MDB_TYPE_ADDR	    MapAddr;
   typedef unsigned short    MapMask;	// map permision mask (i.e. umask)
   
   // use this constructor to create a new file or open an existing one
@@ -52,13 +55,13 @@ public:
 	   ios::open_mode   mode,
 	   bool		    create,
 	   size_type	    size,
-	   MapMask	    permMask = 0777 );
+	   MapMask	    permMask = 02 );
 
   // use this constructor to create a new file
   MapFile( const char *     fileName,
 	   size_type   	    size,
  	   MapAddr   	    baseAddr = 0,
-	   MapMask	    permMask = 0777 );
+	   MapMask	    permMask = 02 );
 
   // use this constructor to open an existing file
   MapFile( const char *     fileName,
@@ -143,7 +146,6 @@ private:
 #else
 #undef inline
 
-
 #endif
 
 
@@ -156,9 +158,58 @@ private:
 //
 //  Constructors:
 //
-//  	MapFile( );
+//  	MapFile( const char *	    fileName,
+//		 MapAddr	    baseAddr,
+//		 ios::open_mode	    mode,
+//		 bool		    create,
+//		 size_type	    size,
+//		 MapMask	    permMask = 02 )
+//	    Create a new map or open an existing one.
+//		'fileName' is the full name of the file to use.
+//		'baseAddr' is the base address to map the file to. 0
+//		    should be use to allow the OS to select the best
+//		    address.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write (note if create == true
+//		    the mode argument is ignored and the file is opened
+//		    with (ios::in | ios::out).
+//		'create' true == create a new map; false == access an
+//		    existing map.
+//		'size' is the minumum initial size of the map.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
 //
-//  Destructors:
+//  	MapFile( const char *	    fileName,
+//		 size_type	    size,
+//		 MapAddr	    baseAddr = 0,
+//		 MapMask	    permMask = 02 )
+//	    Create a new map.
+//		'fileName' is the full name of the file to use.
+//		'baseAddr' is the base address to map the file to. 0
+//		    should be use to allow the OS to select the best
+//		    address.
+//		'size' is the minumum initial size of the map.
+//		'permMask' is the 'umask(2)' to use when creating the file.
+//		    a value of '02' will create a file with the mode
+//		    set to '-rw-rw-r--'.
+//
+//
+//  	MapFile( const char *	    fileName,
+//		 MapAddr	    baseAddr = 0,
+//		 ios::open_mode	    mode = ios::in )
+//	    Open an existing map.
+//		'fileName' is the full name of the file to use.
+//		'baseAddr' is the base address to map the file to. 0
+//		    should be use to allow the OS to select the best
+//		    address.
+//		'mode' is the mode to open the file, ios::in == read only
+//		    (ios::in | ios::out) == read/write (note if create == true
+//		    the mode argument is ignored and the file is opened
+//		    with (ios::in | ios::out).
+//
+//	MapFile( void )
+//	    Instanciate a MapFile. Use 'map()' to open/create a map.
 //
 //  Public Interface:
 //
@@ -231,6 +282,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/07/13 11:15:10  houghton
+// Cleanup
+// Added documentation.
+//
 // Revision 2.8  1997/06/09 11:57:12  houghton
 // Cleanup.
 //
