@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1996/02/29 19:09:49  houghton
+// *** empty log message ***
+//
 // Revision 2.1  1995/11/10 12:42:28  houghton
 // Change to Version 2
 //
@@ -32,14 +35,10 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#ifdef Linux
 #include <fcntl.h>
-#endif
 #include <sys/mman.h>
 #include <iostream.h>
 #include <errno.h>
-
-extern "C" size_t getpagesize( void );
 
 class MapFile
 {
@@ -166,7 +165,7 @@ MapFile::MapFile(
       return;
     }
 
-  fileStat( mapFd, TRUE );
+  fileStat( mapFd, true );
   
   if( permMask != 0 )
     {

@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.2  1996/02/29 19:09:57  houghton
+// *** empty log message ***
+//
 // Revision 2.1  1995/11/10 12:42:30  houghton
 // Change to Version 2
 //
@@ -419,7 +422,7 @@ MapMemFixedDynamic::next( RecNumber & rec )
       if( nextRec > getEnd() - getBase() )
 	{
 	  rec = 0;
-	  return( FALSE );
+	  return( false );
 	}
       off_t 	baseAddr = (off_t)base;
       
