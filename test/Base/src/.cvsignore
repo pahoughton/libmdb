@@ -1,5 +1,7 @@
 .depend_debug
+.depend_test
 Templates.DB
 Test_g
+Test_tg
 ir.out
 objects
