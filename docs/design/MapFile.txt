@@ -1,0 +1,189 @@
+#
+#
+# Title:        MapFile.txt
+# Project:	Mdb
+# Desc:
+# 
+#   MapFile class design
+# 
+# Notes:
+# 
+# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
+# Created:	07/22/97 14:41
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+Class Hierarchy
+
+    MapFile
+
+Classes Used
+
+    FileStat (part of libClue)
+    DumpInfo<> (part of libClue)
+
+Class Description
+
+    MapFile is provides mapping between a processes address space and
+    file. This allow you to access the file's data through a memory
+    pointer instead of reading and/or writing to the file. The base
+    address used to access the data can be specificed when the map is
+    opened or the operating system can pick one for you. For a more
+    detailed description of memory mapped files, see the mmap(2) man
+    page.
+
+    Using the MapFile class, you can open an existing map file or create a
+    new one. Once opened, you access the memory through the getBase()
+    method. The class also provides methods to grow, shrink and set
+    the map's size. See MapFile.hh for detail descriptions of the
+    methods provided.
+
+    A MapFile can be accessed by multiple applications. This includes
+    either differect programs or the same program running multiple
+    times. No matter how many applications are accessing the MapFile,
+    there is only one copy in the system's real memory.
+
+Detail Design.
+
+    Data Structures: None
+
+    Primary Methods:
+
+	createMap( const char *	fileName,
+		   MapAddr	baseAddr,
+		   size_type    size,
+		   MapMask	permMask );
+
+	    Create a new map file of a specific size. If 'fileName'
+	    exist, it is removed before the map file is
+	    created. If 'baseAddr' is 0, the operating system will
+	    select an address to use. Otherwise, mapping is attempted
+	    at the address specified.
+
+	    The 'size' parameter is the minimum size of the map. It
+	    will be rounded up to the next full page. Note memory page
+	    alignment is required by the mmap(2) system call.
+
+	    The 'permMask' parameter is the 'umask(2)' value to use
+	    when creating the file.  a value of '02' will create a
+	    file with the mode set to '-rw-rw-r--'.
+
+	    The value returned is the actuall size of the map or 0 if
+	    an error occured.
+
+	    
+	map( const char *   fileName,
+	     MapAddr	    baseAddr,
+	     ios::open_mode mode = ios::in )
+
+	    Open an existing file and map it to memory. If the file
+	    does not exist, the map is set to an error state
+	    (i.e. good() returns false) and 0 is returned.
+
+	    If 'baseAddr' is 0, the operating system will select an
+	    address to use. Otherwise, mapping is attempted at the
+	    address specified.
+
+	    The 'mode' parameter spefies whether the address range
+	    can be read, written or both.
+
+	    The value returned is the actuall size of the original
+	    file or 0 if an error occured.
+
+	unmap( void )
+
+	    This unmaps the file and closes it.
+
+
+	setSize( size_type size, MapAddr baseAddr )
+
+	    Change the size of the map to 'size' and remap it to
+	    'baseAddr'. 
+	    	    
+	    The value returned is the actuall size of the map or 0 if
+	    an error occured.
+
+
+	grow( size_type amount, MapAddr baseAddr )
+
+	    Increase the map's size by at least 'amount' bytes. This
+	    just uses setSize to change the map's size. It is called
+	    with 'amount' added to the current map's size and the
+	    'baseAddr' value.
+	    
+	shrink( size_type amount, MappAddr baseAddr )
+	    Decrease the map's size by at most 'amount' bytes. This
+	    just uses setSize to change the map's size. It is called
+	    with 'amount' subtracted from the current map's size and the
+	    'baseAddr' value.
+
+Performance Characteristics:
+
+    This provides the fastest access to file data that I have
+    found. It significantly out performs read(2) and write(2).
+
+    IF the system does not have enough real memory to map the entire
+    file, only the pages being used will be placed in real
+    memory. Most operating systems I've looked at utilized a least
+    recently used algorithm to determine which pages will remain in
+    real memory and which will be swapped to disk. If you access a
+    page that has been swapped to disk, a page fault will occure which
+    causes that page to be read from the disk into real memory.
+
+    MapFiles use the file system object they are associated with for
+    swap space. The systems normal swap space is not used for any of
+    the data in the map file.
+  
+    Letting the operating system select the base address to use can be
+    slighly slower than specifing an address, but the resizing
+    flexibility usually overides any performance gains.
+
+    For example, If you have many chunks of data throughout the map,
+    and you let the operating system select the base address, you
+    would normally be accessing the data chunks by there offset.
+    This means you have to use 'getBase() + chunkOffset' to get to the
+    correct memory address.
+
+    If you use a specific base address, you know the data will always
+    be at that address, so there is no need to use offsets.
+
+    The primary disadvantage to specifying an address comes into play
+    when you start working with multible map files from within the
+    same application. The maximum size of any one map file has to be
+    established before the application is run. The reason for this is
+    you need to pick the correct addresses and make sure the will not
+    collide.
+
+    For example, lets say you want to use 4 diffent map files and you
+    want to specify the address of each.
+
+	map1: 0x30000000
+	map2: 0x30100000
+	map3: 0x30200000
+	map4: 0x30300000
+
+    This forces the max size of map1, map2 and map3 to be 0x100000
+    bytes. If you attemtp to increase one of these map's sizes beyond
+    this, it's address range would collide with the next map and the
+    call would fail.
+	
+    
+    
+	    
+#
+# $Log$
+# Revision 1.1  1997/07/25 13:39:57  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:indented-text
+# End:
