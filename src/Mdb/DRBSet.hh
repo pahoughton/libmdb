@@ -117,6 +117,10 @@ public:
     return( table.effective( it ) );
   };
   
+  inline bool		effective( const const_iterator & it, EffDate eff ) const {
+    return( table.effective( it, eff ) );
+  }
+  
   inline const_iterator		begin( void ) const { return(table.begin()); };
   inline const_iterator		end( void ) const { return( table.end() ); };
 
@@ -421,6 +425,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/11/03 12:03:35  houghton
+// Added a method to check if a record is effective for a specfic date.
+//
 // Revision 2.6  1997/08/20 14:07:45  houghton
 // Chagned lower_bound() args, it did not use the effective date so,
 //     it no longer accepts the argument.

@@ -309,10 +309,9 @@ public:
       {
 	Loc hist = drbNode( node ).hist;
 
-	// return the newest non deleted history
+	// return the newest (latest eff date) non deleted history 
 	for( ; hist && history( hist ).del;
 	     hist = history( hist ).next );
-
 	
 	if( hist )
 	  return( history( hist ).del ? end() :
@@ -408,13 +407,53 @@ public:
     return( reverse_iterator( begin() ) );
   };
 
-  inline EffDate	    effective( const const_iterator & it ) const {
+  inline EffDate	effective( const const_iterator & it ) const {
     if( it.hist )
       return( history( it.hist ).when );
     else
       return( 0 );
   };
-      
+
+  inline bool		effective( const const_iterator & it, EffDate eff ) const {
+    Loc node = it.node;
+    Loc hist = it.hist;
+    
+    if( node && hist )
+      {
+	Loc h = drbNode( node ).hist;
+
+	for( ; h && h != hist && history( h ).when > eff;
+	     h = history( h ).next );
+
+	// ok, now we should have a hist who's when is before eff
+
+	// no record found that had a when less that eff
+	if( ! h )
+	  return( false );
+	
+	if( h == hist )
+	  {
+	    // we stoped at the same record was the one we where passed.
+	    // so, it is the one in effect if it's when is before (or =)
+	    // the the effdate and it is not a 'del' rec.
+	    return( history( h ).when <= eff && ! history( h ).del );
+	  }
+	else
+	  {
+	    // bad news, not the same record, so whe have a rec with
+	    // a newer eff date which is still before 'eff' so the 'it'
+	    // is not the record in effect for 'eff'
+	    return( false );
+	  }
+      }
+    else
+      {
+	// we go a bad iterator.
+	return( false );
+      }
+  }
+	    
+    
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -760,6 +799,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/11/03 12:03:21  houghton
+// Added a method to check if a record is effective for a specfic date.
+//
 // Revision 2.8  1997/08/20 14:07:51  houghton
 // Chagned lower_bound() args, it did not use the effective date so,
 //     it no longer accepts the argument.
