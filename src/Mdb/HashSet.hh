@@ -44,7 +44,7 @@ public:
   typedef Table::reverse_iterator	reverse_iterator;
   typedef Table::const_reverse_iterator	const_reverse_iterator;
   typedef Table::pair_iterator_bool	pair_iterator_bool;
-  
+
   inline Hash( MultiMemOffset *	memMgr,
 	       const char *	indexFileName,
 	       ios::open_mode	mode = ios::in,
@@ -149,11 +149,9 @@ private:
   // Hash & operator =( const Hash & from );
 
   Table		table;
-  
 };
 
 #include <Hash.ii>
-
 
 //
 // Detail Documentation
@@ -419,6 +417,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:21:18  houghton
+// Cleanup.
+//
 // Revision 2.2  1997/07/13 11:09:59  houghton
 // Cleanup.
 // Finished coding.
