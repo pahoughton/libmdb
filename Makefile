@@ -57,18 +57,13 @@ setup:
 
 
 verify_setup:
-	$(hide) if [ -z "$$TOOL_DIR" ] ; then				      \
-	  echo "TOOL_DIR env var not set.";				      \
-	  echo "  Please see $(PROJECT)/docs/devel/Dependencies.txt";	      \
-	  echo "  for details.";					      \
-	  exit 1;							      \
-	fi
-	$(hide) if [ ! -f "$(stlutils_hh)" ] ; then			      \
-	  echo " ";							      \
-	  echo "+ $(stlutils_hh) NOT FOUND!";				      \
+	$(hide)								      \
+	if [ ! -f $(CFG_DIR)/Setup.cfg ]				      \
+	    && [ ! -f $(PROJECT)/$(CFG_DIR)/Setup.cfg ] ; then		      \
+	  echo "+ Setup.cfg NOT FOUND!";				      \
 	  echo " ";							      \
 	  echo "    To install all the dependencies, please perform";	      \
-	  echo "    the following:";				      \
+	  echo "    the following:";					      \
 	  echo " ";							      \
 	  echo "      cd \$$TOOL_DIR/src/Build/Libs";			      \
 	  echo "      make -f $(PROJECT)/Makefile setup";		      \
@@ -152,6 +147,9 @@ help_config:
 
 #
 # $Log$
+# Revision 1.5  1999/11/10 09:28:25  houghton
+# Changed verify_setup to check Setup.cfg.
+#
 # Revision 1.4  1999/11/09 10:53:50  houghton
 # Changed setup to generate Setup.cfg.
 #
