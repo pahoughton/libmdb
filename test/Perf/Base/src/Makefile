@@ -44,7 +44,7 @@ PROGRAM_PROFILE	= $(NAME)_pg
 PROGRAM_STATIC	= $(NAME)_static
 
 
-PRJ_TOPDIR	= .
+PRJ_TOPDIR	= ../../..
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
@@ -137,9 +137,12 @@ DEBUG_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
-DEFAULT_LD_LIBS		= -lMdb -lClue -lGnuRegex -lCommon
-DEBUG_LD_LIBS		= -lMdb_g -lClue_g -lGnuRegex -lCommon
-PROFILE_LD_LIBS		= -lMdb_pg -lClue -lGnuRegex -lCommon
+DEFAULT_LD_LIBS		= -lMdb -lClue -lGnuRegex -lCommon \
+			  $(ARCH_DEFAULT_LD_LIBS)
+DEBUG_LD_LIBS		= -lMdb_g -lClue_g -lGnuRegex -lCommon \
+			  $(ARCH_DEBUG_LD_LIBS)
+PROFILE_LD_LIBS		= -lMdb_pg -lClue -lGnuRegex -lCommon \
+			  $(ARCH_PROFILE_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
 
 # DEP_LIBS - rebuild target if DEP_LIBS newer than target
@@ -218,6 +221,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.2  1997/07/14 10:51:43  houghton
+# Added ARCH_*_LD_LIBS.
+#
 # Revision 1.1  1997/07/13 11:36:39  houghton
 # Initial Version.
 #
