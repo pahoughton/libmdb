@@ -24,6 +24,26 @@
 #define inline
 #endif
 
+inline
+MultiMemOffset::Addr
+MultiMemOffset::address( Loc loc )
+{
+  return( getBase() + loc );
+}
+
+inline
+const MultiMemOffset::Addr
+MultiMemOffset::address( Loc loc ) const
+{
+  return( getBase() + loc );
+}
+
+inline
+MultiMemOffset::Loc
+MultiMemOffset::location( const void * addr ) const
+{
+  return( ((const char *)addr) - getBase() );
+}
 
 
 #if defined( inline )
@@ -33,6 +53,10 @@
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:30:42  houghton
+// Cleanup.
+// Added address() & location().
+//
 // Revision 2.1  1997/06/19 12:03:25  houghton
 // Initial Version.
 //
