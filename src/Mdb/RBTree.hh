@@ -140,7 +140,7 @@ public:
       return( it );
     };
 
-    inline const Value &    operator * ( void ) {
+    inline const Value &    operator * ( void ) const {
       return( table->value( node ) );
     };
     
@@ -224,6 +224,22 @@ public:
     return( ( found == end() ||
 	      lessKeyObj( key, keyOf( *found ) ) ) ?
 	    end() : found );
+  };
+
+  inline const_iterator	    lower_bound( const Key & key ) const {
+    return( const_iterator( this, findNode( key ) ) );
+  };
+  
+  inline iterator	    lower_bound( const Key & key ) {
+    return( iterator( this, findNode( key ) ) );
+  };
+
+  inline const_iterator	    upper_bound( const Key & key ) const {
+    return( const_iterator( this, upperBound( key ) ) );
+  };
+
+  inline iterator	    upper_bound( const Key & key ) {
+    return( iterator( this, upperBound( key ) ) );
   };
 
   inline bool		    erase( const iterator & pos ) {
@@ -336,6 +352,27 @@ protected:
     return( parent );
   };
 
+  inline Loc	    upperBound( const Key & key ) const {
+    Loc	    parent = headerLoc;
+    Loc	    node = root();
+
+    while( node )
+      {
+	if( lessKeyObj( key, keyOf( value( node ) ) ) )
+	  {
+	    parent = node;
+	    node = left( node ).loc();
+	  }
+	else
+	  {
+	    node = right( node ).loc();
+	  }
+      }
+
+    return( parent );
+  };
+
+    
   inline bool	lessKey( Loc one, Loc two ) const {
     return( lessKeyObj( keyOf( value( one ) ), keyOf( value( two ) ) ) );
   };
@@ -443,6 +480,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/08/17 01:39:45  houghton
+// Bug-Fix: const_iterator::operator * () changed to const method.
+// Added lower_bound
+// Added upper_bound
+//
 // Revision 2.6  1997/07/25 15:59:27  houghton
 // Cleanup.
 //
