@@ -86,11 +86,12 @@ Hash< Key, HashFunct, LessKey >::dumpInfo(
   ) const
 {
   if( showVer )
-    dest << Hash::getClassName() << ":\n"
-	 << Hash::getVersion() << '\n';
+    dest << Hash<Key,HashFunct,LessKey>::getClassName() << ":\n"
+	 << Hash<Key,HashFunct,LessKey>::getVersion() << '\n';
 
-  if( ! Hash::good() )
-    dest << prefix << "Error: " << Hash::error() << '\n';
+  if( ! Hash<Key,HashFunct,LessKey>::good() )
+    dest << prefix << "Error: "
+	 << Hash<Key,HashFunct,LessKey>::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
@@ -140,6 +141,9 @@ Hash< Key, HashFunct, LessKey >::dumpValue(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/14 10:37:19  houghton
+// Port(AIX): changed Hash:: to Hash<Key,HashFunct,LessKey>::.
+//
 // Revision 2.1  1997/07/11 17:37:31  houghton
 // Initial Version.
 //
