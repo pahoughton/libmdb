@@ -28,7 +28,7 @@
 #include <RBTreeBase.hh>
 #include <iostream>
 #include <iterator>
-#include <pair>
+#include <utility>
 
 template< class Key, class Value, class KeyOfValue, class LessKey >
 class DRBTree : public RBTreeBase
@@ -173,6 +173,10 @@ public:
     inline bool		    operator == ( const iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node && hist == rhs.hist );
     };
+    
+    inline bool		    operator != ( const iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    }
     
     inline const_iterator & operator = ( const const_iterator & rhs ) {
       table = rhs.table;
@@ -821,6 +825,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1998/10/23 13:17:01  houghton
+// Changed include <pair> to <utility>
+// Added const_iterator::operator != ( const iterator & rhs );
+//
 // Revision 2.11  1998/03/03 20:56:39  houghton
 // Bug-Fix: effective() would lie.
 //
