@@ -105,8 +105,6 @@ public:
   DumpInfo< MapMem >	    dump( const char *	prefix = "    ",
 				  bool		showVer = true ) const;
   
-protected:
-
   struct MapInfo
   {
     MapType 	    type;
@@ -114,6 +112,8 @@ protected:
     unsigned long   base;
     unsigned long   size;
   };
+
+protected:
 
 private:
 
@@ -229,6 +229,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/06/05 13:42:56  houghton
+// Changed for AIX: had to make MapInfo a public member.
+//
 // Revision 2.5  1997/06/05 11:22:51  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
