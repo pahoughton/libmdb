@@ -12,7 +12,10 @@
 //
 // 
 // $Log$
-// Revision 1.2  1995/03/02 16:35:36  houghton
+// Revision 1.3  1995/07/21 15:43:18  ichudov
+// DAVLs
+//
+// Revision 1.2  1995/03/02  16:35:36  houghton
 // Linux ports & new Classes
 //
 // Revision 1.1  1995/02/13  16:08:50  houghton
@@ -81,6 +84,12 @@ public:
   virtual Bool	    	good( void ) const;
   virtual const char *	error( void ) const;
     
+  struct FreeList
+  {
+    unsigned long next;
+    unsigned long prev;
+  };
+
 protected:
 
 private:
@@ -88,12 +97,6 @@ private:
   MapMemFixedDynamic( const MapMemFixedDynamic & copyFrom );
   MapMemFixedDynamic & operator=( const MapMemFixedDynamic & assignFrom );
   
-  struct FreeList
-  {
-    unsigned long next;
-    unsigned long prev;
-  };
-
   struct MapFixedDynamicInfo : MapInfo
   {
     unsigned long   recSize;	// record size

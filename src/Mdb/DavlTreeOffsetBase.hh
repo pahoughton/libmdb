@@ -12,7 +12,10 @@
 //
 // 
 // $Log$
-// Revision 1.1  1995/02/13 16:08:37  houghton
+// Revision 1.2  1995/07/21 15:43:12  ichudov
+// DAVLs
+//
+// Revision 1.1  1995/02/13  16:08:37  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -170,11 +173,30 @@ DavlTreeOffsetBase::findHist(
     {
       if( hist(h)->when <= when )
 	{
-	  if( hist(h)->deleted )
+          // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< ichudov
+          // This piece of code between <<< and >>> looks for the _last_
+          // element with the same appropriate effective date. 
+          // It helps us to get the right record if there are many 
+          // records with the same key and effdate. Note that the last
+          // found record is the last added one.
+          //
+          //			- ichudov
+          //
+          time_t good_when = hist(h)->when;
+          off_t  good_h;
+
+          for(; h != 0 && hist(h)->when == good_when; h = hist(h)->next )
+            {
+              good_h = h; // Going to the last record with the same effdate
+            }
+          //
+          // ichudov >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+	  if( hist(good_h)->deleted )
 	    {
 	      return( 0 );
 	    }
-	  return( h );
+	  return( good_h );
 	}
     }
   return( h );

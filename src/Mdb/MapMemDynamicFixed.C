@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.2  1995/03/02 16:35:35  houghton
+// Revision 1.3  1995/07/21 15:43:15  ichudov
+// DAVLs
+//
+// Revision 1.2  1995/03/02  16:35:35  houghton
 // Linux ports & new Classes
 //
 // Revision 1.1  1995/02/13  16:08:50  houghton
@@ -278,10 +281,12 @@ MapMemFixedDynamic::freeMem(
 		{
 		  unsigned long releaseRecs = (releaseChunks - 1) * base->chunkSize;
 
-		  shrink( releaseRecs * base->recSize, (caddr_t)base->base  );
+		  size_t newSize = shrink( releaseRecs * base->recSize,
+					   (caddr_t)base->base  );
 
 		  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
 		  
+		  base->size = getSize();
 		  base->freeCount -= releaseRecs;
 		  base->recCount -= releaseRecs;
 		}
@@ -398,6 +403,7 @@ MapMemFixedDynamic::next( RecNumber & rec )
 
       if( nextRec > getEnd() - getBase() )
 	{
+	  rec = 0;
 	  return( FALSE );
 	}
       off_t 	baseAddr = (off_t)base;
@@ -414,6 +420,7 @@ MapMemFixedDynamic::next( RecNumber & rec )
 
       if( nextFreeRecOffset == 0 )
 	{
+	  rec = 0;
 	  return( FALSE );
 	}
       else
