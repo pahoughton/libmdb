@@ -218,12 +218,12 @@ tDRBTree03( LibTest & tester )
       long	     e = 20;
       Str errDesc;
 
+      cout << '\n';
       for( ; them != t.end(); ++ them )
 	{
 	  errDesc = "match: ";
 	  errDesc << "k: " << k << " tk: " << (*them).k
 		  << " e: " << e << " te: " << t.effective( them );
-	  
 	  
 	  TESTR( errDesc, (*them).k == k );
 	  TESTR( errDesc, t.effective( them ) == e );
@@ -231,18 +231,17 @@ tDRBTree03( LibTest & tester )
 
 	  e -= 5;
 
-	  if( k == 10 && e == 15 )
+	  if( k == 10 && e == 15 ) {
 	    e -= 5;
-
-	  if( e == 0 )
-	    {
-	      e = 25;
+	  }
+	  
+	  if( e == 0 ) {
+	    e = 25;
+	    k += 2;
+	    
+	    if( k == 8 || k == 16 )
 	      k += 2;
-	      
-	      if( k == 8 || k == 16 )
-		k += 2;
-	    }
-
+	  }
 	}
       TEST( them == t.end() );      
       TEST( k == 20 );
@@ -257,6 +256,9 @@ tDRBTree03( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/09/18 15:15:54  houghton
+// Cleanup.
+//
 // Revision 4.1  2001/07/27 00:57:45  houghton
 // Change Major Version to 4
 //
