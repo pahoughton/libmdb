@@ -25,6 +25,20 @@
 #endif
 
 inline
+HashTableBase::size_type
+HashTableBase::size( void ) const
+{
+  return( good() ? header().count : 0 );
+}
+
+inline
+bool
+HashTableBase::empty( void ) const
+{
+  return( size() == 0 );
+}
+
+inline
 HashTableBase::Header &
 HashTableBase::header( void )
 {
@@ -169,6 +183,9 @@ HashTableBase::endHash( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/06/25 12:54:36  houghton
+// Added size() and empty().
+//
 // Revision 2.1  1997/06/05 11:29:11  houghton
 // Initial Version.
 //
