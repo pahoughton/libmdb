@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/03/07 11:50:26  houghton
+// Add getBase() const.
+//
 // Revision 2.1  1995/11/10 12:42:37  houghton
 // Change to Version 2
 //
@@ -42,7 +45,9 @@ public:
   virtual void 	    freeMem( off_t offset );
 
   virtual void *    getAddr( off_t offset );
-  virtual void *    getBase( void );
+  
+  virtual void *	    getBase( void );
+  virtual const void *	    getBase( void ) const;
 
   virtual ostream & 	getStats( ostream & dest ) const;
 

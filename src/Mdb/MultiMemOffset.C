@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.2  1997/03/07 11:50:41  houghton
+// Add getBase() const.
+//
 // Revision 2.1  1995/11/10 12:42:37  houghton
 // Change to Version 2
 //
@@ -54,6 +57,12 @@ MultiMemOffset::getAddr( off_t offset )
 
 void *
 MultiMemOffset::getBase( void )
+{
+  return( (void *)0 );
+}
+
+const void *
+MultiMemOffset::getBase( void ) const
 {
   return( (void *)0 );
 }
