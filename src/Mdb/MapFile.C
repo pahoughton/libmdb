@@ -301,6 +301,10 @@ MapFile::sync(
     }
 }
 
+#if defined( Sun5 )
+static char sunWriteData[ 8192 * 8 ];
+#endif
+
 MapFile::size_type
 MapFile::setSize(
   size_type    	size,
@@ -325,6 +329,50 @@ MapFile::setSize(
   
   if( size >= mapSize )
     {
+
+#if defined( Sun5 )
+
+      // THIS IS SLOW AND STUPID, BUT ...
+      //
+      // SunOS will randomly cause a SIGBUS when I use 'memory'
+      // operations that write to a memory mapped file.
+      //
+      size_type	newSize = Align( size, pageSize );
+
+      // seek to the current size
+      if( lseek( mapFd, mapSize, SEEK_SET ) < 0 )
+	{
+	  osErrno = errno;
+	  return( 0 );
+	}
+
+      size_type writeSize = newSize - mapSize;
+      
+      size_type written;
+
+      while( writeSize > 0 )
+	{
+	  if( (written = write( mapFd,
+				&sunWriteData,
+				min( writeSize,
+				     (size_type)sizeof( sunWriteData )) ))
+	      < 0 )
+	    {
+	      if( errno != EINTR )
+		{
+		  osErrno = errno;
+		  return( 0 );
+		}
+	    }
+	  else
+	    {
+	      writeSize -= written;
+	    }
+	}
+      
+      mapSize = newSize;
+      
+#else
       mapSize = Align( size, pageSize );
       
       char	buf = 0;
@@ -334,6 +382,7 @@ MapFile::setSize(
 	  osErrno = errno;
 	  return( 0 );
 	}
+#endif
     }
   else
     {
@@ -478,6 +527,11 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.18  1998/03/18 06:41:36  houghton
+// Changed for Sun5 - the kernel does not allocate file space
+//     properly. I'm hoping 'writing' to the map file first will keep me
+//     from getting random SIGBUSs.
+//
 // Revision 2.17  1998/01/09 10:42:41  houghton
 // Bug-Fix: sync() was not handling default args (len == npos) correctly.
 //
