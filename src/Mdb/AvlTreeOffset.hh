@@ -14,6 +14,9 @@
 //
 // 
 // $Log$
+// Revision 2.6  1997/03/17 14:14:53  houghton
+// Changed to verify values during construction to prevent core dumps.
+//
 // Revision 2.5  1997/03/13 02:22:14  houghton
 // Added dumpInfo method.
 //
@@ -171,8 +174,12 @@ private:
 
   inline void initTree( int (* cmp)( const T & one, const T & two ),
 			T & (* cpy)( T & dest, const T & src),
-			MultiMemOffset * memMgr = 0,
-			off_t avlTree = 0 );
+			MultiMemOffset * memMgr );
+	    
+  inline void initTree( int (* cmp)( const T & one, const T & two ),
+			T & (* cpy)( T & dest, const T & src),
+			MultiMemOffset * memMgr,
+			off_t avlTree );
 	    
   enum AvlTreeError
   {
@@ -525,7 +532,7 @@ inline
 bool
 AvlTreeOffset<T>::good( void ) const
 {
-  return( tree != 0 && mem->good() );
+  return( tree != 0 && mem && mem->good() );
 }
 
 // error - return a string that describes the state of the tree
@@ -557,9 +564,14 @@ AvlTreeOffset<T>::error( void ) const
 	  break;
 
 	case E_MEMMGR:
-	  if( mem->good() )
+	  if( mem )
 	    {
-	      errStr << ": unknown mem error";
+	      if( mem->good() )
+		errStr << ": unknown mem error";
+	    }
+	  else
+	    {
+	      errStr << ": no memory manager.";
 	    }
 	  break;
 
@@ -585,7 +597,7 @@ ostream &
 AvlTreeOffset<T>::dumpInfo(
   ostream &	dest,
   const char *	prefix,
-  bool		showVer
+  bool		CLUE_UNUSED( showVer )
   ) const
 {
   if( ! AvlTreeOffset<T>::good() )
@@ -760,30 +772,21 @@ void
 AvlTreeOffset<T>::initTree(
   int (* cmp)( const T & one, const T & two ),
   T & (* cpy)( T & dest, const T & src),
-  MultiMemOffset * memMgr,
-  off_t avlTree
+  MultiMemOffset * memMgr
   )
 {
-  avlError = E_OK;
-  compareRec = cmp;
-  copyRec = cpy;
-
-  walkAction = 0;
-  walkActionClosure = 0;
-  destroyAction = 0;
-  destroyActionClosure = 0;
-
-  mem = (memMgr) ? memMgr : &MultiMemOffsetMalloc;
-
-  setBase( mem->getBase() );
-  
-  if( ! avlTree )
+  if( memMgr )
     {
-      tree = getMem( sizeof( AvlTree ) );
-      if( tree )
+      off_t newTree = memMgr->getMem( sizeof( AvlTree ) );
+      
+      if( newTree )
 	{
-	  getTree()->root = 0;
-	  getTree()->count = 0;
+	  initTree( cmp, cpy, memMgr, newTree );
+	  if( avlError == E_OK )
+	    {
+	      getTree()->root = 0;
+	      getTree()->count = 0;
+	    }
 	}
       else
 	{
@@ -792,7 +795,52 @@ AvlTreeOffset<T>::initTree(
     }
   else
     {
-      tree = avlTree;
+      avlError = E_MEMMGR;
+    }
+}
+
+template<class T>
+inline
+void
+AvlTreeOffset<T>::initTree(
+  int (* cmp)( const T & one, const T & two ),
+  T & (* cpy)( T & dest, const T & src),
+  MultiMemOffset * memMgr,
+  off_t avlTree
+  )
+{
+  compareRec = cmp;
+  copyRec = cpy;
+
+  walkAction = 0;
+  walkActionClosure = 0;
+  destroyAction = 0;
+  destroyActionClosure = 0;
+
+  if( memMgr )
+    {
+      mem = memMgr;
+    }
+  else 
+    {
+      avlError = E_MEMMGR;
+      return;
+    }
+
+  if( mem->good() )
+    setBase( mem->getBase() );
+  else
+    {
+      avlError = E_MEMMGR;
+      return;
+    }
+  
+  if( avlTree )
+    tree = avlTree;
+  else
+    {
+      avlError = E_NOTREE;
+      return;
     }
   
 #if !defined( AVLTREE_FAST )
@@ -803,13 +851,10 @@ AvlTreeOffset<T>::initTree(
       return;
     }
 #endif // ! def AVLTREE_GLOBALFUNCT
-
-  if( ! mem->good() )
-    {
-      avlError = E_MEMMGR;
-    }
 #endif // ! def AVLTREE_FAST
-    
+
+  avlError = E_OK;
+
 }
     
 #endif // ! def _AvlTreeOffset_hh_ 
