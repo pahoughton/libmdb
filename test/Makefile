@@ -39,16 +39,19 @@ exports	    = 					\
 	check_install=$(check_install)		\
 
 depend depend_all depend_test depend_default depend_debug:
-	$(hide) if ! $(MAKE) -C Base/src $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C Base/src $@ $(exports)
 
 all default debug:
-	$(hide) if ! $(MAKE) -C Base/src $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C Base/src $@ $(exports)
 
 clean realclean:
-	$(hide) if ! $(MAKE) -C Base/src $@ $(exports); then exit; fi
+	$(hide) $(MAKE) -C Base/src $@ $(exports)
 
 test:
-	$(hide) if ! $(MAKE) -C Base/src check $(exports); then exit; fi
+	$(hide) $(MAKE) -C Base/src $@ $(exports)
+
+check:
+	$(hide) $(MAKE) -C Base/src $@ $(exports)
 
 
 
@@ -56,6 +59,9 @@ test:
 
 #
 # $Log$
+# Revision 1.2  1999/10/30 11:50:50  houghton
+# Added check target.
+#
 # Revision 1.1  1998/10/23 13:20:33  houghton
 # Initial Version.
 #
