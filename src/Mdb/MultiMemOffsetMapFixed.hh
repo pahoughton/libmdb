@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/06/18 14:15:57  houghton
+// Rework to use allocate and release.
+//
 // Revision 2.3  1997/03/13 02:41:58  houghton
 // Added getOffset.
 //
@@ -113,28 +116,28 @@ inline
 off_t
 MultiMemOffsetMapFixed::getMem( size_t size )
 {
-  return( mem.getMem( size ) );
+  return( mem.allocate( size ) );
 }
 
 inline
 void 
 MultiMemOffsetMapFixed::freeMem( off_t offset )
 {
-  mem.freeMem( offset );
+  mem.release( offset );
 }
 
 inline
 void *
 MultiMemOffsetMapFixed::getAddr( off_t offset )
 {
-  return( mem.getAddr( offset ) );
+  return( mem.address( offset ) );
 }
 
 inline
 off_t
 MultiMemOffsetMapFixed::getOffset( void * addr )
 {
-  return( mem.getOffset( addr ) );
+  return( mem.location( addr ) );
 }
 
 inline

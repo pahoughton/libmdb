@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.5  1997/06/18 14:16:03  houghton
+// Rework to use allocate and release.
+//
 // Revision 2.4  1997/04/04 20:50:37  houghton
 // Cleanup.
 //
@@ -51,17 +54,6 @@ MultiMemOffsetMapFixed::error( void ) const
   return( errStr.cstr() );
 }
 
-
-ostream &
-MultiMemOffsetMapFixed::getStats( ostream & dest ) const
-{
-  dest << MultiMemOffsetMapFixed::getClassName() << ": stats" << endl
-       << "    Status:   " << error() << endl
-       << "    Using:    MapMemFixedDynamic" << endl
-    ;
-  
-  return( mem.getStats( dest ) );
-}
 
 ostream &
 MultiMemOffsetMapFixed::dumpInfo(
