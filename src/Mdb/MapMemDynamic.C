@@ -150,8 +150,8 @@ MapMemDynamic::dumpInfo(
     dest << prefix << "Good" << '\n';
 
   Str pre;
-  pre = MapMem::getClassName();
-  pre << "::";
+  pre = prefix;
+  pre << "::" << MapMem::getClassName();
 
   MapMem::dumpInfo( dest, pre, false );
 
@@ -211,6 +211,9 @@ MapMemDynamic::openMapMemDynamic(
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/06/25 12:55:04  houghton
+// Cleanup dumpInfo() output.
+//
 // Revision 2.2  1997/06/23 12:56:00  houghton
 // Bug-Fix: forgot to initialize errorNum in costructor.
 //
