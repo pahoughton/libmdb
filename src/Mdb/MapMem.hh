@@ -39,7 +39,9 @@ class MapMem : public MapFile
 
 public:
 
-  typedef unsigned long	    MapVersion;
+  typedef MDB_U32_T	    MapVersion;
+  typedef MDB_U32_T	    MapBaseAddr;
+  typedef MDB_S32_T	    MapOwner;
   
   enum MapType
   {
@@ -81,7 +83,7 @@ public:
   MapType   	    getType( void ) const;
   const char *	    getTypeName( void ) const;
   size_type	    getMapSize( void ) const;
-  long		    getOwner( void ) const;
+  MapOwner	    getOwner( void ) const;
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -99,11 +101,12 @@ public:
   
   struct MapInfo
   {
-    MapType 	    type;
+    MDB_S32_T	    type;
     MapVersion	    version;
-    unsigned long   base;
-    unsigned long   size;
-    long	    owner;	    // pid of owner (writer)
+    MapBaseAddr	    base;
+    MapBaseAddr	    resvBase;       // reserved for 64 bit addressing
+    size_type	    size;
+    MapOwner	    owner;	    // pid of owner (writer)
   };
 
 protected:
@@ -235,6 +238,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/10/01 14:00:33  houghton
+// Changed to use portable multi platform data types.
+//
 // Revision 2.8  1997/09/17 16:56:02  houghton
 // Changed for new library rename to StlUtils
 //

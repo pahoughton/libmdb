@@ -121,7 +121,7 @@ MapMem::getMapVersion( void ) const
 MapMem::MapType
 MapMem::getType( void  ) const
 {
-  return( (mapInfo()) ? mapInfo()->type : MM_UNDEFINED );
+  return( (mapInfo()) ? (MapType)mapInfo()->type : MM_UNDEFINED );
 }
 
 long
@@ -242,7 +242,7 @@ MapMem::createMapMem( MapType type, MapVersion mapVersion, MapAddr baseAddr )
     {
       mapInfo()->type	    = type;
       mapInfo()->version    = mapVersion;
-      mapInfo()->base	    = (unsigned long)baseAddr;      
+      mapInfo()->base	    = (MapBaseAddr)baseAddr;      
       mapInfo()->size	    = getSize();
       mapInfo()->owner	    = getpid();
       errorNum = E_OK;
@@ -314,6 +314,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/10/01 14:00:54  houghton
+// Changed to use portable multi platform data types.
+//
 // Revision 2.10  1997/09/17 16:56:02  houghton
 // Changed for new library rename to StlUtils
 //
