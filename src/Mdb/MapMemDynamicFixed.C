@@ -6,38 +6,13 @@
 // Author:      Paul Houghton - (houghton@cworld.wiltel.com)
 // Created:     11/28/94 03:53 
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// $Log$
-// Revision 2.6  1997/03/07 11:49:46  houghton
-// Add dumpInfo.
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
 //
-// Revision 2.5  1997/03/03 14:32:42  houghton
-// Added virtual destructor.
-//
-// Revision 2.4  1996/11/06 18:07:27  houghton
-// Renamed Clue.hh to ClueUtils.hh.
-//
-// Revision 2.3  1996/03/04 11:38:38  houghton
-// Bug Fix: set baseAddr to base after remap in freeMem
-// Bug Fix: if freeRecs == 0 do not decrement.
-//
-// Revision 2.2  1996/02/29 19:09:57  houghton
-// *** empty log message ***
-//
-// Revision 2.1  1995/11/10 12:42:30  houghton
-// Change to Version 2
-//
-// Revision 1.6  1995/11/05  16:32:34  houghton
-// Revised
-//
-// Revision 1.2  1995/03/02  16:35:35  houghton
-// Linux ports & new Classes
-//
-// Revision 1.1  1995/02/13  16:08:50  houghton
-// New Style Avl an memory management. Many New Classes
-//
-//
+
 static const char * RcsId =
 "$Id$";
 
@@ -46,6 +21,10 @@ static const char * RcsId =
 #include <Str.hh>
 #include <iomanip>
 #include <cstring>
+
+CLUE_VERSION(
+  MapMemFixedDynamic,
+  "$Id$");
 
 //
 // allocation chunks must be at least 1 page
@@ -601,4 +580,41 @@ MapMemFixedDynamic::dumpInfo(
 // 
 //                      All Rights Reserved.  
 // 
+//
+
+// Revision Log:
+//
+// $Log$
+// Revision 2.7  1997/03/08 10:28:59  houghton
+// Cleanup.
+// Added ClassVersion.
+//
+// Revision 2.6  1997/03/07 11:49:46  houghton
+// Add dumpInfo.
+//
+// Revision 2.5  1997/03/03 14:32:42  houghton
+// Added virtual destructor.
+//
+// Revision 2.4  1996/11/06 18:07:27  houghton
+// Renamed Clue.hh to ClueUtils.hh.
+//
+// Revision 2.3  1996/03/04 11:38:38  houghton
+// Bug Fix: set baseAddr to base after remap in freeMem
+// Bug Fix: if freeRecs == 0 do not decrement.
+//
+// Revision 2.2  1996/02/29 19:09:57  houghton
+// *** empty log message ***
+//
+// Revision 2.1  1995/11/10 12:42:30  houghton
+// Change to Version 2
+//
+// Revision 1.6  1995/11/05  16:32:34  houghton
+// Revised
+//
+// Revision 1.2  1995/03/02  16:35:35  houghton
+// Linux ports & new Classes
+//
+// Revision 1.1  1995/02/13  16:08:50  houghton
+// New Style Avl an memory management. Many New Classes
+//
 //
