@@ -66,7 +66,8 @@ MapMemDynamic::MapMemDynamic(
   ios::open_mode    mode,
   bool		    overrideOwner
   )
-  : MapMem( fileName, MM_DYNAMIC, version, mode )
+  : MapMem( fileName, MM_DYNAMIC, version, mode ),
+    errorNum( E_OK )
 {
   openMapMemDynamic( mode, overrideOwner );
 }
@@ -210,6 +211,9 @@ MapMemDynamic::openMapMemDynamic(
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/23 12:56:00  houghton
+// Bug-Fix: forgot to initialize errorNum in costructor.
+//
 // Revision 2.1  1997/06/05 11:29:12  houghton
 // Initial Version.
 //
