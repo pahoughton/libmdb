@@ -16,7 +16,7 @@
 //
 
 #include <TestConfig.hh>
-#include <Dash.hh>
+#include <DashSet.hh>
 #include <MdbUtils.hh>
 #include <MapMemDynamicDynamic.hh>
 #include <MultiMemOffsetMapDynamic.hh>
@@ -34,13 +34,13 @@ public:
   };
 };
 
-typedef Dash< long, LongHash, less< long > >   Table;
+typedef DashSet< long, LongHash, less< long > >   Table;
 
 bool
-tDash01( LibTest & tester )
+tDashSet01( LibTest & tester )
 {
   {
-    MapMemDynamicDynamic    mmdd( TEST_DATA_DIR "/tDash01.data",
+    MapMemDynamicDynamic    mmdd( TEST_DATA_DIR "/tDashSet01.data",
 				  (ios::open_mode)(ios::in|ios::out),
 				  true,
 				  1,
@@ -109,6 +109,10 @@ tDash01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/25 13:49:38  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 2.1  1997/07/22 19:47:05  houghton
 // Initial Version.
 //

@@ -18,12 +18,12 @@
 #include <TestConfig.hh>
 #include <LibTest.hh>
 
-bool	tHash01( LibTest & tester );
+bool	tHashSet01( LibTest & tester );
 
 bool
-tHash( LibTest & tester )
+tHashSet( LibTest & tester )
 {
-  TESTP( tHash01( tester ) );
+  TESTP( tHashSet01( tester ) );
 
   return( true );
 }
@@ -32,6 +32,10 @@ tHash( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/25 13:49:41  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 2.1  1997/07/11 17:39:07  houghton
 // Initial Version.
 //

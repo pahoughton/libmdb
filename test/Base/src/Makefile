@@ -180,14 +180,15 @@ CXX_C_SOURCES	=			\
 	tDavlTreeOffset01.C		\
 	tHashTable.C			\
 	tHashTable01.C			\
-	tHash.C				\
-	tHash01.C			\
-	tDash.C				\
-	tDash01.C			\
+	tHashSet.C			\
+	tHashSet01.C			\
+	tDashSet.C			\
+	tDashSet01.C			\
 	tRBTree.C			\
 	tRBTree01.C			\
 	tRBTree02.C			\
 	tRBTree03.C			\
+	tRBSet.C			\
 	tDRBTree.C			\
 	tDRBTree01.C			\
 	tDRBTree02.C			\
@@ -242,6 +243,10 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.8  1997/07/25 13:49:21  houghton
+# Changed: Dash was renamed to DashSet.
+# Changed: Hash was renamed to HashSet.
+#
 # Revision 1.7  1997/07/22 19:45:40  houghton
 # Added Dash test.
 #

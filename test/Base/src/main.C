@@ -35,10 +35,11 @@ LibTest::TestItem   TestList[] =
   { "MapMemDynamicFixed", tMapMemDynamicFixed },
   { "MapMemDynamicDynamic", tMapMemDynamicDynamic },
   { "RBTree", tRBTree },
+  { "RBSet", tRBSet },
   { "DRBTree", tDRBTree },
   { "HashTable", tHashTable },
-  { "Hash", tHash },
-  { "Dash", tDash },
+  { "HashSet", tHashSet },
+  { "DashSet", tDashSet },
   { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
   { 0, 0 }
@@ -64,6 +65,10 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.8  1997/07/25 13:49:31  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 1.7  1997/07/22 19:45:51  houghton
 // Added Dash test.
 //

@@ -18,15 +18,15 @@
 #include <TestConfig.hh>
 #include <LibTest.hh>
 
-bool	tDash01( LibTest & tester );
-bool	tDash02( LibTest & tester );
-bool	tDash03( LibTest & tester );
-bool	tDash04( LibTest & tester );
+bool	tDashSet01( LibTest & tester );
+bool	tDashSet02( LibTest & tester );
+bool	tDashSet03( LibTest & tester );
+bool	tDashSet04( LibTest & tester );
 
 bool
-tDash( LibTest & tester )
+tDashSet( LibTest & tester )
 {
-  TESTP( tDash01( tester ) );
+  TESTP( tDashSet01( tester ) );
   // TESTP( tDash02( tester ) );
   // TESTP( tDash03( tester ) );
   // TESTP( tDash04( tester ) );
@@ -37,6 +37,10 @@ tDash( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/25 13:49:35  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 2.1  1997/07/22 19:47:02  houghton
 // Initial Version.
 //

@@ -18,7 +18,7 @@
 #include <TestConfig.hh>
 #include <MapMemDynamicFixed.hh>
 #include <MultiMemOffsetMapDynamic.hh>
-#include <Hash.hh>
+#include <HashSet.hh>
 #include <LibTest.hh>
 #include <iomanip>
 #include <cstring>
@@ -69,7 +69,7 @@ public:
   };
 };
 
-class TestHash : public Hash< TestRec, TestHashFunct, TestLess >
+class TestHash : public HashSet< TestRec, TestHashFunct, TestLess >
 {
 public:
 
@@ -78,11 +78,11 @@ public:
 	    ios::open_mode	mode = ios::in,
 	    unsigned short	permMask = 02,
 	    bool		create = false ) :
-    Hash< TestRec, TestHashFunct, TestLess >( memMgr,
-					      indexFileName,
-					      mode,
-					      permMask,
-					      create ) {};
+    HashSet< TestRec, TestHashFunct, TestLess >( memMgr,
+						 indexFileName,
+						 mode,
+						 permMask,
+						 create ) {};
   
 
   ostream & dumpKey( ostream & dest, const TestRec & rec ) const {
@@ -95,7 +95,7 @@ public:
 typedef vector< TestRec >   List;
 
 bool
-tHash01( LibTest & tester )
+tHashSet01( LibTest & tester )
 {
   {
     MapMemDynamicFixed	     mmdf( TEST_DATA_DIR "/tHash01.mdf",
@@ -108,7 +108,7 @@ tHash01( LibTest & tester )
     TESTR( mmo.error(), mmo.good() );
     
     TestHash	t( &mmo,
-		   TEST_DATA_DIR "/tHash01.hash",
+		   TEST_DATA_DIR "/tHashSet01.hash",
 		   (ios::open_mode)(ios::in|ios::out),
 		   true,
 		   02 );
@@ -223,6 +223,10 @@ tHash01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/25 13:49:45  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 2.3  1997/07/19 10:39:08  houghton
 // Bug-Fix: added include <cstring>
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue.

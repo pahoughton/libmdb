@@ -26,9 +26,10 @@ bool	tMapMemDynamicFixed( LibTest & tester );
 bool	tMapMemDynamicDynamic( LibTest & tester );
 bool	tAvlTreeOffset( LibTest & tester );
 bool	tDavlTreeOffset( LibTest & tester );
-bool	tHash( LibTest & tester );
-bool	tDash( LibTest & tester );
+bool	tHashSet( LibTest & tester );
+bool	tDashSet( LibTest & tester );
 bool	tRBTree( LibTest & tester );
+bool	tRBSet( LibTest & tester );
 bool	tDRBTree( LibTest & tester );
 
 bool tHashTable( LibTest & tester );
@@ -36,6 +37,10 @@ bool tHashTable( LibTest & tester );
 // Revision Log:
 //
 // $Log$
+// Revision 1.6  1997/07/25 13:49:27  houghton
+// Changed: Dash was renamed to DashSet.
+// Changed: Hash was renamed to HashSet.
+//
 // Revision 1.5  1997/07/22 19:45:46  houghton
 // Added Dash test.
 //
