@@ -1003,7 +1003,7 @@ RBTreeBase::error( void ) const
 	  break;
 
 	default:
-	  myErrStr << ": errorNum(" << errorNum << ')';
+	  myErrStr << ": errorNum(" << (int)errorNum << ')';
 	  break;
 	}
 
@@ -1583,6 +1583,9 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1999/07/17 08:39:37  houghton
+// Improved Error output.
+//
 // Revision 2.6  1997/10/01 14:03:29  houghton
 // Chaged to reserve 'keys' set.
 // Changed to use portable multi platform types.
