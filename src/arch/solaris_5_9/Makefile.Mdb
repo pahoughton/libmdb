@@ -1,0 +1,30 @@
+#
+# File:		Makefile.Mdb
+# Project:	Mdb 
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author(s):   Paul Houghton <paul.houghton@mci.com>
+# Created:     07/19/2003 04:12
+#
+# Revision Info: (See ChangeLog or cvs log for revision history)
+#
+#	$Author$
+#	$Date$
+#	$Name$
+#	$Revision$
+#	$State$
+#
+# $Id$
+#
+
+
+ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/src
+
+
+# Local Variables:
+# mode:makefile
+# End:

@@ -1,0 +1,36 @@
+#
+# File:		Makefile.Test
+# Project:	Mdb 
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author(s):   Paul Houghton <paul.houghton@mci.com>
+# Created:     07/19/2003 04:13
+#
+# Revision Info: (See ChangeLog or cvs log for revision history)
+#
+#	$Author$
+#	$Date$
+#	$Name$
+#	$Revision$
+#	$State$
+#
+# $Id$
+#
+
+
+ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/test
+MDB_SRC_INC	= -I$(PRJ_TOPDIR)/src/Mdb
+
+MDB_SRC_LDIR	= -L$(PRJ_TOPDIR)/src/Mdb
+
+ARCH_DEFAULT_LD_LIBS = 
+ARCH_DEBUG_LD_LIBS = 
+
+
+# Local Variables:
+# mode:makefile
+# End:
