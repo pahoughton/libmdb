@@ -130,7 +130,7 @@ public:
     inline const_iterator( const const_iterator & from )
       : table( from.table ), node( from.node ) {} ;
 
-    inline const_iterator( const self::iterator & from )
+    inline const_iterator( const typename self::iterator & from )
       : table( from.table ), node( from.node ) {} ;
 
     inline const_iterator &    operator ++ ( void ) {
@@ -183,7 +183,7 @@ public:
       return( *this );
     };
 
-    inline const_iterator & operator = ( const self::iterator & rhs ) {
+    inline const_iterator & operator = ( const typename self::iterator & rhs ) {
       table = rhs.table;
       node = rhs.node;
       return( *this );
@@ -521,6 +521,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2002/02/28 15:13:02  houghton
+// Port(Forte 6.2) Added typename to eliminate warnings.
+//
 // Revision 4.1  2001/07/27 00:57:44  houghton
 // Change Major Version to 4
 //

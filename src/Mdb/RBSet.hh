@@ -44,12 +44,12 @@ public:
 
   typedef RBTree< Key, Key, MdbIdent< Key, Key >, LessKey > Table;
 
-  typedef Table::size_type		size_type;
-  typedef Table::iterator		iterator;
-  typedef Table::const_iterator		const_iterator;
-  typedef Table::reverse_iterator	reverse_iterator;
-  typedef Table::const_reverse_iterator	const_reverse_iterator;
-  typedef Table::pair_iterator_bool	pair_iterator_bool;
+  typedef typename Table::size_type		size_type;
+  typedef typename Table::iterator		iterator;
+  typedef typename Table::const_iterator		const_iterator;
+  typedef typename Table::reverse_iterator	reverse_iterator;
+  typedef typename Table::const_reverse_iterator	const_reverse_iterator;
+  typedef typename Table::pair_iterator_bool	pair_iterator_bool;
   
   inline RBSet( MultiMemOffset *    memMgr,
 		unsigned short	    treeKey = 0,
@@ -348,6 +348,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2002/02/28 15:12:59  houghton
+// Port(Forte 6.2) Added typename to eliminate warnings.
+//
 // Revision 4.1  2001/07/27 00:57:44  houghton
 // Change Major Version to 4
 //
