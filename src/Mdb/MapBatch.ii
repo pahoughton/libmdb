@@ -26,7 +26,7 @@ MapBatch<T>::MapBatch(
   const char *	    fileName,
   ios::open_mode    mode
   )
-  : map( fileName, 0, mode, false ),
+  : map( fileName, 0, mode, false, 02 ),
     endPos( map.getSize() )
 {
 }
@@ -140,6 +140,9 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.8  1999/05/01 12:57:40  houghton
+// Reworked constructors.
+//
 // Revision 2.7  1999/03/02 12:57:32  houghton
 // Changed constructors.
 //

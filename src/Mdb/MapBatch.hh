@@ -77,12 +77,12 @@ public:
 		   ios::open_mode   mode = ios::in );
 		   
   inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode
+		   ios::open_mode   mode,
 		   MapFile::MapMask permMask );
   
   inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode 
-		   bool		    create 
+		   ios::open_mode   mode,
+		   bool		    create,
 		   MapFile::MapMask permMask );
   
   virtual ~MapBatch( void );
@@ -294,6 +294,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1999/05/01 12:57:38  houghton
+// Reworked constructors.
+//
 // Revision 2.8  1999/03/02 12:57:19  houghton
 // Changed constructors.
 // Added append().
