@@ -1,0 +1,36 @@
+#
+#
+# Title:        Makefile.Mdb
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul Houghton 719-527-7834 - (paul.houghton@wcom.com)
+# Created:	07/19/97 14:14
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/src
+
+
+
+#
+# $Log$
+# Revision 1.1  1997/07/19 19:54:10  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:makefile
+# End:
