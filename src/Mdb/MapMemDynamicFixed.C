@@ -455,6 +455,12 @@ MapMemFixedDynamic::getClassName( void ) const
   return( "MapMemFixedDynamic" );
 }
 
+const char *
+MapMemFixedDynamic::getVersion( bool withPrjVer ) const
+{
+  return( version.getVer( withPrjVer ) );
+}
+
 bool
 MapMemFixedDynamic::good( void ) const
 {
@@ -548,6 +554,8 @@ MapMemFixedDynamic::dumpInfo(
 	   << prefix << "chunk size:   " << getChunkSize() << '\n'
 	   << prefix << "rec count:    " << getRecCount() << '\n'
 	   << prefix << "free count:   " << getFreeRecCount() << '\n'
+	   << prefix << "free first:   " << base->freeList.next << '\n'
+	   << prefix << "free last:    " << base->freeList.prev << '\n'
 	;
       
       for( int k = 0; k < NUM_KEYS; k++ )
@@ -585,6 +593,10 @@ MapMemFixedDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/03/13 02:39:42  houghton
+// Added getVersion.
+// Added free list info to dumpInfo output.
+//
 // Revision 2.7  1997/03/08 10:28:59  houghton
 // Cleanup.
 // Added ClassVersion.
