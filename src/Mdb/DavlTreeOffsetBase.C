@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 2.1  1995/11/10 12:42:10  houghton
+// Revision 2.2  1995/12/04 11:19:17  houghton
+// Changed to eliminate compile warnings.
+//
+// Revision 2.1  1995/11/10  12:42:10  houghton
 // Change to Version 2
 //
 // Revision 1.3  1995/11/05  16:32:28  houghton
@@ -19,7 +22,7 @@
 // New Style Avl an memory management. Many New Classes
 //
 //
-static const char * RcsId =
+const char DavlTreeOffsetBaseRcsId[] =
 "$Id$";
 
 #include "DavlTreeOffsetBase.hh"

@@ -15,14 +15,17 @@
 // Revision History:
 //
 // $Log$
-// Revision 2.1  1995/11/10 12:42:03  houghton
+// Revision 2.2  1995/12/04 11:19:17  houghton
+// Changed to eliminate compile warnings.
+//
+// Revision 2.1  1995/11/10  12:42:03  houghton
 // Change to Version 2
 //
 // Revision 1.1  1995/02/13  16:08:32  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
-static const char * RcsId =
+const char AvlTreeOffsetBaseRcsId[] =
 "$Id$";
 
 #include "AvlTreeOffsetBase.hh"

@@ -51,7 +51,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 2.1  1995/11/10 12:42:01  houghton
+// Revision 2.2  1995/12/04 11:19:16  houghton
+// Changed to eliminate compile warnings.
+//
+// Revision 2.1  1995/11/10  12:42:01  houghton
 // Change to Version 2
 //
 // Revision 1.4  1995/11/05  16:32:25  houghton
@@ -64,7 +67,7 @@
 // # New Style Avl an memory management. Many New Classes
 // #
 //
-static const char * IncRcsId =
+const char AvlTreeMethodsRcsId[] =
 "$Id$";
 
 #include <algorithm>
@@ -212,7 +215,7 @@ ClassName::deleteNode(
   )
 {
 
-  short     dec;
+  short     dec = 0;
   int	    diff = minMax;
 
   if( *root == 0 )
@@ -264,6 +267,7 @@ ClassName::deleteNode(
 
 	  *key = *root;
 
+	  
 	  switch( getNodeType( *root ) )
 	    {
 	    case LEAF:
