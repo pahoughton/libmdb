@@ -164,22 +164,29 @@ STATIC_DEP_LIBS		=
 CXX_C_SOURCES	=			\
 	main.C				\
 	TestAvlTreeOffset.C		\
-	tAvlTreeOffset.C		\
-	tAvlTreeOffset01.C		\
-	tAvlTreeOffset02.C		\
-	tDavlTreeOffset.C		\
-	tDavlTreeOffset01.C		\
+	tMapFile.C			\
+	tMapFile01.C			\
+	tMapFile02.C			\
+	tMapFile03.C			\
 	tMapMemDynamicFixed.C		\
 	tMapMemDynamicFixed01.C		\
 	tMapMemDynamicDynamic.C		\
 	tMapMemDynamicDynamic01.C	\
 	tMapMemDynamicDynamic02.C	\
+	tAvlTreeOffset.C		\
+	tAvlTreeOffset01.C		\
+	tAvlTreeOffset02.C		\
+	tDavlTreeOffset.C		\
+	tDavlTreeOffset01.C		\
 	tHash.C				\
 	tHash01.C			\
 	tRBTree.C			\
 	tRBTree01.C			\
 	tRBTree02.C			\
 	tRBTree03.C			\
+	tDRBTree.C			\
+	tDRBTree01.C			\
+	tDRBTree02.C			\
 	$(ARCH_CXX_C_SOURCES)           \
 
 
@@ -229,6 +236,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.5  1997/07/16 16:38:20  houghton
+# Added MapFile & DRBTree tests.
+#
 # Revision 1.4  1997/07/14 10:44:20  houghton
 # Added ARCH_DEBUG_LD_LIBS to DEBUG_LD_LIBS.
 #

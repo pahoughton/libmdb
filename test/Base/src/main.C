@@ -31,9 +31,11 @@ MDB_FUNCT_VERSION(
 
 LibTest::TestItem   TestList[] =
 {
+  { "MapFile", tMapFile },
   { "MapMemDynamicFixed", tMapMemDynamicFixed },
   { "MapMemDynamicDynamic", tMapMemDynamicDynamic },
   { "RBTree", tRBTree },
+  { "DRBTree", tDRBTree },
   { "Hash", tHash },
   { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
@@ -60,6 +62,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.5  1997/07/16 16:38:28  houghton
+// Added MapFile & DRBTree tests.
+//
 // Revision 1.4  1997/07/14 10:44:42  houghton
 // Changed order of tests.
 //
