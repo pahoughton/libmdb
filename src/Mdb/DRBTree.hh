@@ -42,7 +42,7 @@ public:
   typedef const Value &	    const_referance;
   typedef Value &	    referance;
   
-  typedef long		    EffDate;
+  typedef time_t	    EffDate;
 
   struct DRBNode : public RBNodeBase
   {
@@ -577,7 +577,8 @@ public:
 
 	dest << prefix
 	     << setw( nameWidth ) << "when"
-	     << ": '" << DateTime( history( h ).when ) << "'\n"
+	     << ": '" << DateTime( history( h ).when ) << "' ("
+	     << history( h ).when << ")\n"
 	     << prefix
 	     << setw( nameWidth ) << "del"
 	     << ": '" << (history( h ).del ? 'Y' : 'N') << "'\n"
@@ -916,6 +917,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.4  2003/09/04 20:50:44  houghton
+// Changed eff date type & changed dumpHist output.
+//
 // Revision 4.3  2003/08/09 12:43:23  houghton
 // Changed ver strings.
 //
