@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1996/11/06 18:07:27  houghton
+// Renamed Clue.hh to ClueUtils.hh.
+//
 // Revision 2.1  1995/11/10 12:42:31  houghton
 // Change to Version 2
 //
@@ -28,7 +31,7 @@
 
 #include <ClueConfig.hh>
 
-#include <Clue.hh>
+#include <ClueUtils.hh>
 #include <MapMem.hh>
 #include <Record.hh>
 

@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.4  1996/11/06 18:07:27  houghton
+// Renamed Clue.hh to ClueUtils.hh.
+//
 // Revision 2.3  1996/03/04 11:38:38  houghton
 // Bug Fix: set baseAddr to base after remap in freeMem
 // Bug Fix: if freeRecs == 0 do not decrement.
@@ -33,7 +36,7 @@ static const char * RcsId =
 "$Id$";
 
 #include "MapMemFixedDynamic.hh"
-#include <Clue.hh>
+#include <ClueUtils.hh>
 #include <Str.hh>
 
 //
