@@ -24,6 +24,9 @@
 #   $Id$
 # 
 
+ENH Paul A. Houghton 09/27/97 03:18
+Hash index needs a header w/ keys. for data set ID
+
 ENH Paul A. Houghton 09/15/97 07:22
 add remap method to MapFile
 
@@ -56,6 +59,9 @@ Write new AvlSetAddr< class Key, class Comp >
 
 #
 # $Log$
+# Revision 2.2  1997/10/01 13:58:20  houghton
+# *** empty log message ***
+#
 # Revision 2.1  1997/09/21 19:20:39  houghton
 # Changed version to 2
 #
