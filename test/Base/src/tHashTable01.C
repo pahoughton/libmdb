@@ -24,6 +24,108 @@
 #include <ClueUtils.hh>
 #include <functional>
 
+struct Rec
+{
+  long	k;
+  long	v;
+};
+
+inline
+bool
+operator < ( const Rec & a, const Rec & b )
+{
+  return( a.k < b.k );
+}
+
+struct HashRec
+{
+  HashTable::HashValue	operator () ( const Rec & key ) const {
+    return( abs( key.k ) );
+  };
+};
+
+typedef set< long, less< long > > KeySet;
+
+
+typedef HashTable< Rec, Rec, MdbIdent< Rec, Rec >,
+		   HashRec, less< Rec > >		Table;
+
+
+#define TEST_INDEX_FN	TEST_DATA_DIR "/tHashTable01.hash"
+#define TEST_DATA_FN	TEST_DATA_DIR "/tTashTable01.data"
+
+#define INSERT_TEST( k_ )
+{
+  Rec i;
+  i.k = k_;
+  i.v = k * 100;
+  
+  Table::size_type  origSize;
+
+  TEST( "keys insert", keys.insert( i ).second );
+  TEST( "insert", t.insert( i ).second );
+
+  TEST( t.size() == origSize + 1 );
+}
+
+bool
+tHashTable01( LibTest & tester )
+{
+  KeySet  keys;
+  
+  {
+    MapMemDynamicFixed	mmdf( TEST_DATA_FN,
+			      (ios::open_mode)(ios::in|ios::out),
+			      true,
+			      Table::getNodeSize(),
+			      1,
+			      02 );
+
+    TESTR( mmo.error(), mmo.good() );
+    
+    Table    t( &mmo,
+		TEST_INDEX_FN, 
+		(ios::open_mode)(ios::in|ios::out),
+		true,
+		02 );
+    
+    TESTR( t.error(), t.good() );
+
+    TEST( t.size() == 0 );
+    TEST( t.empty() );
+
+    Rec	r;
+    
+    INSERT_TEST( 1000 );
+    INSERT_TEST( 0 );
+    INSERT_TEST( 50 );
+    INSERT_TEST( 100 );
+
+    {
+      for( long k = 0; k < 500; k += 10 )
+	{
+	  if( k == 0 || k == 50 || k == 100 )
+	    {
+	      r.k = k;
+	      TESTR( "ins dup", ! t.insert( i ).second );
+	    }
+	  else
+	    {
+	      INSERT_TEST( i );
+	    }
+	}
+    }
+    
+
+
+  }
+
+  return( true );
+}
+
+
+
+#if defined( OLD_TEST )
 class HashLong
 {
 public:
@@ -114,6 +216,7 @@ tHashTable01( LibTest & tester )
 #endif
   }
 
+#endif
   return( true );
 }
 
@@ -121,6 +224,9 @@ tHashTable01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 1.4  1997/07/25 13:50:18  houghton
+// Reworking to do major portion of testing (work in progress).
+//
 // Revision 1.3  1997/07/22 19:47:28  houghton
 // Bug-Fix: LessLong::operator () changed to const.
 //
