@@ -17,6 +17,7 @@
 
 #include "MapMemDynamicDynamic.hh"
 #include <Str.hh>
+#include <algorithm>
 #include <iomanip>
 #include <cstring>
 
@@ -48,8 +49,9 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 	    MM_DYNAMIC,
 	    MMD_VERSION,
 	    ( sizeof( MapDynamicDynamicInfo ) +
-	      DwordAlign( max( allocSize, getpagesize() ) ) ),
-	    permMask )
+	      DwordAlign( max( allocSize, (size_t)getpagesize() ) ) ),
+	    permMask ),
+  refCount( 0 )
 {
   base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
   
@@ -59,11 +61,12 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
     {
       base->minChunkSize    = DwordAlign( max( minChunkSize + sizeof( size_t ),
 					       sizeof( FreeList ) ));
-      base->allocSize	    = DwordAlign( max( allocSize, getpagesize() ) );
+      base->allocSize	    = DwordAlign( max( allocSize,
+					       (size_t)getpagesize() ) );
       base->chunkCount	    = 0;
       base->chunkSize	    = 0;
       base->freeCount	    = 1;
-      base->freeSize	    = ( getSize() -
+      base->freeSize	    = ( getMapSize() -
 				DwordAlign( sizeof( MapDynamicDynamicInfo ) ));
       
       memset( base->keys, 0, sizeof( base->keys ) );      
@@ -88,7 +91,8 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
   ios::open_mode    mode
   )
-  : MapMem( fileName, MM_DYNAMIC, MMD_VERSION, mode )
+  : MapMem( fileName, MM_DYNAMIC, MMD_VERSION, mode ),
+    refCount( 0 )
 {
   base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
     
@@ -288,12 +292,12 @@ MapMemDynamicDynamic::freeMem( off_t offset )
     // now see if there is enough space at the end to shrink
 
     if( ( base->freeList.prev + getFreeNode( base->freeList.prev )->size )
-	  == getSize() &&
+	  == getMapSize() &&
 	( getFreeNode( base->freeList.prev )->size > (base->allocSize * 2 ) ) )
       {
 	// shrink by all but one alloc unit;
 	
-	size_t origSize = getSize();
+	size_t origSize = getMapSize();
 	
 	size_t newSize =
 	  shrink( ( getFreeNode( base->freeList.prev )->size -
@@ -319,7 +323,7 @@ MapMemDynamicDynamic::expand( size_t minSize )
 
   size_t amount = max( minSize, (size_t)(base->allocSize ));
 
-  size_t origSize = getSize();
+  size_t origSize = getMapSize();
   
   if( grow( amount, (caddr_t)base->base ) == 0 )
     {
@@ -336,13 +340,13 @@ MapMemDynamicDynamic::expand( size_t minSize )
   if( ( base->freeList.prev + getFreeNode( base->freeList.prev )->size )
       == origSize )
     {       
-      getFreeNode( base->freeList.prev )->size += getSize() - origSize;
+      getFreeNode( base->freeList.prev )->size += getMapSize() - origSize;
     }
   else
     {
       getFreeNode( origSize )->next = 0;
       getFreeNode( origSize )->prev = base->freeList.prev;
-      getFreeNode( origSize )->size = getSize() - origSize;
+      getFreeNode( origSize )->size = getMapSize() - origSize;
 
       if( base->freeList.next )
 	{
@@ -355,7 +359,7 @@ MapMemDynamicDynamic::expand( size_t minSize )
 	  base->freeList.prev = origSize;
 	}
     }
-  base->freeSize += getSize() - origSize;
+  base->freeSize += getMapSize() - origSize;
 }
 
 
@@ -434,6 +438,8 @@ MapMemDynamicDynamic::dumpInfo(
 
   MapMem::dumpInfo( dest, pre, false );
 
+  dest << prefix << "refCount:     " << refCount << '\n';
+  
   if( base )
     {
       dest << prefix << "minChunkSize: " << base->minChunkSize << '\n'
@@ -506,7 +512,7 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
        f;
        f = getFreeNode( f )->next )
     {
-      for( ; node < f && node < (off_t)getSize();
+      for( ; node < f && node < (off_t)getMapSize();
 	   node += getNodeSize( node ) )
 	{
 	  
@@ -528,7 +534,7 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 	;
     }
 
-  for( ; node < (off_t)getSize();
+  for( ; node < (off_t)getMapSize();
        node += getNodeSize( node ) )
     {
       
@@ -545,6 +551,11 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/03/13 02:24:37  houghton
+// Bug-Fix: change calls to getSize to getMapSize.
+// Added refCount.
+// Minor changes for AIX port.
+//
 // Revision 2.1  1997/03/08 10:29:52  houghton
 // Initial partially tested version.
 //
