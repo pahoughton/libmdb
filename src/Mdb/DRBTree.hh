@@ -623,18 +623,21 @@ protected:
   };
 
   inline bool		eraseNode( Loc node, EffDate eff ) {
+    // we allocate hist first so 'h' will not become invalid.
+    Loc hist = histMgr->allocate( sizeof( DRBHist ) );
     Loc * h = &(drbNode( node ).hist);
+    
     for( ; *h && history( *h ).when > eff ;
 	 h = &(history( *h ).next) );
     
     if( *h && history( *h ).when == eff )
       {
 	history( *h ).del = 1;
+	if( hist )
+	  histMgr->release( hist );
       }
     else
       {
-	Loc hist = histMgr->allocate( sizeof( DRBHist ) );
-	
 	if( hist )
 	  {
 	    ++ header().count;
@@ -799,6 +802,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/11/03 13:38:57  houghton
+// Bug-Fix: changed to alloc the hist node before getting the address of
+//     node's hist.
+//
 // Revision 2.9  1997/11/03 12:03:21  houghton
 // Added a method to check if a record is effective for a specfic date.
 //
