@@ -16,13 +16,19 @@
 //
 
 #include "AppParam.hh"
+#include <ClueUtils.hh>
 
 AppParam::AppParam(
   int &		mainArgc,
   char **	mainArgv,
   const char *	mainVer
   )
-  : Param( mainArgc, mainArgv, mainVer, true, "ERROR | WARN | INFO" ),
+  : Param( mainArgc,
+	   mainArgv,
+	   mainVer,
+	   true,
+	   "ERROR | WARN | INFO | DEBUG",
+	   true ),
     passesV( 1 ),
     tableDirV( "../data" ),
     mapTypeV( "mdd" ),
@@ -80,18 +86,14 @@ AppParam::parseArgs( void )
   status &= argLong( recSizeV,
 		     "record size: 4, 128, 512, 1024)",
 		     "rs" );
-  Str mode;
   
-  status &= argStr( mode,
+  Str modeStr( IosOpenModeToString( tableModeV ) );
+  
+  status &= argStr( modeStr,
 		    "table mode",
 		    "mode" );
 
-  if( mode.size() )
-    {
-      tableModeV = ios::in;
-      if( mode.find( "out" ) != Str::npos )
-	tableModeV = (ios::open_mode)(tableModeV|ios::out);
-    }
+  tableModeV = IosOpenModeFromString( modeStr );
 
   status &= argBool( createV,
 		     "create table",
@@ -140,6 +142,10 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/28 16:51:31  houghton
+// Changed to use default log file.
+// Changed to use IosModeToString() and IosModeFromString().
+//
 // Revision 1.1  1997/07/25 13:41:37  houghton
 // Initial Version.
 //
