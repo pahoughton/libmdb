@@ -107,8 +107,6 @@ public:
     return( DumpInfo< RBSet< Key, LessKey > >( *this, prefix, showVer ) );
   };
   
-  static const ClassVersion version;
-
 protected:
 
 private:
@@ -208,6 +206,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/16 16:37:47  houghton
+// Cleanup.
+//
 // Revision 2.1  1997/07/11 17:37:48  houghton
 // Initial Version.
 //
