@@ -280,7 +280,7 @@ public:
 	     hist = history( hist ).next );
 	
 	if( hist )
-	  return( iterator( this, node, hist ) );
+	  return( history( hist ).del ? end() : iterator( this, node, hist ) );
 	else
 	  return( end() );
       }
@@ -289,9 +289,64 @@ public:
 	return( end() );
       }
   };
+  
+  inline bool		    erase( const Key & key, EffDate eff ) {
+    Loc node = findNode( key );
+    if( node != headerLoc &&
+	! lessKeyObj( key, keyOf( nodeValue( node ) ) ) )
+      {
+	Loc * h = &(drbNode( node ).hist);
+	for( ; *h && history( *h ).when > eff ;
+	     h = &(history( *h ).next) );
 
+	if( *h && history( *h ).when == eff )
+	  {
+	    history( *h ).del = 1;
+	  }
+	else
+	  {
+	    Loc hist = histMgr->allocate( sizeof( DRBNode ) );
+    
+	    if( hist )
+	      {
+		keyOf( history( hist ).value )	= key;
+		history( hist ).when		= eff;
+		history( hist ).next		= 0;
+		history( hist ).del		= 1;
+		
+		history( hist ).next = *h;
+		*h = hist;
+	      }
+	  }
+	return( true );
+      }
+    return( false );
+  };
+
+  inline bool		    trim( const Key & key, EffDate eff ) {
+    Loc node = findNode( key );
+    if( node != headerLoc &&
+	! lessKeyObj( key, keyOf( nodeValue( node ) ) ) )
+      {
+	return( trimNode( node, eff ) );
+      }
+    return( true );
+  };
+	
+  inline bool		trim( EffDate eff ) {
+    Loc node = first();
+    for(Loc nNode; node != headerLoc; node = nNode )
+      {
+	nNode = node;
+	RBTreeBase::next( nNode );
+	if( ! trimNode( node, eff ) )
+	  return( false );
+      }
+    return( true );
+  };
+    
   inline const_iterator	    begin( void ) const {
-    return( const_iterator( this, first(), drbNode( first() ).hist ) );
+    return( const_iterator( this, first(), firstHist( first() ) ) );
   };
   
   inline const_iterator	    end( void ) const {
@@ -299,21 +354,20 @@ public:
   };
   
   inline iterator	    begin( void ) {
-    return( iterator( this, first(), drbNode( first() ).hist ) );
+    return( iterator( this, first(), firstHist( first() ) ) );
   };
   
   inline iterator	    end( void ) {
     return( iterator( this, headerLoc, 0 ) );
   };
-  
-  inline const Value &	nodeValue( Loc node ) const {
-    return( history( drbNode( node ).hist ).value );
-  }
 
-  inline Value &	nodeValue( Loc node ) {
-    return( history( drbNode( node ).hist ).value );
-  }
-
+  inline EffDate	    effective( const_iterator it ) {
+    if( it.hist )
+      return( history( it.hist ).when );
+    else
+      return( 0 );
+  };
+      
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -325,11 +379,29 @@ public:
 
   static const ClassVersion version;
 #endif
-  
+
+  ostream & dumpNode( ostream & dest, const_iterator it ) const {
+    dest << "node:      " << it.node << '\n'
+	 << "hist:      " << it.hist << '\n'
+	 << "next hist: " << (it.hist ? history( it.hist ).next : 0 ) << '\n'
+	 << "when       " << (it.hist ? history( it.hist ).when : 0 ) << '\n'
+	 << "del:       " << (it.hist ? history( it.hist ).del : 0 ) << '\n'
+      ;
+    return( dest );
+  };
+    
 protected:
 
   friend iterator;
   friend const_iterator;
+
+  inline const Value &	nodeValue( Loc node ) const {
+    return( history( drbNode( node ).hist ).value );
+  }
+
+  inline Value &	nodeValue( Loc node ) {
+    return( history( drbNode( node ).hist ).value );
+  }
 
   inline const DRBHist &    history( Loc hist ) const {
     return( *((const DRBHist *)histMgr->address( hist ) ) );
@@ -349,37 +421,96 @@ protected:
   
   inline Loc	nextHist( Loc & node, Loc & hist ) const {
     if( history( hist ).next )
-      hist = history( hist ).next;
-    else
       {
-	next( node );
-	hist = ( node == headerLoc ? 0 : drbNode( node ).hist );
+	for( hist = history( hist ).next;
+	     history( hist ).del;
+	     hist = history( hist ).next );
+	
+	if( hist )
+	  return( hist );
       }
+
+    for( next( node ); node != headerLoc; next( node ) )
+      {
+	for( hist = drbNode( node ).hist;
+	     history( hist ).del ;
+	     hist = history( hist ).next );
+
+	  if( hist )
+	    return( hist );
+      }
+
+    hist = 0;
     return( hist );
   };
 
   inline Loc	prevHist( Loc & node, Loc & hist ) const {
+    
     if( hist && hist != drbNode( node ).hist )
       {
-	if( hist )
+	Loc pHist = drbNode( node ).hist;
+	Loc gHist = pHist;
+	
+	for( ; history( pHist ).next != hist; pHist = history( pHist ).next )
 	  {
-	    Loc prev;
-	    for( prev = drbNode( node ).hist;
-		 history( prev ).next != hist;
-		 prev = history( prev ).next );
-	    hist = prev;
+	    if( history( pHist ).del == 0 )
+	      gHist = pHist;
+	  }
+
+	if( history( pHist ).del == 0 )
+	  {
+	    hist = pHist;
+	    return( hist );
+	  }
+	
+	if( history( gHist ).del == 0 )
+	  {
+	    hist = gHist;
+	    return( hist );
 	  }
       }
-    else
+
+    // stay on first node & good hist.
+    if( node == first() )
+      return( hist );
+
+    for( prev( node ); ; prev( node ) )
       {
-	prev( node );
-	for( hist = drbNode( node ).hist;
-	     history( hist ).next;
-	     hist = history( hist ).next );
+	Loc nHist = drbNode( node ).hist;
+	Loc gHist = nHist;
+	
+	for( ; history( nHist ).next; nHist = history( nHist ).next )
+	  {
+	    if( history( nHist ).del == 0 )
+	      gHist = nHist;
+	  }
+
+	if( history( nHist ).del == 0 )
+	  {
+	    hist = nHist;
+	    return( hist );
+	  }
+
+	if( history( gHist ).del == 0 )
+	  {
+	    hist = gHist;
+	    return( hist );
+	  }
+
+	if( node == first() )
+	  break;
       }
+
     return( hist );
   };
 
+  inline Loc	    firstHist( Loc node ) const {
+    Loc hist;
+    for( hist = drbNode( node ).hist;
+	 hist && history( hist ).del;
+	 hist = history( hist ).next );
+    return( hist );
+  };
   
   inline Loc		findNode( const Key & key ) const {
     Loc	    parent = headerLoc;
@@ -401,6 +532,43 @@ protected:
     return( parent );
   };
 
+  inline bool		trimNode( Loc node, EffDate eff ) {
+    
+    Loc prevHist    = 0;
+    Loc hist	    = drbNode( node ).hist;
+    for( ; hist && history( hist ).when >= eff;
+	 hist = history( hist ).next )
+      {
+	if( history( hist ).del == 0 )
+	  prevHist = hist;
+      }
+    
+    if( hist )
+      {
+	Loc trimHist = history( hist ).next;
+	Loc nextHist;
+	
+	if( ! prevHist )
+	  {
+	    trimHist = hist;
+	    RBTreeBase::erase( node );
+	  }
+	else
+	  {
+	    trimHist = history( prevHist ).next;
+	    history( prevHist ).next = 0;
+	  }
+	
+	for( ; trimHist; trimHist = nextHist )
+	  {
+	    nextHist = history( trimHist ).next;
+	    histMgr->release( trimHist );
+	  }
+      }
+    
+    return( true );
+  };
+  
   inline bool	lessKey( Loc one, Loc two ) const {
     return( lessKeyObj( keyOf( nodeValue( one ) ),
 			keyOf( nodeValue( two ) ) ) );
@@ -505,6 +673,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/22 19:42:01  houghton
+// Cleanup.
+// Bug-Fix: Many.
+// Added trim functionallity.
+//
 // Revision 2.2  1997/07/19 10:17:22  houghton
 // Bug-Fix: added include <pair> and <iterator>.
 //
