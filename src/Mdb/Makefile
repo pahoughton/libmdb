@@ -54,8 +54,8 @@ NAME		= Mdb
 
 PRJ_TOPDIR	= ../..
 
-INSTALL_LIB_DIR	= $(beta_libdir)
-INSTALL_INC_DIR	= $(beta_incdir)
+INSTALL_LIB_DIR	= $(local_libdir)
+INSTALL_INC_DIR	= $(local_incdir)
 
 VER_MAJOR	= 1
 VER_MINOR	= 00
@@ -302,6 +302,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.20  1999/05/09 17:31:53  houghton
+# Fixed install dirs.
+#
 # Revision 2.19  1998/10/23 13:18:59  houghton
 # Changed to use MakeConfigs 5.06.
 #
