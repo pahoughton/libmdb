@@ -231,6 +231,8 @@ all::	default debug profile
 
 install:: default $(INSTALL_DIR)/$(PROGRAM_DEFAULT)
 
+test_debug: debug
+	$(PROGRAM_DEBUG) $(TEST)
 
 test:	default
 
@@ -243,6 +245,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.2  1998/03/18 06:42:04  houghton
+# Added test_debug target.
+#
 # Revision 2.1  1997/09/21 19:21:58  houghton
 # Changed version to 2
 #
