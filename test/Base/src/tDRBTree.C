@@ -20,20 +20,26 @@
 
 bool	tDRBTree01( LibTest & tester );
 bool	tDRBTree02( LibTest & tester );
-// bool	tDRBTree03( LibTest & tester );
+bool	tDRBTree03( LibTest & tester );
+bool	tDRBTree04( LibTest & tester );
 
 bool
 tDRBTree( LibTest & tester )
 {
   TESTP( tDRBTree01( tester ) );
   TESTP( tDRBTree02( tester ) );
-
+  TESTP( tDRBTree03( tester ) );
+  TESTP( tDRBTree04( tester ) );
+  
   return( true );
 }
 
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/22 19:46:22  houghton
+// Added tDRBTree03 and tDRBTree04 test.
+//
 // Revision 2.2  1997/07/19 10:36:57  houghton
 // Cleanup.
 //
