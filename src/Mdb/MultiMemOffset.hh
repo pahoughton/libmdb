@@ -22,7 +22,6 @@
 //
 
 #include <MdbConfig.hh>
-#include <MapMemDynamic.hh>
 #include <cstddef>
 #include <iostream>
 
@@ -36,25 +35,28 @@ class MultiMemOffset
 
 public:
 
-  typedef MapMemDynamic::Loc	    Loc;
-  typedef MapMemDynamic::size_type  size_type;
-  typedef void *		    Addr;
+  typedef MDB_TYPE_LOC	    Loc;
+  typedef MDB_TYPE_SIZE	    size_type;
+  typedef MDB_TYPE_ADDR	    Addr;
   
   MultiMemOffset( void );
   
   virtual ~MultiMemOffset( void );
   
-  virtual Loc		allocate( size_type size );
-  virtual void		release( Loc offset );
+  virtual Loc		allocate( size_type size ) = 0;
+  virtual void		release( Loc offset ) = 0;
 
-  virtual Addr		address( Loc offset );
-  virtual const Addr	address( Loc loc ) const;
-  
-  virtual Loc		location( const Addr addr ) const;
-  
-  virtual void *	getBase( void );
-  virtual const void *	getBase( void ) const;
+  virtual Addr		getBase( void ) = 0;
+  virtual const Addr	getBase( void ) const = 0;
 
+  virtual long		getKey( unsigned short key ) const = 0;
+  virtual long		setKey( unsigned short key, long value ) = 0;
+  
+  inline Addr		address( Loc loc );
+  inline const Addr	address( Loc loc ) const;
+  
+  inline Loc		location( const void * addr ) const;
+  
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -65,18 +67,13 @@ public:
 
   static const ClassVersion version;
 
+  static const Loc	    badLoc;
+  
 protected:
 
 private:
 
-  MultiMemOffset( const MultiMemOffset & from );
-  MultiMemOffset & operator =( const MultiMemOffset & from );
-
-  int	osErrno;
-  
 };
-
-extern MultiMemOffset MultiMemOffsetMalloc;
 
 #if !defined( inline )
 #include <MultiMemOffset.ii>
@@ -171,6 +168,10 @@ extern MultiMemOffset MultiMemOffsetMalloc;
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/07/13 11:28:54  houghton
+// Cleanup.
+// Added getKey & setKey.
+//
 // Revision 2.5  1997/06/19 13:35:51  houghton
 // Changed location to be a const method.
 //
