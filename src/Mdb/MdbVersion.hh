@@ -24,7 +24,7 @@
 #include <ClassVersion.hh>
 
 #define MDB_PRJ_NAME	    "libMdb"
-#define MDB_PRJ_VER	    "1.01.01.a.01"
+#define MDB_PRJ_VER	    VERSION
 #define MDB_PRJ_VER_NUM     0x01010101L
 #define MDB_PRJ_VER_TAG     "ALPHA_1_01"
 
@@ -129,6 +129,9 @@ const char VERID_##name_[] =						      \
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/09/19 12:33:36  houghton
+// Changed to use version info from Makefile.
+//
 // Revision 2.1  1997/06/05 11:29:13  houghton
 // Initial Version.
 //
