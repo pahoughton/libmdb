@@ -33,8 +33,10 @@ MDB_VERSION(
   "$Id$");
 
 
+Str AvlTreeOffsetBase::errStr;
+
 #define ClassName   	AvlTreeOffsetBase
-#define NodeDataType	off_t
+#define NodeDataType	AvlTreeOffsetBase::Loc
 #define NODE( n )   	node( n )
 
 #include "AvlTreeMethods.INC"
@@ -64,6 +66,12 @@ AvlTreeOffsetBase::getVersion( bool withPrjVer ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:15:35  houghton
+// Bug-Fix: changed off_t to AvlTreeOffsetBase::Loc.
+// Port(Sun5): Added static errStr to be used by both AvlTreeOffset and
+//     DavlTreeOffset. The Sun5 compiler could not handle the static
+//     local variable in the template class error() methods.
+//
 // Revision 2.3  1997/07/13 11:01:49  houghton
 // Cleanup.
 //
