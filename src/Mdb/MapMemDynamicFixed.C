@@ -14,10 +14,12 @@
 //
 
 #include "MapMemDynamicFixed.hh"
-#include <ClueUtils.hh>
 #include <Str.hh>
+#include <LibLog.hh>
 #include <iomanip>
 #include <cstring>
+
+#include <assert.h>
 
 #if defined( MDB_DEBUG )
 #include "MapMemDynamicFixed.ii"
@@ -28,9 +30,6 @@ MDB_VERSION(
   MapMemDynamicFixed,
   "$Id$");
 
-//
-// allocation chunks must be at least 1 page
-//
 
 const char *
 MapMemDynamicFixed::ErrorStrings[] =
@@ -41,26 +40,40 @@ MapMemDynamicFixed::ErrorStrings[] =
     0
   };
 
+#if defined( MDF_DEBUG )
+
+static long	relOnly = 0;
+static long	relLast = 0;
+static long	relFirst = 0;
+static long	relMiddleEnd = 0;
+static long	relMiddleBeg = 0;
+static long	shrunkMap = 0;
+static long	expandFreeEmpty = 0;
+static long	expandFreeNotEmpty = 0;
+
+#endif
+
+//
+// allocation chunks must be at least 1 page
+//
+
 MapMemDynamicFixed::MapMemDynamicFixed(
   const char *	    fileName,
   ios::open_mode    mode,
   bool		    create,
   size_type	    recSize,
-  size_type	    numRecs,
+  size_type	    allocNumRecs,
   MapMask	    permMask
   )
   : MapMemDynamic( fileName,
 		   MDF_VERSION,
 		   mode,
 		   create,
-		   ( sizeof( MapDynamicFixedInfo ) +
-		     ( recSize * numRecs > (size_type)getpagesize()  ?
-		       (recSize * numRecs) :
-		       ((getpagesize() / recSize) + 1) * recSize ) ),
+		   (recSize * allocNumRecs) + sizeof( MapDynamicFixedInfo ),
 		   permMask )
 {
   if( create )
-    createMapMemDynamicFixed( recSize, numRecs);
+    createMapMemDynamicFixed( recSize, allocNumRecs);
   else
     openMapMemDynamicFixed();
 }
@@ -69,18 +82,15 @@ MapMemDynamicFixed::MapMemDynamicFixed(
 MapMemDynamicFixed::MapMemDynamicFixed(
   const char * 	    fileName,
   size_type	    recSize,
-  size_type	    numRecs,
+  size_type	    allocNumRecs,
   MapMask	    permMask
   )
   : MapMemDynamic( fileName,
 		   MDF_VERSION,
-		   ( sizeof( MapDynamicFixedInfo ) +
-		     ( recSize * numRecs > (size_type)getpagesize()  ?
-		       (recSize * numRecs) :
-		       ((getpagesize() / recSize) + 1) * recSize ) ),
+		   (recSize * allocNumRecs) + sizeof( MapDynamicFixedInfo ),
 		   permMask )
 {
-  createMapMemDynamicFixed( recSize, numRecs );
+  createMapMemDynamicFixed( recSize, allocNumRecs );
 }
 
 MapMemDynamicFixed::MapMemDynamicFixed(
@@ -96,55 +106,43 @@ MapMemDynamicFixed::MapMemDynamicFixed(
 
 MapMemDynamicFixed::~MapMemDynamicFixed( void )
 {
-  if( mapInfo() && mapInfo()->owner == getpid() )
-    mapInfo()->owner = 0;
 }
 
-off_t
+MapMemDynamicFixed::Loc
 MapMemDynamicFixed::allocate( size_type size )
 {
-  if( ! good() ) return( 0 );
+  if( ! good() )
+    return( 0 );
   
   //
-  // we can only allocate 1 size of records
+  // we can only allocate fixed size records
   //
 
-  if( size != 0 &&  size > mapInfo()->recSize )
+  if( size > mapInfo()->recSize )
     {
       errorNum = E_BADSIZE;
       return( 0 );
     }
 
-  if( mapInfo()->freeList.next == 0 )
+  if( freeList().nextFree == 0 )
     {      
-      expand();
-
-      if( mapInfo()->freeList.next == 0 )
-	{
-	  return(0);
-	}
+      if( ! expand() )
+	return( 0 );
     }
 
-  off_t     	    baseAddr = (off_t)mapInfo();
-  off_t     	    freeOffset = mapInfo()->freeList.next;
-  struct FreeList * freeNode = (struct FreeList *)(baseAddr + freeOffset);
+  Loc	f = freeList().nextFree;
 
-  mapInfo()->freeList.next = freeNode->next;
+  freeList().nextFree = freeNode( f ).nextFree;
 
-  if( mapInfo()->freeList.next == 0 )
-    {
-      mapInfo()->freeList.prev = 0;
-    }
+  if( freeList().nextFree != 0 )
+    freeNode( freeList().nextFree ).prevFree = 0;
   else
-    {  
-      struct FreeList * nextNode = (struct FreeList *)(baseAddr + freeNode->next);
-  
-      nextNode->prev = 0;
-    }
-
+    freeList().prevFree = 0;
+      
   -- mapInfo()->freeCount;
-
-  return( freeOffset );
+  ++ mapInfo()->allocCount;
+  
+  return( f );
 }
 
 
@@ -153,7 +151,7 @@ MapMemDynamicFixed::allocate( size_type size )
 //
 // The free list should be kept in order from
 // beginning of file to the end of the file.
-// getMem always uses to first available record.
+// allocate() always uses to first available record.
 //
 // This increases the chances of being able to shrink
 // the map file when there are 2 * the chunksize free
@@ -161,129 +159,224 @@ MapMemDynamicFixed::allocate( size_type size )
 //
 
 void
-MapMemDynamicFixed::release( Loc offset )
+MapMemDynamicFixed::release( Loc f )
 {
 
-  if( ! good() ) return;
-  
-  off_t     baseAddr = (off_t)mapInfo();
-  
-  struct FreeList * freeNode = (struct FreeList *)(baseAddr + offset);
+  if( ! good() )
+    return;
 
-
+  -- mapInfo()->allocCount;
   ++ mapInfo()->freeCount;
 
-  freeNode->next = 0;
-  freeNode->prev = 0;
-
-  if( mapInfo()->freeList.next == 0 )
+  if( freeList().nextFree == 0 )
     {
-      mapInfo()->freeList.next = offset;
-      mapInfo()->freeList.prev = offset;
+      freeList().nextFree = f;
+      freeList().prevFree = f;
+      
+      freeNode( f ).nextFree = 0;
+      freeNode( f ).prevFree = 0;
+
+#if defined( MDF_DEBUG )
+      _LLg( LogLevel::Test )
+	<< "release ( " << f << " ) only."
+	<< endl;
+      ++ relOnly;
+#endif
     }
   else
     {
-      struct FreeList * firstNode= (struct FreeList *)(baseAddr +
-						       mapInfo()->freeList.next);
 
-      struct FreeList * nextNode = firstNode ;
-      for( ;
-	   nextNode < freeNode && nextNode->next != 0;
-	   nextNode = (struct FreeList *)((off_t)baseAddr + nextNode->next) );
-
-      if( nextNode > freeNode )
+      if( freeList().prevFree < f )
 	{
-	  freeNode->next = (off_t)nextNode - baseAddr;
-	  freeNode->prev = nextNode->prev;
-	  nextNode->prev = (off_t)freeNode - baseAddr;
-	  
-	  if( nextNode == firstNode )
-	    {
-	      mapInfo()->freeList.next = offset;
-	    }
-	  else
-	    {
-	      struct FreeList * prevNode = (struct FreeList *)( baseAddr +
-								freeNode->prev );
+	  // 'f' is after the last free
+	  freeNode( f ).prevFree = freeList().prevFree;
+	  freeNode( f ).nextFree = 0;
 
-	      prevNode->next = (off_t)freeNode - baseAddr;
-	    }
+	  freeNode( freeNode( f ).prevFree ).nextFree = f;
+
+	  freeList().prevFree = f;
+	  
+#if defined( MDF_DEBUG )
+	  _LLg( LogLevel::Test )
+	    << "release ( " << f << " ) Last."
+	    << endl;
+	  ++ relLast;
+#endif
 	}
       else
 	{
-	  // nextNode->next must be 0, so freeNode is now
-	  // the last in the list
+	  if( freeList().nextFree > f )
+	    {
+	      // 'f' is before the first free.
+	      freeNode( f ).prevFree = 0;
+	      freeNode( f ).nextFree = freeList().nextFree;
+	      
+	      freeNode( freeNode( f ).nextFree ).prevFree = f;
+	      
+	      freeList().nextFree = f;
+	      
+#if defined( MDF_DEBUG )
+	      _LLg( LogLevel::Test )
+		<< "release ( " << f << " ) first."
+		<< endl;
+	      ++ relFirst;
+#endif
+	    }
+	  else
+	    {
+	      // firstFree < f < lastFree so ...
+	      
+	      // find out if I'm closer to the begining or
+	      // end of the free list
+	      
+	      Loc nextF;
+	      Loc prevF;
+	      
+	      if( ( freeList().prevFree - f ) <
+		  ( f - freeList().nextFree ) )
+		{
+		  // closer to the last of the free list
+		  prevF = freeList().prevFree;
+		  
+		  for( prevF =  freeNode( prevF ).prevFree;
+		       prevF > f;
+		       prevF =  freeNode( prevF ).prevFree );
 
-	  nextNode->next = (off_t)freeNode - baseAddr;
-	  freeNode->prev = (off_t)nextNode - baseAddr;
-
-	  mapInfo()->freeList.prev = (off_t)freeNode - baseAddr;
+		  nextF = freeNode( prevF ).nextFree;
+#if defined( MDF_DEBUG )
+		  _LLg( LogLevel::Test )
+		    << "release ( " << f << " ) MidEnd"
+		    << " first: " << freeList().nextFree
+		    << " last: " << freeList().prevFree
+		    << endl;
+		  ++ relMiddleEnd;
+		  
+		  assert( prevF < f && f < nextF );
+#endif
+		}
+	      else
+		{
+		  nextF = freeList().nextFree;
+		  
+		  for( nextF = freeNode( nextF ).nextFree;
+		       nextF < f;
+		       nextF = freeNode( nextF ).nextFree );
+		  
+		  prevF = freeNode( nextF ).prevFree;
+#if defined( MDF_DEBUG )
+		  _LLg( LogLevel::Test )
+		    << "release ( " << f << " ) MidBeg"
+		    << " first: " << freeList().nextFree
+		    << " last: " << freeList().prevFree
+		    << endl;
+		  ++ relMiddleBeg;
+		  
+		  assert( prevF < f && f < nextF );
+#endif
+		}
+	      
+	      // now put f in the free list
+	      freeNode( f ).nextFree = nextF;
+	      freeNode( f ).prevFree = prevF;
+	      
+	      freeNode( nextF ).prevFree = f;
+	      freeNode( prevF ).nextFree = f;
+	    }
 	}
     }
-
-  if( mapInfo()->freeCount > (mapInfo()->chunkSize * 2) )
+  
+  if( mapInfo()->freeCount > (mapInfo()->allocNumRecs * 2) )
     {
       //
       // see if there are enough contigious free recs at the
       // end to release a chunk
       //
 
-      // this is the offset of the last known record
-      
-      off_t 	endOffset;
+      // is the last rec free?
 
-      endOffset = ( DwordAlign( sizeof( MapDynamicFixedInfo ) ) +
-		     ( (mapInfo()->chunkCount - 1)* mapInfo()->recSize ) );
-		     
-      //
-      // is the last rec free
-      //
-
-      if( mapInfo()->freeList.prev == (unsigned long)endOffset )
+      if( freeList().prevFree == lastNode() )
 	{
-	  unsigned long freeRecs = 0;
+	  Loc	lastFree;
+
+	  // find the amount of contigious free recs
+	  for( lastFree = lastNode();
+	       (size_type)freeNode( lastFree ).prevFree ==
+		 (lastFree - mapInfo()->recSize);
+	       lastFree = freeNode( lastFree ).prevFree );
 	  
-	  struct FreeList * endNode = (struct FreeList *)(baseAddr + endOffset);
-	  
-	  for( ; endNode->prev == endOffset - mapInfo()->recSize;
-		 endOffset = endNode->prev,
-		 endNode = (struct FreeList *)(baseAddr + endOffset) )
+	  if( (size_type)(lastNode() - lastFree) >= 
+	      ( mapInfo()->allocNumRecs * mapInfo()->recSize ) &&
+	      (size_type)(lastNode() - lastFree) >= getPageSize() )
+								
 	    {
-	      freeRecs++;
-	    }
+	      // ok we have enough free recs at the end to
+	      // shrink the map
 
-	  if( freeRecs > 0 )
-	    freeRecs --;
-	  
-	  if( freeRecs > mapInfo()->chunkSize )
-	    {
-	      unsigned long releaseChunks = freeRecs / mapInfo()->chunkSize;
+	      unsigned long endFreeRecs;
+	      unsigned long otherFreeRecs;
+	      unsigned long shrinkRecs;
+	      
+	      // endFreeRecs: the number of contigous free records at
+	      //		the end of the map
+	      // otherFreeRecs: the number of free recs NOT at the end.
+	      // shrinkRecs: the number of recs to shrink the map by
+	      
+	      endFreeRecs = (lastNode() - lastFree) / mapInfo()->recSize;
+	      otherFreeRecs = mapInfo()->freeCount - endFreeRecs;
 
-	      if( releaseChunks )
-		{
-		  unsigned long releaseRecs = releaseChunks * mapInfo()->chunkSize;
+	      // if there are at least 'chunkSize' free recs NOT at
+	      // the end of the map, shrink by 'endFreeRecs'. otherwise,
+	      // shrink by all by 'chunkSize' recs.
+	      
+	      if( otherFreeRecs > mapInfo()->allocNumRecs )
+		shrinkRecs = endFreeRecs;
+	      else
+		shrinkRecs = mapInfo()->freeCount - mapInfo()->allocNumRecs;
 
-		  size_t newSize = shrink( releaseRecs * mapInfo()->recSize,
-					   (caddr_t)mapInfo()->base  );
+#if defined( MDF_DEBUG )
+	      _LLg( LogLevel::Test )
+		<< "SHRINK: pre:\n"
+		<< "    amount: " << shrinkRecs * mapInfo()->allocNumRecs << '\n'
+		<< "	lastNode:   " << lastNode() << '\n'
+		<< "    lastFree:   " << lastFree << '\n'
+		<< "    shrinkRecs: " << shrinkRecs << '\n'
+		<< '\n' << dump( " pre: " )
+		<< '\n' ;
+      
+	      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+		dumpNodes( *_LibLog ) << endl;
+#endif
+      
+	      size_t newSize = shrink( shrinkRecs * mapInfo()->recSize,
+				       (caddr_t)mapInfo()->base  );
 
-		  if( ! newSize )
-		    return;
-		  
-		  baseAddr = (off_t)mapInfo();
+	      if( ! newSize )
+		return;
 
-		  releaseRecs++;
-		  
-		  mapInfo()->size = getSize();
-		  mapInfo()->freeCount -= releaseRecs;
-		  mapInfo()->chunkCount -= releaseRecs;
-		  mapInfo()->freeList.prev = ( DwordAlign( sizeof( MapDynamicFixedInfo ) ) +
-					  ( (mapInfo()->chunkCount - 1)* mapInfo()->recSize ) );
+	      unsigned long newRecCount;
+	      
+	      mapInfo()->size = getSize();
 
-		  struct FreeList * lastNode = (struct FreeList *)
-		    (baseAddr + mapInfo()->freeList.prev);
-		  lastNode->next = 0;
-		  
-		}
+	      newRecCount = ( ( mapInfo()->size - firstNode() ) / 
+			      mapInfo()->recSize );
+
+	      mapInfo()->freeCount = newRecCount - mapInfo()->allocCount;
+	      
+	      freeList().prevFree = lastNode();
+
+	      freeNode( lastNode() ).nextFree = 0;
+	      
+#if defined( MDF_DEBUG )
+	      ++ shrunkMap;
+      
+	      _LLg( LogLevel::Test )
+		<< "SHRINK: post: "
+		<< '\n' << dump( " post: " )
+		<< '\n' ;
+      
+	      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+		dumpNodes( *_LibLog ) << endl;
+#endif
 	    }
 	}
     }
@@ -292,87 +385,84 @@ MapMemDynamicFixed::release( Loc offset )
 bool
 MapMemDynamicFixed::valid( off_t offset ) const
 {
-  off_t   first = DwordAlign( sizeof( MapDynamicFixedInfo ) );
-
-  if( (offset - first) % mapInfo()->recSize )
+  if( (offset - firstNode()) % mapInfo()->recSize )
     return( false );
   
-  off_t     	baseAddr = (off_t)mapInfo();
-  off_t     	freeOffset;
-      
-  for( freeOffset = mapInfo()->freeList.next;
-       freeOffset && freeOffset < offset;
-       freeOffset = ((FreeList *)(baseAddr + freeOffset))->next );
+  Loc f;
 
-  return( freeOffset == offset ? false : true );
+  for( f = freeList().nextFree;
+       f && f < offset;
+       f = freeNode( f ).nextFree );
+  
+  return( f == offset ? false : true );
 }
 
 
-void
+bool
 MapMemDynamicFixed::expand( void )
 {
 
-  if( ! good() ) return;
+  if( ! good() )
+    return( false );
 
-  unsigned long amount = mapInfo()->chunkSize * mapInfo()->recSize;
+  unsigned long amount = mapInfo()->allocNumRecs * mapInfo()->recSize;
+
+  Loc	origLastNode = lastNode();
   
   if( grow( amount, (caddr_t)mapInfo()->base ) == 0 )
     {
       errorNum = E_MAPMEM;
-      return;
+      return( false );
     }
 
   mapInfo()->size = getSize();
 
+  // f is the first new free node
+
+  Loc f		= origLastNode + mapInfo()->recSize;
+  Loc prevF	= freeList().prevFree;
   
-  //
-  // now add these recs to the free list;
-  //
-      
-  off_t     baseAddr = (unsigned long) mapInfo();
-  off_t     freeAddr = 0;
-  off_t	    prevFreeOffset = 0;
-  struct FreeList * freeNode = 0;
-
-  freeAddr = baseAddr + ( DwordAlign( sizeof( MapDynamicFixedInfo )  ) +
-			  (mapInfo()->recSize * (mapInfo()->chunkCount) ) );
-
-  if( mapInfo()->freeList.next == 0 )
+  if( freeList().nextFree == 0 )
     {
-      mapInfo()->freeList.next = freeAddr - baseAddr;
-      prevFreeOffset = 0;
+      freeList().nextFree = f;
+#if defined( MDF_DEBUG )
+      _LLg( LogLevel::Test )
+	<< "EXPAND: post free list empty: \n";
+      ++ expandFreeEmpty;
     }
   else
     {
-      freeNode = (FreeList * ) baseAddr + mapInfo()->freeList.prev;
-      freeNode->next = freeAddr - baseAddr;
-      
-      prevFreeOffset = mapInfo()->freeList.prev;
+      _LLg( LogLevel::Test )
+	<< "EXPAND: post free list NOT empty: \n";
+      ++ expandFreeNotEmpty;
+#endif
     }
-      
-  for( ;
-	freeAddr + (off_t)mapInfo()->recSize < (off_t)getEnd();
-	freeAddr += mapInfo()->recSize )
+
+  freeList().prevFree = lastNode();
+  
+  for( ; f < freeList().prevFree; f += mapInfo()->recSize )
     {
-      freeNode = (FreeList *)freeAddr;
-      
-      freeNode->next    = ( freeAddr - baseAddr ) + mapInfo()->recSize;
-      freeNode->prev    = prevFreeOffset;
-      prevFreeOffset    = freeAddr - baseAddr ;
-      
-      ++ mapInfo()->freeCount;
-      ++ mapInfo()->chunkCount;
+      freeNode( f ).nextFree = f + mapInfo()->recSize;
+      freeNode( f ).prevFree = prevF;
+      prevF = f;
     }
 
-  // one to many, backup one
+  freeNode( f ).nextFree = 0;
+  freeNode( f ).prevFree = prevF;
 
-  freeNode = (FreeList *)(baseAddr + prevFreeOffset);
+  mapInfo()->freeCount += (lastNode() - origLastNode) / mapInfo()->recSize;
   
-  freeNode->next = 0;
-
-  mapInfo()->freeList.prev = prevFreeOffset;
+#if defined( MDF_DEBUG )
+  if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+    {
+      dumpInfo( *_LibLog, " post: " ) << endl;
+      dumpNodes( *_LibLog ) << endl;
+    }
+#endif
   
+  return( true );
 }
+
 
 const char *
 MapMemDynamicFixed::getClassName( void ) const
@@ -408,25 +498,18 @@ MapMemDynamicFixed::error( void ) const
     }
   else
     {
-      int errCnt = 0;
+      size_type eSize = errStr.size();
+
+      if( errorNum > E_MAPMEM && errorNum < E_UNDEFINED )
+	errStr << ErrorStrings[ errorNum ];
       
-      if( errorNum > E_MAPMEM &&
-	  errorNum < E_UNDEFINED )
-	{
-	  errCnt++;
-	  errStr << ErrorStrings[ errorNum ];
-	}
 
       if( ! MapMemDynamic::good() )
-	{
-	  errCnt++;
-	  errStr << ": " << MapMemDynamic::error();
-	}
+	errStr << ": " << MapMemDynamic::error();
+	
+      if( eSize == errStr.size() )
+        errStr << ": unknown error";
 
-      if( ! errCnt )
-	{
-	  errStr << ": unknown error";
-	}
     }
   return( errStr.cstr() );
 }
@@ -456,9 +539,19 @@ MapMemDynamicFixed::dumpInfo(
   if( mapInfo() )
     {
       dest << prefix << "rec size:     " << getRecSize() << '\n'
-	   << prefix << "chunk size:   " << getChunkSize() << '\n'
-	   << prefix << "free first:   " << mapInfo()->freeList.next << '\n'
-	   << prefix << "free last:    " << mapInfo()->freeList.prev << '\n'
+	   << prefix << "alloc recs:   " << getAllocNumRecs() << '\n'
+	   << prefix << "first free:   " << freeList().nextFree << '\n'
+	   << prefix << "last free:    " << freeList().prevFree << '\n'
+#if defined( MDF_DEBUG )
+	   << prefix << "R only:       " << relOnly << '\n'
+	   << prefix << "R first:      " << relFirst << '\n'
+	   << prefix << "R last:       " << relLast << '\n'
+	   << prefix << "R mid beg:    " << relMiddleBeg << '\n'
+	   << prefix << "R mid end:    " << relMiddleEnd << '\n'
+	   << prefix << "shrink count: " << shrunkMap << '\n'
+	   << prefix << "expand new:   " << expandFreeNotEmpty << '\n'
+	   << prefix << "expand empty: " << expandFreeEmpty << '\n'
+#endif
 	;
       
     }
@@ -470,59 +563,134 @@ MapMemDynamicFixed::dumpInfo(
   return( dest );
 }
 
+ostream &
+MapMemDynamicFixed::dumpFreeList( ostream & dest ) const
+{
+  dest << "Node      prevF      nextF\n";
+  
+  dest << setw( 6 ) << ' '
+       << setw( 8 ) << freeList().prevFree
+       << setw( 8 ) << freeList().nextFree
+       << endl;
+  
+  for( Loc f = freeList().nextFree;
+       f ;
+       f = freeNode( f ).nextFree )
+    {
+      dest << setw( 6 ) << f
+	   << setw( 8 ) << freeNode( f ).prevFree
+	   << setw( 8 ) << freeNode( f ).nextFree
+	   << endl;
+    }
+
+  return( dest );
+}
+
+ostream &
+MapMemDynamicFixed::dumpNodes( ostream & dest ) const
+{
+  Loc n	    = firstNode();
+  Loc lastN = lastNode();
+
+  Loc f	    = freeList().nextFree;
+
+  dest << "  Node      prevF     nextF\n";
+  
+  dest << setw( 6 ) << " "
+       << setw( 10 ) << freeList().prevFree
+       << setw( 10 ) << freeList().nextFree
+       << endl;
+  
+  for( ; n < lastN; n += getRecSize() )
+    {
+      
+      dest << setw( 6 ) << n ;
+
+      if( n == f )
+	{
+	  dest << setw( 10 ) << freeNode( f ).prevFree
+	       << setw( 10 ) << freeNode( f ).nextFree
+	    ;
+	  f = freeNode( f ).nextFree;
+	}
+	    
+      dest << endl;
+    }
+
+  dest << setw( 6 ) << n ;
+
+  if( n == f )
+    {
+      dest << setw( 10 ) << freeNode( f ).prevFree
+	   << setw( 10 ) << freeNode( f ).nextFree
+	;
+    }
+	    
+  dest << endl;
+
+  return( dest );
+  
+}
+
+bool
+MapMemDynamicFixed::allTested( void )
+{
+#if defined( MDF_DEBUG )
+  return( relOnly	     > 0 &&
+	  relLast            > 0 &&
+	  relFirst           > 0 &&
+	  relMiddleEnd	     > 0 &&
+	  relMiddleBeg       > 0 &&
+	  shrunkMap	     > 0 &&
+	  expandFreeEmpty    > 0 &&
+	  expandFreeNotEmpty > 0 );
+#else
+  return( true );
+#endif
+}
+
 void
 MapMemDynamicFixed::createMapMemDynamicFixed(
   size_type recSize,
-  size_type numRecs
+  size_type allocNumRecs
   )
 {
   if( mapInfo() != 0 && MapMemDynamic::good() )
     {
-      mapInfo()->recSize =
-	DwordAlign( max( recSize, (size_type)sizeof( struct FreeList ) ) );
+      mapInfo()->recSize = DwordAlign( max( recSize,
+					    (size_type)sizeof(FreeNode) ) );
 
-      if( mapInfo()->recSize * numRecs > getPageSize() )
-	mapInfo()->chunkSize = numRecs;
-      else
-	mapInfo()->chunkSize = (getPageSize() / mapInfo()->recSize) + 1;
-      
-            
-      //
-      // Initialize the list of avaliable (deleted) records
-      //
-      
-      off_t  baseAddr = (off_t) mapInfo();
+      mapInfo()->allocNumRecs = max( allocNumRecs,
+				     ( getPageSize() /
+				       mapInfo()->recSize) );
 
-      mapInfo()->freeList.next = DwordAlign( sizeof( MapDynamicFixedInfo ) );
-      mapInfo()->freeCount = 0;
+      mapInfo()->allocCount = 0;
+      mapInfo()->freeCount = ( ( (lastNode() + mapInfo()->recSize) -
+				 firstNode() ) /
+				 mapInfo()->recSize );
+			     
+      freeList().nextFree = firstNode();
+      freeList().prevFree = lastNode();
+
+      //
+      // Initialize the list of free records
+      //
+
+      Loc   f;
+      Loc   prevF = 0;
       
-      off_t 	    	freeAddr = baseAddr + mapInfo()->freeList.next;
-      off_t 	    	prevFreeOffset = 0;
-      struct FreeList * freeNode = 0;
-      
-      
-      for( ;
-	  (off_t)(freeAddr + mapInfo()->recSize) < (off_t)getEnd();
-	  freeAddr += mapInfo()->recSize )
+      for( f = freeList().nextFree;
+	   f < freeList().prevFree;
+	   f += mapInfo()->recSize )
 	{
-	  freeNode = (struct FreeList *)freeAddr;
-
-	  freeNode->next    = ( freeAddr - baseAddr ) + mapInfo()->recSize;
-	  freeNode->prev    = prevFreeOffset;
-	  prevFreeOffset    = ( freeAddr - baseAddr );
-	  
-	  mapInfo()->freeCount++;
+	  freeNode( f ).nextFree = f + mapInfo()->recSize;
+	  freeNode( f ).prevFree = prevF;
+	  prevF = f;
 	}
 
-      // one to many, backup one
+      freeNode( f ).nextFree = 0;
+      freeNode( f ).prevFree = prevF;
 
-      freeNode = (struct FreeList *)(baseAddr + prevFreeOffset);
-  
-      freeNode->next = 0;
-      mapInfo()->freeList.prev = prevFreeOffset;
-
-      mapInfo()->chunkCount = mapInfo()->freeCount;
-      
       errorNum = E_OK;
     }
   else
@@ -559,6 +727,11 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.16  1997/07/13 11:27:16  houghton
+// Cleanup.
+// Major rework to make more readable and improve performance.
+// Added lots of testing & debuging code.
+//
 // Revision 2.15  1997/06/25 12:56:13  houghton
 // Bug-Fix: chunkCount was not being updated correctly.
 //
