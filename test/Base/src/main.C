@@ -65,6 +65,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:21:59  houghton
+// Changed version to 2
+//
 // Revision 1.8  1997/07/25 13:49:31  houghton
 // Changed: Dash was renamed to DashSet.
 // Changed: Hash was renamed to HashSet.

@@ -110,6 +110,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:05  houghton
+// Changed version to 2
+//
 // Revision 1.4  1997/07/19 19:55:14  houghton
 // Reorederd loops.
 //

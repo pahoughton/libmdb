@@ -42,6 +42,9 @@ Performance Characteristics:
 
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:20:54  houghton
+# Changed version to 2
+#
 # Revision 1.1  1997/08/09 14:47:25  houghton
 # Initial Version (work in progress).
 #

@@ -48,6 +48,9 @@ how to use the classes in your application.
     
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:20:39  houghton
+# Changed version to 2
+#
 # Revision 1.2  1997/07/25 13:39:38  houghton
 # Complete rewrite.
 #

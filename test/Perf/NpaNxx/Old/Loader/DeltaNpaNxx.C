@@ -10,6 +10,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:21  houghton
+// Changed version to 2
+//
 // Revision 1.1  1997/07/19 12:52:42  houghton
 // Initial Version (work in progess).
 //

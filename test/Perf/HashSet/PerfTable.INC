@@ -154,6 +154,9 @@ FUNCT_NAME( ostream & perfDest )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:16  houghton
+// Changed version to 2
+//
 // Revision 1.2  1997/07/28 16:52:43  houghton
 // Added support for initial map size.
 //

@@ -142,6 +142,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:25  houghton
+// Changed version to 2
+//
 // Revision 1.4  1997/09/17 16:56:20  houghton
 // Changed for new library rename to StlUtils
 //

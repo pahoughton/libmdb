@@ -30,6 +30,9 @@ ARCH_DEBUG_LD_LIBS = -lStdC++
 
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:21:36  houghton
+# Changed version to 2
+#
 # Revision 1.1  1997/07/14 10:55:14  houghton
 # Initial Version.
 #

@@ -28,6 +28,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:21:42  houghton
+// Changed version to 2
+//
 // Revision 1.2  1997/07/22 19:44:21  houghton
 // Added define TEST_DATA_DIR.
 //

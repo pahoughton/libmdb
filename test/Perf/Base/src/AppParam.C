@@ -51,6 +51,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:04  houghton
+// Changed version to 2
+//
 // Revision 1.2  1997/07/14 10:50:45  houghton
 // Added perfLogFn arg.
 //

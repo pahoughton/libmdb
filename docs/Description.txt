@@ -340,6 +340,9 @@ Possible Future Classes
 	            
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:20:40  houghton
+# Changed version to 2
+#
 # Revision 1.1  1997/07/25 13:39:53  houghton
 # Initial Version.
 #

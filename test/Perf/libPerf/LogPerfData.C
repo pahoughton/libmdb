@@ -99,6 +99,9 @@ LogPerfData(
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:41  houghton
+// Changed version to 2
+//
 // Revision 1.4  1997/07/25 13:51:18  houghton
 // Reworked to ouptut more detail.
 //

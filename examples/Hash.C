@@ -160,6 +160,9 @@ HashExample( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:21:30  houghton
+// Changed version to 2
+//
 // Revision 1.1  1997/07/11 17:36:34  houghton
 // Initial Version.
 //

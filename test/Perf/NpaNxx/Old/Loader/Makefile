@@ -139,6 +139,9 @@ include .depend.prog
 
 # 
 # $Log$
+# Revision 2.1  1997/09/21 19:22:22  houghton
+# Changed version to 2
+#
 # Revision 1.2  1997/09/17 16:56:19  houghton
 # Changed for new library rename to StlUtils
 #

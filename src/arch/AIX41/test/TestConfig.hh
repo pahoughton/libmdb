@@ -27,6 +27,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:21:38  houghton
+// Changed version to 2
+//
 // Revision 1.1  1997/07/14 10:55:23  houghton
 // Initial Version.
 //

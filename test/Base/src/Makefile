@@ -243,6 +243,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:21:58  houghton
+# Changed version to 2
+#
 # Revision 1.10  1997/09/17 16:56:11  houghton
 # Changed for new library rename to StlUtils
 #

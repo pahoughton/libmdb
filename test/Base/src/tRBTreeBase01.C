@@ -54,6 +54,9 @@ tRBTreeBase01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:01  houghton
+// Changed version to 2
+//
 // Revision 1.1  1997/06/05 11:30:12  houghton
 // Initial Version.
 //

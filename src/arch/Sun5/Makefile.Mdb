@@ -26,6 +26,9 @@ ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/src
 
 #
 # $Log$
+# Revision 2.1  1997/09/21 19:21:43  houghton
+# Changed version to 2
+#
 # Revision 1.1  1997/07/19 10:34:13  houghton
 # Initial Version.
 #

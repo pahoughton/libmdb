@@ -119,6 +119,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.1  1997/09/21 19:22:36  houghton
+// Changed version to 2
+//
 // Revision 1.2  1997/07/25 13:52:47  houghton
 // Reworked for new style performance test.
 //
