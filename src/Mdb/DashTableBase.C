@@ -115,7 +115,7 @@ DashTableBase::dumpInfo(
 // insert a new node into an existing list of nodes with the same key
 //
 HashTableBase::Loc
-DashTableBase::insert( Hash hash, Loc cur, EffDate effDate, Loc node )
+DashTableBase::insert( HashValue hash, Loc cur, EffDate effDate, Loc node )
 {
   Loc	    prev;
   
@@ -190,7 +190,7 @@ DashTableBase::insert( Hash hash, Loc cur, EffDate effDate, Loc node )
 //
 // insert a new node when there is no other nodes with the same key
 HashTableBase::Loc
-DashTableBase::insert( Hash hash, EffDate effDate, Loc node )
+DashTableBase::insert( HashValue hash, EffDate effDate, Loc node )
 {
   if( HashTableBase::insert( hash, node ) )
     {
@@ -203,7 +203,7 @@ DashTableBase::insert( Hash hash, EffDate effDate, Loc node )
 }
 
 bool
-DashTableBase::erase( Hash hash, Loc node )
+DashTableBase::erase( HashValue hash, Loc node )
 {
   if( dashNode( node ).nextEff )
     dashNode( dashNode( node ).nextEff ).prevEff = dashNode( node ).prevEff;
@@ -226,6 +226,10 @@ DashTableBase::erase( Hash hash, Loc node )
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:18:35  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.3  1997/07/14 13:42:54  houghton
 // Change: initialize prev from cur. (eliminate a compiler warning)
 //

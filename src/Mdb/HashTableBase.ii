@@ -55,7 +55,7 @@ HashTableBase::header( void ) const
 
 inline
 const HashTableBase::Loc &
-HashTableBase::hashLoc( Hash hash ) const
+HashTableBase::hashLoc( HashValue hash ) const
 {
   return( *( (const Loc *)( index->getBase() +
 			 sizeof( Header ) +
@@ -65,7 +65,7 @@ HashTableBase::hashLoc( Hash hash ) const
 
 inline
 HashTableBase::Loc &
-HashTableBase::hashLoc( Hash hash )
+HashTableBase::hashLoc( HashValue hash )
 {
   return( *( (Loc *)( index->getBase() +
 			 sizeof( Header ) +
@@ -88,7 +88,7 @@ HashTableBase::hashNode( Loc node )
 
 inline
 HashTableBase::Loc
-HashTableBase::find( Hash hash ) const
+HashTableBase::find( HashValue hash ) const
 {
   if( good() && hash < endHash() )
     return( hashLoc( hash ) );
@@ -98,13 +98,13 @@ HashTableBase::find( Hash hash ) const
 
 
 inline
-HashTableBase::Hash
+HashTableBase::HashValue
 HashTableBase::first( void ) const
 {
   if( ! good() )
     return( badHash );
 
-  Hash hash;
+  HashValue hash;
 
   for( hash = 0;
        hash < endHash() && hashLoc(hash) == 0;
@@ -115,7 +115,7 @@ HashTableBase::first( void ) const
 
 inline
 HashTableBase::Loc
-HashTableBase::next( Hash & hash, Loc & node ) const
+HashTableBase::next( HashValue & hash, Loc & node ) const
 {
   if( hashNode( node ).next )
     {
@@ -139,7 +139,7 @@ HashTableBase::next( Hash & hash, Loc & node ) const
 
 inline
 HashTableBase::Loc
-HashTableBase::prev( Hash & hash, Loc & node ) const
+HashTableBase::prev( HashValue & hash, Loc & node ) const
 {
   if( node && hashNode( node ).prev )
     {
@@ -165,7 +165,7 @@ HashTableBase::prev( Hash & hash, Loc & node ) const
       
   
 inline
-HashTableBase::Hash
+HashTableBase::HashValue
 HashTableBase::endHash( void ) const
 {
   if( ! good() )
@@ -183,6 +183,10 @@ HashTableBase::endHash( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.4  1997/07/19 10:20:50  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.3  1997/07/13 11:14:15  houghton
 // Changed to use MultiMemOffset.
 //

@@ -67,13 +67,13 @@ protected:
   inline const DashNodeBase &	dashNode( Loc node ) const;
   inline DashNodeBase &		dashNode( Loc node );
   
-  Loc		insert( Hash hash, Loc cur, EffDate eff, Loc node );
-  Loc		insert( Hash hash, EffDate eff, Loc node );
+  Loc		insert( HashValue hash, Loc cur, EffDate eff, Loc node );
+  Loc		insert( HashValue hash, EffDate eff, Loc node );
   
-  bool		erase( Hash hash, Loc node );
+  bool		erase( HashValue hash, Loc node );
 
-  inline Loc	next( Hash & hash, Loc & node  ) const;
-  inline Loc	prev( Hash & hash, Loc & node ) const;
+  inline Loc	next( HashValue & hash, Loc & node  ) const;
+  inline Loc	prev( HashValue & hash, Loc & node ) const;
   
 private:
 
@@ -175,6 +175,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:18:49  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.3  1997/07/13 11:06:08  houghton
 // Changed constructor permMask default value.
 //

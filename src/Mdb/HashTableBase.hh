@@ -37,7 +37,7 @@ class HashTableBase
 
 public:
 
-  typedef long		    Hash;
+  typedef long		    HashValue;
   typedef MDB_TYPE_LOC	    Loc;
   
   typedef MDB_TYPE_SIZE	    size_type;
@@ -63,7 +63,7 @@ public:
 
   static const ClassVersion version;
 
-  static const Hash  badHash;
+  static const HashValue  badHash;
 
   struct Header
   {
@@ -103,23 +103,23 @@ protected:
   inline Header &	header( void );
   inline const Header &	header( void ) const;
   
-  inline const Loc &	hashLoc( Hash hash ) const;
-  inline Loc &		hashLoc( Hash hash );
+  inline const Loc &	hashLoc( HashValue hash ) const;
+  inline Loc &		hashLoc( HashValue hash );
 
   inline const HashNodeBase &	hashNode( Loc node ) const;
   inline HashNodeBase &		hashNode( Loc node );
   
-  Loc		insert( Hash hash, Loc node );
-  bool		erase( Hash hash, Loc node );
-  bool		erase( Hash firstHash, Loc firstNode,
-		       Hash lastHash, Loc lastNode );
+  Loc		insert( HashValue hash, Loc node );
+  bool		erase( HashValue hash, Loc node );
+  bool		erase( HashValue firstHash, Loc firstNode,
+		       HashValue lastHash, Loc lastNode );
   
-  inline Loc	find( Hash hash ) const;
+  inline Loc	find( HashValue hash ) const;
 
-  inline Hash	first( void ) const;
-  inline Loc	next( Hash & hash, Loc & node  ) const;
-  inline Loc	prev( Hash & hash, Loc & node ) const;
-  inline Hash	endHash( void ) const;
+  inline HashValue	first( void ) const;
+  inline Loc	next( HashValue & hash, Loc & node  ) const;
+  inline Loc	prev( HashValue & hash, Loc & node ) const;
+  inline HashValue	endHash( void ) const;
 
   bool		setError( ErrorNum err );
   
@@ -235,6 +235,10 @@ operator >> ( istream & src, const HashTableBase & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:20:43  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.3  1997/07/13 11:13:49  houghton
 // Changed to use MultiMemOffset.
 // Changed dumpTable().

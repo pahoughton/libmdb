@@ -40,7 +40,7 @@ DashTableBase::dashNode( Loc node )
 
 inline
 HashTableBase::Loc
-DashTableBase::next( Hash & hash, Loc & node ) const
+DashTableBase::next( HashValue & hash, Loc & node ) const
 {
   if( dashNode( node ).nextEff )
     {
@@ -60,7 +60,7 @@ DashTableBase::next( Hash & hash, Loc & node ) const
 	  
 inline
 DashTableBase::Loc
-DashTableBase::prev( Hash & hash, Loc & node ) const
+DashTableBase::prev( HashValue & hash, Loc & node ) const
 {
   if( dashNode( node ).prevEff )
     {
@@ -81,6 +81,10 @@ DashTableBase::prev( Hash & hash, Loc & node ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/19 10:19:01  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.2  1997/07/13 11:06:49  houghton
 // Changed to use mgr as a ptr (ie from mgr. to mgr->).
 //

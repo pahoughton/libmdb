@@ -29,7 +29,7 @@ MDB_VERSION(
 
 const unsigned long HashTableBase::hashTableVersion = 0x4d485402;   // MHT02
 
-const HashTableBase::Hash    HashTableBase::badHash( -1 );
+const HashTableBase::HashValue    HashTableBase::badHash( -1 );
 
 HashTableBase::HashTableBase(
   MultiMemOffset *  memMgr,
@@ -204,7 +204,7 @@ HashTableBase::dumpTable(
 {
   dest << "hash      node  prev  next\n";
   
-  for( Hash hash = first(); hash < endHash(); ++ hash )
+  for( HashValue hash = first(); hash < endHash(); ++ hash )
     {
       for( Loc node = hashLoc( hash );
 	   node != 0;
@@ -229,7 +229,7 @@ HashTableBase::dumpNode( ostream & dest, Loc CLUE_UNUSED( node ) ) const
 }
 
 HashTableBase::Loc
-HashTableBase::insert( Hash hash, Loc node )
+HashTableBase::insert( HashValue hash, Loc node )
 {
   if( ! good() )
     return( MultiMemOffset::badLoc );
@@ -264,7 +264,7 @@ HashTableBase::insert( Hash hash, Loc node )
 }
 
 bool
-HashTableBase::erase( Hash hash, Loc node )
+HashTableBase::erase( HashValue hash, Loc node )
 {
   if( ! good() )
     return( false );
@@ -285,19 +285,19 @@ HashTableBase::erase( Hash hash, Loc node )
 
 bool
 HashTableBase::erase(
-  Hash	    firstHash,
+  HashValue	    firstHash,
   Loc	    firstNode,
-  Hash	    lastHash,
+  HashValue	    lastHash,
   Loc	    lastNode
   )
 {
   if( ! good() )
     return( false );
 
-  Hash  curHash  = firstHash;
+  HashValue  curHash  = firstHash;
   Loc	curNode  = firstNode;
   
-  Hash	nextHash = firstHash;
+  HashValue	nextHash = firstHash;
   Loc	nextNode = firstNode;
 
   for( next( nextHash, nextNode );
@@ -323,6 +323,10 @@ HashTableBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/19 10:20:23  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
+//     'Hash' was conflicting with the 'Hash' template class.
+//
 // Revision 2.2  1997/07/13 11:14:05  houghton
 // Changed to use MultiMemOffset.
 // Changed dumpTable().
