@@ -15,8 +15,7 @@
 //  Version:	    $Revision$
 //
 
-#include <AppParam.hh>
-
+#include <LibLog.hh>
 #include <TimeIt.hh>
 #include <iostream>
 #include <iomanip>
@@ -59,38 +58,44 @@ LogPerfData(
   dest << timer
        << endl;
 
-  AppDebug;
+  _LLg( LogLevel::Debug );
 
-  App->log().setf( ios::left, ios::adjustfield );
-  App->log() << setw(20) << mapType
-	     << " "
-	     << setw(20) << className
-	     << " "
-    ;
-  App->log().setf( ios::internal, ios::adjustfield );
-  App->log() << setw( 5 ) << initAlloc
-	     << " "
-	     << setw( 4 ) << recSize
-	     << " "
-	     << setw( 8 ) << quantity
-	     << " "
-    ;
-  App->log().setf( ios::left, ios::adjustfield );
-  App->log() << setw(10) << method
-	     << " "
-	     << setw(5) <<  order
-	     << " "
-    ;
-  App->log().setf( ios::internal, ios::adjustfield );
-  App->log() << timer.dump()
-	     << endl;
-
+  if( _LibLog && _LibLog->willOutput( LogLevel::Debug ) )
+    {
+      (*_LibLog).setf( ios::left, ios::adjustfield );
+      (*_LibLog) << setw(20) << mapType
+		 << " "
+		 << setw(20) << className
+		 << " "
+	;
+      (*_LibLog).setf( ios::internal, ios::adjustfield );
+      (*_LibLog) << setw( 5 ) << initAlloc
+		 << " "
+		 << setw( 4 ) << recSize
+		 << " "
+		 << setw( 8 ) << quantity
+		 << " "
+	;
+      (*_LibLog).setf( ios::left, ios::adjustfield );
+      (*_LibLog) << setw(10) << method
+		 << " "
+		 << setw(5) <<  order
+		 << " "
+	;
+      (*_LibLog).setf( ios::internal, ios::adjustfield );
+      (*_LibLog) << timer.dump()
+		 << endl;
+    }
+      
 }
 
 
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/07/21 10:27:08  houghton
+// Changed to use LibLog for debug loging.
+//
 // Revision 1.2  1997/07/14 10:51:17  houghton
 // Added detail info output to AppDebug.
 //
