@@ -188,6 +188,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/06/25 12:48:36  houghton
+// Added dumpNode and dumpKey methods.
+//
 // Revision 2.1  1995/11/10 12:41:59  houghton
 // Change to Version 2
 //
@@ -235,6 +238,10 @@ protected:
   void	    	initNode( Node * node );
   
   ostream & 	dumpTree( const Node * root, ostream & dest, int level = 0 ) const;
+  
+  ostream &	dumpNode( ostream & dest, const Node * root, int level ) const;
+  
+  virtual ostream & dumpKey( ostream & dest, const Node * keyLoc ) const = 0;
   
   void	    	destroyTree( Node ** root );
   void	    	destroyTree( Node ** root, void * closure );
