@@ -195,24 +195,24 @@ public:
   virtual ~HashTable( void ) {};
 
   inline pair_iterator_bool	insert( const Value & rec ) {
-    Loc	    node = mgr->allocate( sizeof( HashNode ) );
-    if( node )
-      {
-	HashValue    hash = hashFunct( keyOf( rec ) );
-	if( HashTableBase::insert( hash, node ) )
-	  {
-	    value( node ) = rec;
-	    return( pair_iterator_bool( iterator( this, hash, node ), true ) );
-	  }
+    HashValue   hash = hashFunct( keyOf( rec ) );
+    Loc		node = HashTableBase::find( hash );
+    for( ; node; node = hashNode( node ).next ) {
+      if( ! lessKey( key, keyOf( value( node ) ) ) &&
+	  ! lessKey( keyOf( value( node ) ), key ) )
+	return( pair_iterator_bool( iterator( this, hash, node ), false ) );
+    }
+    node = mgr->allocate( sizeof( HashNode ) );
+    if( node ) {
+      if( HashTableBase::insert( hash, node ) ) {
+	value( node ) = rec;
+	return( pair_iterator_bool( iterator( this, hash, node ), true ) );
       }
-      return( pair_iterator_bool( iterator( this, endHash(), 0 ), false ) );
+    }
+    return( pair_iterator_bool( end(), false ) );
   };
   
-  inline bool	    erase( const iterator & first, const iterator & last ) {
-    return( HashTableBase::erase( first.hash, first.node,
-				  last.hash, last.node ) );
-  };
-    
+  
   inline const_iterator	    find( const Key & key ) const {
     HashValue    hash = hashFunct( key );
     Loc	    node = HashTableBase::find( hash );
@@ -235,10 +235,6 @@ public:
     return( end() );
   }
     
-  inline bool		erase( const iterator & it ) {
-    return( HashTableBase::erase( it.hash, it.node ) );
-  };
-
   inline bool		erase( const Key & key ) {
     iterator  it = find( key );
     if( it != end() )
@@ -247,6 +243,15 @@ public:
       return( false );
   };
 
+  inline bool		erase( const iterator & it ) {
+    return( HashTableBase::erase( it.hash, it.node ) );
+  };
+
+  inline bool	    erase( const iterator & first, const iterator & last ) {
+    return( HashTableBase::erase( first.hash, first.node,
+				  last.hash, last.node ) );
+  };
+    
   inline const_iterator	    begin( void ) const {
     HashValue    hash = first();
     return( const_iterator( this, hash, hashLoc( hash ) ) );
@@ -350,7 +355,18 @@ protected:
   inline Loc	prevNode( HashValue & hash, Loc & node ) const {
     return( prev( hash, node ) );
   };
-  
+
+  inline Loc	findNode( HashValue & hash, const Key & key ) {
+    HashValue    hash = hashFunct( key );
+    Loc	    node = HashTableBase::find( hash );
+    for( ; node; node = hashNode( node ).next ) {
+      if( ! lessKey( key, keyOf( value( node ) ) ) &&
+	  ! lessKey( keyOf( value( node ) ), key ) )
+	return( node );
+    }
+    return( 
+    return( end() );
+    
   HashFunct	hashFunct;
   KeyOfValue	keyOf;
   LessKey	lessKey;
@@ -452,6 +468,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/25 13:45:16  houghton
+// Changed so that only unique keys could be inserted.
+//
 // Revision 2.4  1997/07/19 10:20:03  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.
