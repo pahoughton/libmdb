@@ -39,7 +39,7 @@ MDB_VERSION(
 
 
 MapFile::MapFile()
-  : mapFd( 0 ),
+  : mapFd( -1 ),
     mapMode( ios::in ),
     mapSize( 0 ),
     mapBase( 0 ),
@@ -58,7 +58,7 @@ MapFile::MapFile(
   MapMask	    permMask
   )
   : fileStat( fileName ),
-    mapFd( 0 ),
+    mapFd( -1 ),
     mapMode( create ? (ios::open_mode)(ios::in | ios::out) : mode ),
     mapSize( 0 ),
     mapBase( 0 ),
@@ -78,7 +78,7 @@ MapFile::MapFile(
   ios::open_mode    mode
   )
   : fileStat( fileName ),
-    mapFd( 0 ),
+    mapFd( -1 ),
     mapMode( mode ),
     mapSize( 0 ),
     mapBase( 0 ),
@@ -96,7 +96,7 @@ MapFile::MapFile(
   MapMask	    permMask
   )
   : fileStat( fileName ),
-    mapFd( 0 ),
+    mapFd( -1 ),
     mapMode( (ios::open_mode)(ios::in | ios::out) ),
     mapSize( 0 ),
     mapBase( 0 ),
@@ -113,6 +113,45 @@ MapFile::~MapFile( void )
   unmap();
 }
 
+
+MapFile::size_type
+MapFile::createMap(
+  const char *	    fileName,
+  MapAddr	    baseAddr,
+  size_type	    size,
+  MapMask	    permMask
+  )
+{
+
+  if( mapFd >= 0 )
+    unmap();
+  
+  unsigned short origMask = 0;
+
+  if( permMask != 0777 )
+    {
+      origMask = umask( permMask );
+    }
+
+  unlink( fileName );
+
+  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
+    {
+      osErrno = errno;
+      mapFd = -1;
+      return( 0 );
+    }
+
+  fileStat( mapFd, true );
+  
+  if( permMask != 0777 )
+    {
+      umask( origMask );
+    }
+  
+  return( setSize( size, baseAddr ) );
+  
+}
 
 MapFile::size_type
 MapFile::map(
@@ -165,6 +204,7 @@ MapFile::map(
   if( (mapFd = open( fileName, posixMode, 0 ) ) < 0 )
     {
       osErrno = errno;
+      mapFd = -1;
       return(0);
     }
 
@@ -202,10 +242,10 @@ MapFile::unmap( void )
       mapSize = 0;
     }
   
-  if( mapFd != 0 )
+  if( mapFd >= 0 )
     {
       close( mapFd );
-      mapFd = 0;
+      mapFd = -1;
     }
 }
   
@@ -266,6 +306,12 @@ MapFile::setSize(
     }
 
   return( mapSize );
+}
+
+const FileStat &
+MapFile::getFileStat( void ) const
+{
+  return( fileStat );
 }
 
 const char *
@@ -375,44 +421,15 @@ MapFile::dumpInfo(
   return( dest );
 }
   
-void
-MapFile::createMap(
-  const char *	    fileName,
-  MapAddr	    baseAddr,
-  size_type	    size,
-  MapMask	    permMask
-  )
-{
-  unsigned short origMask = 0;
-
-  if( permMask != 0777 )
-    {
-      origMask = umask( permMask );
-    }
-
-  unlink( fileName );
-
-  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
-    {
-      osErrno = errno;
-      return;
-    }
-
-  fileStat( mapFd, true );
-  
-  if( permMask != 0777 )
-    {
-      umask( origMask );
-    }
-  
-  setSize( size, baseAddr );
-  
-}
 
 
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1997/07/25 13:47:02  houghton
+// Cleanup.
+// Changed so an invalid mapFd value is -1.
+//
 // Revision 2.11  1997/07/19 10:25:50  houghton
 // Port(Sun5): moved secializations to new _MdbMapMem.hh header.
 //
