@@ -351,16 +351,7 @@ protected:
   KeyOfValue	keyOf;
   
 private:
-#if defined( FIXME )
-  RBTree( const RBTree<K,D> & from );
-  RBTree<K,D> & operator = ( const RBTree<K,D> & from );
-
-  inline const RBNode *     nodeAddr( Loc loc ) const {
-    return( (const RBNode *)mgr.address( loc ) ); };
   
-  inline RBNode *	    nodeAddr( Loc loc ) {
-    return( (RBNode *)mgr.address( loc ) ); };
-#endif
 };
 
 #include <RBTree.ii>
@@ -450,6 +441,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/25 13:48:28  houghton
+// Cleanup.
+//
 // Revision 2.4  1997/07/19 10:29:41  houghton
 // Bug-Fix: added include <pair> and <iterator>
 //

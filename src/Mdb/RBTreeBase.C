@@ -341,6 +341,8 @@ RBTreeBase::erase( Loc loc )
   NodeBase x( *mgr, 0 );
   NodeBase xp( *mgr, 0 );
 
+  -- header().count;
+  
   if( ! y.left() )
     {
       RBT_TEST_FUNCT( erase_NO_LEFT );
@@ -614,7 +616,6 @@ RBTreeBase::erase( Loc loc )
     }
 #endif
   
-  -- header().count;
   return( true );
 }
 	  
@@ -1561,6 +1562,9 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/25 13:48:40  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/07/14 10:40:43  houghton
 // Port(AIX): added a bool constructor for the '? :' operator.
 //

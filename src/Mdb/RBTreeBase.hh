@@ -127,12 +127,6 @@ public:
   inline size_type	size( void ) const;
   inline bool		empty( void ) const;
   
-  // virtual ostream &	    write( ostream & dest ) const;
-  // virtual istream &	    read( istream & src );
-
-  // virtual ostream &	    toStream( ostream & dest ) const;
-  // virtual istream &	    fromStream( istream & src );
-
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -324,6 +318,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/25 13:48:48  houghton
+// Cleanup.
+//
 // Revision 2.2  1997/07/13 11:33:15  houghton
 // Cleanup.
 // Changed to use MultiMemOffset.
