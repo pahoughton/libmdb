@@ -40,7 +40,7 @@ const char * MapMemDynamicDynamic::ErrorStrings[] =
   0
 };
 
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 
 static long	allocSplit = 0;
 static long	allocWhole = 0;
@@ -143,7 +143,7 @@ MapMemDynamicDynamic::allocFreeNode( Loc f, size_type chunkSize )
       mapInfo()->chunkSize += chunkSize;
       mapInfo()->freeSize  -= chunkSize;
       
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "allocate( " << setw( 4 ) << chunkSize << " ) split: "
 	<< setw( 6 ) << "n: " << nodeLoc( f )
@@ -173,7 +173,7 @@ MapMemDynamicDynamic::allocFreeNode( Loc f, size_type chunkSize )
       
       -- mapInfo()->freeCount;
       
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "allocate( " << setw( 4 ) << chunkSize << " ) whole: "
 	<< setw( 6 ) << "n: " << nodeLoc( f )
@@ -255,7 +255,7 @@ MapMemDynamicDynamic::release( Loc offset )
       
       ++ mapInfo()->freeCount;
       
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "release ( " << offset << " ) only."
 	<< endl;
@@ -281,7 +281,7 @@ MapMemDynamicDynamic::release( Loc offset )
 	      
 	      setFreeNextPrev( nextF, prevF );
 
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 	      _LLg( LogLevel::Test )
 		<< "release ( " << offset << " ) join prev self next."
 		<< endl;
@@ -294,7 +294,7 @@ MapMemDynamicDynamic::release( Loc offset )
 	      // no next or next is an allocated node
 	      freeNode( prevF ).next = freeNode( f ).next;
 
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 	      _LLg( LogLevel::Test )
 		<< "release ( " << offset << " ) join prev self."
 		<< endl;
@@ -330,7 +330,7 @@ MapMemDynamicDynamic::release( Loc offset )
 	      // change next->prev to free 'f'
 	      setNextPrev( f, -f );
 		  
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 	      _LLg( LogLevel::Test )
 		<< "release ( " << offset << " ) join self next."
 		<< endl;
@@ -362,7 +362,7 @@ MapMemDynamicDynamic::release( Loc offset )
 		  
 		  freeList().prevFree = f;
 		  
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 		  _LLg( LogLevel::Test )
 		    << "release ( " << offset << " ) Last."
 		    << endl;
@@ -381,7 +381,7 @@ MapMemDynamicDynamic::release( Loc offset )
 		      
 		      freeList().nextFree = f;
 		      
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 		      _LLg( LogLevel::Test )
 			<< "release ( " << offset << " ) first."
 			<< endl;
@@ -409,7 +409,7 @@ MapMemDynamicDynamic::release( Loc offset )
 			       prevF =  freeNode( prevF ).prevFree );
 
 			  nextF = freeNode( prevF ).nextFree;
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 			  _LLg( LogLevel::Test )
 			    << "release ( " << offset << " ) Middle end."
 			    << endl;
@@ -427,7 +427,7 @@ MapMemDynamicDynamic::release( Loc offset )
 			       nextF = freeNode( nextF ).nextFree );
 
 			  prevF = freeNode( nextF ).prevFree;
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 			  _LLg( LogLevel::Test )
 			    << "release ( " << offset << " ) Middle beg."
 			    << endl;
@@ -459,7 +459,7 @@ MapMemDynamicDynamic::release( Loc offset )
 				 mapInfo()->allocSize );
       
       // shrink by all but one alloc unit;
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "SHRINK: pre: amount: " << shrinkAmount
 	<< '\n' << dump( " pre: " )
@@ -478,7 +478,7 @@ MapMemDynamicDynamic::release( Loc offset )
   
       mapInfo()->freeSize -= (origSize - newSize);
   
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
       ++ shrunkMap;
       
       _LLg( LogLevel::Test )
@@ -528,7 +528,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
   //    free node is big enough to accomidate an allocate request for
   //	'minAmount'.
   
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
   _LLg( LogLevel::Test )
     << "EXPAND: pre: \n"
     << "    minAmount:     " << minAmount << '\n'
@@ -558,7 +558,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
   if( lastFreeSize + freeList().prevFree != origSize )
     {       
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
       if( freeList().prevFree )
 	{
 	  _LLg( LogLevel::Test )
@@ -610,7 +610,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
       
       ++ mapInfo()->freeCount;
       
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
       
       _LLg( LogLevel::Test )
 	<< "EXPAND: post last not free done: "
@@ -621,7 +621,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
 #endif
     }
-#if defined( MDB_DEBUG )
+#if defined( MDD_TEST )
   else
     {
       ++ expandLastNode;
@@ -721,7 +721,7 @@ MapMemDynamicDynamic::dumpInfo(
 	   << prefix << "prev:         " << freeList().prev << '\n'
 	   << prefix << "freeNext:     " << freeList().nextFree << '\n'
 	   << prefix << "freePrev:     " << freeList().prevFree << '\n'
-#if defined( MDD_DEBUG )
+#if defined( MDD_TEST )
 	   << prefix << "A split:      " << allocSplit << '\n'
 	   << prefix << "A whole:      " << allocWhole << '\n'
 	   << prefix << "R only:       " << relOnly << '\n'
@@ -863,6 +863,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.16  1998/02/02 15:39:03  houghton
+// Cleanup test defines.
+//
 // Revision 2.15  1997/09/17 16:56:03  houghton
 // Changed for new library rename to StlUtils
 //
