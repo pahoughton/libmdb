@@ -345,22 +345,24 @@ tMapMemDynamicDynamic01( LibTest & tester )
     d.size  =   80;	data.push_back( d );	// 21
     d.size  = 3720;	data.push_back( d );	// 22
 
-    // allocate()
-    for( DataList::iterator them = data.begin();
-	 them != data.end();
-	 ++ them )
-      {
-	(*them).loc = t.allocate( (*them).size );
-	TESTR( t.error(), (*them).loc != 0 );
+    {
+      // allocate()
+      for( DataList::iterator them = data.begin();
+	   them != data.end();
+	   ++ them )
+	{
+	  (*them).loc = t.allocate( (*them).size );
+	  TESTR( t.error(), (*them).loc != 0 );
 
-	char * chunk;
+	  char * chunk;
 
-	chunk = (char *)t.address( (*them).loc );
+	  chunk = (char *)t.address( (*them).loc );
 	
-	TESTR( t.error(), chunk != 0 );
+	  TESTR( t.error(), chunk != 0 );
 
-	memset( chunk, 0xff, (*them).size);
-      }
+	  memset( chunk, 0xff, (*them).size);
+	}
+    }
 
     int rNode = 12;
 
@@ -467,22 +469,24 @@ tMapMemDynamicDynamic01( LibTest & tester )
     TESTR( t.error(), chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
-    for( DataList::iterator them = data.begin();
-	 them != data.end();
-	 ++ them )
-      {
-	if( (*them).loc )
-	  {
-	    chunk = (unsigned char *)t.address( (*them).loc );
+    {
+      for( DataList::iterator them = data.begin();
+	   them != data.end();
+	   ++ them )
+	{
+	  if( (*them).loc )
+	    {
+	      chunk = (unsigned char *)t.address( (*them).loc );
 	    
-	    TESTR( t.error(), chunk != 0 );
+	      TESTR( t.error(), chunk != 0 );
 
-	    for( int c = 0; c < (*them).size; ++ c )
-	      {
-		TESTR( "bad value.", chunk[c] == 0xff );
-	      }
-	  }
-      }
+	      for( int c = 0; c < (*them).size; ++ c )
+		{
+		  TESTR( "bad value.", chunk[c] == 0xff );
+		}
+	    }
+	}
+    }
   }
 #endif // defined( MANUAL_REVIEW )
 
@@ -665,6 +669,9 @@ tMapMemDynamicDynamic01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/07/14 10:47:48  houghton
+// Port(AIX): had to enclose for loop in '{}'.
+//
 // Revision 2.5  1997/07/13 11:35:44  houghton
 // Cleanup.
 // Rework.
