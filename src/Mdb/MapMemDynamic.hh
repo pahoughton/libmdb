@@ -67,6 +67,8 @@ public:
   virtual Loc		allocate( size_type size ) = 0;
   virtual void		release( Loc loc ) = 0;
 
+  virtual bool		 expand( size_type minAmount ) = 0;
+
   inline Addr		address( Loc loc );
   inline const Addr	address( Loc loc ) const;
   inline Loc		location( const Addr addr ) const;
@@ -292,6 +294,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/28 16:49:43  houghton
+// Added expand.
+//
 // Revision 2.3  1997/07/13 11:19:18  houghton
 // Cleanup
 // Removed owner (now in MapMem).
