@@ -21,8 +21,8 @@
 //
 
 #include <MdbConfig.hh>
+#include <MdbUtils.hh>
 #include <DashTable.hh>
-#include <projectn.h>
 #include <iostream>
 
 #if defined( MDB_DEBUG )
@@ -38,7 +38,7 @@ class DashSet
 
 public:
 
-  typedef DashTable< Key, Key, ident< Key, Key >, HashFunct, LessKey > Table;
+  typedef DashTable< Key, Key, MdbIdent< Key, Key >, HashFunct, LessKey > Table;
 
   typedef Table::size_type		size_type;
   typedef Table::iterator		iterator;
@@ -236,6 +236,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1998/10/23 13:17:51  houghton
+// Changed include <projectn.h> to include <MdbUtils.h>.
+// Changed ident<> to MdbIdent<>.
+//
 // Revision 2.5  1997/07/25 13:44:29  houghton
 // Class was renamed to DashSet (was Dash).
 //
