@@ -49,7 +49,7 @@ public:
   
   typedef T		Rec;
   
-#if defined( STLTUTILS_STD_ITERATORS )
+#if defined( STLUTILS_STD_ITERATORS )
 
   typedef std::reverse_iterator< iterator,
     random_access_iterator_tag,
@@ -303,6 +303,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2001/08/08 14:10:00  houghton
+// *** empty log message ***
+//
 // Revision 4.2  2001/07/30 12:18:36  houghton
 // *** empty log message ***
 //
