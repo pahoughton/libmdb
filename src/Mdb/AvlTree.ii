@@ -1,0 +1,597 @@
+#ifndef _AvlTree_ii_
+#define _AvlTree_ii_
+//
+// File:        AvlTree.ii
+// Project:	Mdb (%PP%)
+// Item:	%PI% (%PF%)
+// Desc:        
+//
+//  Inline source for AvlTree. See AvlTree.hh for class
+//  description and other documentation.
+//
+// Notes:
+//
+// Author(s):   Paul Houghton - (paul.houghton@wcom.com)
+// Created:     07/30/01 04:57
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    %PO%
+//  Last Mod:	    %PRT%
+//  Version:	    %PIV%
+//  Status:	    %PS%
+//
+//  %PID%
+//
+
+
+
+//
+// Inline methods
+//
+
+//
+// Public Methods
+//
+
+// constructor - create a new tree
+template<class T>
+inline
+AvlTree<T>::AvlTree(
+  int	    	(* compareData)( const T & one, const T & two ),
+  void	    	(* copyData)( T & dest, const T & src ),
+  MultiMem * 	memMgr
+  )
+{
+  initTree( compareData, copyData, memMgr );
+}
+
+// construcor - manage an existng tree
+template<class T>
+inline
+AvlTree<T>::AvlTree(
+  void *    	avlTree,
+  int	    	(* compareData)( const T & one, const T & two ),
+  void	    	(* copyData)( T & dest, const T & src ),
+  MultiMem * 	memMgr
+  )
+{
+  initTree( compareData, copyData, memMgr, avlTree );
+}
+
+// add - add a node to the tree
+template<class T>
+inline
+T *
+AvlTree<T>::add( const T & rec )
+{
+  AVLTREE_CHECK( 0 );
+
+  AvlNode * newNode = getNodeMem();
+  AvlNode * addNode = newNode;
+  
+  AVLTREE_SAFE( newNode, 0 );
+
+  initNode( newNode );
+
+  copy( newNode->data, rec );
+  
+  insertNode( &(tree->root), &addNode );
+
+  if( addNode == 0 )
+    {
+      tree->count++;
+    }
+  else
+    {
+      freeNodeMem( newNode );
+    }
+
+  return( (addNode) ? &(addNode->data) : 0 );
+}
+
+// find - find a node in the tree
+template<class T>
+inline
+T *
+AvlTree<T>::find( const T & rec )
+{
+  AVLTREE_CHECK( 0 );
+
+  AvlNode key;
+
+  copy( key.data, rec );
+
+  AvlNode * found = findNode( tree->root, &key );
+
+  return( (found) ? &(found->data) : 0 );  
+}
+
+// find - find a node in the tree
+template<class T>
+inline
+const T *
+AvlTree<T>::find( const T & rec ) const
+{
+  AVLTREE_CHECK( 0 );
+  
+  AvlNode * found = findNode( tree->root, &rec );
+
+  return( (found) ? &(found->data) : 0 );  
+}
+
+// del - remove a node from the tree
+template<class T>
+inline
+Bool
+AvlTree<T>::del( const T & rec )
+{
+  AVLTREE_CHECK( FALSE );
+  
+  AvlNode key;
+ 
+  copy( key.data, rec );
+
+  Node * delKey = &key;
+  deleteNode( &(tree->root), &delKey );
+
+  if( delKey )
+    {
+      tree->count--;
+      freeNodeMem( delKey );
+    }
+  return( delKey );
+}
+
+// walk - execute a user function for each node the tree
+template<class T>
+inline
+Bool
+AvlTree<T>::walk( Bool (*action)( T * data ) )
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) walkAction = action;
+  return( walkTree( tree->root ) );
+}
+
+// walk - execute a user function for each node the tree
+template<class T>
+inline
+Bool
+AvlTree<T>::walk( Bool (*action)( cosnt T * data ) ) const
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) walkActionConst = action;
+  return( walkTree( tree->root ) );
+}
+
+// walk - execute a user function for each node the tree
+template<class T>
+inline
+Bool
+AvlTree<T>::walk(
+  void * closure,
+  Bool  (*action)( T * data, void * closure )
+  )  
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) walkActionClosure = action;
+  return( walkTree( tree->root, closure ) );
+}
+
+// walk - execute a user function for each node the tree
+template<class T>
+inline
+Bool
+AvlTree<T>::walk(
+  void * closure ,
+  Bool (*action)( cosnt T * data, void * closure )
+  ) const
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) walkActionClosureConst = action;
+  walkTree( tree->root, closure );
+}
+
+// destroy - remove all nodes from the tree
+template<class T>
+inline
+void
+AvlTree<T>::destroy( void (*action)( T * data ) )
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) destroyAction = action
+  destroyTree( &(tree->root), closure );
+}
+
+// destroy - remove all nodes from the tree
+template<class T>
+inline
+void
+AvlTree<T>::destroy(
+  void * closure,
+  void (*action)( T * data, void * closure)
+  )
+{
+  AVLTREE_CHECK( TRUE );
+  
+  if( action ) destroyActionClosure = action;
+  destroyTree( tree->root, closure );
+}
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTree<T>::setWalk( Bool (* action)( T & data ) )
+{
+  walkAction = action;
+}
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTree<T>::setWalk( Bool (* action)( const T & data ) )
+{
+  walkActionConst = action;
+}
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTree<T>::setWalk( Bool (* action)( T & data, void * ) )
+{
+  walkActionClosure = action;
+}
+
+// setWalk - set the function to execute for each node during a walk
+template<class T>
+inline
+void
+AvlTree<T>::setWalk( Bool (* action)( const T & data, void * ) )
+{
+  walkActionClosureConst = action;
+}
+
+// setDestroy - set the function to execut for each node durring a destroy
+template<class T>
+inline
+void
+AvlTree<T>::setDestroy( Bool (* action)( T & data ) )
+{
+  destroyAction = action;
+}
+
+// setDestroy - set the function to execut for each node durring a destroy
+template<class T>
+inline
+void
+AvlTree<T>::setDestroy( Bool (* action)( T & data, void * closure ) )
+{
+  destroyActionClosure = action;
+}
+
+// dump - output the tree structure
+template<class T>
+inline
+ostream &
+AvlTree<T>::dump( ostream & dest ) const
+{
+  AVLTREE_CHECK( TRUE );
+  
+  return( dumpTree( tree->root, dest ) );
+}
+
+// getCount - return the number of nodes in the tree
+template<class T>
+inline
+unsigned long
+AvlTree<T>::getCount( void ) const
+{
+  AVLTREE_CHECK( 0 );
+
+  return( tree->count );
+}
+
+// getNodeSize - return the size of each node in the tree
+template<class T>
+inline
+size_t
+AvlTree<T>::getNodeSize( void  )
+{
+  return( sizeof( AvlNode ) );
+}
+
+// getTree - return a pointer to the head of the tree
+template<class T>
+inline
+void *
+AvlTree<T>::getTree( void )
+{
+  return( tree );
+}
+
+// getTree - return a pointer to the head of the tree
+template<class T>
+inline
+cosnt void *
+AvlTree<T>::getTree( void ) const
+{
+  return( tree );
+}
+
+// getMemMgr - return a pointer to the memory manager 
+template<class T>
+inline
+const MultiMem *
+AvlTree<T>::getMemMgr( void ) cosnt
+{
+  return( mem );
+}
+
+// getMemMgr - return a pointer to the memory manager 
+template<class T>
+inline
+MultiMem *
+AvlTree<T>::getMemMgr( void )
+{
+  return( mem );
+}
+
+// good - return TRUE if no errors
+template<class T>
+inline
+Bool
+AvlTree<T>::good( void ) const
+{
+  return( avlError == E_OK && mem.good() );
+}
+
+// error - return a description of the current error state
+template<class T>
+const char *
+AvlTree<T>::error( void ) cont
+{
+  static Str errStr;
+  errStr.reset();
+
+  errStr << getClassName();
+  
+  if( good() )
+    {
+      errStr << ": Ok";
+    }
+  else
+    {
+      switch( avlError )
+	{
+	case E_NOFUNCT:
+	  errStr << ": no copy or compare function";
+	  break;
+
+	case E_NOTREE:
+	  errStr << ": no tree (tree == 0)";
+	  break;
+
+	case E_MEMMGR:
+	  if( mem->good() )
+	    {
+	      errStr << ": unknown mem error";
+	    }
+	  break;
+
+	default:
+	  if( mem->good() )
+	    {
+	      errStr << ": unknown error";
+	    }
+	  break;
+	}
+
+      if( ! mem->good() )
+	{
+	  errStr << ": " << mem->error();
+	}
+    }
+  return( errStr.cstr() );
+}
+
+// compare - virtual compare T 
+template<class T>
+inline
+int
+AvlTree<T>::compare( const T & one, const T & two )
+{
+  
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( ::Compare( one, two ) );
+#else
+  return( compareRec( one, two ) );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+  return( (compareRec) ? compareRec( one, two) :
+	  ::Compare( one, two ) );
+#else
+  return( (compareRec) ? compareRec( one, two ) : 0 );
+#endif
+  
+}
+
+// compareNode - override of base class's virtual compare
+template<class T>
+inline
+int
+AvlTree<T>::compareNode( const AvlNode * one, const AvlNode * two )
+{
+  return( compare( one->data, two->data ) );
+}
+
+// compareFind - override of base class's virtual compare
+template<class T>
+inline
+int
+AvlTree<T>::compareFind( const void * one, const AvlNode * two )
+{
+  return( compare( *((T*)data), two->data ) );
+}
+
+
+// copy - copy src to dest
+tempate<class T>
+void
+AvlTree<T>::copy( T & dest, const & src )
+{
+#ifdef AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   dest = src;
+#else
+   copyRec( dest, src );
+#endif
+#else // ! AVLTREE_FAST
+#ifdef AVLTREE_GLOBALFUNCT
+   if( copyRec )
+     {
+       copyRec( dest, src );
+     }
+   else
+     {
+       dest = src;
+     }
+#else
+   if( copyRec ) copyRec( one->data, two->data );
+#endif  
+}
+
+// walkNode - override of base class's virtual walkNode
+template<class T>
+inline
+Bool
+AvlTree<T>::walkNode( AvlNode * node )
+{
+  return( (walkAction) ? walkAction( node->data ) : TRUE );
+}
+
+// walkNode - override of base class's virtual walkNode
+template<class T>
+inline
+Bool
+AvlTree<T>::walkNode( const AvlNode * node ) const
+{
+  return( (walkActionConst) ? walkActionConst( node->data ) : TRUE );
+}
+
+// walkNode - override of base class's virtual walkNode
+template<class T>
+inline
+Bool
+AvlTree<T>::walkNode( AvlNode * node, void * closure )
+{
+  return( (walkActionClosure) ? walkActionClosure( node->data, closure ) : TRUE );
+}
+
+// walkNode - override of base class's virtual walkNode
+template<class T>
+inline
+Bool
+AvlTree<T>::walkNode( const AvlNode * node, void * closure ) const
+{
+  return( (walkActionClosureConst) ?
+	  walkActionClosureConst( node->data, closure ) : TRUE );
+}
+
+// destroyNode - overide of base class's virtual destroyNode
+template<class T>
+inline
+void
+AvlTree<T>::destroyNode( AvlNode * node )
+{
+  if( destroyAction )
+    {
+      destroyAction( node->data );
+    }
+
+  freeNodeMem( node );
+}
+
+// destroyNode - overide of base class's virtual destroyNode
+template<class T>
+inline
+void
+AvlTree<T>::destroyNode( AvlNode * node, void * closure )
+{
+  if( destroyActionClosure )
+    {
+      destroyActionClosure( node->data, closure );
+    }
+
+  freeNodeMem( node );
+}
+    
+template<class T>
+inline
+void
+AvlTree<T>::initTree(
+  int (* cmp)( const T & one, const T & two ),
+  void (* cpy)( T & dest, const T & src),
+  memMgr = 0,
+  avlTree = 0
+  )
+{
+  avlError = E_OK;
+  compareRec = cmp;
+  copyRec    = cpy;
+
+  walkAction = 0;
+  walkActionConst = 0;
+  walkActionClosure = 0;
+  walkActionClosureConst = 0;
+
+  destroyAction = 0;
+  destroyActionClosure = 0;
+  
+  mem = (memMgr) ? memMgr : &MutliMemMalloc;
+
+  tree = (AvlTree *)((avlTree) ? avlTree : mem->getMem( sizeof( AvlTree ) ));
+  
+#if !defined( AVLTREE_FAST )
+  if( ! tree )
+    {
+      avlError = E_NOTREE;
+    }
+  
+#if !defined( AVLTREE_GLOBALFUNCT ) 
+  if( ! compareRec || ! copyRec )
+    {
+      avlError = E_NOFUNCT;
+      return;
+    }
+#endif // ! def AVLTREE_GLOBALFUNCT
+  
+  if( ! mem.good() )
+    {
+      avlError = E_MEMMGR;
+    }
+#endif // ! def AVLTREE_FAST
+}
+
+// Revision Log:
+// 
+// %PL%
+//
+
+// Set XEmacs mode
+//
+// Local Variables:
+// mode: c++
+// End:
+//
+#endif // ! def _AvlTree_ii_ 
