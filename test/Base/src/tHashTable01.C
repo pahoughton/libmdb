@@ -15,20 +15,32 @@
 //  Version:	    $Revision$
 //
 
-#include <LibTest.hh>
 #include <HashTable.hh>
+#include <MdbUtils.hh>
+#include <MapMemDynamicDynamic.hh>
+#include <MultiMemOffsetMapDynamic.hh>
+#include <TestConfig.hh>
+#include <LibTest.hh>
 #include <ClueUtils.hh>
 #include <functional>
-#include <projectn.h>
 
-class HashFunction
+class HashLong
 {
 public:
   
-  HashTableBase::Hash	operator() ( long key ) const {
+  HashTableBase::HashValue	operator() ( long key ) const {
     return( abs( key % 100 ) );
   }
 };
+
+class LessLong
+{
+public:
+  bool	operator () ( const long & one, const long & two ) {
+    return( one < two );
+  };
+};
+
 
 bool
 tHashTable01( LibTest & tester )
@@ -40,12 +52,15 @@ tHashTable01( LibTest & tester )
     MapMemDynamicDynamic    map( TestDataFn, 16 );
 
     TESTR( map.error(), map.good() );
-    
-    ChunkMgr		    chunkMgr( map );
 
-    typedef HashTable< long, long, ident< long, long >, HashFunction, less< long > >	TestHash;
+    MultiMemOffsetMapDynamic   mmo( &map, false );
+
+    typedef HashTable< long, long,
+		       MdbIdent< long, long >,
+		       HashLong,
+		       LessLong >	TestHash;
     
-    TestHash	t( chunkMgr,
+    TestHash	t( &mmo,
 		   TestIndexFn,
 		   (ios::open_mode)(ios::in | ios::out),
 		   0002,
@@ -59,7 +74,7 @@ tHashTable01( LibTest & tester )
       for( int i = 0; data[i] != -1; ++ i )
 	{
 	  TESTR( t.error(),
-		 t.insert( data[i], data[i] * 10 ).second );
+		 t.insert( data[i] ).second );
 	}
     }
 
@@ -102,11 +117,13 @@ tHashTable01( LibTest & tester )
   return( true );
 }
 
-			   
 
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/19 10:39:40  houghton
+// Port(Sun5): HashTableBase::Hash was renamed to HashValue.
+//
 // Revision 1.1  1997/06/05 11:30:11  houghton
 // Initial Version.
 //
