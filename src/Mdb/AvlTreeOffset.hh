@@ -14,6 +14,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1996/04/27 13:14:43  houghton
+// Bug-Fix: inline keyword was missing from AvlTreeOffset<T>::copy()
+//
 // Revision 2.1  1995/11/10 12:42:01  houghton
 // Change to Version 2
 //
@@ -619,6 +622,7 @@ AvlTreeOffset<T>::compareFind( const void * one, const off_t two )
 
 // copy - copy data 
 template<class T>
+inline
 T &
 AvlTreeOffset<T>::copy( T & dest, const T & src )
 {
