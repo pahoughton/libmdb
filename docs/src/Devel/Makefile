@@ -92,7 +92,8 @@ PHONY_TARGETS		= $(HELP_TARGETS)
 
 # *** DOC FILES ***
 
-SUBDIRS		=
+SUBDIRS		=	\
+	CxxApi
 
 #
 # Uncomment this to generate the SupportTools.xml document
