@@ -26,6 +26,7 @@ CFG_DIR		= $(PROJECT)/src/config
 
 stlutils_hh	= $(INSTALL_INC_DIR)/StlUtilsConfig.hh 
 
+LIB_STLUTILS	= libStlUtils-5
 
 tools_build_dir		= $(TOOL_DIR)/src/Build/Tools
 libs_build_dir		= $(TOOL_DIR)/src/Build/Libs
@@ -96,6 +97,9 @@ setup: check_cvs $(stlutils_hh) gen_setup_cfg
 
 #
 # $Log$
+# Revision 1.6  2000/05/30 15:27:25  houghton
+# Bug-Fix: forgot to define LIB_STLUTILS variable.
+#
 # Revision 1.5  2000/05/30 13:01:46  houghton
 # Changed to use LIB_STLUTILS variable (vs libStlUtils-4).
 #
