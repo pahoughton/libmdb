@@ -196,12 +196,11 @@ public:
 
   inline pair_iterator_bool	insert( const Value & rec ) {
     HashValue   hash = hashFunct( keyOf( rec ) );
-    Loc		node = HashTableBase::find( hash );
-    for( ; node; node = hashNode( node ).next ) {
-      if( ! lessKey( key, keyOf( value( node ) ) ) &&
-	  ! lessKey( keyOf( value( node ) ), key ) )
-	return( pair_iterator_bool( iterator( this, hash, node ), false ) );
-    }
+    Loc		node = findNode( hash, rec );
+
+    if( node )  // prevent dup keys
+      return( pair_iterator_bool( iterator( this, hash, node ), false ) );
+    
     node = mgr->allocate( sizeof( HashNode ) );
     if( node ) {
       if( HashTableBase::insert( hash, node ) ) {
@@ -215,25 +214,16 @@ public:
   
   inline const_iterator	    find( const Key & key ) const {
     HashValue    hash = hashFunct( key );
-    Loc	    node = HashTableBase::find( hash );
-    for( ; node; node = hashNode( node ).next ) {
-      if( ! lessKey( key, keyOf( value( node ) ) ) &&
-	  ! lessKey( keyOf( value( node ) ), key ) )
-	return( const_iterator( this, hash, node ) );
-    }
-    return( end() );
-  }
+    Loc		 node = findNode( hash, key );
+    return( node ? const_iterator( this, hash, node ) : end() );
+  };
     
   inline iterator	    find( const Key & key ) {
     HashValue    hash = hashFunct( key );
-    Loc	    node = HashTableBase::find( hash );
-    for( ; node; node = hashNode( node ).next ) {
-      if( ! lessKey( key, keyOf( value( node ) ) ) &&
-	  ! lessKey( keyOf( value( node ) ), key ) )
-	return( iterator( this, hash, node ) );
-    }
-    return( end() );
-  }
+    Loc		 node = findNode( hash, key );
+    return( node ? iterator( this, hash, node ) : end() );
+  };
+  
     
   inline bool		erase( const Key & key ) {
     iterator  it = find( key );
@@ -356,16 +346,15 @@ protected:
     return( prev( hash, node ) );
   };
 
-  inline Loc	findNode( HashValue & hash, const Key & key ) {
-    HashValue    hash = hashFunct( key );
+  inline Loc	findNode( HashValue & hash, const Key & key ) const {
     Loc	    node = HashTableBase::find( hash );
     for( ; node; node = hashNode( node ).next ) {
       if( ! lessKey( key, keyOf( value( node ) ) ) &&
 	  ! lessKey( keyOf( value( node ) ), key ) )
-	return( node );
+	break;
     }
-    return( 
-    return( end() );
+    return( node );
+  };
     
   HashFunct	hashFunct;
   KeyOfValue	keyOf;
@@ -468,6 +457,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/07/25 15:58:44  houghton
+// Cleanup.
+// Reworked insert() and find() methods to use new findNode() method.
+//
 // Revision 2.5  1997/07/25 13:45:16  houghton
 // Changed so that only unique keys could be inserted.
 //
