@@ -12,39 +12,46 @@
 //
 // 
 
-#include <ClueConfig.hh>
-
-#include <ClueUtils.hh>
-#include <MapMem.hh>
-#include <Record.hh>
+#include <MdbConfig.hh>
+#include <MapMemDynamic.hh>
 
 #include <DumpInfo.hh>
 
 #include <iostream>
 
-#define MMF_VERSION 0x4d4d4603	// 'MMF3'
+#define MDF_VERSION 0x4d444604	// 'MDF4'
 
-#define NUM_KEYS    16
+#if defined( MDB_DEBUG )
+#define inline
+#endif
 
-class MapMemFixedDynamic : public MapMem
+class MapMemFixedDynamic : public MapMemDynamic
 {
 
 public:
 
-  enum MapFixedDynamicError
+  enum ErrorNum
   {
     E_OK,
     E_MAPMEM,
     E_BADSIZE,
-    E_OWNER,
     E_UNDEFINED
   };
-    
+
+  
+  // use this constructor to either create a new map or access an existing
+  MapMemFixedDynamic( const char *	fileName,
+		      ios::open_mode	mode,
+		      bool		create,
+		      size_type		recSize = 0,
+		      size_type		numRecs = 0,
+		      MapMask		permMask = 0777 );
+  
   // use this constructor to create a new map file  
   MapMemFixedDynamic( const char * 	fileName,
-		      size_t		recSize,
-		      unsigned long	numRecs = 0,
-		      unsigned short	permMask = 0 );
+		      size_type		recSize,
+		      size_type		numRecs = 0,
+		      MapMask		permMask = 0777 );
 
   // use this constructor to access an existing map file  
   MapMemFixedDynamic( const char * 	fileName,
@@ -53,31 +60,15 @@ public:
 
   virtual ~MapMemFixedDynamic( void );
   
-  off_t	    	    getMem( size_t size = 0 );	// returns offset not addr!
-  void	    	    freeMem( off_t  offset ); 	// needs offset not addr!
+  Loc	    	    allocate( size_type size = 0 ); 
+  void	    	    release( Loc loc ); 	
   
-  bool		    valid( off_t offset ) const;
+  bool		    valid( Loc loc ) const;
   
-  void *    	    getAddr( off_t offset ) const;
-  off_t	    	    getOffset( void * addr ) const;
-
-  size_t	    getRecSize( void ) const;
-  size_t	    getChunkSize( void ) const;
-  unsigned long	    getRecCount( void ) const;
-  unsigned long	    getFreeRecCount( void ) const;
-  
-  long	    	    setKey( long value, unsigned short key = 0 );
-  long	    	    getKey( unsigned short key = 0) const;
+  size_type	    getRecSize( void ) const;
+  size_type	    getChunkSize( void ) const;
   
   void 	    	    expand( void );
-
-  RecNumber   	    first( void );
-  bool	    	    next( RecNumber & rec );
-  
-  off_t	    	    recNum2Offset( RecNumber recNum ) const;
-  RecNumber	    offset2RecNum( off_t offset ) const;
-  
-  virtual ostream & 	getStats( ostream & dest ) const;
 
   virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;    
@@ -104,137 +95,36 @@ private:
 
   MapMemFixedDynamic( const MapMemFixedDynamic & copyFrom );
   MapMemFixedDynamic & operator=( const MapMemFixedDynamic & assignFrom );
+
+  void	createMapMemFixedDynamic( size_type recSize,
+				  size_type numRecs );
+
+  void	openMapMemFixedDynamic( void );
   
-  struct MapFixedDynamicInfo : MapInfo
+  struct MapFixedDynamicInfo : MapDynamicInfo
   {
-    long	    owner;	// map owner (writer)
     unsigned long   recSize;	// record size
     unsigned long   chunkSize;	// records to allocate at a time
-    unsigned long   recCount;	// allocated records
-    unsigned long   freeCount;	// available records
-    long    	    keys[NUM_KEYS];	// general purpose values
     struct FreeList freeList;	// head to list of free records
   };
 
+  inline MapFixedDynamicInfo *		mapInfo( void );
+  inline const MapFixedDynamicInfo *	mapInfo( void ) const;
+  
   static const char * ErrorStrings[];
   
-  MapFixedDynamicError	    	mapFixedDynamicError;
-  struct MapFixedDynamicInfo * 	base;  
+  ErrorNum	errorNum;
 
-  off_t	    nextFreeRecOffset;
 };
 
-// inline ostream & operator<<( ostream & dest, const MapMemFixedDynamic & mmf );
 
-//
-// Inline methods
-//
-
-
-inline
-size_t
-MapMemFixedDynamic::getRecSize( void ) const
-{
-  return( base->recSize );
-}
-
-inline
-size_t
-MapMemFixedDynamic::getChunkSize( void ) const
-{
-  return( base->chunkSize );
-}
-
-inline
-unsigned long
-MapMemFixedDynamic::getRecCount( void ) const
-{
-  return( base->recCount );
-}
-
-inline
-unsigned long
-MapMemFixedDynamic::getFreeRecCount( void ) const
-{
-  return( base->freeCount );
-}
-
-    
-inline
-off_t
-MapMemFixedDynamic::getOffset( void * addr ) const
-{
-  return( (off_t)addr - (off_t)base );
-}
+#if !defined( inline )
+#include <MapMemFixedDynamic.ii>
+#else
+#undef inline
 
 
-inline
-void *
-MapMemFixedDynamic::getAddr( off_t offset ) const
-{
-  return( (void *) ((caddr_t)base + offset ));
-}
-
-inline
-long
-MapMemFixedDynamic::getKey( unsigned short key ) const
-{
-  if( base && key < NUM_KEYS )
-    {
-      return( base->keys[key] );
-    }
-  else
-    {
-      return( 0 );
-    }
-}
-
-inline
-long
-MapMemFixedDynamic::setKey(
-  long	    	 value,
-  unsigned short key
-  )
-{
-  if( key >= NUM_KEYS )
-    {
-      return(0);
-    }
-  
-  long old = getKey( key );
-  
-  base->keys[key] = value;
-
-  return( old );
-}
-
-inline
-off_t
-MapMemFixedDynamic::recNum2Offset( RecNumber recNum ) const
-{
-  off_t offset = DwordAlign( sizeof( MapFixedDynamicInfo ) );
-
-  offset += (recNum - 1) * base->recSize;
-
-  return( offset );
-}
-
-inline
-RecNumber
-MapMemFixedDynamic::offset2RecNum( off_t offset ) const
-{
-
-  return( ( ( offset - DwordAlign( sizeof( MapFixedDynamicInfo ) ) ) /
-	    base->recSize ) + 1 );
-}
-
-inline
-ostream &
-operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
-{
-  return( mmf.getStats( dest ) );
-}
-
+#endif
 
 //
 //              This software is the sole property of
@@ -248,6 +138,10 @@ operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
 // 
 //
 // $Log$
+// Revision 2.8  1997/06/18 14:15:26  houghton
+// Rework to use MapMemDynamic as base Class.
+// Rework to be part of libMdb.
+//
 // Revision 2.7  1997/04/25 22:25:18  houghton
 // Added valid( off_t ) - returns true if the off_t is a valid usable
 //     offset for this map.
