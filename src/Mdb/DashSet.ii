@@ -1,11 +1,11 @@
-#ifndef _Dash_ii_
-#define _Dash_ii_
+#ifndef _DashSet_ii_
+#define _DashSet_ii_
 //
-// File:        Dash.ii
+// File:        DashSet.ii
 // Project:	Mdb
 // Desc:        
 //
-//  	Inline source for Dash
+//  	Inline source for DashSet
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     06/02/97 11:02
@@ -23,7 +23,7 @@
 
 template< class Key, class HashFunct, class LessKey >
 inline
-Dash< Key, HashFunct, LessKey >::Dash(
+DashSet< Key, HashFunct, LessKey >::DashSet(
   MultiMemOffset *	memMgr,
   const char *		indexFileName,
   ios::open_mode	mode,
@@ -37,7 +37,7 @@ Dash< Key, HashFunct, LessKey >::Dash(
 template< class Key, class HashFunct, class LessKey >
 inline
 bool
-Dash< Key, HashFunct, LessKey >::good( void ) const
+DashSet< Key, HashFunct, LessKey >::good( void ) const
 {
   return( table.good() );
 }
@@ -45,7 +45,7 @@ Dash< Key, HashFunct, LessKey >::good( void ) const
 template< class Key, class HashFunct, class LessKey >
 inline
 const char *
-Dash< Key, HashFunct, LessKey >::error( void ) const
+DashSet< Key, HashFunct, LessKey >::error( void ) const
 {
   return( table.error() );
 }
@@ -55,6 +55,9 @@ Dash< Key, HashFunct, LessKey >::error( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.5  1997/07/25 13:44:33  houghton
+// Class was renamed to DashSet (was Dash).
+//
 // Revision 2.4  1997/07/22 19:42:28  houghton
 // Cleanup.
 // Chagned to use MultiMemOffset (vs ChunkMgr).
@@ -69,4 +72,4 @@ Dash< Key, HashFunct, LessKey >::error( void ) const
 // Initial Version.
 //
 //
-#endif // ! def _Dash_ii_ 
+#endif // ! def _DashSet_ii_ 

@@ -1,11 +1,11 @@
-#ifndef _Dash_hh_
-#define _Dash_hh_
+#ifndef _DashSet_hh_
+#define _DashSet_hh_
 //
-// File:        Dash.hh
+// File:        DashSet.hh
 // Project:	Mdb
 // Desc:        
 //
-//	A 'Dash' is a hash table for a data type that includes an
+//	A 'DashSet' is a hash table for a data type that includes an
 //      effecive date for each key value.
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
@@ -33,7 +33,7 @@
 template< class Key,
 	  class HashFunct,
 	  class LessKey >
-class Dash
+class DashSet
 {
 
 public:
@@ -49,13 +49,13 @@ public:
 
   typedef Table::EffDate		EffDate;
   
-  inline Dash( MultiMemOffset *	memMgr,
+  inline DashSet( MultiMemOffset *	memMgr,
 	       const char *	indexFileName,
 	       ios::open_mode	mode = ios::in,
 	       bool		create = false,
 	       unsigned short	permMask = 0 );
 
-  virtual ~Dash( void ) {};
+  virtual ~DashSet( void ) {};
 
   inline pair_iterator_bool	insert( const Key & key, EffDate effDate ) {
     return( table.insert( key, effDate, key ) );
@@ -113,14 +113,14 @@ private:
 
   // DashTable will prevent these
   //
-  // Dash( const Dash & from );
-  // Dash & operator =( const Dash & from );
+  // DashSet( const DashSet & from );
+  // DashSet & operator =( const DashSet & from );
 
   Table	    table;
 };
 
 
-#include <Dash.ii>
+#include <DashSet.ii>
 
 
 //
@@ -150,18 +150,18 @@ private:
 //	  };
 //	};
 //
-//	typedef Dash< Data, DataHashFunct, DataLess >    DataDash;
+//	typedef DashSet< Data, DataHashFunct, DataLess >    DataDash;
 //
 //
 // Detail Documentation
 //
 //  Data Types: - data types defined by this header
 //
-//  	Dash	class
+//  	DashSet	class
 //
 //  Constructors:
 //
-//  	Dash( );
+//  	DashSet( );
 //
 //  Destructors:
 //
@@ -197,7 +197,7 @@ private:
 //
 //  	virtual const char *
 //  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. Dash )
+//  	    Return the name of this class (i.e. DashSet )
 //
 //  	virtual const char *
 //  	getVersion( bool withPrjVer = true ) const;
@@ -236,6 +236,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/25 13:44:29  houghton
+// Class was renamed to DashSet (was Dash).
+//
 // Revision 2.4  1997/07/13 11:03:11  houghton
 // Added rbgin() & rend().
 // Added getNodeSize().
@@ -250,5 +253,5 @@ private:
 // Initial Version.
 //
 //
-#endif // ! def _Dash_hh_ 
+#endif // ! def _DashSet_hh_ 
 

@@ -1,11 +1,11 @@
-#ifndef _Hash_ii_
-#define _Hash_ii_
+#ifndef _HashSet_ii_
+#define _HashSet_ii_
 //
-// File:        Hash.ii
+// File:        HashSet.ii
 // Project:	Mdb
 // Desc:        
 //
-//  	Inline source for Hash
+//  	Inline source for HashSet
 //
 // Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     07/01/97 09:19
@@ -24,7 +24,7 @@ template< class Key,
 	  class HashFunct,
 	  class LessKey >
 inline
-Hash< Key, HashFunct, LessKey >::Hash(
+HashSet< Key, HashFunct, LessKey >::HashSet(
   MultiMemOffset *	memMgr,
   const char *		indexFileName,
   ios::open_mode	mode,
@@ -39,14 +39,14 @@ template< class Key,
 	  class HashFunct,
 	  class LessKey >
 inline
-Hash< Key, HashFunct, LessKey >::~Hash( void )
+HashSet< Key, HashFunct, LessKey >::~HashSet( void )
 {
 }
   
 template< class Key, class HashFunct, class LessKey >
 inline
 bool
-Hash< Key, HashFunct, LessKey >::good( void ) const
+HashSet< Key, HashFunct, LessKey >::good( void ) const
 {
   return( table.good() );
 }
@@ -54,7 +54,7 @@ Hash< Key, HashFunct, LessKey >::good( void ) const
 template< class Key, class HashFunct, class LessKey >
 inline
 const char *
-Hash< Key, HashFunct, LessKey >::error( void ) const
+HashSet< Key, HashFunct, LessKey >::error( void ) const
 {
   return( table.error() );
 }
@@ -63,15 +63,15 @@ Hash< Key, HashFunct, LessKey >::error( void ) const
 template< class Key, class HashFunct, class LessKey >
 inline
 const char *
-Hash< Key, HashFunct, LessKey >::getClassName( void ) const
+HashSet< Key, HashFunct, LessKey >::getClassName( void ) const
 {
-  return( "Hash<Key,HashFunct,LessKey>" );
+  return( "HashSet<Key,HashFunct,LessKey>" );
 }
 
 template< class Key, class HashFunct, class LessKey >
 inline
 const char *
-Hash< Key, HashFunct, LessKey >::getVersion( bool withPrjVer ) const
+HashSet< Key, HashFunct, LessKey >::getVersion( bool withPrjVer ) const
 {
   return( table.getVersion( withPrjVer ) );
 }
@@ -79,19 +79,19 @@ Hash< Key, HashFunct, LessKey >::getVersion( bool withPrjVer ) const
 template< class Key, class HashFunct, class LessKey >
 inline
 ostream &
-Hash< Key, HashFunct, LessKey >::dumpInfo(
+HashSet< Key, HashFunct, LessKey >::dumpInfo(
   ostream &	dest,
   const char *	prefix,
   bool		showVer
   ) const
 {
   if( showVer )
-    dest << Hash<Key,HashFunct,LessKey>::getClassName() << ":\n"
-	 << Hash<Key,HashFunct,LessKey>::getVersion() << '\n';
+    dest << HashSet<Key,HashFunct,LessKey>::getClassName() << ":\n"
+	 << HashSet<Key,HashFunct,LessKey>::getVersion() << '\n';
 
-  if( ! Hash<Key,HashFunct,LessKey>::good() )
+  if( ! HashSet<Key,HashFunct,LessKey>::good() )
     dest << prefix << "Error: "
-	 << Hash<Key,HashFunct,LessKey>::error() << '\n';
+	 << HashSet<Key,HashFunct,LessKey>::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
@@ -106,9 +106,9 @@ Hash< Key, HashFunct, LessKey >::dumpInfo(
 template< class Key, class HashFunct, class LessKey >
 inline
 ostream &
-Hash< Key, HashFunct, LessKey >::dumpTable( ostream & dest ) const
+HashSet< Key, HashFunct, LessKey >::dumpTable( ostream & dest ) const
 {
-  HashDumpMethods   meth( table, *this );
+  HashSetDumpMethods   meth( table, *this );
   
   return( table.dumpTable( dest, meth ) );
 }
@@ -116,7 +116,7 @@ Hash< Key, HashFunct, LessKey >::dumpTable( ostream & dest ) const
 template< class Key, class HashFunct, class LessKey >
 inline
 ostream &
-Hash< Key, HashFunct, LessKey >::dumpKey(
+HashSet< Key, HashFunct, LessKey >::dumpKey(
   ostream &	dest,
   const Key &	CLUE_UNUSED( key )
   ) const
@@ -127,7 +127,7 @@ Hash< Key, HashFunct, LessKey >::dumpKey(
 template< class Key, class HashFunct, class LessKey >
 inline
 ostream &
-Hash< Key, HashFunct, LessKey >::dumpValue(
+HashSet< Key, HashFunct, LessKey >::dumpValue(
   ostream &	dest,
   const Key &	CLUE_UNUSED( value )
   ) const
@@ -141,6 +141,9 @@ Hash< Key, HashFunct, LessKey >::dumpValue(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/25 13:44:54  houghton
+// Class was renamed to DashSet (was Dash).
+//
 // Revision 2.2  1997/07/14 10:37:19  houghton
 // Port(AIX): changed Hash:: to Hash<Key,HashFunct,LessKey>::.
 //
@@ -148,4 +151,4 @@ Hash< Key, HashFunct, LessKey >::dumpValue(
 // Initial Version.
 //
 //
-#endif // ! def _Hash_ii_ 
+#endif // ! def _HashSet_ii_ 
