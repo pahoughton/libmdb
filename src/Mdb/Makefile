@@ -171,6 +171,8 @@ USER_HH_INCS	=			\
 	RBTreeBase.hh			\
 	RBTree.hh			\
 	RBSet.hh			\
+	DRBTree.hh			\
+	DRBSet.hh			\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
@@ -194,6 +196,8 @@ USER_II_INCS	=			\
 	RBTreeBase.ii			\
 	RBTree.ii			\
 	RBSet.ii			\
+	DRBTree.ii			\
+	DRBSet.ii			\
 	$(ARCH_USER_II_INCS)            \
 
 USER_INCLUDES	=		\
@@ -274,6 +278,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.10  1997/07/25 15:59:13  houghton
+# Added DRBSet.hh, DRBSet.ii, DRBTree.hh and DRBTree.ii.
+#
 # Revision 2.9  1997/07/25 13:45:52  houghton
 # Chagned: Dash was renamed to DashSet.
 # Changed: Hash was renamed to HashSet.
