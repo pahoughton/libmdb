@@ -19,7 +19,7 @@
 #include <LibTest.hh>
 
 bool	tDRBTree01( LibTest & tester );
- bool	tDRBTree02( LibTest & tester );
+bool	tDRBTree02( LibTest & tester );
 // bool	tDRBTree03( LibTest & tester );
 
 bool
@@ -34,6 +34,9 @@ tDRBTree( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:36:57  houghton
+// Cleanup.
+//
 // Revision 2.1  1997/07/16 16:38:54  houghton
 // Initial Version (work in progress).
 //
