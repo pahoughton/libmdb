@@ -35,7 +35,7 @@ pInsert(
   const char *	    order,
   ostream &	    perfLog,
   size_t	    initAlloc,
-  size_t	    quantity
+  long		    quantity
   )
 {
   TimeIt    timer;
@@ -71,7 +71,7 @@ pErase(
   const char *	    order,
   ostream &	    perfLog,
   size_t	    initAlloc,
-  size_t	    quantity
+  long		    quantity
   )
 {
   TimeIt    timer;
@@ -107,7 +107,7 @@ pFind(
   const char *	    order,
   ostream &	    perfLog,
   size_t	    initAlloc,
-  size_t	    quantity
+  long		    quantity
   )
 {
   TimeIt    timer;
@@ -165,25 +165,37 @@ pMapType(
 		 "asc", perfLog, initAllocNumRecs, quantity ) )
     return( false );
   
+  AppDebug << table.dump() << endl;
+  
   if( ! pFind( dataMap, table, dataList.begin(), dataList.end(),
 	       "same", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pErase( dataMap, table, dataList.begin(), dataList.end(),
 	       "same", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pInsert( dataMap, table, dataList.begin(), dataList.end(),
 		 "asc", perfLog, initAllocNumRecs, quantity ) )
     return( false );
+  
+  AppDebug << table.dump() << endl;
   
   if( ! pErase( dataMap, table, dataList.rbegin(), dataList.rend(),
 	       "rev", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pInsert( dataMap, table, dataList.begin(), dataList.end(),
 		 "asc", perfLog, initAllocNumRecs, quantity ) )
     return( false );
+  
+  AppDebug << table.dump() << endl;
   
   random_shuffle( dataList.begin(), dataList.end() );
     
@@ -191,44 +203,62 @@ pMapType(
 	       "rand", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   sort( dataList.begin(), dataList.end(), greater< Data >() );
     
   if( ! pInsert( dataMap, table, dataList.begin(), dataList.end(),
 		 "rev", perfLog, initAllocNumRecs, quantity ) )
     return( false );
   
+  AppDebug << table.dump() << endl;
+  
   if( ! pFind( dataMap, table, dataList.begin(), dataList.end(),
 	       "same", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pErase( dataMap, table, dataList.begin(), dataList.end(),
 	       "same", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pInsert( dataMap, table, dataList.begin(), dataList.end(),
 		 "rev", perfLog, initAllocNumRecs, quantity ) )
     return( false );
   
+  AppDebug << table.dump() << endl;
+  
   random_shuffle( dataList.begin(), dataList.end() );
     
   if( ! pErase( dataMap, table, dataList.begin(), dataList.end(),
 	       "rand", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   if( ! pInsert( dataMap, table, dataList.begin(), dataList.end(),
 		 "rand", perfLog, initAllocNumRecs, quantity ) )
     return( false );
+  
+  AppDebug << table.dump() << endl;
   
   if( ! pFind( dataMap, table, dataList.begin(), dataList.end(),
 	       "same", perfLog, initAllocNumRecs, quantity ) )
     return( false );
   
+  AppDebug << table.dump() << endl;
+  
   random_shuffle( dataList.begin(), dataList.end() );
     
   if( ! pErase( dataMap, table, dataList.begin(), dataList.end(),
 	       "rand", perfLog, initAllocNumRecs, quantity ) )
     return( false );
 
+  AppDebug << table.dump() << endl;
+  
   return( true );
 }
   
@@ -326,52 +356,71 @@ pDataType(
 bool
 pRBSet( 
   const char *	fileName,
+  long		recSize,
   size_t	initAllocNumRecs,
   long		quantity,
   ostream &	perfLog
  )
 {
-  Rec_4 d_4; d_4.k = 0;
-  
-  if( ! pDataType( d_4,
-		   fileName,
-		   initAllocNumRecs,
-		   quantity,
-		   perfLog ) )
-    return( false );
-  
-  Rec_128 d_128; d_128.k = 0;
-  
-  if( ! pDataType( d_128,
-		   fileName,
-		   initAllocNumRecs,
-		   quantity,
-		   perfLog ) )
-    return( false );
-  
-#if defined( Linux )
-  if( quantity > 20000 )
-    return( true );
-#endif
-  
-  Rec_512 d_512; d_512.k = 0;
-  
-  if( ! pDataType( d_512,
-		   fileName,
-		   initAllocNumRecs,
-		   quantity,
-		   perfLog ) )
-    return( false );
-  
-  Rec_1024 d_1024; d_1024.k = 0;
-  
-  if( ! pDataType( d_1024,
-		   fileName,
-		   initAllocNumRecs,
-		   quantity,
-		   perfLog ) )
-    return( false );
 
+  switch( recSize )
+    {
+    case 4:
+      {
+	Rec_4 d_4; d_4.k = 0;
+	
+	if( ! pDataType( d_4,
+			 fileName,
+			 initAllocNumRecs,
+			 quantity,
+			 perfLog ) )
+	  return( false );
+	break;
+      }
+
+    case 128:
+      {
+	Rec_128 d_128; d_128.k = 0;
+	
+	if( ! pDataType( d_128,
+			 fileName,
+			 initAllocNumRecs,
+			 quantity,
+			 perfLog ) )
+	  return( false );
+	break;
+      }
+
+    case 512:
+      {
+	Rec_512 d_512; d_512.k = 0;
+	
+	if( ! pDataType( d_512,
+			 fileName,
+			 initAllocNumRecs,
+			 quantity,
+			 perfLog ) )
+	  return( false );
+	break;
+      }
+
+    case 1024:
+      {
+	Rec_1024 d_1024; d_1024.k = 0;
+	
+	if( ! pDataType( d_1024,
+			 fileName,
+			 initAllocNumRecs,
+			 quantity,
+			 perfLog ) )
+	  return( false );
+	break;
+      }
+
+    default:
+      break;
+    }
+  
   return( true );
 }
 
@@ -382,6 +431,10 @@ pRBSet(
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/14 10:53:27  houghton
+// Added recSize arg.
+// Added debugging info to log.
+//
 // Revision 1.1  1997/07/13 11:36:40  houghton
 // Initial Version.
 //
