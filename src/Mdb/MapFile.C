@@ -38,6 +38,8 @@ MDB_VERSION(
   "$Id$");
 
 
+const MapFile::size_type  MapFile::npos = NPOS;
+
 MapFile::MapFile()
   : mapFd( -1 ),
     mapMode( ios::in ),
@@ -249,7 +251,36 @@ MapFile::unmap( void )
       mapFd = -1;
     }
 }
-  
+
+bool
+MapFile::sync(
+  size_type	beg,
+  size_type	len,
+  bool		async
+  )
+{
+  if( mapBase != 0 && mapSize != 0 )
+    {
+      // sync must begin and end on page boundries
+      caddr_t	syncBeg = mapBase + RoundDown( beg, pageSize );
+      size_t	syncLen = Align( (mapBase + beg) - syncBeg + len, pageSize );
+      			      
+      if( msync( syncBeg, syncLen, (async ? MS_ASYNC : MS_SYNC ) ) )
+	{
+	  osErrno = errno;
+	  return( false );
+	}
+      else
+	{
+	  return( true );
+	}
+    }
+  else
+    {
+      return( false );
+    }
+}
+
 MapFile::size_type
 MapFile::setSize(
   size_type    	size,
@@ -427,6 +458,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.15  1997/10/01 14:00:10  houghton
+// Added sync().
+//
 // Revision 2.14  1997/09/17 16:56:00  houghton
 // Changed for new library rename to StlUtils
 //
