@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1997/06/19 12:00:46  houghton
+// Changed off_t to Loc
+//
 // Revision 2.2  1995/12/04 11:19:17  houghton
 // Changed to eliminate compile warnings.
 //
@@ -28,9 +31,9 @@ const char DavlTreeOffsetBaseRcsId[] =
 #include "DavlTreeOffsetBase.hh"
 
 void
-DavlTreeOffsetBase::insertHist( off_t * firstHist, off_t newHist )
+DavlTreeOffsetBase::insertHist( Loc * firstHist, Loc newHist )
 {
-  off_t * h = firstHist;
+  Loc * h = firstHist;
   for( ;
       *h != 0 && hist( *h )->when > hist( newHist )->when;
       h = &( hist(*h)->next ) );
@@ -40,9 +43,9 @@ DavlTreeOffsetBase::insertHist( off_t * firstHist, off_t newHist )
 }
 
 bool
-DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when )
+DavlTreeOffsetBase::walkKeyHist( Loc root, EffDate when )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {
@@ -58,9 +61,9 @@ DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when )
 }
 
 bool
-DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when, void * closure )
+DavlTreeOffsetBase::walkKeyHist( Loc root, EffDate when, void * closure )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {
@@ -77,7 +80,7 @@ DavlTreeOffsetBase::walkKeyHist( off_t root, time_t when, void * closure )
 
   
 void
-DavlTreeOffsetBase::trimTree( off_t * root, time_t when )
+DavlTreeOffsetBase::trimTree( Loc * root, EffDate when )
 {
 
   //
@@ -104,7 +107,7 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when )
 }
   
 void
-DavlTreeOffsetBase::trimTree( off_t * root, time_t when, void * closure )
+DavlTreeOffsetBase::trimTree( Loc * root, EffDate when, void * closure )
 {
 
   //
@@ -131,9 +134,9 @@ DavlTreeOffsetBase::trimTree( off_t * root, time_t when, void * closure )
 }
 
 bool
-DavlTreeOffsetBase::walkNode( off_t root )
+DavlTreeOffsetBase::walkNode( Loc root )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {
@@ -163,9 +166,9 @@ DavlTreeOffsetBase::walkNode( off_t root )
 }
 
 bool
-DavlTreeOffsetBase::walkNode( off_t root, void * closure )
+DavlTreeOffsetBase::walkNode( Loc root, void * closure )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {
@@ -196,7 +199,7 @@ DavlTreeOffsetBase::walkNode( off_t root, void * closure )
 
 			  
 short
-DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
+DavlTreeOffsetBase::trimNode( Loc * root, EffDate when )
 {
 
   short	    dec = 0;
@@ -213,7 +216,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 
   if( dec == 0 )
     {
-      off_t * h = &(node( *root )->hist);
+      Loc * h = &(node( *root )->hist);
       for( ;
 	  *h != 0 && hist(*h)->when > when;
 	  h = &( hist(*h)->next ) );
@@ -223,7 +226,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 	  for( h = &( hist(*h)->next);
 	      *h != 0; )
 	    {
-	      off_t * n = (& hist(*h)->next);
+	      Loc * n = (& hist(*h)->next);
 
 	      trimHistAction( *root, *h );
 
@@ -241,7 +244,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 
 	      trimDelete = true;
 	      
-	      off_t 	origRoot = *root;
+	      Loc 	origRoot = *root;
 
 	      switch( getNodeType( *root ) )
 		{
@@ -259,7 +262,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 
 		case TREE:
 		{
-		  off_t key 	 = *root;
+		  Loc key 	 = *root;
 		  dec = deleteNode( &( node( *root )->subTree[ RIGHT ] ), &key, -1 );
 
 		  node( key )->subTree[ LEFT ]  = node( *root )->subTree[ LEFT ];
@@ -298,7 +301,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when )
 }
 
 short
-DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
+DavlTreeOffsetBase::trimNode( Loc * root, EffDate when, void * closure )
 {
 
   short	    dec = 0;
@@ -315,7 +318,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 
   if( dec == 0 )
     {
-      off_t * h = &(node( *root )->hist);
+      Loc * h = &(node( *root )->hist);
       for( ;
 	  *h != 0 && hist(*h)->when > when;
 	  h = &( hist(*h)->next ) );
@@ -325,7 +328,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 	  for( h = &( hist(*h)->next);
 	      *h != 0; )
 	    {
-	      off_t * n = (& hist(*h)->next);
+	      Loc * n = (& hist(*h)->next);
 
 	      trimHistAction( *root, *h, closure );
 
@@ -343,7 +346,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 
 	      trimDelete = true;
 	      
-	      off_t origRoot = *root;
+	      Loc origRoot = *root;
 
 	      switch( getNodeType( *root ) )
 		{
@@ -361,7 +364,7 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 
 		case TREE:
 		{
-		  off_t key = *root;
+		  Loc key = *root;
 
 		  dec = deleteNode( &( node( *root )->subTree[ RIGHT ] ), &key, -1 );
 
@@ -400,9 +403,9 @@ DavlTreeOffsetBase::trimNode( off_t * root, time_t when, void * closure )
 }
 
 void
-DavlTreeOffsetBase::destroyNode( off_t root )
+DavlTreeOffsetBase::destroyNode( Loc root )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {
@@ -412,9 +415,9 @@ DavlTreeOffsetBase::destroyNode( off_t root )
 }
 	  
 void
-DavlTreeOffsetBase::destroyNode( off_t root, void * closure )
+DavlTreeOffsetBase::destroyNode( Loc root, void * closure )
 {
-  for( off_t h = node(root)->hist;
+  for( Loc h = node(root)->hist;
       h != 0;
       h = hist( h )->next )
     {

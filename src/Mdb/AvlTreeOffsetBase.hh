@@ -184,6 +184,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/06/19 12:00:21  houghton
+// Changed off_t to Loc
+//
 // Revision 2.1  1995/11/10 12:42:03  houghton
 // Change to Version 2
 //
@@ -195,7 +198,7 @@
 //
 //
 
-#include <ClueConfig.hh>
+#include <MdbConfig.hh>
 
 #include <AvlTreeBase.hh>
 #include <sys/types.h>
@@ -205,6 +208,10 @@
 
 class AvlTreeOffsetBase : public AvlTreeBase
 {
+
+public:
+
+  typedef off_t	    Loc;
   
 protected:
 
@@ -214,7 +221,7 @@ public:
   
   struct Node
   {
-    off_t    subTree[2];
+    Loc    subTree[2];
     short    bal;
   };
 
@@ -226,41 +233,41 @@ protected:
   caddr_t   	getBase( void ) const;
   caddr_t    	setBase( void * newBase );
   
-  short	    	insertNode( off_t * root, off_t * newNode );
-  off_t 	findNode( off_t root, const void * key );
-  short	    	deleteNode( off_t * root, off_t * key, int minMax = 0);
+  short	    	insertNode( Loc * root, Loc * newNode );
+  Loc 	findNode( Loc root, const void * key );
+  short	    	deleteNode( Loc * root, Loc * key, int minMax = 0);
 
-  bool	    	walkTree( off_t  root );
-  bool	    	walkTree( off_t  root, void * closure );
+  bool	    	walkTree( Loc  root );
+  bool	    	walkTree( Loc  root, void * closure );
 
-  void	    	initNode( off_t node );
+  void	    	initNode( Loc node );
   
-  ostream &    	dumpTree( const off_t root, ostream & dest, int level = 0 ) const;
+  ostream &    	dumpTree( const Loc root, ostream & dest, int level = 0 ) const;
   
-  void	    	destroyTree( off_t * root );
-  void	    	destroyTree( off_t * root, void * closure );
+  void	    	destroyTree( Loc * root );
+  void	    	destroyTree( Loc * root, void * closure );
 		 
-  virtual int	compareNode( const off_t one, const off_t two) = 0;
-  virtual int	compareFind( const void * one, const off_t two ) = 0;
+  virtual int	compareNode( const Loc one, const Loc two) = 0;
+  virtual int	compareFind( const void * one, const Loc two ) = 0;
 
-  virtual void  destroyNode( off_t root ) = 0;
-  virtual void  destroyNode( off_t root, void * closure ) = 0;
+  virtual void  destroyNode( Loc root ) = 0;
+  virtual void  destroyNode( Loc root, void * closure ) = 0;
 
-  virtual bool  walkNode( off_t root ) = 0;
-  virtual bool  walkNode( off_t root, void * closure ) = 0;
+  virtual bool  walkNode( Loc root ) = 0;
+  virtual bool  walkNode( Loc root, void * closure ) = 0;
   
-  NodeType  	    getNodeType( off_t  root );
+  NodeType  	    getNodeType( Loc  root );
 
-  short	    	    balance( off_t * 	root );
+  short	    	    balance( Loc * 	root );
 
 private:
 
-  Node *    	    node( off_t root ) const;
+  Node *    	    node( Loc root ) const;
   
-  void	    	    rotateTwice( off_t * root,
+  void	    	    rotateTwice( Loc * root,
 				 SubTree   	dir );
 
-  short	    	    rotateOnce( off_t * 	root,
+  short	    	    rotateOnce( Loc * 	root,
 				SubTree    	dir );
 
   caddr_t    	    baseAddr;
@@ -296,7 +303,7 @@ AvlTreeOffsetBase::setBase( void * newBase )
 
 inline
 AvlTreeOffsetBase::Node *
-AvlTreeOffsetBase::node( off_t root ) const
+AvlTreeOffsetBase::node( Loc root ) const
 {
   return( (Node *)( baseAddr + root ) );
 }
@@ -304,7 +311,7 @@ AvlTreeOffsetBase::node( off_t root ) const
 
 inline
 void
-AvlTreeOffsetBase::initNode( off_t root )
+AvlTreeOffsetBase::initNode( Loc root )
 {
   node( root )->subTree[ LEFT ]     = 0;
   node( root )->subTree[ RIGHT ]    = 0;
