@@ -1,0 +1,131 @@
+#ifndef _ReconTable_ii_
+#define _ReconTable_ii_
+//
+// File:        ReconTable.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for ReconTable
+//
+// Author:      Paul Houghton 719-527-7834 - (paul.houghton@wcom.com)
+// Created:     07/31/00 06:44
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::ReconTable(
+  const FilePath &	tableFn,
+  VersionNum		versionNum,
+  ios::open_mode	mode,
+  bool			create,
+  MapFile::MapMask	permMask
+  )
+  : ReconTableBase( tableFn,
+		    mode,
+		    create,
+		    permMask,
+		    versionNum,
+		    sizeof( Rec ) )
+{
+}
+
+template< class Rec, class LessKey >
+inline
+bool
+ReconTable< Rec, LessKey >::append( const Rec & rec )
+{
+  return( ReconTableBase::append( &rec ) );
+}
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::const_iterator
+ReconTable< Rec, LessKey >::begin( void ) const
+{
+  return( &(record( 0 )) );
+}
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::const_iterator
+ReconTable< Rec, LessKey >::end( void ) const
+{
+  if( ! good() )
+    return( &(record( 0 ) ) );
+  else
+    return( &(record( Net2Host( header().count ) )) );
+}
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::RecordNum
+ReconTable< Rec, LessKey >::rfind( const Rec & key ) const
+{
+  for( RecordNum r = size() - 1; r >= 0; -- r )
+    {
+      if( ! lessKey( record( r ), key )
+	  && ! lessKey( key, record( r ) ) )
+	return( r );
+    }
+  return( BadRec );
+}
+
+template< class Rec, class LessKey >
+inline
+bool
+ReconTable< Rec, LessKey >::update( RecordNum r, const Rec & rec )
+{
+  return( ReconTableBase::update( r, &rec ) );
+}
+
+template< class Rec, class LessKey >
+inline
+const Rec &
+ReconTable< Rec, LessKey >::operator [] ( RecordNum r ) const
+{
+  return( record( r ) );
+}
+
+
+template< class Rec, class LessKey >
+inline
+const Rec &
+ReconTable< Rec, LessKey >::record( RecordNum recNum ) const
+{
+  return( *((const Rec *)(map.getBase() + recpos( recNum ) ) ) );
+}
+
+template< class Rec, class LessKey >
+inline
+Rec &
+ReconTable< Rec, LessKey >::record( RecordNum recNum )
+{
+  return( *((Rec *)(map.getBase() + recpos( recNum ) ) ) );
+}
+
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 1.1  2000/08/02 11:03:47  houghton
+// Initial Version.
+//
+//
+#endif // ! def _ReconTable_ii_ 

@@ -1,0 +1,81 @@
+#ifndef _ReconTableBase_ii_
+#define _ReconTableBase_ii_
+//
+// File:        ReconTableBase.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for ReconTableBase
+//
+// Author:      Paul Houghton 719-527-7834 - (paul.houghton@wcom.com)
+// Created:     07/31/00 06:13
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+inline
+ReconTableBase::RecordNum
+ReconTableBase::size( void ) const
+{
+  return( Net2Host( header().count ) );
+}
+
+
+inline
+DumpInfo< ReconTableBase >
+ReconTableBase::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< ReconTableBase >( *this, prefix, showVer ) );
+}
+
+inline
+const ReconTableBase::Header &
+ReconTableBase::header( void ) const
+{
+  return( *( (const Header *)(map.getBase())));
+}
+
+inline
+ReconTableBase::Header &
+ReconTableBase::header( void )
+{
+  return( *( (Header *)(map.getBase())));
+}
+
+inline
+ReconTableBase::size_type
+ReconTableBase::recpos( RecordNum recNum ) const
+{
+  return( sizeof( Header ) + ( Net2Host( header().recSize ) * recNum ) );
+}
+
+inline
+void *
+ReconTableBase::recptr( RecordNum recNum )
+{
+  return( map.getBase() + recpos( recNum ) );
+}
+
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 1.1  2000/08/02 11:03:47  houghton
+// Initial Version.
+//
+//
+#endif // ! def _ReconTableBase_ii_ 
