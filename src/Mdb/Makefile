@@ -159,10 +159,10 @@ USER_HH_INCS	=			\
 	MultiMemOffsetMapDynamic.hh	\
 	HashTableBase.hh		\
 	HashTable.hh			\
-	Hash.hh				\
+	HashSet.hh			\
 	DashTableBase.hh		\
 	DashTable.hh			\
-	Dash.hh				\
+	DashSet.hh			\
 	DavlTreeOffset.hh		\
 	AvlTreeOffset.hh		\
 	DavlTreeOffsetBase.hh		\
@@ -181,10 +181,10 @@ USER_II_INCS	=			\
 	MapMemDynamicFixed.ii		\
 	HashTableBase.ii		\
 	HashTable.ii			\
-	Hash.ii				\
+	HashSet.ii			\
 	DashTableBase.ii		\
 	DashTable.ii			\
-	Dash.ii				\
+	DashSet.ii			\
 	AvlTreeOffsetBase.ii		\
 	AvlTreeOffset.ii		\
 	DavlTreeOffset.ii		\
@@ -274,6 +274,10 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.9  1997/07/25 13:45:52  houghton
+# Chagned: Dash was renamed to DashSet.
+# Changed: Hash was renamed to HashSet.
+#
 # Revision 2.8  1997/07/21 10:50:13  houghton
 # Added dependant libs to SHLIB_DEP_LIB.
 #
