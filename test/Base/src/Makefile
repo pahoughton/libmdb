@@ -10,7 +10,7 @@
 # Do not modifiy 'makefile_type'
 makefile_type = prog
 # This is the make.cfg version that will be used
-make_cfg_ver	= 5.01
+make_cfg_ver	= 5.02
 # Default target type
 make_target	= default
 # Uncomment 'show_commands' to output compile command.
@@ -243,6 +243,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.9  1997/08/18 10:25:50  houghton
+# Changed to use MakeConfigs 5.02.
+#
 # Revision 1.8  1997/07/25 13:49:21  houghton
 # Changed: Dash was renamed to DashSet.
 # Changed: Hash was renamed to HashSet.

@@ -10,7 +10,7 @@
 # Do not modifiy 'makefile_type'
 makefile_type   = lib
 # This is the make.cfg version that will be used
-make_cfg_ver	= 5.01
+make_cfg_ver	= 5.02
 # Default target type
 make_target	= default
 # Uncomment 'show_compile_command' to output compile command.
@@ -280,6 +280,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.12  1997/08/18 10:25:18  houghton
+# Changed to use MakeConfigs 5.02.
+#
 # Revision 2.11  1997/08/10 20:36:49  houghton
 # Added MapBatch.hh & MapBatch.ii.
 #
