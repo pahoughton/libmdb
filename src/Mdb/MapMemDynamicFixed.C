@@ -9,6 +9,10 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1996/03/04 11:38:38  houghton
+// Bug Fix: set baseAddr to base after remap in freeMem
+// Bug Fix: if freeRecs == 0 do not decrement.
+//
 // Revision 2.2  1996/02/29 19:09:57  houghton
 // *** empty log message ***
 //
@@ -281,7 +285,8 @@ MapMemFixedDynamic::freeMem(
 	      freeRecs++;
 	    }
 
-	  freeRecs --;
+	  if( freeRecs > 0 )
+	    freeRecs --;
 	  
 	  if( freeRecs > base->chunkSize )
 	    {
@@ -295,6 +300,8 @@ MapMemFixedDynamic::freeMem(
 					   (caddr_t)base->base  );
 
 		  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
+		  baseAddr = (off_t)base;
+
 		  releaseRecs++;
 		  
 		  base->size = getSize();
