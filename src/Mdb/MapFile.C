@@ -59,7 +59,7 @@ MapFile::MapFile(
   )
   : fileStat( fileName ),
     mapFd( -1 ),
-    mapMode( create ? (ios::open_mode)(ios::in | ios::out) : mode ),
+    mapMode( create ? (ios::open_mode)( mode | ios::out) : mode ),
     mapSize( 0 ),
     mapBase( 0 ),
     refCount( 0 ),
@@ -133,9 +133,10 @@ MapFile::createMap(
       origMask = umask( permMask );
     }
 
-  unlink( fileName );
+  if( ! (mapMode & ios::noreplace ) )
+    unlink( fileName );
 
-  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
+  if( (mapFd = open( fileName, OpenFlags( mapMode ), 0666 ) ) < 0 )
     {
       osErrno = errno;
       mapFd = -1;
@@ -426,6 +427,10 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.13  1997/08/25 10:35:34  houghton
+// Changed so the noreplace (and other) ios::open_modes can be used when
+//     createding a map.
+//
 // Revision 2.12  1997/07/25 13:47:02  houghton
 // Cleanup.
 // Changed so an invalid mapFd value is -1.
