@@ -35,6 +35,7 @@ const char * MapMemDynamicDynamic::ErrorStrings[] =
   ": ok",
   ": ",
   ": Bad size requested",
+  ": already owned by",
   0
 };
 
@@ -60,6 +61,7 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   
   if( base != 0 && MapMem::good() )
     {
+      base->owner	    = getpid();
       base->minChunkSize    = DwordAlign( max( minChunkSize + sizeof( size_t ),
 					       sizeof( FreeList ) ));
       base->allocSize	    = DwordAlign( max( allocSize,
@@ -90,7 +92,8 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
-  ios::open_mode    mode
+  ios::open_mode    mode,
+  bool		    overrideOwner
   )
   : MapMem( fileName, MM_DYNAMIC, MMD_VERSION, mode ),
     refCount( 0 )
@@ -98,13 +101,31 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   base = (MapDynamicDynamicInfo *)MapMem::getMapInfo();
     
   if( base == 0 || ! MapMem::good() )
-    errorNum = E_MAPMEM;
-  else
-    errorNum = E_OK;
+    {
+      errorNum = E_MAPMEM;
+      return;
+    }
+
+  if( mode & ios::out )
+    {
+      if( base->owner && ! overrideOwner )
+	{
+	  errorNum = E_OWNER;
+	  return;
+	}
+
+      base->owner = getpid();
+	
+    }
+  
+  errorNum = E_OK;
+
 }
 
 MapMemDynamicDynamic::~MapMemDynamicDynamic( void )
 {
+  if( base && base->owner == getpid() )
+    base->owner = 0;
 }
 
 off_t
@@ -244,7 +265,7 @@ MapMemDynamicDynamic::freeMem( off_t offset )
 			<< setw( 6 ) << offset
 			<< setw(6) << nodeSize
 			<< endl;
-		      if( getFreeNode( nPrevNode )->next != nextNode )
+		      if( (off_t)getFreeNode( nPrevNode )->next != nextNode )
 			{
 			  _LLg( LogLevel::Error ) <<
 			    "In free( p n x ): p->n != n\n" << endl;
@@ -525,8 +546,13 @@ MapMemDynamicDynamic::error( void ) const
 
       if( errorNum > E_MAPMEM &&
 	  errorNum < E_UNDEFINED )
-	errStr << ErrorStrings[ errorNum ];
-
+	{
+	  errStr << ErrorStrings[ errorNum ];
+	  
+	  if( errorNum == E_OWNER )
+	    errStr << " " << base->owner;
+	}
+      
       if( ! MapMem::good() )
 	  errStr << ": " << MapMem::error();
 
@@ -576,7 +602,8 @@ MapMemDynamicDynamic::dumpInfo(
   
   if( base )
     {
-      dest << prefix << "minChunkSize: " << base->minChunkSize << '\n'
+      dest << prefix << "owner:        " << base->owner << '\n'
+	   << prefix << "minChunkSize: " << base->minChunkSize << '\n'
 	   << prefix << "allocSize:    " << base->allocSize << '\n'
 	   << prefix << "chunkCount:   " << base->chunkCount << '\n'
 	   << prefix << "chunkSize:    " << base->chunkSize << '\n'
@@ -689,6 +716,11 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/04/04 20:50:09  houghton
+// Cleanup.
+// Added map owner to prevent to progs from opening the map in write
+//     mode at the same time.
+//
 // Revision 2.4  1997/03/19 16:23:40  houghton
 // Bug-Fix: stray character.
 //

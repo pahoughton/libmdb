@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-#define MMD_VERSION 0x4d4d4402	// 'MMD1'
+#define MMD_VERSION 0x4d4d4403	// 'MMD3'
 
 #define NUM_KEYS    16
 
@@ -45,6 +45,7 @@ public:
     E_OK,
     E_MAPMEM,
     E_BADSIZE,
+    E_OWNER,
     E_UNDEFINED
   };
     
@@ -56,7 +57,8 @@ public:
 
   // use this constructor to access an existing map file  
   MapMemDynamicDynamic( const char * 	fileName,
-			ios::open_mode	mode = (ios::open_mode)(ios::in) );
+			ios::open_mode	mode = (ios::open_mode)(ios::in),
+			bool		overrideOwner = false );
 
   virtual ~MapMemDynamicDynamic( void );
 
@@ -122,6 +124,7 @@ private:
 
   struct MapDynamicDynamicInfo : MapInfo
   {
+    long	    owner;	    // pid of owner (writer)
     unsigned long   minChunkSize;   // minimum chunk size
     unsigned long   allocSize;	    // bytes to allocate at a time
     unsigned long   chunkCount;	    // allocated chunks
@@ -238,6 +241,11 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.5  1997/04/04 20:50:14  houghton
+// Cleanup.
+// Added map owner to prevent to progs from opening the map in write
+//     mode at the same time.
+//
 // Revision 1.4  1997/03/18 16:56:37  houghton
 // Added setNodeSize().
 //

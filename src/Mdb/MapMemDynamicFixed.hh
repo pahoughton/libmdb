@@ -22,7 +22,7 @@
 
 #include <iostream>
 
-#define MMF_VERSION 0x4d4d4602	// 'MMF2'
+#define MMF_VERSION 0x4d4d4603	// 'MMF3'
 
 #define NUM_KEYS    16
 
@@ -36,6 +36,7 @@ public:
     E_OK,
     E_MAPMEM,
     E_BADSIZE,
+    E_OWNER,
     E_UNDEFINED
   };
     
@@ -47,7 +48,8 @@ public:
 
   // use this constructor to access an existing map file  
   MapMemFixedDynamic( const char * 	fileName,
-		      ios::open_mode	mode = (ios::open_mode)(ios::in) );
+		      ios::open_mode	mode = (ios::open_mode)(ios::in),
+		      bool		overrideOwner = false );
 
   virtual ~MapMemFixedDynamic( void );
   
@@ -103,6 +105,7 @@ private:
   
   struct MapFixedDynamicInfo : MapInfo
   {
+    long	    owner;	// map owner (writer)
     unsigned long   recSize;	// record size
     unsigned long   chunkSize;	// records to allocate at a time
     unsigned long   recCount;	// allocated records
@@ -125,26 +128,6 @@ private:
 // Inline methods
 //
 
-
-inline
-MapMemFixedDynamic::MapMemFixedDynamic(
-  const char * 	    fileName,
-  ios::open_mode    mode
-  )
-  : MapMem( fileName, MM_FIXED, MMF_VERSION, mode )
-{
-  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
-  nextFreeRecOffset = 0;
-    
-  if( base == 0 || ! MapMem::good() )
-    {
-      mapFixedDynamicError = E_MAPMEM;
-    }
-  else
-    {      
-      mapFixedDynamicError = E_OK;
-    }
-}
 
 inline
 size_t
@@ -263,6 +246,11 @@ operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
 // 
 //
 // $Log$
+// Revision 2.6  1997/04/04 20:50:25  houghton
+// Cleanup.
+// Added map owner to prevent to progs from opening the map in write
+//     mode at the same time.
+//
 // Revision 2.5  1997/03/08 10:28:40  houghton
 // Cleanup.
 // Added dump.

@@ -36,6 +36,7 @@ MapMemFixedDynamic::ErrorStrings[] =
     ": Ok",
     ": ",
     ": Bad size requested",
+    ": already owned by",
     0
   };
 
@@ -60,7 +61,9 @@ MapMemFixedDynamic::MapMemFixedDynamic(
   nextFreeRecOffset = 0;
   
   if( base != 0 && MapMem::good() )
-    {      
+    {
+      base->owner = getpid();
+      
       base->recSize = DwordAlign( max( recSize, sizeof( struct FreeList ) ) );
 
       if( base->recSize * numRecs > getPageSize() )
@@ -120,8 +123,42 @@ MapMemFixedDynamic::MapMemFixedDynamic(
     }
 }
 
+MapMemFixedDynamic::MapMemFixedDynamic(
+  const char * 	    fileName,
+  ios::open_mode    mode,
+  bool		    overrideOwner
+  )
+  : MapMem( fileName, MM_FIXED, MMF_VERSION, mode )
+{
+  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
+  nextFreeRecOffset = 0;
+    
+  if( base == 0 || ! MapMem::good() )
+    {
+      mapFixedDynamicError = E_MAPMEM;
+      return;
+    }
+
+  if( mode & ios::out )
+    {
+      if( base->owner && ! overrideOwner )
+	{
+	   mapFixedDynamicError = E_OWNER;
+	  return;
+	}
+
+      base->owner = getpid();
+    }
+         
+  mapFixedDynamicError = E_OK;
+  
+}
+
+
 MapMemFixedDynamic::~MapMemFixedDynamic( void )
 {
+  if( base && base->owner == getpid() )
+    base->owner = 0;
 }
 
 off_t
@@ -265,7 +302,7 @@ MapMemFixedDynamic::freeMem(
       // is the last rec free
       //
 
-      if( base->freeList.prev == endOffset )
+      if( base->freeList.prev == (unsigned long)endOffset )
 	{
 	  unsigned long freeRecs = 0;
 	  
@@ -292,6 +329,9 @@ MapMemFixedDynamic::freeMem(
 		  size_t newSize = shrink( releaseRecs * base->recSize,
 					   (caddr_t)base->base  );
 
+		  if( ! newSize )
+		    return;
+		  
 		  base = (MapFixedDynamicInfo *)MapMem::getMapInfo();
 		  baseAddr = (off_t)base;
 
@@ -359,7 +399,7 @@ MapMemFixedDynamic::expand( void )
     }
       
   for( ;
-	freeAddr + base->recSize < (off_t)getEnd();
+	freeAddr + (off_t)base->recSize < (off_t)getEnd();
 	freeAddr += base->recSize )
     {
       freeNode = (FreeList *)freeAddr;
@@ -490,6 +530,8 @@ MapMemFixedDynamic::error( void ) const
 	{
 	  errCnt++;
 	  errStr << ErrorStrings[ mapFixedDynamicError ];
+	  if( mapFixedDynamicError == E_OWNER )
+	    errStr << " " << base->owner;
 	}
 
       if( ! MapMem::good() )
@@ -537,6 +579,10 @@ MapMemFixedDynamic::dumpInfo(
   bool		showVer
   ) const
 {
+  if( showVer )
+    dest << MapMemFixedDynamic::getClassName() << ":\n"
+	 << RcsId << '\n' ;
+      
   if( ! MapMemFixedDynamic::good() )
     dest << prefix << "Error: " << MapMemFixedDynamic::error() << '\n';
   else
@@ -550,7 +596,8 @@ MapMemFixedDynamic::dumpInfo(
 
   if( base )
     {
-      dest << prefix << "rec size:     " << getRecSize() << '\n'
+      dest << prefix << "owner:        " << base->owner << '\n'
+	   << prefix << "rec size:     " << getRecSize() << '\n'
 	   << prefix << "chunk size:   " << getChunkSize() << '\n'
 	   << prefix << "rec count:    " << getRecCount() << '\n'
 	   << prefix << "free count:   " << getFreeRecCount() << '\n'
@@ -593,6 +640,11 @@ MapMemFixedDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1997/04/04 20:50:19  houghton
+// Cleanup.
+// Added map owner to prevent to progs from opening the map in write
+//     mode at the same time.
+//
 // Revision 2.8  1997/03/13 02:39:42  houghton
 // Added getVersion.
 // Added free list info to dumpInfo output.
