@@ -100,7 +100,8 @@ public:
   ostream &	dumpFreeList( ostream & dest ) const;
   ostream &	dumpNodes( ostream & dest ) const;
 
-  // Node & FreeNode should be protected but AIX can't deal with it.
+  // do NOT use these
+  // Node & FreeNode should be protected but AIX & Sun can't deal with it.
   
   struct Node
   {
@@ -114,7 +115,7 @@ public:
     long	prevFree;
   };
   
-  
+
 protected:
 
   inline FreeNode &	    freeNode( Loc f );
@@ -143,6 +144,9 @@ private:
 
   void	    openMapMemDynamicDynamic( void );
 
+  // do NOT use this it is only public because Sun can't handle it
+  // being private.
+public:  
   struct MapDynamicDynamicInfo : public MapDynamicInfo
   {
     unsigned long   minChunkSize;   // minimum chunk size
@@ -151,7 +155,8 @@ private:
     unsigned long   freeSize;	    // total available size;
     struct FreeNode freeList;	    // head to list of free chunks
   };
-
+private:
+  
   inline MapDynamicDynamicInfo *	mapInfo( void );
   inline const MapDynamicDynamicInfo *  mapInfo( void ) const;
   
@@ -319,6 +324,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.10  1997/07/19 10:28:53  houghton
+// Port(Sun5): the compiler could not handle protected and/or private
+//     classes or structs.
+//
 // Revision 1.9  1997/07/13 11:21:09  houghton
 // Cleanup
 // Added documentation.

@@ -127,13 +127,17 @@ private:
 
   void	openMapMemDynamicFixed( void );
   
+  // do NOT use this it is only public because Sun can't handle it
+  // being private.
+public:  
   struct MapDynamicFixedInfo : MapDynamicInfo
   {
     size_type	recSize;	    // record size
     size_type   allocNumRecs;   // records to allocate at a time
     FreeNode	freeList;	    // head to list of free records
   };
-
+private:
+  
   inline MapDynamicFixedInfo *		mapInfo( void );
   inline const MapDynamicFixedInfo *	mapInfo( void ) const;
   
@@ -237,6 +241,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/07/19 10:29:14  houghton
+// Port(Sun5): the compiler could not handle protected and/or private
+//     classes or structs.
+//
 // Revision 2.10  1997/07/13 11:25:40  houghton
 // Cleanup.
 // Added firstNode(), lastNode(), freeList() & freeNode().
