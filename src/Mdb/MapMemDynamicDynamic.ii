@@ -1,0 +1,174 @@
+#ifndef _MapMemDynamicDynamic_ii_
+#define _MapMemDynamicDynamic_ii_
+//
+// File:        MapMemDynamicDynamic.ii
+// Project:	Clue
+// Desc:        
+//
+//  	Inline source for MapMemDynamicDynamic
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Created:     03/07/97 06:13
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+#if defined( CLUE_DEBUG )
+#define inline
+#endif
+
+inline
+const void *
+MapMemDynamicDynamic::getAddr( off_t offset ) const
+{
+  return( (const void *) (getBase() + offset ));
+}
+
+inline
+void *
+MapMemDynamicDynamic::getAddr( off_t offset )
+{
+  return( (void *) ((caddr_t)base + offset ));
+}
+
+inline
+off_t
+MapMemDynamicDynamic::getOffset( const void * addr ) const
+{
+  return( (off_t)addr - (off_t)base );
+}
+
+inline
+unsigned long
+MapMemDynamicDynamic::getChunkCount( void ) const
+{
+  return( good() ? base->chunkCount : 0 );
+}
+
+inline
+unsigned long
+MapMemDynamicDynamic::getChunkSize( void ) const
+{
+  return( good() ? base->chunkSize : 0 );
+}
+
+inline
+unsigned long
+MapMemDynamicDynamic::getFreeCount( void ) const
+{
+  return( good() ? base->freeCount : 0 );
+}
+
+inline
+unsigned long
+MapMemDynamicDynamic::getFreeSize( void ) const
+{
+  return( good() ? base->freeSize : 0 );
+}
+
+
+inline
+long
+MapMemDynamicDynamic::setKey( long value, unsigned short key )
+{
+  if( ! base || key >= NUM_KEYS )
+    return(0);
+  
+  long old = getKey( key );
+  
+  base->keys[key] = value;
+
+  return( old );
+}
+
+inline
+long
+MapMemDynamicDynamic::getKey( unsigned short key ) const
+{
+  return( ( base && key < NUM_KEYS ) ?  base->keys[key] : 0 );
+}
+
+    
+inline
+MapMemDynamicDynamic::FreeList *
+MapMemDynamicDynamic::getFreeNode( off_t f )
+{
+  return( (FreeList *)(getBase() + f ) );
+}
+
+inline
+const MapMemDynamicDynamic::FreeList *
+MapMemDynamicDynamic::getFreeNode( off_t f ) const
+{
+  return( (const FreeList *)(getBase() + f ) );
+}
+
+inline
+bool
+MapMemDynamicDynamic::setPrevFnodeNext( off_t f, off_t n )
+{
+  off_t prev = getFreeNode( f )->prev;
+
+  if( prev )
+    getFreeNode( prev )->next = n;
+  else
+    base->freeList.next = n;
+  
+  return( true );
+}
+
+inline
+bool
+MapMemDynamicDynamic::setNextFnodePrev( off_t f, off_t p )
+{
+  off_t next = getFreeNode( f )->next;
+
+  if( next )
+    getFreeNode( next )->prev = p;
+  else
+    base->freeList.prev = p;
+  
+  return( true );
+}
+
+inline
+size_t &
+MapMemDynamicDynamic::getNodeSize( off_t node )
+{
+  return( *( (size_t *)(getBase() + node )) );
+}
+
+inline
+size_t 
+MapMemDynamicDynamic::getNodeSize( off_t node ) const
+{
+  return( *( (size_t *)(getBase() + node )) );
+}
+
+inline
+DumpInfo< MapMemDynamicDynamic >
+MapMemDynamicDynamic::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo<MapMemDynamicDynamic>( *this, prefix, showVer ) );
+}
+
+	  
+#if defined( inline )
+#undef inline
+#endif
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/03/08 10:29:53  houghton
+// Initial partially tested version.
+//
+//
+#endif // ! def _MapMemDynamicDynamic_ii_ 

@@ -18,15 +18,15 @@
 //
 
 #include <ClueConfig.hh>
-#include <iostream>
-
-#include <ClueUtils.hh>
 #include <MapMem.hh>
 #include <Record.hh>
 
-#include <iostream.h>
+#include <ClueUtils.hh>
+#include <DumpInfo.hh>
 
-#define MMF_VERSION 0x4d4d4402	// 'MMD1'
+#include <iostream>
+
+#define MMD_VERSION 0x4d4d4402	// 'MMD1'
 
 #define NUM_KEYS    16
 
@@ -40,7 +40,7 @@ class MapMemDynamicDynamic : public MapMem
 
 public:
 
-  enum MapFixedDynamicError
+  enum ErrorNum
   {
     E_OK,
     E_MAPMEM,
@@ -50,8 +50,8 @@ public:
     
   // use this constructor to create a new map file  
   MapMemDynamicDynamic( const char * 	fileName,
-			size_t		recSize,
-			unsigned long	numRecs = 0,
+			size_t		minChunkSize = 16,
+			size_t		allocSize = 0,
 			unsigned short	permMask = 0 );
 
   // use this constructor to access an existing map file  
@@ -63,27 +63,20 @@ public:
   off_t	    	    getMem( size_t size );	// returns offset not addr!
   void	    	    freeMem( off_t  offset ); 	// needs offset not addr!
   
-  void *    	    getAddr( off_t offset ) const;
-  off_t	    	    getOffset( void * addr ) const;
+  inline const void *	    getAddr( off_t offset ) const;
+  inline void *    	    getAddr( off_t offset );
+  inline off_t	    	    getOffset( const void * addr ) const;
 
-  // size_t	    getRecSize( void ) const;
-  size_t	    getChunkSize( void ) const;
-  unsigned long	    getRecCount( void ) const;
-  unsigned long	    getFreeRecCount( void ) const;
-  unsigned long	    getFreeRecSize( void ) const;
-    
-  long	    	    setKey( long value, unsigned short key = 0 );
-  long	    	    getKey( unsigned short key = 0) const;
+  inline unsigned long	    getChunkCount( void ) const;
+  inline unsigned long	    getChunkSize( void ) const;
+  inline unsigned long	    getFreeCount( void ) const;
+  inline unsigned long	    getFreeSize( void ) const;
   
-  void 	    	    expand( void );
+  inline long	    setKey( long value, unsigned short key = 0 );
+  inline long	    getKey( unsigned short key = 0) const;
+  
+  void 	    	    expand( size_t minAmount );
 
-  RecNumber   	    first( void );
-  bool	    	    next( RecNumber & rec );
-  
-  off_t	    	    recNum2Offset( RecNumber recNum ) const;
-  RecNumber	    offset2RecNum( off_t offset ) const;
-  
-  virtual ostream & 	getStats( ostream & dest ) const;
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
   virtual const char *	getClassName( void ) const;
@@ -92,27 +85,60 @@ public:
 				  const char *  prefix = "    ",
                                   bool          showVer = true ) const;
 
+  ostream &	dumpFreeList( ostream & dest ) const;
+  ostream &	dumpNodes( ostream & dest ) const;
+  
   static const ClassVersion version;
 
+  inline
+  DumpInfo< MapMemDynamicDynamic >  dump( const char *	prefix = "    ",
+					  bool		showVer = true ) const;
 protected:
+
+  struct FreeList
+  {
+    unsigned long   size;
+    unsigned long   next;
+    unsigned long   prev;
+  };
+
+  inline FreeList *	    getFreeNode( off_t f );
+  inline const FreeList *   getFreeNode( off_t f ) const ;
+  inline bool		    setPrevFnodeNext( off_t f, off_t n );
+  inline bool		    setNextFnodePrev( off_t f, off_t p );
+
+  inline size_t &   getNodeSize( off_t node );
+  inline size_t     getNodeSize( off_t node ) const;
 
 private:
 
+  struct MapDynamicDynamicInfo : MapInfo
+  {
+    unsigned long   minChunkSize;   // minimum chunk size
+    unsigned long   allocSize;	    // bytes to allocate at a time
+    unsigned long   chunkCount;	    // allocated chunks
+    unsigned long   chunkSize;	    // total allocated size
+    unsigned long   freeCount;	    // available chunks
+    unsigned long   freeSize;	    // total available size;
+    long    	    keys[NUM_KEYS]; // general purpose values
+    struct FreeList freeList;	    // head to list of free chunks
+  };
+
+  static const char *	ErrorStrings[];
+  
+  ErrorNum			    errorNum;
+  struct MapDynamicDynamicInfo *    base;
+
+  off_t				    nextFree;
+  
   MapMemDynamicDynamic( const MapMemDynamicDynamic & from );
   MapMemDynamicDynamic & operator =( const MapMemDynamicDynamic & from );
-
 };
 
 #if !defined( inline )
 #include <MapMemDynamicDynamic.ii>
 #else
 #undef inline
-
-ostream &
-operator << ( ostream & dest, const MapMemDynamicDynamic & src );
-
-istream &
-operator >> ( istream & src, const MapMemDynamicDynamic & dest );
 
 
 #endif
@@ -202,6 +228,9 @@ operator >> ( istream & src, const MapMemDynamicDynamic & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/03/08 10:29:52  houghton
+// Initial partially tested version.
+//
 // Revision 1.1  1997/03/07 11:51:31  houghton
 // Initial Version.
 //
