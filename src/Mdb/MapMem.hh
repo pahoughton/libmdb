@@ -113,7 +113,6 @@ public:
     MDB_S32_T	    type;
     MapVersion	    version;
     MapBaseAddr	    base;
-    MapBaseAddr	    resvBase;       // reserved for 64 bit addressing
     size_type	    size;
     MapOwner	    owner;	    // pid of owner (writer)
   };
@@ -247,6 +246,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2003/07/26 15:58:22  houghton
+// Cleanup.
+//
 // Revision 4.2  2003/07/19 09:11:13  houghton
 // Port to 64 bit.
 //
