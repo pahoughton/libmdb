@@ -56,6 +56,8 @@ public:
   off_t	    	    getMem( size_t size = 0 );	// returns offset not addr!
   void	    	    freeMem( off_t  offset ); 	// needs offset not addr!
   
+  bool		    valid( off_t offset ) const;
+  
   void *    	    getAddr( off_t offset ) const;
   off_t	    	    getOffset( void * addr ) const;
 
@@ -246,6 +248,10 @@ operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
 // 
 //
 // $Log$
+// Revision 2.7  1997/04/25 22:25:18  houghton
+// Added valid( off_t ) - returns true if the off_t is a valid usable
+//     offset for this map.
+//
 // Revision 2.6  1997/04/04 20:50:25  houghton
 // Cleanup.
 // Added map owner to prevent to progs from opening the map in write

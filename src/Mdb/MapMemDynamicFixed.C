@@ -353,6 +353,24 @@ MapMemFixedDynamic::freeMem(
     }
 }
 		
+bool
+MapMemFixedDynamic::valid( off_t offset ) const
+{
+  off_t   first = DwordAlign( sizeof( MapFixedDynamicInfo ) );
+
+  if( (offset - first) % base->recSize )
+    return( false );
+  
+  off_t     	baseAddr = (off_t)base;
+  off_t     	freeOffset;
+      
+  for( freeOffset = base->freeList.next;
+       freeOffset < offset;
+       freeOffset = ((FreeList *)(baseAddr + freeOffset))->next );
+
+  return( freeOffset == offset ? false : true );
+}
+
 
 void
 MapMemFixedDynamic::expand( void )
@@ -640,6 +658,10 @@ MapMemFixedDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/04/25 22:25:27  houghton
+// Added valid( off_t ) - returns true if the off_t is a valid usable
+//     offset for this map.
+//
 // Revision 2.10  1997/04/21 12:12:40  houghton
 // Cleanup.
 //
