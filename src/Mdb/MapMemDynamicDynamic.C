@@ -239,13 +239,21 @@ MapMemDynamicDynamic::freeMem( off_t offset )
     }
   else
     {
-      // find loc in insert this node into
+      // find loc to insert this node into
 
       off_t nextNode  = base->freeList.next;
 
       for( ; nextNode < node && getFreeNode( nextNode )->next != 0 ;
 	   nextNode = getFreeNode( nextNode )->next );
 
+      if( nextNode == node )
+	{
+	  _LLg( LogLevel::Warn )
+	    << "Trying to free a free node: "
+	    << node << " ignored." << endl;
+	  return;
+	}
+	  
       if( nextNode > node )
 	{	  
 	  off_t	    nPrevNode = getFreeNode( nextNode )->prev;
@@ -716,6 +724,10 @@ MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/04/22 10:34:39  houghton
+// Added a check to seek if someone is trying to free an already free'd
+//     node. If so, log a warning and return.
+//
 // Revision 2.5  1997/04/04 20:50:09  houghton
 // Cleanup.
 // Added map owner to prevent to progs from opening the map in write
