@@ -12,6 +12,10 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/13 02:40:59  houghton
+// Added getOffset.
+// Added dumpInfo.
+//
 // Revision 2.2  1997/03/07 11:50:26  houghton
 // Add getBase() const.
 //
@@ -45,6 +49,7 @@ public:
   virtual void 	    freeMem( off_t offset );
 
   virtual void *    getAddr( off_t offset );
+  virtual off_t	    getOffset( void * addr );
   
   virtual void *	    getBase( void );
   virtual const void *	    getBase( void ) const;
@@ -55,6 +60,10 @@ public:
   virtual bool	        good( void ) const;
   virtual const char *	error( void ) const;
 
+  virtual ostream &	dumpInfo( ostream &	dest = cerr,
+				  const char *	prefix = "    ",
+				  bool		showVer = true ) const;
+  
   friend inline ostream & operator<<( ostream & dest, const MultiMemOffset & mmo );
   
 protected:

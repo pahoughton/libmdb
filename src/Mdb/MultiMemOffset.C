@@ -9,6 +9,10 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.3  1997/03/13 02:40:53  houghton
+// Added getOffset.
+// Added dumpInfo.
+//
 // Revision 2.2  1997/03/07 11:50:41  houghton
 // Add getBase() const.
 //
@@ -53,6 +57,12 @@ void *
 MultiMemOffset::getAddr( off_t offset )
 {
   return( (void *)offset );
+}
+
+off_t
+MultiMemOffset::getOffset( void * addr )
+{
+  return( (off_t)addr );
 }
 
 void *
@@ -110,7 +120,22 @@ MultiMemOffset::getStats( ostream & dest ) const
   return( dest );
 }
 
+ostream &
+MultiMemOffset::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! MultiMemOffset::good() )
+    dest << prefix << "Error: " << MultiMemOffset::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+  
+  dest << "using malloc\n";
 
+  return( dest );
+}
 
 //
 //              This software is the sole property of
