@@ -90,7 +90,7 @@ inline
 HashTableBase::Loc
 HashTableBase::find( HashValue hash ) const
 {
-  if( good() && hash < endHash() )
+  if( good() && hash >= 0 && hash < endHash() )
     return( hashLoc( hash ) );
   else
     return( MultiMemOffset::badLoc );
@@ -183,6 +183,9 @@ HashTableBase::endHash( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.5  1997/08/25 10:33:53  houghton
+// Bug-Fix: changed find() to verify hash >= 0.
+//
 // Revision 2.4  1997/07/19 10:20:50  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
 //     'Hash' was conflicting with the 'Hash' template class.
