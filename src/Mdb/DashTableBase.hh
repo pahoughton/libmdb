@@ -55,14 +55,14 @@ public:
 
   static const ClassVersion version;
 
-protected:
-
   struct DashNodeBase : public HashNodeBase
   {
     Loc		nextEff;
     Loc		prevEff;
     EffDate	when;
   };
+
+protected:
 
   inline const DashNodeBase &	dashNode( Loc node ) const;
   inline DashNodeBase &		dashNode( Loc node );
@@ -175,6 +175,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/05 13:42:01  houghton
+// Changed for AIX: had to make DashNodeBase a public member.
+//
 // Revision 2.1  1997/06/05 11:29:09  houghton
 // Initial Version.
 //
