@@ -81,11 +81,11 @@ RBSet< Key, LessKey >::dumpInfo(
   ) const
 {
   if( showVer )
-    dest << RBSet::getClassName() << ":\n"
-	 << RBSet::getVersion() << '\n';
+    dest << RBSet< Key, LessKey >::getClassName() << ":\n"
+	 << RBSet< Key, LessKey >::getVersion() << '\n';
 
-  if( ! RBSet::good() )
-    dest << prefix << "Error: " << RBSet::error() << '\n';
+  if( ! RBSet< Key, LessKey >::good() )
+    dest << prefix << "Error: " << RBSet< Key, LessKey >::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
@@ -101,6 +101,9 @@ RBSet< Key, LessKey >::dumpInfo(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/14 10:42:58  houghton
+// Port(AIX): changed RBSet:: to RBSet< Key, LessKey >::.
+//
 // Revision 2.1  1997/07/11 17:37:52  houghton
 // Initial Version.
 //
