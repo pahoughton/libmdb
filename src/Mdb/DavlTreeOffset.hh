@@ -12,6 +12,10 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/06/19 13:34:05  houghton
+// Changed include ClueConfig to include MdbConfig.
+// Cleanup.
+//
 // Revision 2.2  1997/06/19 12:00:28  houghton
 // Changed off_t to Loc
 //
@@ -26,7 +30,7 @@
 //
 //
 
-#include <ClueConfig.hh>
+#include <MdbConfig.hh>
 
 #include <MultiMemOffset.hh>
 #include <DavlTreeOffsetBase.hh>
@@ -365,9 +369,9 @@ private:
 template<class K, class D>
 inline
 DavlTreeOffset<K,D>::DavlTreeOffset(
-  int	(* compKey)( const K & one, const K & two ),
-  K & 	(* keyCopy)( K & dest, const K & src ),
-  D & 	(* dataCopy)( D & dest, const D & src ),
+  int		    (* compKey)( const K & one, const K & two ),
+  K &		    (* keyCopy)( K & dest, const K & src ),
+  D &		    (* dataCopy)( D & dest, const D & src ),
   MultiMemOffset *  keyMemMgr,
   MultiMemOffset *  dataMemMgr
   )
@@ -1430,7 +1434,7 @@ DavlTreeOffset<K,D>::initTree(
     }
 #endif // ! def AVLTREE_FAST
 }      
-      
+
 #endif // ! def _DavlTreeOffset_hh_ 
 //
 //              This software is the sole property of
