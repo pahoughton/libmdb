@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/04/04 01:36:54  houghton
+// Changed include stddef to stddef.h
+//
 // Revision 2.1  1995/11/10 12:42:36  houghton
 // Change to Version 2
 //
@@ -25,7 +28,7 @@
 
 #include <ClueConfig.hh>
 
-#include <stddef>
+#include <stddef.h>
 
 class MultiMem
 {
