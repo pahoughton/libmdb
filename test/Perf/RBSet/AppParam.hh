@@ -33,16 +33,23 @@ public:
   ~AppParam( void );
 
   const FilePath &  perfInfoFn( void ) const { return( perfInfoFnV ); };
+
+  long		    passes( void ) const { return( passesV ); };
+  const FilePath &  tableDir( void ) const { return( tableDirV ); };
   const Str &	    mapType( void ) const { return( mapTypeV ); };
-  const FilePath &  tableFn( void ) const { return( tableFnV ); };
+  long		    recSize( void ) const { return( recSizeV ); };
+  
   ios::open_mode    tableMode( void ) const { return( tableModeV ); };
   bool		    create( void ) const { return( createV ); };
+  unsigned long	    initSize( void ) const { return( initSizeV ); };
   unsigned long	    allocSize( void ) const { return( allocSizeV ); };
   long		    qty( void ) const { return( qtyV ); };
 
   const Str &	    order( void ) const { return( orderV ); };
   bool		    insert( void ) const { return( insertV ); };
   bool		    find( void ) const { return( findV ); };
+  bool		    erase( void ) const { return( eraseV ); };
+  bool		    iterate( void ) const { return( iterateV ); };
   
   bool		parseArgs( void );
   bool		parseArgs( int argc, char * argv[] );
@@ -55,16 +62,22 @@ private:
   AppParam & operator=( const AppParam & assignFrom );
 
   FilePath	    perfInfoFnV;
+
+  long		    passesV;
+  FilePath	    tableDirV;
   Str		    mapTypeV;
-  FilePath	    tableFnV;
+  long		    recSizeV;
   ios::open_mode    tableModeV;
   bool		    createV;
+  unsigned long	    initSizeV;
   unsigned long	    allocSizeV;
   long		    qtyV;
 
   Str		    orderV;
   bool		    insertV;
   bool		    findV;
+  bool		    eraseV;
+  bool		    iterateV;
   
 };
 
@@ -108,6 +121,9 @@ extern AppParam * App;
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/25 13:52:22  houghton
+// Added args for new style performance test.
+//
 // Revision 1.1  1997/07/21 10:29:40  houghton
 // Initial version.
 //

@@ -23,17 +23,24 @@ AppParam::AppParam(
   const char *	mainVer
   )
   : Param( mainArgc, mainArgv, mainVer, true, "ERROR | WARN | INFO" ),
-    perfInfoFnV( "rbset.perf" ),
+    passesV( 1 ),
+    tableDirV( "../data" ),
     mapTypeV( "mdd" ),
-    tableFnV( "../data/TestTable.tbl" ),
+    recSizeV( 4 ),
     tableModeV( ios::in ),
     createV( false ),
+    initSizeV( 0 ),
     allocSizeV( 1 ),
     qtyV( 1000000 ),
     orderV("asc"),
     insertV( false ),
-    findV( true )
+    findV( false ),
+    eraseV( false ),
+    iterateV( false )
 {
+  perfInfoFnV = appName();
+  perfInfoFnV += ".perf";
+  
   parseArgs();
 }
 
@@ -57,15 +64,22 @@ AppParam::parseArgs( void )
   status &= argStr( perfInfoFnV,
 		    "perf info file",
 		    "perf" );
+
+  status &= argLong( passesV,
+		     "number of times to run test",
+		     "p" );
   
+  status &= argStr( tableDirV,
+		    "table directory name",
+		    "dir" );
+
   status &= argStr( mapTypeV,
 		    "map type",
 		    "mt" );
 
-  status &= argStr( tableFnV,
-		    "table file name",
-		    "fn" );
-
+  status &= argLong( recSizeV,
+		     "record size: 4, 128, 512, 1024)",
+		     "rs" );
   Str mode;
   
   status &= argStr( mode,
@@ -83,8 +97,12 @@ AppParam::parseArgs( void )
 		     "create table",
 		     "create" );
 
+  status &= argULong( initSizeV,
+		      "initial size to allocate",
+		      "is" );
+  
   status &= argULong( allocSizeV,
-		      "alloc size",
+		      "expand size",
 		      "alloc" );
 
   status &= argLong( qtyV,
@@ -95,13 +113,24 @@ AppParam::parseArgs( void )
 		    "order",
 		    "ord" );
 
-  status &= argBool( insertV,
+  status &= argFlag( insertV,
 		     "insret recs",
 		     "i" );
 
-  status &= argBool( findV,
+  status &= argFlag( findV,
 		     "find recs",
 		     "f" );
+  
+  status &= argFlag( eraseV,
+		     "erase recs",
+		     "e" );
+  
+  status &= argFlag( iterateV,
+		     "iterate recs",
+		     "iter" );
+  
+  if( insertV || eraseV )
+    tableModeV = (ios::open_mode)(ios::in|ios::out);
   
   // status &= argStr( varV, "desc", "argid", "envVar" );
 
@@ -111,6 +140,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/07/25 13:52:19  houghton
+// Added args for new style performance test.
+//
 // Revision 1.1  1997/07/21 10:29:40  houghton
 // Initial version.
 //
