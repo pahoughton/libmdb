@@ -8,23 +8,6 @@
 //  This class is intended for creating and/or accessing a file
 //  containing a collection of fixed records.
 //
-// Quick Start: a short example of class usage
-//
-//  struct Rec {
-//    long  a;
-//    long  b;
-//    char  c[50];
-//  };
-//
-//  MapBatch<Rec>   batch( "abc.bin" );
-//
-//  for( MapBatch<Rec>::iterator them = batch.begin();
-//	 them != batch.end();
-//	 ++ them )
-//    {
-//	 ...
-//    }
-//
 // Notes:
 //
 //  You should only use a structure or  other base type (i.e. long,
@@ -294,6 +277,21 @@ private:
 //
 // Example:
 //
+//	  struct Rec {
+//	    long  a;
+//	    long  b;
+//	    char  c[50];
+//	  };
+//
+//	  MapBatch<Rec>   batch( "abc.bin" );
+//
+//	  for( MapBatch<Rec>::iterator them = batch.begin();
+//	       them != batch.end();
+//	       ++ them )
+//	    {
+//		 ...
+//	    }
+//
 // See Also:
 //
 // Files:
@@ -305,6 +303,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2001/07/30 12:18:36  houghton
+// *** empty log message ***
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

@@ -53,12 +53,12 @@
       <doc>SupportTools</doc>
     </item>
     <item>
-      <subdir dir="JavaApi" usedesc="no">
-	Java Packages Api Docs
+      <subdir dir="CxxApi" usedesc="no">
+	C++ Api Documentation
       </subdir>
       <desc>
 	<p>
-	  Java doc API docs for packages provided by &PRJ.NAME;.
+	  Documentation for the C++ classes and functions provided.
 	</p>
       </desc>
     </item>
