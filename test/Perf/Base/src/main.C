@@ -70,6 +70,35 @@ main( int argc, char * argv[] )
       exit( 1 );
     }
 
+  perfLog.setf( ios::left, ios::adjustfield );
+  perfLog << setw(10) << "App Name"
+	  << ' '
+	  << setw(12) << "Pass Num"
+	  << ' '
+	  << setw(24) << "Map Type"
+	  << ' '
+	  << setw( 5 ) << "I SZ"
+	  << ' '
+	  << setw( 4) << "A SZ"
+	  << ' '
+	  << setw( 4 ) << "R SZ"
+	  << ' '
+	  << setw( 24 ) << "Class"
+	  << ' '
+	  << setw( 10 ) << "Meth"
+	  << ' '
+	  << setw( 5 ) << "Order"
+	  << ' '
+	  << setw( 8 ) << "Start SZ"
+	  << ' '
+	  << setw( 8 ) << "Quantity"
+	  << '\n'
+	  << endl
+    ;
+  
+  perfLog.setf( ios::internal, ios::adjustfield );
+
+  
   static long RecSize[] = { 4, 128, 512, 1024, -1 };
   static long Quantity[] = { 1024, 10000, 100000, 500000, -1 };
   
@@ -77,6 +106,7 @@ main( int argc, char * argv[] )
     {
       for( long rs = 0; RecSize[rs] > 0; ++ rs )
 	{
+#if defined( FIXME_ALV )
 	  pAvlTreeOffset( "../data/perf.test",
 			  RecSize[rs],
 			  1,
@@ -88,7 +118,8 @@ main( int argc, char * argv[] )
 			  Quantity[qty] / 2,
 			  Quantity[qty],
 			  perfLog );
-  
+#endif
+	  
 	  pRBSet( "../data/perf.test",
 		  RecSize[rs],
 		  1,
@@ -110,6 +141,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:31:56  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.1  1997/09/21 19:22:05  houghton
 // Changed version to 2
 //

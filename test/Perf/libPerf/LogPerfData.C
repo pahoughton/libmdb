@@ -47,12 +47,12 @@ LogPerfData(
     ;
   
   entry.setf( ios::internal, ios::adjustfield );
-  entry << setw(2) << passNum + 1  << " of " << setw(2) << passes 
+  entry << setw(4) << passNum + 1  << " of " << setw(4) << passes 
 	<< ' '
     ;
   
   entry.setf( ios::left, ios::adjustfield );
-  entry << setw(5) << mapType
+  entry << setw(24) << mapType
 	<< ' '
     ;
   
@@ -66,7 +66,7 @@ LogPerfData(
     ;
 
   entry.setf( ios::left, ios::adjustfield );
-  entry << setw( 20 ) << className
+  entry << setw( 24 ) << className
 	<< ' '
 	<< setw( 10 ) << method
 	<< ' '
@@ -99,6 +99,9 @@ LogPerfData(
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:32:04  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.1  1997/09/21 19:22:41  houghton
 // Changed version to 2
 //

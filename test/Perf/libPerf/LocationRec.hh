@@ -8,52 +8,9 @@
 // Locationor:      David Lin x6048
 // Created:     05/10/95 15:57
 //
-// Revision History:
-//
-// 
-// $Log$
-// Revision 2.1  1997/09/21 19:22:40  houghton
-// Changed version to 2
-//
-// Revision 1.2  1997/09/17 16:56:22  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 1.1  1997/07/19 12:52:04  houghton
-// Initial Version (work in progess).
-//
-// Revision 1.10  1996/04/29  15:46:33  ichudov
-// Changes related to Phase IIa of Rating Split.
-//
-// Revision 1.9  1996/02/07  17:27:12  ichudov
-// Rating Split Phase I.
-//
-// Revision 1.8  1995/11/07  19:05:38  rjankir
-// Added function to display legend
-//
-// Revision 1.7  1995/09/27  15:16:40  ichudov
-// Committed changes after struggling with CVS.
-//
-// Revision 1.5.2.5  1995/09/25  19:43:00  ichudov
-// Many changes for ITFS, 700 1+ calls, enhanced 800 (putting 24 in infodig),
-// and 7-digit called numbers.
-//
-// Revision 1.5.2.4  1995/08/29  20:08:18  ichudov
-// Zero Tolerance.
-//
-// Revision 1.5.2.2  1995/08/21  02:30:14  ichudov
-// Reconciling my and David's zero tol versions.
-//
-// Revision 1.5.2.1  1995/08/19  16:28:56  bcooper
-// Development versions of libRating for Zero Tolerance/Pristine
-// 	-- find call start time on 800# calls from terminating side of call
-// 	-- rate 14-digit auth codes
-//
-// Revision 1.5  1994/12/30  21:13:21  rjankir
-// Implemented getNumber - needed for unratables
-//
 
 #include <DateTime.hh>
-#include <StlUtils.hh>
+#include <StlUtilsMisc.hh>
 
 #include <TeleNum.hh>
 
@@ -660,5 +617,51 @@ operator<<( ostream & dest, const LocationRec & loc )
 
 
 
+// Revision History:
+//
+// 
+// $Log$
+// Revision 2.2  2000/05/27 14:32:04  houghton
+// Port: Sun CC 5.0.
+//
+// Revision 2.1  1997/09/21 19:22:40  houghton
+// Changed version to 2
+//
+// Revision 1.2  1997/09/17 16:56:22  houghton
+// Changed for new library rename to StlUtils
+//
+// Revision 1.1  1997/07/19 12:52:04  houghton
+// Initial Version (work in progess).
+//
+// Revision 1.10  1996/04/29  15:46:33  ichudov
+// Changes related to Phase IIa of Rating Split.
+//
+// Revision 1.9  1996/02/07  17:27:12  ichudov
+// Rating Split Phase I.
+//
+// Revision 1.8  1995/11/07  19:05:38  rjankir
+// Added function to display legend
+//
+// Revision 1.7  1995/09/27  15:16:40  ichudov
+// Committed changes after struggling with CVS.
+//
+// Revision 1.5.2.5  1995/09/25  19:43:00  ichudov
+// Many changes for ITFS, 700 1+ calls, enhanced 800 (putting 24 in infodig),
+// and 7-digit called numbers.
+//
+// Revision 1.5.2.4  1995/08/29  20:08:18  ichudov
+// Zero Tolerance.
+//
+// Revision 1.5.2.2  1995/08/21  02:30:14  ichudov
+// Reconciling my and David's zero tol versions.
+//
+// Revision 1.5.2.1  1995/08/19  16:28:56  bcooper
+// Development versions of libRating for Zero Tolerance/Pristine
+// 	-- find call start time on 800# calls from terminating side of call
+// 	-- rate 14-digit auth codes
+//
+// Revision 1.5  1994/12/30  21:13:21  rjankir
+// Implemented getNumber - needed for unratables
+//
 
 #endif // ! def _LocationRec_hh_ 

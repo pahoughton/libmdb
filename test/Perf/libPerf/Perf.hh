@@ -95,6 +95,36 @@ operator < ( const Rec_1024 & a, const Rec_1024 & b )
   return( a.k < b.k );
 }
 
+#if defined( STLUTILS_RELOPS_BROKEN )
+inline
+bool
+operator > ( const Rec_4 & a, const Rec_4 & b )
+{
+  return( a.k > b.k );
+}
+
+inline
+bool
+operator > ( const Rec_128 & a, const Rec_128 & b )
+{
+  return( a.k > b.k );
+}
+
+inline
+bool
+operator > ( const Rec_512 & a, const Rec_512 & b )
+{
+  return( a.k > b.k );
+}
+
+inline
+bool
+operator > ( const Rec_1024 & a, const Rec_1024 & b )
+{
+  return( a.k > b.k );
+}
+#endif
+
 struct HashRec_4
 {
   inline long operator () ( const Rec_4 & key ) const {
@@ -207,6 +237,9 @@ struct HashRec_1024
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:32:04  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.1  1997/09/21 19:22:41  houghton
 // Changed version to 2
 //

@@ -29,9 +29,9 @@ AppParam::~AppParam( void )
 }
 
 bool
-AppParam::parseArgs( int argc, char * argv[] )
+AppParam::parseArgs( int mainArgc, char * mainArgv[] )
 {
-  bool status = Param::parseArgs( argc, argv );
+  bool status = Param::parseArgs( mainArgc, mainArgv );
 
   return( status ? parseArgs() : status );
 }
@@ -51,6 +51,9 @@ AppParam::parseArgs( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:31:56  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.1  1997/09/21 19:22:04  houghton
 // Changed version to 2
 //

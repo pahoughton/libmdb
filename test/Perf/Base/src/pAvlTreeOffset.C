@@ -99,6 +99,8 @@ pInsert(
 {
   TimeIt    timer;
   
+  Table::size_type startSize( table.size() );
+  
   timer.start();
   
   for( ; first != last; ++ first )
@@ -107,14 +109,20 @@ pInsert(
   timer.stop();
     
   LogPerfData( perfLog,
-	       dataMap.getClassName(),
-	       table.getClassName(),
-	       "insert",
-	       order,
+	       "AvlTreeOffset",
+	       1,
+	       1,
+	       dataMap.getClassName(),	       
 	       initAlloc,
-	       table.getNodeSize(),
+	       0,
+	       table.getNodeSize(),	       
+	       table.getClassName(),
+	       "add",
+	       order,
+	       startSize,
 	       quantity,
 	       timer );
+
 
   return( table.size() == quantity && table.good() );
 }
@@ -135,6 +143,8 @@ pErase(
 {
   TimeIt    timer;
   
+  Table::size_type startSize( table.size() );
+  
   timer.start();
   
   for( ; first != last; ++ first )
@@ -143,14 +153,20 @@ pErase(
   timer.stop();
     
   LogPerfData( perfLog,
-	       dataMap.getClassName(),
+	       "AvlTreeOffset",
+	       1,
+	       1,
+	       dataMap.getClassName(),	       
+	       initAlloc,
+	       0,
+	       table.getNodeSize(),	       
 	       table.getClassName(),
 	       "erase",
 	       order,
-	       initAlloc,
-	       table.getNodeSize(),
+	       startSize,
 	       quantity,
 	       timer );
+
 
   return( table.size() == 0 && table.good() );
 }
@@ -171,6 +187,8 @@ pFind(
 {
   TimeIt    timer;
   
+  Table::size_type startSize( table.size() );
+  
   timer.start();
   
   for( ; first != last; ++ first )
@@ -179,12 +197,17 @@ pFind(
   timer.stop();
     
   LogPerfData( perfLog,
-	       dataMap.getClassName(),
+	       "AvlTreeOffset",
+	       1,
+	       1,
+	       dataMap.getClassName(),	       
+	       initAlloc,
+	       0,
+	       table.getNodeSize(),	       
 	       table.getClassName(),
 	       "find",
 	       order,
-	       initAlloc,
-	       table.getNodeSize(),
+	       startSize,
 	       quantity,
 	       timer );
 
@@ -361,12 +384,17 @@ pDataType(
   timer.stop();
     
   LogPerfData( perfLog,
-	       "N/A",
-	       "Iteration",
-	       "loop",
-	       "N/A",
+	       "AvlTreeOffset",
+	       1,
+	       1,
+	       "DynamicFixed",
+	       Table::getNodeSize() * initAllocNumRecs,
 	       0,
 	       sizeof( x ),
+	       "AvlTreeOffset",
+	       "Iteration",
+	       "loop",
+	       0,
 	       quantity,
 	       timer );
 
@@ -503,6 +531,9 @@ pAvlTreeOffset(
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  2000/05/27 14:31:56  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.1  1997/09/21 19:22:05  houghton
 // Changed version to 2
 //
