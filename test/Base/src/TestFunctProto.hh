@@ -23,6 +23,7 @@
 
 
 bool	tMapFile( LibTest & tester );
+bool	tMapBatch( LibTest & tester );
 bool	tMapMemDynamicFixed( LibTest & tester );
 bool	tMapMemDynamicDynamic( LibTest & tester );
 bool	tAvlTreeOffset( LibTest & tester );
@@ -40,6 +41,9 @@ bool	tMapMemDlist( LibTest & tester );
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  2000/07/31 13:06:29  houghton
+// Added MapBatch tests.
+//
 // Revision 2.2  1998/10/23 13:22:09  houghton
 // Added MapMemDList test.
 //

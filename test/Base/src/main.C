@@ -32,6 +32,7 @@ MDB_FUNCT_VERSION(
 LibTest::TestItem   TestList[] =
 {
   { "MapFile", tMapFile },
+  { "MapBatch", tMapBatch },
   { "MapMemDynamicFixed", tMapMemDynamicFixed },
   { "MapMemDynamicDynamic", tMapMemDynamicDynamic },
   { "RBTree", tRBTree },
@@ -66,6 +67,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  2000/07/31 13:06:44  houghton
+// Added MapBatch tests.
+//
 // Revision 2.3  2000/02/28 11:58:02  houghton
 // OS Update: with upgrade to 5.6 AVL test are giving me trouble. skiping
 //     for now.

@@ -226,6 +226,8 @@ BISON_CXX_C_SOURCES	=
 C_SOURCES	=			
 CXX_C_SOURCES	=			\
 	main.C                          \
+	tMapBatch.C			\
+	tMapBatch01.C			\
 	tDRBTree.C                      \
 	tDRBTree01.C                    \
 	tDRBTree02.C                    \
@@ -346,6 +348,9 @@ check: test
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.6  2000/07/31 13:06:22  houghton
+# Added MapBatch tests.
+#
 # Revision 2.5  2000/02/28 11:57:58  houghton
 # OS Update: with upgrade to 5.6 AVL test are giving me trouble. skiping
 #     for now.
