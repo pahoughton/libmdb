@@ -20,11 +20,6 @@
 //
 
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
-
-
 template< class Key, class LessKey >
 inline
 DRBSet< Key, LessKey >::DRBSet(
@@ -115,13 +110,12 @@ DRBSet< Key, LessKey >::dumpInfo(
 }
 
 
-#if defined( inline )
-#undef inline
-#endif
-
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/28 16:49:16  houghton
+// Bug-Fix: should never define 'inline'
+//
 // Revision 2.1  1997/07/16 16:36:59  houghton
 // Initial Version (work in progress).
 //
