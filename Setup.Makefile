@@ -66,7 +66,7 @@ RUN_BASE_DIR		= $(TOOL_DIR)
 INSTALL_BASE_DIR	= $(TOOL_DIR)
 
 make_cfg_ver		= 6.01
-tools_host		= sideswipe.mci.com
+tools_host		= soundwave.mcilink.com
 tools_host_dir		= pub/tools
 
 CONFIG_VARS	=		\
