@@ -185,7 +185,7 @@ gen_config_file:
 		-f $(PROJECT_DIR)/support/MakeConfigs.Makefile	\
 		$(make_configs_vars_file)
 
-setup: tools_dirs $(setup_targets) gen_config_file
+setup: prep tools_dirs $(setup_targets) gen_config_file
 
 
 .force:

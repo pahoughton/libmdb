@@ -26,14 +26,11 @@ GNUREGEX_NAME		= GnuRegex
 GNUREGEX_VER		= 3
 GNUREGEX_DOC_HTML	= $(WWW_OBJECT_REP_ROOT)/GenC/GnuRegex
 
-GNUREGEX_API_PKG_URI	= $(GNUREGEX_EXTRACT_DIR)/$(GNUREGEX_build_dir)/docs/html/Devel/JavaApi
-GNUREGEX_API_DOC_URI	= $(WWW_OBJECT_REP_ROOT)/GenC/GnuRegex/Devel/JavaApi
-
 GNUREGEX_DESC_CMD	= \
 	cat $(GNUREGEX_EXTRACT_DIR)/$(GNUREGEX_build_dir)/src/config/.prjdesc.txt
 GNUREGEX_CLASSPATH	= \
 
-GNUREGEX_INC_DIRS	= $(INSTALL_INC_DIR)
+GNUREGEX_INC_DIRS	= 
 GNUREGEX_LIB_DIRS	= $(INSTALL_LIB_DIR)
 GNUREGEX_LIBS		= GnuRegex
 GNUREGEX_SUPPORT_ITMES	= GZIP MAKE_CONFIGS DOCTOOLS 
@@ -52,15 +49,20 @@ $(GNUREGEX_target): $(tools_archive_dir)/$(GNUREGEX_tar)
 	&& $(make_cmd) -f $(GNUREGEX_build_dir)/Setup.Makefile	\
 		setup						\
 		TOOL_DIR=$(TOOL_DIR)				\
+		EXTRACT_DIR=$(GNUREGEX_EXTRACT_DIR)		\
 		INSTALL_BASE_DIR=$(TOOL_DIR)			\
 		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
-	&& $(make_cmd) -C $(STLUTILS_build_dir) check		\
+		hide=$(hide)					\
+	&& $(make_cmd) -C $(GNUREGEX_build_dir) check		\
+		hide=$(hide)					\
 	&& $(make_cmd) -C $(GNUREGEX_build_dir) install_all	\
 		check_install=false				\
+		hide=$(hide)					\
 	&& $(make_cmd) -C $(GNUREGEX_build_dir)/docs html	\
 	&& [ -f $@ ]						\
 	&& touch $@						\
 	&& echo " Done -" `date`
+
 
 
 

@@ -117,7 +117,6 @@ XML_HTML_SOURCES	=	\
 	$(XML_MAN_3_SOURCES)	\
 	$(XML_MAN_5_SOURCES)	\
 	00-Readme.xml		\
-	Install.xml		\
 	Prerequisites.xml	\
 	StandaloneInstall.xml	\
 	SupportInstall.xml

@@ -20,6 +20,8 @@
 #
 #   %PID%
 #
+
+
 DOCTOOLS_SUPPORT_TYPE	= TOOL
 DOCTOOLS_NAME		= DocTools
 DOCTOOLS_VER		= 2
@@ -51,14 +53,20 @@ $(DOCTOOLS_target): $(tools_archive_dir)/$(DOCTOOLS_tar)
 	&& $(make_cmd) -f $(DOCTOOLS_build_dir)/Setup.Makefile	\
 		setup						\
 		TOOL_DIR=$(TOOL_DIR)				\
+		EXTRACT_DIR=$(DOCTOOLS_EXTRACT_DIR)		\
 		INSTALL_BASE_DIR=$(TOOL_DIR)			\
 		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+		hide=$(hide)					\
+	&& $(make_cmd) -C $(DOCTOOLS_build_dir) check		\
+		hide=$(hide)					\
 	&& $(make_cmd) -C $(DOCTOOLS_build_dir) install_all	\
 		check_install=false				\
+		hide=$(hide)					\
 	&& $(make_cmd) -C $(DOCTOOLS_build_dir)/docs html	\
 	&& [ -f $@ ]						\
 	&& touch $@						\
 	&& echo " Done -" `date`
+
 
 
 #
