@@ -1,0 +1,41 @@
+#
+# Title:        Makefile.Perf
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul Houghton 719-527-7834 - (paul.houghton@wcom.com)
+# Created:	05/27/00 08:18
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
+
+ARCH_INC	= -I$(PRJ_TOPDIR)/src/arch/$(arch)/test
+MDB_SRC_INC	= -I$(PRJ_TOPDIR)/src/Mdb
+PERF_INC	= -I$(PRJ_TOPDIR)/test/Perf/libPerf
+
+MDB_SRC_LIB_DIRS	= -L$(PRJ_TOPDIR)/src/Mdb
+PERF_LIB_DIRS		= -L$(PRJ_TOPDIR)/test/Perf/libPerf
+
+ARCH_DEFAULT_LD_LIBS = 
+ARCH_DEBUG_LD_LIBS = 
+
+#
+# $Log$
+# Revision 1.1  2000/05/27 14:35:07  houghton
+# Initial Version.
+#
+#
+
+# Local Variables:
+# mode:makefile
+# End:
