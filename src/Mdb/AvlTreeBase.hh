@@ -31,6 +31,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/06/25 12:49:10  houghton
+// Added typedef Addr, Loc & size_type.
+//
 // Revision 2.2  1997/06/19 11:59:52  houghton
 // Changed include ClueConfig to include MdbConfig.
 //
@@ -52,6 +55,10 @@ class AvlTreeBase
 
 public:
 
+  typedef caddr_t   Addr;
+  typedef off_t	    Loc;
+  typedef size_t    size_type;
+  
   enum NodeType
   {
     TREE,
