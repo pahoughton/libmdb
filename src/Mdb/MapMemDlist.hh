@@ -164,7 +164,7 @@ public:
       return( it );
     };
 
-    inline Value &	    operator * ( void ) {
+    inline const Value &	    operator * ( void ) {
       return( (*dlist).value( recLoc ) );
     };
     
@@ -223,12 +223,12 @@ public:
     
     
     inline const_iterator(
-      MapMemDlist< Value > *	aDlist,
-      Loc			aLoc )
+      const MapMemDlist< Value > *  aDlist,
+      Loc			    aLoc )
       : dlist( aDlist ), recLoc( aLoc ) {};
 
-    MapMemDlist< Value > *  dlist;
-    Loc			    recLoc;
+    const MapMemDlist< Value > *    dlist;
+    Loc				    recLoc;
     
   };
 
@@ -338,9 +338,13 @@ public:
     return( const_iterator( this, 0 ) );
   };
   
+  static size_type	getNodeSize( void ) {
+    return( sizeof( Rec ) );
+  };
+  
   inline bool	    	good( void ) const;
   inline const char * 	error( void ) const;
-  
+
 #if defined( FIXME )  
   virtual const char *	getClassName( void ) const;
   virtual const char *  getVersion( bool withPrjVer = true ) const;
@@ -505,6 +509,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1999/03/02 12:58:49  houghton
+// Bug-Fixes.
+//
 // Revision 2.3  1998/10/27 15:39:02  houghton
 // Added const_iterator.
 // Added begin() const && end() const.
