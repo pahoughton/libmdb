@@ -2,6 +2,7 @@
 .depend_default
 .depend_profile
 .depend_shared
+.depend_test
 Templates.DB
 ir.out
 objects
