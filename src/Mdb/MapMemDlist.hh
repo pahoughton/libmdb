@@ -24,6 +24,9 @@
 #include <MdbConfig.hh>
 #include <DumpInfo.hh>
 #include <iostream>
+#include <iterator>
+
+class MultiMemOffset;
 
 template <class Value>
 class MapMemDlist
@@ -54,7 +57,11 @@ public:
   class const_iterator;
   
   class iterator
-    : public bidirectional_iterator< Value, difference_type >
+    : public std::iterator< bidirectional_iterator_tag,
+                       Value,
+                       difference_type,
+                       Value *,
+                       Value & >
   {
   public:
 
@@ -87,6 +94,12 @@ public:
     inline bool		operator == ( const iterator & rhs ) const {
       return( dlist == rhs.dlist && recLoc == rhs.recLoc );
     };
+
+#if defined( STLUTILS_RELOPS_BROKEN )
+    inline bool		operator != ( const iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    };
+#endif
     
     inline iterator &	operator = ( const iterator & rhs ) {
       dlist = rhs.dlist;
@@ -135,7 +148,11 @@ public:
   };
 
   class const_iterator
-    : public bidirectional_iterator< Value, difference_type >
+    : public std::iterator< bidirectional_iterator_tag,
+                       Value,
+                       difference_type,
+                       Value *,
+                       Value & >
   {
   public:
 
@@ -175,6 +192,12 @@ public:
     inline bool		operator == ( const iterator & rhs ) const {
       return( dlist == rhs.dlist && recLoc == rhs.recLoc );
     };
+    
+#if defined( STLUTILS_RELOPS_BROKEN )
+    inline bool		operator != ( const const_iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    };
+#endif
     
     inline bool		operator != ( const iterator & rhs ) const {
       return( !( *this == rhs) );
@@ -509,6 +532,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  2000/05/27 14:02:49  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.4  1999/03/02 12:58:49  houghton
 // Bug-Fixes.
 //

@@ -1,4 +1,3 @@
-
 #ifndef _RBTree_hh_
 #define _RBTree_hh_
 //
@@ -33,6 +32,8 @@ class RBTree : public RBTreeBase
 {
 
 public:
+  typedef RBTree< Key, Value, KeyOfValue, LessKey >	self;
+  
   typedef ptrdiff_t	    difference_type;
   typedef const Value &	    const_referance;
   typedef Value &	    referance;
@@ -44,7 +45,11 @@ public:
 
   class const_iterator;
   class iterator
-    : public bidirectional_iterator< Value, difference_type >
+    : public std::iterator< bidirectional_iterator_tag,
+                            Value,
+                            difference_type,
+                            Value *,
+                            Value & >
   {
   public:
 
@@ -76,13 +81,19 @@ public:
       return( it );
     };
 
-    inline Value &	operator * ( void ) {
+    inline reference	operator * ( void ) {
       return( table->value( node ) );
     };
     
     inline bool		operator == ( const iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node );
     };
+    
+#if defined( STLUTILS_RELOPS_BROKEN )
+    inline bool		operator != ( const iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    };
+#endif
     
     inline iterator &	operator = ( const iterator & rhs ) {
       table = rhs.table;
@@ -105,7 +116,11 @@ public:
   };
 
   class const_iterator
-    : public bidirectional_iterator< Value, difference_type >
+    : public std::iterator< bidirectional_iterator_tag,
+                            Value,
+                            difference_type,
+                            const Value *,
+                            const Value & >
   {
   public:
 
@@ -115,7 +130,7 @@ public:
     inline const_iterator( const const_iterator & from )
       : table( from.table ), node( from.node ) {} ;
 
-    inline const_iterator( const iterator & from )
+    inline const_iterator( const self::iterator & from )
       : table( from.table ), node( from.node ) {} ;
 
     inline const_iterator &    operator ++ ( void ) {
@@ -140,7 +155,7 @@ public:
       return( it );
     };
 
-    inline const Value &    operator * ( void ) const {
+    inline reference    operator * ( void ) const {
       return( table->value( node ) );
     };
     
@@ -148,11 +163,17 @@ public:
       return( table == rhs.table && node == rhs.node );
     };
     
-    inline bool		    operator == ( const iterator & rhs ) const {
+#if defined( STLUTILS_RELOPS_BROKEN )
+    inline bool		    operator != ( const const_iterator & rhs ) const {
+      return( ! (*this == rhs) );
+    };
+#endif
+    
+    inline bool		    operator == ( const setf::iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node );
     };
 
-    inline bool		    operator != ( const iterator & rhs ) const {
+    inline bool		    operator != ( const setf::iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
     
@@ -162,7 +183,7 @@ public:
       return( *this );
     };
 
-    inline const_iterator & operator = ( const iterator & rhs ) {
+    inline const_iterator & operator = ( const self::iterator & rhs ) {
       table = rhs.table;
       node = rhs.node;
       return( *this );
@@ -180,12 +201,26 @@ public:
     const RBTree< Key, Value, KeyOfValue, LessKey > *	table;
     RBTreeBase::Loc					node;
   };
-
-  typedef reverse_bidirectional_iterator< const_iterator,
-    Value, const Value &, difference_type >	const_reverse_iterator;
-  typedef reverse_bidirectional_iterator< iterator,
-    Value, Value &, difference_type >		reverse_iterator;
-    
+  
+#if defined( STDCXX_PARTIAL_SPECIALIZATION )
+  typedef ::reverse_iterator< iterator >	reverse_iterator;
+  typedef ::reverse_iterator< const_iterator >	const_reverse_iterator;
+#else
+  typedef std::reverse_iterator< const_iterator,
+    const_iterator::iterator_category,
+    const_iterator::value_type,
+    const_iterator::reference,
+    const_iterator::pointer,
+    const_iterator::difference_type > const_reverse_iterator;
+  typedef std::reverse_iterator<
+    iterator,
+    iterator::iterator_category,
+    iterator::value_type,
+    iterator::reference,
+    iterator::pointer,
+    iterator::difference_type > reverse_iterator;
+#endif
+  
   typedef pair< iterator, bool >    pair_iterator_bool;
     
   inline RBTree( MultiMemOffset *   memMgr,
@@ -394,8 +429,9 @@ protected:
   KeyOfValue	keyOf;
   
 private:
-  
+
 };
+
 
 #include <RBTree.ii>
 
@@ -484,6 +520,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  2000/05/27 14:02:49  houghton
+// Port: Sun CC 5.0.
+//
 // Revision 2.9  1998/10/23 13:19:41  houghton
 // Changed include <pair> to <utility>.
 // Added const_iterator::operator != ( const iterator & rhs ) const;
