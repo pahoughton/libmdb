@@ -165,6 +165,7 @@ CXX_C_SOURCES	=			\
 	HashTableBase.C			\
 	DashTableBase.C			\
 	RBTreeBase.C			\
+	ReconTableBase.C		\
 	$(ARCH_CXX_C_SOURCES)           \
 
 
@@ -200,6 +201,8 @@ USER_HH_INCS	=			\
 	RBSet.hh			\
 	DRBTree.hh			\
 	DRBSet.hh			\
+	ReconTableBase.hh		\
+	ReconTable.hh			\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
@@ -227,6 +230,8 @@ USER_II_INCS	=			\
 	RBSet.ii			\
 	DRBTree.ii			\
 	DRBSet.ii			\
+	ReconTableBase.ii		\
+	ReconTable.ii			\
 	$(ARCH_USER_II_INCS)            \
 
 USER_INCLUDES	=		\
@@ -306,6 +311,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.22  2000/08/02 11:03:13  houghton
+# Added ReconTable sources.
+#
 # Revision 2.21  2000/05/26 11:44:53  houghton
 # Bug-Fix: was not including make config file.
 #
