@@ -16,28 +16,18 @@
 //
 
 #include "MapFile.hh"
+#include "_MdbMemMap.hh"
 
 #include <Str.hh>
 #include <ClueUtils.hh>
 
+#include <cstring>
+
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <errno.h>
+#include <unistd.h>
 
-#ifdef Linux
-#include <sys/stat.h>
-
-//
-// linux has an else construct on MAP_FIXED, so it does
-// not have a MAP_VARIABLE. I define it here as 0 so it will be ignored
-// 
-#define MAP_VARIABLE  0
-#endif
-
-#if defined( Linux )
-extern "C" size_t getpagesize( void );
-#endif
 
 #if defined( MDB_DEBUG )
 #include "MapFile.ii"
@@ -423,6 +413,9 @@ MapFile::createMap(
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/07/19 10:25:50  houghton
+// Port(Sun5): moved secializations to new _MdbMapMem.hh header.
+//
 // Revision 2.10  1997/07/16 16:37:38  houghton
 // Bug-Fix: if create is true mode needs to be set to ios::in|ios::out.
 //
