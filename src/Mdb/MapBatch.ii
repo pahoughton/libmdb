@@ -24,6 +24,35 @@ template< class T >
 inline
 MapBatch<T>::MapBatch(
   const char *	    fileName,
+  ios::open_mode    mode
+  )
+  : map( fileName, 0, mode, false ),
+    endPos( map.getSize() )
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *	    fileName,
+  ios::open_mode    mode,
+  MapFile::MapMask  permMask
+  )
+  : map( fileName,
+	 0,
+	 mode,
+	 ( (mode & ios::out)
+	   && !(mode & ios::nocreate)) ? true : false,
+	 permMask ),
+    endPos( (mode & ios::out)
+	    && ! (mode & ios::nocreate) ? 0 : map.getSize() )
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *	    fileName,
   ios::open_mode    mode,
   bool		    create,
   MapFile::MapMask  permMask
@@ -111,6 +140,9 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.7  1999/03/02 12:57:32  houghton
+// Changed constructors.
+//
 // Revision 2.6  1997/12/30 13:41:12  houghton
 // Added records to dumpInfo outpput.
 //
