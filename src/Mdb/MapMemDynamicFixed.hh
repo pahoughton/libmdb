@@ -52,15 +52,15 @@ public:
   MapMemDynamicFixed( const char *	fileName,
 		      ios::open_mode	mode,
 		      bool		create,
-		      size_type		recSize = 0,
-		      size_type		numRecs = 0,
-		      MapMask		permMask = 0777 );
+		      size_type		recSize,
+		      size_type		allocNumRecs = 0,
+		      MapMask		permMask = 02 );
   
   // use this constructor to create a new map file  
   MapMemDynamicFixed( const char * 	fileName,
 		      size_type		recSize,
-		      size_type		numRecs = 0,
-		      MapMask		permMask = 0777 );
+		      size_type		allocNumRecs = 0,
+		      MapMask		permMask = 02 );
 
   // use this constructor to access an existing map file  
   MapMemDynamicFixed( const char * 	fileName,
@@ -75,9 +75,9 @@ public:
   bool		    valid( Loc loc ) const;
   
   size_type	    getRecSize( void ) const;
-  size_type	    getChunkSize( void ) const;
+  size_type	    getAllocNumRecs( void ) const;
   
-  void 	    	    expand( void );
+  bool 	    	    expand( void );
 
   virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;    
@@ -87,34 +87,51 @@ public:
 				  const char *  prefix = "    ",
 				  bool		showVer = false ) const;
 
-  static const ClassVersion version;
-
   inline
   DumpInfo< MapMemDynamicFixed >  dump( const char *	prefix = "    ",
 					bool		showVer = true ) const;
-  struct FreeList
+
+  static const ClassVersion version;
+
+  // debuging / testing methods
+  ostream &	dumpFreeList( ostream & dest ) const;
+  ostream &	dumpNodes( ostream & dest ) const;
+  bool		allTested( void );
+  
+  // FreeNode should be protected but AIX can't deal with it.
+  struct FreeNode
   {
-    unsigned long next;
-    unsigned long prev;
+    Loc	    nextFree;
+    Loc	    prevFree;
   };
 
 protected:
 
+  inline Loc		    firstNode( void ) const;
+  inline Loc		    lastNode( void ) const;
+  
+  inline const FreeNode &   freeList( void ) const;
+  inline FreeNode &	    freeList( void );
+
+  inline const FreeNode &   freeNode( Loc f ) const;
+  inline FreeNode &	    freeNode( Loc f );
+  
+  
 private:
 
   MapMemDynamicFixed( const MapMemDynamicFixed & copyFrom );
   MapMemDynamicFixed & operator=( const MapMemDynamicFixed & assignFrom );
 
   void	createMapMemDynamicFixed( size_type recSize,
-				  size_type numRecs );
+				  size_type allocNumRecs );
 
   void	openMapMemDynamicFixed( void );
   
   struct MapDynamicFixedInfo : MapDynamicInfo
   {
-    unsigned long   recSize;	// record size
-    unsigned long   chunkSize;	// records to allocate at a time
-    struct FreeList freeList;	// head to list of free records
+    size_type	recSize;	    // record size
+    size_type   allocNumRecs;   // records to allocate at a time
+    FreeNode	freeList;	    // head to list of free records
   };
 
   inline MapDynamicFixedInfo *		mapInfo( void );
@@ -220,6 +237,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1997/07/13 11:25:40  houghton
+// Cleanup.
+// Added firstNode(), lastNode(), freeList() & freeNode().
+//
 // Revision 2.9  1997/06/19 12:02:31  houghton
 // Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
 //

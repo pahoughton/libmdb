@@ -19,6 +19,7 @@
 //  $Id$
 //
 
+#include <ClueUtils.hh>
 
 #if defined( MDB_DEBUG )
 #define inline
@@ -28,15 +29,66 @@ inline
 MapMemDynamicFixed::size_type
 MapMemDynamicFixed::getRecSize( void ) const
 {
-  return( mapInfo()->recSize );
+  return( mapInfo() ? mapInfo()->recSize : 0 );
 }
 
 inline
 MapMemDynamicFixed::size_type
-MapMemDynamicFixed::getChunkSize( void ) const
+MapMemDynamicFixed::getAllocNumRecs( void ) const
 {
-  return( mapInfo()->chunkSize );
+  return( mapInfo() ? mapInfo()->allocNumRecs : 0 );
 }
+
+inline
+DumpInfo< MapMemDynamicFixed >
+MapMemDynamicFixed::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< MapMemDynamicFixed >( *this, prefix, showVer ) );
+}
+
+inline
+MapMemDynamicFixed::Loc
+MapMemDynamicFixed::firstNode( void ) const
+{
+  return( DwordAlign( sizeof( MapDynamicFixedInfo ) ) );
+}
+
+inline
+MapMemDynamicFixed::Loc
+MapMemDynamicFixed::lastNode( void ) const
+{
+  return( ( ( ((getMapSize() - firstNode()) / mapInfo()->recSize) - 1) *
+	  mapInfo()->recSize ) + firstNode() );
+}
+
+inline
+const MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeList( void ) const
+{
+  return( mapInfo()->freeList );
+}
+
+inline
+MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeList( void )
+{
+  return( mapInfo()->freeList );
+}
+
+inline
+const MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeNode( Loc f ) const
+{
+  return( *( (const FreeNode *)( (const char *)getBase() + f ) ));
+}
+  
+inline
+MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeNode( Loc f )
+{
+  return( *( (FreeNode *)( (char *)getBase() + f ) ));
+}
+  
 
 inline
 MapMemDynamicFixed::MapDynamicFixedInfo *
@@ -62,6 +114,10 @@ MapMemDynamicFixed::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/13 11:27:39  houghton
+// Cleanup.
+// Added firstNode(), lastNode(), freeList() & freeNode().
+//
 // Revision 2.2  1997/06/19 12:02:33  houghton
 // Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
 //
