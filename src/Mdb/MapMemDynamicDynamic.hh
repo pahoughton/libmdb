@@ -71,7 +71,7 @@ public:
   inline unsigned long	    getChunkSize( void ) const;
   inline unsigned long	    getFreeSize( void ) const;
   
-  void 	    	    expand( size_type minAmount );
+  void			    expand( size_type minAmount );
 
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -81,35 +81,48 @@ public:
 				  const char *  prefix = "    ",
                                   bool          showVer = true ) const;
 
-  ostream &	dumpFreeList( ostream & dest ) const;
-  ostream &	dumpNodes( ostream & dest ) const;
-  
   static const ClassVersion version;
 
+  // debuging / testing methods
   inline
   DumpInfo< MapMemDynamicDynamic >  dump( const char *	prefix = "    ",
 					  bool		showVer = true ) const;
 
-  // FreeList should be protected but AIX can't deal with it.
-  
-  struct FreeList
+  ostream &	dumpFreeList( ostream & dest ) const;
+  ostream &	dumpNodes( ostream & dest ) const;
+
+  struct Node
   {
-    unsigned long   size;
-    unsigned long   next;
-    unsigned long   prev;
+    long	next;
+    long	prev;
   };
 
+  // FreeNode should be protected but AIX can't deal with it.
+  struct FreeNode : public Node
+  {
+    long	nextFree;
+    long	prevFree;
+  };
+  
+  
 protected:
 
-  inline FreeList *	    getFreeNode( off_t f );
-  inline const FreeList *   getFreeNode( off_t f ) const ;
-  inline bool		    setPrevFnodeNext( off_t f, off_t n );
-  inline bool		    setNextFnodePrev( off_t f, off_t p );
+  inline FreeNode &	    freeNode( Loc f );
+  inline const FreeNode &   freeNode( Loc f ) const;
+  inline size_type	    freeNodeSize( Loc f ) const;
+  
+  inline FreeNode &	    freeList( void );
+  inline const FreeNode &   freeList( void ) const;
 
-  inline size_type &   setNodeSize( off_t node, size_type nodeSize );
-  inline size_type &   getNodeSize( off_t node );
-  inline size_type     getNodeSize( off_t node ) const;
+  inline void		    setNextPrev( Loc n, Loc p );
+  inline void		    setFreePrevNext( Loc f, Loc n );
+  inline void		    setFreeNextPrev( Loc f, Loc p );
 
+  inline Loc		    nodeLoc( Loc f ) const;
+  inline Loc		    freeLoc( Loc n ) const;
+
+  inline Loc		    allocFreeNode( Loc f, size_type chunkSize );
+  
 private:
 
   MapMemDynamicDynamic( const MapMemDynamicDynamic & from );
@@ -126,7 +139,7 @@ private:
     unsigned long   allocSize;	    // bytes to allocate at a time
     unsigned long   chunkSize;	    // total allocated size
     unsigned long   freeSize;	    // total available size;
-    struct FreeList freeList;	    // head to list of free chunks
+    struct FreeNode freeList;	    // head to list of free chunks
   };
 
   inline MapDynamicDynamicInfo *	mapInfo( void );
@@ -231,6 +244,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.8  1997/06/27 12:15:31  houghton
+// Major rework to speed up 'release'.
+//
 // Revision 1.7  1997/06/18 14:14:47  houghton
 // Removed include ClueUtils.
 //

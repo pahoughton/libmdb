@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
+#include <assert.h>
 
 #if defined( MDB_DEBUG )
 #include "MapMemDynamicDynamic.ii"
@@ -38,6 +39,25 @@ const char * MapMemDynamicDynamic::ErrorStrings[] =
   ": Bad size requested",
   0
 };
+
+#if defined( MDD_DEBUG )
+
+static long	allocSplit = 0;
+static long	allocWhole = 0;
+static long	relOnly = 0;
+static long	relJoinPSN = 0;
+static long	relJoinPS = 0;
+static long	relJoinSN = 0;
+static long	relFirst = 0;
+static long	relLast = 0;
+static long	relMiddleBeg = 0;
+static long	relMiddleEnd = 0;
+static long	shrunkMap = 0;
+static long	expandNewNode = 0;
+static long	expandFreeEmpty = 0;
+static long	expandLastNode = 0;
+
+#endif
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
@@ -91,84 +111,111 @@ MapMemDynamicDynamic::~MapMemDynamicDynamic( void )
 }
 
 MapMemDynamicDynamic::Loc
+MapMemDynamicDynamic::allocFreeNode( Loc f, size_type chunkSize )
+{
+  if( freeNodeSize( f ) >= (chunkSize + mapInfo()->minChunkSize ) )
+    {
+      // this node is big enough to split into the allocated
+      // node and another free node
+      
+      Loc	nf = f + chunkSize;
+      
+      freeNode( nf ).next	= freeNode( f ).next;
+      freeNode( nf ).prev	= f;
+      freeNode( nf ).nextFree	= freeNode( f ).nextFree;
+      freeNode( nf ).prevFree	= freeNode( f ).prevFree;
+      
+      // insert the new free node into the freeList
+      setFreePrevNext( f, nf );
+      setFreeNextPrev( f, nf );
+      
+      // change prev->next to non free
+      if( freeNode( f ).prev )
+	freeNode( freeNode( f ).prev ).next = f;
+      
+      // change next->prev to free 'nf'
+      setNextPrev( f, -nf );
+      
+      freeNode( f ).next = -nf;	// node's next is a free 'nf'
+      
+      mapInfo()->chunkSize += chunkSize;
+      mapInfo()->freeSize  -= chunkSize;
+      
+#if defined( MDD_DEBUG )
+      _LLg( LogLevel::Test )
+	<< "allocate( " << setw( 4 ) << chunkSize << " ) split: "
+	<< setw( 6 ) << "n: " << nodeLoc( f )
+	<< setw( 6 ) << "a: " << freeNodeSize( f )
+	<< endl;
+      ++ allocSplit;
+#endif
+    }
+  else
+    {
+      // not big enough to split so give the whole node
+      
+      // remove 'f' from free list
+      setFreePrevNext( f, freeNode( f ).nextFree );
+      setFreeNextPrev( f, freeNode( f ).prevFree );
+      
+      // change next->prev to non free
+      if( freeNode( f ).next )
+	freeNode( freeNode( f ).next ).prev = f;
+      
+      // change prev->next to non free
+      if( freeNode( f ).prev )
+	freeNode( freeNode( f ).prev ).next = f;
+      
+      mapInfo()->chunkSize  += freeNodeSize( f );
+      mapInfo()->freeSize   -= freeNodeSize( f );
+      
+      -- mapInfo()->freeCount;
+      
+#if defined( MDD_DEBUG )
+      _LLg( LogLevel::Test )
+	<< "allocate( " << setw( 4 ) << chunkSize << " ) whole: "
+	<< setw( 6 ) << "n: " << nodeLoc( f )
+	<< setw( 6 ) << "a: " << freeNodeSize( f )
+	<< endl;
+      
+      ++ allocWhole;
+#endif
+    }
+  return( nodeLoc( f ) );
+}
+
+MapMemDynamicDynamic::Loc
 MapMemDynamicDynamic::allocate( size_type size )
 {
   if( ! good() )
     return( 0 );
 
-  size_type    chunkSize = max( DwordAlign( size + sizeof( size_type ) ),
-			     mapInfo()->minChunkSize );
+  size_type    chunkSize = max( DwordAlign( size + sizeof( Node ) ),
+				mapInfo()->minChunkSize );
 
-  if( mapInfo()->freeList.next == 0 )
-    expand( chunkSize );
+  ++ mapInfo()->chunkCount;
 
-  mapInfo()->chunkCount++;
+  Loc f;
   
-  while( good() )
+  for( f = freeList().nextFree;
+       f;
+       f = freeNode( f ).nextFree )
     {
-      for( off_t f = mapInfo()->freeList.next;
-	   f;
-	   f = getFreeNode( f )->next )
-	{
-	  FreeList * fnode = getFreeNode( f );
+      if( freeNodeSize( f ) < chunkSize )
+	continue;
 
-	  if( fnode->size >= chunkSize )
-	    {
-	      if( fnode->size >= (chunkSize + mapInfo()->minChunkSize) )
-		{
-		  // give part of this chunk
-		  FreeList * newFnode = getFreeNode( f + chunkSize );
-		  
-		  setPrevFnodeNext( f, f + chunkSize );
-		  setNextFnodePrev( f, f + chunkSize );
-		  
-		  newFnode->next = fnode->next;
-		  newFnode->prev = fnode->prev;
-		  newFnode->size = fnode->size - chunkSize;
-		  
-		  // set this chunk's size
-		  setNodeSize( f, chunkSize );
+  // this node is big enough to satisfy the  request.
 
-		  mapInfo()->chunkSize += chunkSize;
-		  mapInfo()->freeSize -= chunkSize;
-
-#if defined( MDB_DEBUG )
-		  _LLg( LogLevel::App1 )
-		    << "getMem (partial): "
-		    << setw( 6 ) << f + sizeof( size_type )
-		    << setw(6) << getNodeSize( f )
-		    << endl;
-#endif
-		  return( f + sizeof( size_type ) );
-		}
-	      else
-		{
-		  setPrevFnodeNext( f, fnode->next );
-		  setNextFnodePrev( f, fnode->prev );
-
-		  setNodeSize( f, fnode->size);
-		  
-		  mapInfo()->chunkSize += fnode->size;
-		  mapInfo()->freeSize -= fnode->size;
-		  mapInfo()->freeCount --;
-
-#if defined( MDB_DEBUG )
-		  _LLg( LogLevel::App1 )
-		    << "getMem (node):    "
-		    << setw( 6 ) << f + sizeof( size_type )
-		    << setw(6) << getNodeSize( f )
-		    << endl;
-#endif
-		  return( f + sizeof( size_type ) );
-		}
-	    }
-	}
-
-      // i didn't find a large enough free node
-      expand( chunkSize );
+      return( allocFreeNode( f, chunkSize ) );
     }
+  
+  // no free chunks or i didn't find one large enough
+  expand( chunkSize );
 
-  return( 0 );
+  if( freeList().prevFree && freeNodeSize( freeList().prevFree ) > chunkSize )
+    return( allocFreeNode( freeList().prevFree, chunkSize ) );
+  else
+    return( 0 );
 }
 
 void
@@ -176,257 +223,312 @@ MapMemDynamicDynamic::release( Loc offset )
 {
   if( ! good() )
     return;
+  
+  Loc		f = freeLoc( offset );
 
-  off_t	    node	= offset - sizeof( size_type );
-  off_t     nodeSize	= getNodeSize( node );
+  -- mapInfo()->chunkCount;
+
+  mapInfo()->chunkSize -= freeNodeSize( f );
+  mapInfo()->freeSize  += freeNodeSize( f );
   
-  mapInfo()->chunkCount--;
-  mapInfo()->chunkSize -= nodeSize;
-  
-  if( mapInfo()->freeList.next == 0 )
+  if( freeList().nextFree == 0 )
     {
-#if defined( MDB_DEBUG )
-      _LLg( LogLevel::App1 )
-	<< "Free (empty):     "
-	<< setw( 6 ) << offset
-	<< setw(6) << nodeSize
+      // no other free nodes, put this node into the free list
+      freeList().nextFree = f;
+      freeList().prevFree = f;
+
+      freeNode( f ).nextFree = 0;
+      freeNode( f ).prevFree = 0;
+
+      freeNode( f ).prev = abs( freeNode( f ).prev );
+      freeNode( f ).next = abs( freeNode( f ).next );
+
+      // change next->prev to a free 'f'
+      if( freeNode( f ).next )
+	freeNode( freeNode( f ).next ).prev = -f;
+
+      // change prev->next to a free 'f'
+      if( freeNode( f ).prev )
+	freeNode( freeNode( f ).prev ).next = -f;
+      
+      ++ mapInfo()->freeCount;
+      
+#if defined( MDD_DEBUG )
+      _LLg( LogLevel::Test )
+	<< "release ( " << offset << " ) only."
 	<< endl;
+      ++ relOnly;
 #endif
-      
-      mapInfo()->freeList.next = node;
-      mapInfo()->freeList.prev = node;
-      
-      getFreeNode( node )->next = 0;
-      getFreeNode( node )->prev = 0;
-      getFreeNode( node )->size = nodeSize;
     }
   else
     {
-      // find loc to insert this node into
-
-      off_t nextNode  = mapInfo()->freeList.next;
-
-      for( ; nextNode < node && getFreeNode( nextNode )->next != 0 ;
-	   nextNode = getFreeNode( nextNode )->next );
-
-      if( nextNode == node )
+      if( freeNode( f ).prev < 0 )
 	{
-	  _LLg( LogLevel::Warn )
-	    << "Trying to free a free node: "
-	    << node << " ignored." << endl;
-	  return;
-	}
+	  // prev is a free node, join with this node
+
+	  Loc		prevF = abs( freeNode( f ).prev );
 	  
-      if( nextNode > node )
-	{	  
-	  off_t	    nPrevNode = getFreeNode( nextNode )->prev;
-
-	  if( nPrevNode )
-	    { 		
-	      off_t    nPrevSize = getFreeNode( nPrevNode )->size;
-
-	      if( (nPrevNode + nPrevSize) == node )
-		{
-		  if( (node + nodeSize) == nextNode )
-		    {
-		      // contigious nprev -> node -> next
-#if defined( MDB_DEBUG )
-		      _LLg( LogLevel::App1 )
-			<< "Free (p n x):     "
-			<< setw( 6 ) << offset
-			<< setw(6) << nodeSize
-			<< endl;
-		      if( (off_t)getFreeNode( nPrevNode )->next != nextNode )
-			{
-			  _LLg( LogLevel::Error ) <<
-			    "In free( p n x ): p->n != n\n" << endl;
-			  exit( 1 );
-			}
-#endif
-
-		      getFreeNode( nPrevNode )->size +=
-			getFreeNode( nextNode )->size + nodeSize;
-
-		      setPrevFnodeNext( nextNode,
-					getFreeNode( nextNode )->next );
-
-		      setNextFnodePrev( nextNode,
-					getFreeNode( nextNode )->prev );
-		      
-		      node = 0;
-		      mapInfo()->freeCount--;
-		    }
-		  else
-		    {
-#if defined( MDB_DEBUG )
-		      _LLg( LogLevel::App1 )
-			<< "Free (p n):       "
-			<< setw( 6 ) << offset
-			<< setw(6) << nodeSize
-			<< endl;
-#endif
-		      // contigious nprev -> node
-		      getFreeNode( nPrevNode )->size += nodeSize;
-		      node = 0;
-		    }
-		}
-	    }
-
-	  if( node )
+	  if( freeNode( f ).next < 0 )
 	    {
-	      if( (node + nodeSize) == nextNode )
-		{
-		  // contigious node -> next
-#if defined( MDB_DEBUG )
-		      _LLg( LogLevel::App1 )
-			<< "Free (n x):       "
-			<< setw( 6 ) << offset
-			<< setw(6) << nodeSize
-			<< endl;
-#endif
-		      
-		  getFreeNode( node )->next = getFreeNode( nextNode )->next;
-		  getFreeNode( node )->prev = getFreeNode( nextNode )->prev;
-		  getFreeNode( node )->size = ( getFreeNode( nextNode )->size +
-						nodeSize );
-		  
-		  setNextFnodePrev( node, node );
-		  setPrevFnodeNext( node, node );		  
-		}
-	      else
-		{
-#if defined( MDB_DEBUG )
-		  _LLg( LogLevel::App1 )
-		    << "Free (n):         "
-		    << setw( 6 ) << offset
-		    << setw(6) << nodeSize
-		    << endl;
-#endif
-		  // non contigous
-		  getFreeNode( node )->next = nextNode;
-		  getFreeNode( node )->prev = getFreeNode( nextNode )->prev;
-		  
-		  setPrevFnodeNext( node, node );
-		  setNextFnodePrev( node, node );
-		  
-		  mapInfo()->freeCount++;
-		}
-	    }
-	}
-      else
-	{
-	  // nextNode->next must be 0, so freeNode is now
-	  // the last in the list
-	  
-	  if( (off_t)(nextNode + getFreeNode( nextNode )->size ) ==  node )
-	    {
-#if defined( MDB_DEBUG )
-	      _LLg( LogLevel::App1 )
-		<< "Free (x l):       "
-		<< setw( 6 ) << offset
-		<< setw(6) << nodeSize
+	      // and next is a free node, join all three
+
+	      Loc		nextF = abs( freeNode( f ).next );
+	      
+	      freeNode( prevF ).next	    = freeNode( nextF ).next;
+	      freeNode( prevF ).nextFree    = freeNode( nextF ).nextFree;
+	      
+	      setFreeNextPrev( nextF, prevF );
+
+#if defined( MDD_DEBUG )
+	      _LLg( LogLevel::Test )
+		<< "release ( " << offset << " ) join prev self next."
 		<< endl;
+	      ++ relJoinPSN;
 #endif
-	      // contigious nextNode -> node
-	      getFreeNode( nextNode )->size += nodeSize;
+	      -- mapInfo()->freeCount;
 	    }
 	  else
 	    {
-	      // non contigious
+	      // no next or next is an allocated node
+	      freeNode( prevF ).next = freeNode( f ).next;
 
-#if defined( MDB_DEBUG )
-	      _LLg( LogLevel::App1 )
-		<< "Free (l):         "
-		<< setw( 6 ) << offset
-		<< setw(6) << nodeSize
+#if defined( MDD_DEBUG )
+	      _LLg( LogLevel::Test )
+		<< "release ( " << offset << " ) join prev self."
 		<< endl;
+	      ++ relJoinPS;
 #endif
-		      
-	      getFreeNode( nextNode )->next = node;
-	  
-	      getFreeNode( node )->prev = nextNode;
-	      getFreeNode( node )->next = 0;
-	      getFreeNode( node )->size = nodeSize;
-
-	      mapInfo()->freeList.prev = node;	  
-	      mapInfo()->freeCount++;
 	    }
-	}    
+	  
+	  // changed next->prev to free 'prevF'
+	  setNextPrev( prevF, -prevF );
+	}
+      else
+	{
+	  if( freeNode( f ).next < 0 )
+	    {
+	      // next is a free node, join with this node
+	      
+	      Loc	    nextF = abs( freeNode( f ).next );
+	      
+	      // put 'f' in the list where 'nextF' was
+	      setFreePrevNext( nextF, f );
+	      setFreeNextPrev( nextF, f );
+	      
+	      freeNode( f ).nextFree	= freeNode( nextF ).nextFree;
+	      freeNode( f ).prevFree	= freeNode( nextF ).prevFree;
+
+	      // set my next node to nextFreeNode's next
+	      freeNode( f ).next	= freeNode( nextF ).next;
+
+	      // change prev->next to free 'f'
+	      if( freeNode( f ).prev )
+		freeNode( freeNode( f ).prev ).next = - f;
+	      
+	      // change next->prev to free 'f'
+	      setNextPrev( f, -f );
+		  
+#if defined( MDD_DEBUG )
+	      _LLg( LogLevel::Test )
+		<< "release ( " << offset << " ) join self next."
+		<< endl;
+	      ++ relJoinSN;
+#endif
+	    }
+	  else
+	    {
+	      // can't join with anybody so just put into free list.
+
+	      ++ mapInfo()->freeCount;
+	      
+	      // first changed next->prev and prev->next to free 'f'
+
+	      if( freeNode( f ).prev )
+		freeNode( freeNode( f ).prev ).next = - f;
+
+	      if( freeNode( f ).next )
+		freeNode( freeNode( f ).next ).prev = - f;
+	      
+	      if( freeList().nextFree > f )
+		{
+		  // 'f' is before the first free.
+		  freeNode( f ).prevFree = 0;
+		  freeNode( f ).nextFree = freeList().nextFree;
+
+		  freeNode( freeNode( f ).nextFree ).prevFree = f;
+
+		  freeList().nextFree = f;
+		  
+#if defined( MDD_DEBUG )
+		  _LLg( LogLevel::Test )
+		    << "release ( " << offset << " ) first."
+		    << endl;
+		  ++ relFirst;
+#endif
+		}
+	      else
+		{
+		  if( freeList().prevFree < f )
+		    {
+		      // 'f' is after the last free.
+
+		      freeNode( f ).prevFree = freeList().prevFree;
+		      freeNode( f ).nextFree = 0;
+
+		      freeNode( freeNode( f ).prevFree ).nextFree = f;
+
+		      freeList().prevFree = f;
+		      
+#if defined( MDD_DEBUG )
+		      _LLg( LogLevel::Test )
+			<< "release ( " << offset << " ) Last."
+			<< endl;
+		      ++ relLast;
+#endif
+		    }
+		  else
+		    {
+		      // firstFree < f < lastFree so ...
+		      
+		      // find out if I'm closer to the begining or
+		      // end of the free list
+
+		      Loc nextF;
+		      Loc prevF;
+		      
+		      if( ( freeList().prevFree - f ) <
+			  ( f - freeList().nextFree ) )
+			{
+			  // closer to the last of the free list
+			  prevF = freeList().prevFree;
+			  
+			  for( prevF =  freeNode( prevF ).prevFree;
+			       prevF > f;
+			       prevF =  freeNode( prevF ).prevFree );
+
+			  nextF = freeNode( prevF ).nextFree;
+#if defined( MDD_DEBUG )
+			  _LLg( LogLevel::Test )
+			    << "release ( " << offset << " ) Middle end."
+			    << endl;
+			  ++ relMiddleEnd;
+
+			  assert( prevF < f && f < nextF );
+#endif
+			}
+		      else
+			{
+			  nextF = freeList().nextFree;
+
+			  for( nextF = freeNode( nextF ).nextFree;
+			       nextF < f;
+			       nextF = freeNode( nextF ).nextFree );
+
+			  prevF = freeNode( nextF ).prevFree;
+#if defined( MDD_DEBUG )
+			  _LLg( LogLevel::Test )
+			    << "release ( " << offset << " ) Middle beg."
+			    << endl;
+			  ++ relMiddleBeg;
+			  
+			  assert( prevF < f && f < nextF );
+#endif
+			}
+
+		      // now put f in the free list
+		      freeNode( f ).nextFree = nextF;
+		      freeNode( f ).prevFree = prevF;
+
+		      freeNode( nextF ).prevFree = f;
+		      freeNode( prevF ).nextFree = f;
+		    }
+		}
+	    }
+	}
     }
 
-  mapInfo()->freeSize += nodeSize;
+  // now see if there is enough space at the end to shrink
 
-  {
-    // now see if there is enough space at the end to shrink
-
-    if( ( mapInfo()->freeList.prev +
-	  getFreeNode( mapInfo()->freeList.prev )->size )
-	  == getMapSize() &&
-	( getFreeNode( mapInfo()->freeList.prev )->size >
-	  (mapInfo()->allocSize * 2 ) ) )
-      {
-	// shrink by all but one alloc unit;
+  if( ! freeNode( freeList().prevFree ).next &&
+      ( getMapSize() - freeList().prevFree ) >
+      ( mapInfo()->allocSize * 2 ) )
+    {
+      size_type	shrinkAmount = ( freeNodeSize(  freeList().prevFree ) -
+				 mapInfo()->allocSize );
+      
+      // shrink by all but one alloc unit;
 #if defined( MDB_DEBUG )
-	_LLg( LogLevel::App1 ) << "SHRINK\n";
-	
-	_LLg( LogLevel::App2 )
-	  << "SHRINK: pre: "
-	  << ( getFreeNode( mapInfo()->freeList.prev )->size -
-	       mapInfo()->allocSize )
-	  << '\n' << dump( " pre: " )
-	  << '\n' ;
-	
-	if( _LibLog->willOutput( LogLevel::App2 ) )
-	  dumpFreeList( *_LibLog ) << endl;
+      _LLg( LogLevel::Test )
+	<< "SHRINK: pre: amount: " << shrinkAmount
+	<< '\n' << dump( " pre: " )
+	<< '\n' ;
+      
+      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+	dumpNodes( *_LibLog ) << endl;
 #endif
-	  
-	size_type origSize = getMapSize();
-	
-	size_type newSize =
-	  shrink( ( getFreeNode( mapInfo()->freeList.prev )->size -
-		    mapInfo()->allocSize ),
-		  (caddr_t)(mapInfo()->base) );
-
-	mapInfo()->size = getSize();
-	
-	mapInfo()->freeSize -= (origSize - newSize);
-		
-	getFreeNode( mapInfo()->freeList.prev )->size -= (origSize - newSize);
-
+      
+      size_type origSize = getMapSize();
+      
+      size_type newSize =
+	shrink( shrinkAmount, (caddr_t)(mapInfo()->base) );
+  
+      mapInfo()->size = getSize();
+  
+      mapInfo()->freeSize -= (origSize - newSize);
+  
 #if defined( MDB_DEBUG )
-	_LLg( LogLevel::App2 )
-	  << "SHRINK: post: "
-	  << ( getFreeNode( mapInfo()->freeList.prev )->size -
-	       mapInfo()->allocSize )
-	  << '\n' << dump( " pos: " )
-	  << '\n' ;
-	if( _LibLog->willOutput( LogLevel::App2 ) )
-	  dumpFreeList( *_LibLog ) << endl;
+      ++ shrunkMap;
+      
+      _LLg( LogLevel::Test )
+	<< "SHRINK: post: "
+	<< '\n' << dump( " post: " )
+	<< '\n' ;
+      
+      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+	dumpNodes( *_LibLog ) << endl;
+
 #endif
-      }
-  }
+    }
 }
 
+
 void
-MapMemDynamicDynamic::expand( size_type minSize )
+MapMemDynamicDynamic::expand( size_type minAmount )
 {
   if( ! good() )
     return;
 
-#if defined( MDB_DEBUG )
-  _LLg( LogLevel::App1 ) << "EXPAND\n";
-  _LLg( LogLevel::App2 )
-    << "EXPAND: pre: " << minSize
-    << '\n' << dump( " pre: " )
-    << '\n' ;
-#endif
+  size_type	origSize = getMapSize();
   
-  if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
-    dumpFreeList( *_LibLog ) << endl;
+  size_type	lastFreeSize = ( freeList().prevFree ?
+				 freeNodeSize( freeList().prevFree ) : 0 );
   
-  size_type amount = max( minSize, (size_type)(mapInfo()->allocSize ));
+  size_type	amount = max( ( minAmount > lastFreeSize ?
+				( (minAmount - lastFreeSize) +  1 ) :
+				minAmount ),
+			      (size_type)(mapInfo()->allocSize ));
 
-  size_type origSize = getMapSize();
+  // Note: if the minAmount is > lastFreeSize, then expand is probably
+  //	being called because there is not enough room for a specific node.
+  //    With this in mind, I only expand just enough to ensure the last
+  //    free node is big enough to accomidate an allocate request for
+  //	'minAmount'.
+  
+#if defined( MDB_DEBUG )
+  _LLg( LogLevel::Test )
+    << "EXPAND: pre: \n"
+    << "    minAmount:     " << minAmount << '\n'
+    << "    amount:        " << amount << '\n'
+    << "    origSize:      " << origSize << '\n'
+    << "    lastFree:      " << freeList().prevFree << '\n'
+    << "    lastFreeSize:  " << lastFreeSize << '\n'
+    << dump( " pre: " )
+    << endl; ;
+
+  if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+    dumpNodes( *_LibLog ) << endl;
+  
+#endif
   
   if( grow( amount, (caddr_t)mapInfo()->base ) == 0 )
     {
@@ -436,63 +538,92 @@ MapMemDynamicDynamic::expand( size_type minSize )
 
   mapInfo()->size = getSize();
 
+  mapInfo()->freeSize += getMapSize() - origSize;
+  
   // now add these recs to the free list
 
-  if( ( mapInfo()->freeList.prev +
-	getFreeNode( mapInfo()->freeList.prev )->size )
-      == origSize )
+  if( lastFreeSize + freeList().prevFree != origSize )
     {       
-      getFreeNode( mapInfo()->freeList.prev )->size += getMapSize() - origSize;
-    }
-  else
-    {
 #if defined( MDB_DEBUG )
-      _LLg( LogLevel::App2 )
-	<< "EXPAND: post 1: "
-	<< '\n' << dump( " post: " )
-	<< '\n' << "  ORIG: " << origSize <<  '\n';
-#endif
-      if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
-	dumpNodes( *_LibLog ) << endl;
-
-      getFreeNode( origSize )->next = 0;
-      getFreeNode( origSize )->prev = mapInfo()->freeList.prev;
-      getFreeNode( origSize )->size = getMapSize() - origSize;
-
-      if( mapInfo()->freeList.prev )
+      if( freeList().prevFree )
 	{
-	  getFreeNode( mapInfo()->freeList.prev )->next = origSize;
-	  mapInfo()->freeList.prev = origSize;
+	  _LLg( LogLevel::Test )
+	    << "EXPAND: post last not free: \n";
+	    ++ expandNewNode;
 	}
       else
 	{
-	  mapInfo()->freeList.next = origSize;
-	  mapInfo()->freeList.prev = origSize;
+	  _LLg( LogLevel::Test )
+	    << "EXPAND: post empty free list: \n";
+	  ++ expandFreeEmpty;
 	}
-#if defined( MDB_DEBUG )
-      _LLg( LogLevel::App2 )
-	<< "EXPAND: post 2: "
-	<< '\n' << dump( " post: " )
-	<< '\n' << "  ORIG: " << origSize <<  '\n';
       
-      if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
+      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+	{
+	  dumpInfo( *_LibLog, " post: " ) << endl;
+	  dumpNodes( *_LibLog ) << endl;
+	}
+
+#endif
+
+      freeNode( origSize ).next = 0;
+      freeNode( origSize ).prev = freeList().prev;
+      
+      if( freeList().prev )
+	{
+	  freeNode( freeList().prev ).next = - origSize;
+	  freeList().prev = origSize;
+	}
+      else
+	{
+	  freeList().next = origSize;
+	  freeList().prev = origSize;
+	}
+
+      freeNode( origSize ).nextFree = 0;
+      freeNode( origSize ).prevFree = freeList().prevFree;
+      
+      if( freeList().prevFree )
+	{
+	  freeNode( freeList().prevFree ).nextFree = origSize;
+	  freeList().prevFree = origSize;
+	}
+      else
+	{
+	  freeList().nextFree = origSize;
+	  freeList().prevFree = origSize;
+	}
+      
+      ++ mapInfo()->freeCount;
+      
+#if defined( MDB_DEBUG )
+      
+      _LLg( LogLevel::Test )
+	<< "EXPAND: post last not free done: "
+	<< '\n' << dump( " post: " ) << '\n';
+      
+      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	dumpNodes( *_LibLog ) << endl;
+
 #endif
     }
-  mapInfo()->freeSize += getMapSize() - origSize;
-
 #if defined( MDB_DEBUG )
-  _LLg( LogLevel::App2 )
-    << "EXPAND: post 3: "
-    << '\n' << dump( " post: " )
-    << '\n' << "  ORIG: " << origSize <<  '\n';
+  else
+    {
+      ++ expandLastNode;
+      
+      _LLg( LogLevel::Test )
+	<< "EXPAND: post last is free done: "
+	<< '\n' << dump( " post: " ) << '\n';
+      
+      if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
+	dumpNodes( *_LibLog ) << endl;
+
+    }
 #endif
+ 
 }
 
-
-      
-	      
-      
 bool
 MapMemDynamicDynamic::good( void ) const
 {
@@ -571,8 +702,26 @@ MapMemDynamicDynamic::dumpInfo(
 	   << prefix << "allocSize:    " << mapInfo()->allocSize << '\n'
 	   << prefix << "chunkSize:    " << mapInfo()->chunkSize << '\n'
 	   << prefix << "freeSize:     " << mapInfo()->freeSize << '\n'
-	   << prefix << "freeNext:     " << mapInfo()->freeList.next << '\n'
-	   << prefix << "freePrev:     " << mapInfo()->freeList.prev << '\n'
+	   << prefix << "next:         " << freeList().next << '\n'
+	   << prefix << "prev:         " << freeList().prev << '\n'
+	   << prefix << "freeNext:     " << freeList().nextFree << '\n'
+	   << prefix << "freePrev:     " << freeList().prevFree << '\n'
+#if defined( MDD_DEBUG )
+	   << prefix << "A split:      " << allocSplit << '\n'
+	   << prefix << "A whole:      " << allocWhole << '\n'
+	   << prefix << "R only:       " << relOnly << '\n'
+	   << prefix << "R join psn:   " << relJoinPSN << '\n'
+	   << prefix << "R join ps:    " << relJoinPS << '\n'
+	   << prefix << "R join sn:    " << relJoinSN << '\n'
+	   << prefix << "R first:      " << relFirst << '\n'
+	   << prefix << "R last:       " << relLast << '\n'
+	   << prefix << "R mid beg:    " << relMiddleBeg << '\n'
+	   << prefix << "R mid end:    " << relMiddleEnd << '\n'
+	   << prefix << "shrink count: " << shrunkMap << '\n'
+	   << prefix << "expand new:   " << expandNewNode << '\n'
+	   << prefix << "expand empty: " << expandFreeEmpty << '\n'
+	   << prefix << "expand last:  " << expandLastNode << '\n'
+#endif
 	;      
     }
   else
@@ -594,20 +743,20 @@ MapMemDynamicDynamic::dumpFreeList( ostream & dest ) const
   
   dest << "FreeList Dump: count: " << mapInfo()->freeCount
        << " size: " << mapInfo()->freeSize
-       << " first: " << mapInfo()->freeList.next
-       << " last: " << mapInfo()->freeList.prev << '\n' ;
+       << " first: " << freeList().nextFree
+       << " last: " << freeList().prevFree << '\n' ;
   dest << "FreeList Nodes:    node    size    prev    next\n";
   
-  for( off_t f = mapInfo()->freeList.next;
+  for( off_t f = freeList().nextFree;
        f;
-       f = getFreeNode( f )->next )
+       f = freeNode( f ).nextFree )
     {
       
       dest << "Free Node:       "
 	   << setw(6) << f
-	   << setw(8) << getFreeNode( f )->size
-	   << setw(8) << getFreeNode( f )->prev
-	   << setw(8) << getFreeNode( f )->next
+	   << setw(8) << freeNodeSize( f )
+	   << setw(8) << freeNode( f ).prevFree
+	   << setw(8) << freeNode( f ).nextFree
 	   << '\n'
 	;
     }
@@ -617,51 +766,28 @@ MapMemDynamicDynamic::dumpFreeList( ostream & dest ) const
 ostream &
 MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
 {
-  dest << "Node List:         node    size    prev    next\n";
+  dest << "Node List:         node    size    prev    next   prevF   nextF\n";
   
-  off_t  node = DwordAlign( sizeof( MapDynamicDynamicInfo )  );
-  
-  for( off_t f = mapInfo()->freeList.next;
-       f;
-       f = getFreeNode( f )->next )
+  for( Loc n = ( (freeList().next == freeList().nextFree) ?
+		 - freeList().next : freeList().next );
+       n;
+       n = freeNode( abs( n ) ).next )
     {
-      for( ; node < f && node < (off_t)getMapSize();
-	   node += getNodeSize( node ) )
-	{
-	  
-	  dest << "Node:            "
-	       << setw(6) << node
-	       << setw(8) << getNodeSize( node )
-	       << endl;
-	    ;
-	  if( getNodeSize( node ) == 0 )
-	    return( dest );
-	}
-      
-      node += getFreeNode( f )->size;
-	  
-      dest << "Free Node:       "
-	   << setw(6) << f
-	   << setw(8) << getFreeNode( f )->size
-	   << setw(8) << getFreeNode( f )->prev
-	   << setw(8) << getFreeNode( f )->next
-	   << endl;
+      dest << "Node:            "
+	   << setw(6) << n
+	   << setw(8) << freeNodeSize( abs( n ) )
+	   << setw(8) << freeNode( abs( n ) ).prev
+	   << setw(8) << freeNode( abs( n ) ).next
 	;
+      if( n < 0 )
+	{
+	  dest << setw( 8 ) << freeNode( abs( n ) ).prevFree
+	       << setw( 8 ) << freeNode( abs( n ) ).nextFree
+	    ;
+	}
+      dest << endl;
     }
 
-  for( ; node < (off_t)getMapSize();
-       node += getNodeSize( node ) )
-    {
-      
-      dest << "Node:            "
-	   << setw(6) << node
-	   << setw(8) << getNodeSize( node )
-	   << endl;
-	;
-      if( getNodeSize( node ) == 0 )
-	return( dest );
-    }
-  
   return( dest );
 }
   
@@ -674,22 +800,27 @@ MapMemDynamicDynamic::createMapMemDynamicDynamic(
   if( mapInfo() != 0 && MapMemDynamic::good() )
     {
       mapInfo()->minChunkSize	=
-	DwordAlign( max( (minChunkSize + sizeof( size_type) ),
-			 (size_type)sizeof( FreeList) ) );
+	DwordAlign( max( (size_type) (minChunkSize + sizeof( Node ) ),
+			 (size_type) sizeof( FreeNode) ) );
+      
       mapInfo()->allocSize	= DwordAlign( max( allocSize,
 						   (size_type)getpagesize()) );
       mapInfo()->chunkSize	= 0;
       mapInfo()->freeSize	= ( getMapSize() -
 				    DwordAlign(
 				      sizeof( MapDynamicDynamicInfo ) ));
-      
-      mapInfo()->freeList.next = DwordAlign( sizeof( MapDynamicDynamicInfo ) );
-      mapInfo()->freeList.prev = mapInfo()->freeList.next;
-      mapInfo()->freeList.size = 0;
 
-      getFreeNode( mapInfo()->freeList.next )->size = mapInfo()->freeSize;
-      getFreeNode( mapInfo()->freeList.next )->next = 0;
-      getFreeNode( mapInfo()->freeList.next )->prev = 0;
+      mapInfo()->freeCount  = 1;
+      
+      freeList().next	    = DwordAlign( sizeof( MapDynamicDynamicInfo ) );
+      freeList().prev	    = freeList().next;
+      freeList().nextFree   = freeList().next; 
+      freeList().prevFree   = freeList().next;
+
+      freeNode( freeList().next ).next = 0;
+      freeNode( freeList().next ).prev = 0;
+      freeNode( freeList().next ).nextFree = 0;
+      freeNode( freeList().next ).prevFree = 0;
       
       errorNum = E_OK;
     }
@@ -717,6 +848,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.12  1997/06/27 12:15:30  houghton
+// Major rework to speed up 'release'.
+//
 // Revision 2.11  1997/06/25 12:55:26  houghton
 // Cleanup.
 //

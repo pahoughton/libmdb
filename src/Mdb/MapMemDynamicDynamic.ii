@@ -39,67 +39,90 @@ MapMemDynamicDynamic::getFreeSize( void ) const
 }
 
 inline
-MapMemDynamicDynamic::FreeList *
-MapMemDynamicDynamic::getFreeNode( off_t f )
+MapMemDynamicDynamic::FreeNode &
+MapMemDynamicDynamic::freeNode( Loc f )
 {
-  return( (FreeList *)(getBase() + f ) );
+  return( *( (FreeNode *)(getBase() + f)) );
 }
 
 inline
-const MapMemDynamicDynamic::FreeList *
-MapMemDynamicDynamic::getFreeNode( off_t f ) const
+const MapMemDynamicDynamic::FreeNode &
+MapMemDynamicDynamic::freeNode( Loc f ) const
 {
-  return( (const FreeList *)(getBase() + f ) );
+  return( *( (const FreeNode *)(getBase() + f)) );
 }
 
 inline
-bool
-MapMemDynamicDynamic::setPrevFnodeNext( off_t f, off_t n )
+MapMemDynamicDynamic::size_type
+MapMemDynamicDynamic::freeNodeSize( Loc f ) const
 {
-  off_t prev = getFreeNode( f )->prev;
-
-  if( prev )
-    getFreeNode( prev )->next = n;
-  else
-    mapInfo()->freeList.next = n;
-  
-  return( true );
+  return( freeNode( f ).next ?
+	  abs( freeNode( f ).next ) - f :
+	  getMapSize() - f );
 }
 
 inline
-bool
-MapMemDynamicDynamic::setNextFnodePrev( off_t f, off_t p )
+MapMemDynamicDynamic::FreeNode &
+MapMemDynamicDynamic::freeList( void )
 {
-  off_t next = getFreeNode( f )->next;
+  return( mapInfo()->freeList );
+}
+
+inline
+const MapMemDynamicDynamic::FreeNode &
+MapMemDynamicDynamic::freeList( void ) const
+{
+  return( mapInfo()->freeList );
+}
+
+inline
+void
+MapMemDynamicDynamic::setNextPrev( Loc f, Loc p )
+{
+  Loc next = freeNode( f ).next;
 
   if( next )
-    getFreeNode( next )->prev = p;
+    freeNode( next ).prev = p;
   else
-    mapInfo()->freeList.prev = p;
-  
-  return( true );
+    freeList().prev = abs( p );
 }
 
 inline
-MapMemDynamicDynamic::size_type &
-MapMemDynamicDynamic::setNodeSize( off_t node, size_type nodeSize )
+void
+MapMemDynamicDynamic::setFreePrevNext( Loc f, Loc n )
 {
-  *( (size_type *)(getBase() + node )) = nodeSize;
-  return( getNodeSize( node ) );
+  Loc prev = freeNode( f ).prevFree;
+
+  if( prev )
+    freeNode( prev ).nextFree = n ;
+  else
+    freeList().nextFree = n;
 }
 
 inline
-MapMemDynamicDynamic::size_type &
-MapMemDynamicDynamic::getNodeSize( off_t node )
+void
+MapMemDynamicDynamic::setFreeNextPrev( Loc f, Loc p )
 {
-  return( *( (size_type *)(getBase() + node )) );
+  Loc next = freeNode( f ).nextFree;
+
+  if( next )
+    freeNode( next ).prevFree = p;
+  else
+    freeList().prevFree = p;
 }
 
 inline
-MapMemDynamicDynamic::size_type 
-MapMemDynamicDynamic::getNodeSize( off_t node ) const
+MapMemDynamicDynamic::Loc
+MapMemDynamicDynamic::nodeLoc( Loc f ) const
 {
-  return( *( (size_type *)(getBase() + node )) );
+  return( f + sizeof( Node ) );
+}
+
+inline
+MapMemDynamicDynamic::Loc
+MapMemDynamicDynamic::freeLoc( Loc n ) const
+{
+  return( n - sizeof( Node ) );
 }
 
 inline
@@ -132,6 +155,9 @@ MapMemDynamicDynamic::mapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.5  1997/06/27 12:15:31  houghton
+// Major rework to speed up 'release'.
+//
 // Revision 2.4  1997/06/05 11:28:25  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
