@@ -133,8 +133,10 @@ protected:
 
 private:
 
-  Dash( const Dash & from );
-  Dash & operator =( const Dash & from );
+  // DashTable will prevent these
+  //
+  // Dash( const Dash & from );
+  // Dash & operator =( const Dash & from );
 
   Table	    table;
 };
@@ -227,6 +229,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/06/05 13:39:39  houghton
+// Commented out copy constructor and operator = private delarations.
+//
 // Revision 2.1  1997/06/05 11:29:08  houghton
 // Initial Version.
 //
