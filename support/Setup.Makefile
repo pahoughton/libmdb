@@ -21,7 +21,7 @@
 
 SHELL		= /bin/ksh
 
-PROJECT		= libMdb-2
+PROJECT		= libMdb-3
 CFG_DIR		= $(PROJECT)/src/config
 
 stlutils_hh	= $(INSTALL_INC_DIR)/StlUtilsConfig.hh 
@@ -96,6 +96,9 @@ setup: check_cvs $(stlutils_hh) gen_setup_cfg
 
 #
 # $Log$
+# Revision 1.4  2000/05/26 11:44:59  houghton
+# Changed Project to Version 3.
+#
 # Revision 1.3  2000/01/03 14:18:49  houghton
 # Bug-Fix: forgot to use exports.
 #

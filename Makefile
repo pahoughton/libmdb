@@ -23,7 +23,7 @@ show_commands	= # true
 check_install	= true
 hide		= @
 
-PROJECT		= libMdb-2
+PROJECT		= libMdb-3
 
 PRJ_TOPDIR	= .
 CFG_DIR		= $(PRJ_TOPDIR)/src/config
@@ -147,6 +147,9 @@ help_config:
 
 #
 # $Log$
+# Revision 1.6  2000/05/26 11:44:22  houghton
+# Changed Project to Version 3.
+#
 # Revision 1.5  1999/11/10 09:28:25  houghton
 # Changed verify_setup to check Setup.cfg.
 #
