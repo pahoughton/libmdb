@@ -22,6 +22,7 @@
 SHELL		= /bin/ksh
 
 PROJECT		= libMdb-2
+CFG_DIR		= $(PROJECT)/src/config
 
 stlutils_hh	= $(INSTALL_INC_DIR)/StlUtilsConfig.hh 
 
@@ -77,7 +78,17 @@ $(stlutils_hh): $(libs_build_dir)/libStlUtils-4
 	$(TOOL_DIR)/bin/make -C $(libs_build_dir)/libStlUtils-4		      \
 	    install_all $(exports) 
 
-setup: check_cvs $(stlutils_hh)
+gen_setup_cfg:
+	rm -f $(CFG_DIR)/Setup.cfg
+	sed								      \
+		-e 's!%INSTALL_INC_DIR%!$(INSTALL_INC_DIR)!'		      \
+		-e 's!%INSTALL_LIB_DIR%!$(INSTALL_LIB_DIR)!'		      \
+		-e 's!%INSTALL_MAN_DIR%!$(INSTALL_MAN_DIR)!'		      \
+	  < $(CFG_DIR)/Setup.cfg.src					      \
+	  > $(CFG_DIR)/Setup.cfg
+	chmod 444 $(CFG_DIR)/Setup.cfg
+
+setup: check_cvs $(stlutils_hh) gen_setup_cfg
 
 
 
@@ -85,6 +96,9 @@ setup: check_cvs $(stlutils_hh)
 
 #
 # $Log$
+# Revision 1.2  1999/11/09 10:54:36  houghton
+# Added gen_setup_cfg target.
+#
 # Revision 1.1  1999/10/30 11:51:07  houghton
 # Initial Version.
 #
