@@ -578,29 +578,29 @@ ClassName::dumpKey(
 //  	    	 calls destroy node for each node so any memory
 //  	    	 associated with the node can be released.
 // **********************************************************************
-void
+NodeDataType
 ClassName::destroyTree(
-  NodeDataType *    root
+  NodeDataType    root
   )
 {
 
   if( root == 0 )
+    return( 0 );
+    
+  if( NODE( root )->subTree[ LEFT ] != 0 )
     {
-      return;
+      NODE( root )->subTree[ LEFT ] =
+	destroyTree( NODE( root )->subTree[ LEFT ] );
     }
 
-  if( NODE( *root )->subTree[ LEFT ] != 0 )
+  if( NODE( root )->subTree[ RIGHT ] != 0 )
     {
-      destroyTree( &(NODE( *root )->subTree[ LEFT ]) );
+      NODE( root )->subTree[ RIGHT ] =
+	destroyTree( NODE( root )->subTree[ RIGHT ] );
     }
 
-  if( NODE( *root )->subTree[ RIGHT ] != 0 )
-    {
-      destroyTree( &(NODE( *root )->subTree[ RIGHT ]) );
-    }
-
-  destroyNode( *root );
-  *root = 0;
+  destroyNode( root );
+  return( 0 );
 }
 
 // **********************************************************************
@@ -608,30 +608,30 @@ ClassName::destroyTree(
 //  	    	 calls destroy node for each node so any memory
 //  	    	 associated with the node can be released.
 // **********************************************************************
-void
+NodeDataType
 ClassName::destroyTree(
-  NodeDataType *    root,
+  NodeDataType	    root,
   void *    	    closure
   )
 {
 
   if( root == 0 )
+    return( 0 );
+    
+  if( NODE( root )->subTree[ LEFT ] != 0 )
     {
-      return;
+      NODE( root )->subTree[ LEFT ] =
+	destroyTree( NODE( root )->subTree[ LEFT ] );
     }
 
-  if( NODE( *root )->subTree[ LEFT ] != 0 )
+  if( NODE( root )->subTree[ RIGHT ] != 0 )
     {
-      destroyTree( &(NODE( *root )->subTree[ LEFT ]), closure );
+      NODE( root )->subTree[ RIGHT ] =
+	destroyTree( NODE( root )->subTree[ RIGHT ] );
     }
 
-  if( NODE( *root )->subTree[ RIGHT ] != 0 )
-    {
-      destroyTree( &(NODE( *root )->subTree[ RIGHT ]), closure );
-    }
-
-  destroyNode( *root, closure );
-  *root = 0;
+  destroyNode( root, closure );
+  return( 0 );
 }
 
 // **********************************************************************
@@ -808,6 +808,12 @@ ClassName::balance(
 // Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/07/19 10:11:36  houghton
+// Bug-Fix: If the map base address changed durring the destroy, all the
+//     '* root' values in the stack would become invalid. Changed to take
+//     a 'NodeType' (vs 'NodeType *') and return a 0 (used to set
+//     'root').
+//
 // Revision 2.4  1997/07/13 10:58:47  houghton
 // Reworked deleteNode to work without creating a copy of the key
 //     in the map.
