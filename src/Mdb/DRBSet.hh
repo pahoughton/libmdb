@@ -91,6 +91,10 @@ public:
     return( table.lower_bound( key ) );
   };
   
+  inline iterator		lower_bound( const Key & key ) {
+    return( table.lower_bound( key ) );
+  };
+  
   inline bool			erase( const Key & key, EffDate eff ) {
     return( table.erase( key, eff ) );
   };
@@ -429,6 +433,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.9  1999/03/02 12:56:04  houghton
+// Added lower_bound().
+//
 // Revision 2.8  1998/03/03 20:57:04  houghton
 // Added dumpHist.
 //

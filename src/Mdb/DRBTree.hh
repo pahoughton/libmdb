@@ -329,6 +329,28 @@ public:
       }
   };
   
+  inline iterator	    lower_bound( const Key & key ) {
+    Loc node = findNode( key );
+    if( node != headerLoc )
+      {
+	Loc hist = drbNode( node ).hist;
+
+	// return the newest (latest eff date) non deleted history 
+	for( ; hist && history( hist ).del;
+	     hist = history( hist ).next );
+	
+	if( hist )
+	  return( history( hist ).del ? end() :
+		  iterator( this, node, hist ) );
+	else
+	  return( end() );
+      }
+    else
+      {
+	return( end() );
+      }
+  };
+  
   inline bool		    erase( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
@@ -825,6 +847,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.13  1999/03/02 12:56:10  houghton
+// Added lower_bound().
+//
 // Revision 2.12  1998/10/23 13:17:01  houghton
 // Changed include <pair> to <utility>
 // Added const_iterator::operator != ( const iterator & rhs );
