@@ -69,6 +69,22 @@ public:
     return( table.find( key ) );
   };
 
+  inline const_iterator		lower_bound( const Key & key ) const {
+    return( table.lower_bound( key ) );
+  };
+  
+  inline iterator		lower_bound( const Key & key ) {
+    return( table.lower_bound( key ) );
+  };
+  
+  inline const_iterator		upper_bound( const Key & key ) const {
+    return( table.upper_bound( key ) );
+  };
+  
+  inline iterator		upper_bound( const Key & key ) {
+    return( table.upper_bound( key ) );
+  };
+  
   inline bool			erase( const Key & key ) {
     return( table.erase( key ) );
   };
@@ -332,6 +348,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1998/06/26 13:48:05  houghton
+// Added lower_bound().
+// Added upper_bound().
+//
 // Revision 2.3  1997/07/25 13:48:08  houghton
 // Cleanup.
 // Added documentation.
