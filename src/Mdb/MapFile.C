@@ -9,7 +9,10 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:48  houghton
+// Revision 1.2  1995/11/05 12:04:42  houghton
+// Fixed bug in truncate size
+//
+// Revision 1.1  1995/02/13  16:08:48  houghton
 // New Style Avl an memory management. Many New Classes
 //
 //
@@ -154,7 +157,7 @@ MapFile::setSize(
     {
       mapSize = size + (pageSize - (size % pageSize) );
       
-      if( ftruncate( mapFd, mapSize ) != 0)
+      if( ftruncate( mapFd, mapSize + 1 ) != 0)
 	{
 	  osErrno = errno;
 	  return( 0 );
