@@ -184,6 +184,10 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/06/25 12:50:37  houghton
+// Removed typedef Loc (now in AvlTreeBase).
+// cleanup.
+//
 // Revision 2.2  1997/06/19 12:00:21  houghton
 // Changed off_t to Loc
 //
@@ -211,7 +215,6 @@ class AvlTreeOffsetBase : public AvlTreeBase
 
 public:
 
-  typedef off_t	    Loc;
   
 protected:
 
@@ -221,7 +224,7 @@ public:
   
   struct Node
   {
-    Loc    subTree[2];
+    Loc	    subTree[2];
     short    bal;
   };
 
@@ -230,11 +233,11 @@ protected:
   AvlTreeOffsetBase( void );
   AvlTreeOffsetBase( const AvlTreeOffsetBase & copyFrom );
 
-  caddr_t   	getBase( void ) const;
-  caddr_t    	setBase( void * newBase );
+  virtual caddr_t   	getBase( void ) = 0;
+  virtual const caddr_t getBase( void ) const = 0;
   
   short	    	insertNode( Loc * root, Loc * newNode );
-  Loc 	findNode( Loc root, const void * key );
+  Loc		findNode( Loc root, const void * key );
   short	    	deleteNode( Loc * root, Loc * key, int minMax = 0);
 
   bool	    	walkTree( Loc  root );
@@ -242,11 +245,17 @@ protected:
 
   void	    	initNode( Loc node );
   
-  ostream &    	dumpTree( const Loc root, ostream & dest, int level = 0 ) const;
+  ostream &    	dumpTree( const Loc root,
+			  ostream & dest,
+			  int level = 0 ) const;
+
+  ostream &	dumpNode( ostream & dest, const Loc root, int level ) const;
+  
+  virtual ostream & dumpKey( ostream & dest, const Loc keyLoc ) const = 0;
   
   void	    	destroyTree( Loc * root );
   void	    	destroyTree( Loc * root, void * closure );
-		 
+
   virtual int	compareNode( const Loc one, const Loc two) = 0;
   virtual int	compareFind( const void * one, const Loc two ) = 0;
 
@@ -270,8 +279,6 @@ private:
   short	    	    rotateOnce( Loc * 	root,
 				SubTree    	dir );
 
-  caddr_t    	    baseAddr;
-  
 };
 
 
@@ -282,30 +289,13 @@ private:
 inline
 AvlTreeOffsetBase::AvlTreeOffsetBase( void )
 {
-  baseAddr = 0;
-}
-
-inline
-caddr_t
-AvlTreeOffsetBase::getBase( void ) const
-{
-  return( baseAddr );
-}
-
-inline
-caddr_t
-AvlTreeOffsetBase::setBase( void * newBase )
-{
-  caddr_t old = baseAddr;
-  baseAddr = (caddr_t)newBase;
-  return( old );
 }
 
 inline
 AvlTreeOffsetBase::Node *
 AvlTreeOffsetBase::node( Loc root ) const
 {
-  return( (Node *)( baseAddr + root ) );
+  return( (Node *)( getBase() + root ) );
 }
 
 
