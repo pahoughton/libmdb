@@ -28,14 +28,14 @@ inline
 const DashTableBase::DashNodeBase &
 DashTableBase::dashNode( Loc node ) const
 {
-  return( *( (const DashNodeBase *)(mgr.address( node )) ) );
+  return( *( (const DashNodeBase *)(mgr->address( node )) ) );
 }
 
 inline
 DashTableBase::DashNodeBase &
 DashTableBase::dashNode( Loc node )
 {
-  return( *( (DashNodeBase *)(mgr.address( node )) ) );
+  return( *( (DashNodeBase *)(mgr->address( node )) ) );
 }
 
 inline
@@ -81,6 +81,9 @@ DashTableBase::prev( Hash & hash, Loc & node ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:06:49  houghton
+// Changed to use mgr as a ptr (ie from mgr. to mgr->).
+//
 // Revision 2.1  1997/06/05 11:29:09  houghton
 // Initial Version.
 //
