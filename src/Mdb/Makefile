@@ -1,26 +1,42 @@
-# -*- makefile -*- for Mdb
 #
-# Created: 5/8/97 using MakeConfigs 5.01.00.a.09
+# Title:        Makefile
+# Project:	Mdb
+# Desc:
+# 
+#   
+# 
+# Notes:
+# 
+# Author:	Paul Houghton - (paul.houghton@wcom.com)
+# Created:	5/8/97 using MakeConfigs 5.01.00.a.09
 #
-# $Id$
+# Revision History: (See end of file for Revision Log)
 #
-# (see end of file for Log info)
+#   Last Mod By:    $Author$
+#   Last Mod:	    $Date$
+#   Version:	    $Revision$
+#
+#   $Id$
+# 
 
 #
-# Do not modifiy 'makefile_type'
+# The following variables control the behavior of MakeConfigs.
+#   makefile_type   is the type of object being build (do NOT change)
+#   make_cfg_ver    is the version of MakeConfigs to use
+#   make_target	    is the default target to build
+#   show_commands   if this is true, the commands  will be output
+#   proto_dep	    if this is true, the proto header will be rebuild when
+#		    one of it's dependancies changes (ie a .c source)
+#   check_install   if this is true, install and install_all will NOT
+#		    overwrite an installed version.
+#
+
 makefile_type   = lib
-# This is the make.cfg version that will be used
-make_cfg_ver	= 5.02
-# Default target type
+make_cfg_ver	= 5.04
 make_target	= default
-# Uncomment 'show_compile_command' to output compile command.
-# Comment check_install (or set to any value but 'true') to install over
-#     the same version.
-# Comment out proto_dep (or set to any value but true) to prevent
-#     regen of proto header
 show_commands 	= # true
-check_install   = true
-proto_dep       = true
+proto_dep	= true
+check_install	= true
 
 # Include standard MakeConfig configuration for GNU make required
 include Make/make.cfg.$(make_cfg_ver)
@@ -34,8 +50,10 @@ include Make/make.cfg.$(make_cfg_ver)
 
 NAME		= Mdb
 
-INSTALL_LIBDIR	= $(beta_libdir)
-INSTALL_INCDIR	= $(beta_incdir)
+PRJ_TOPDIR	= ../..
+
+INSTALL_LIB_DIR	= $(beta_libdir)
+INSTALL_INC_DIR	= $(beta_incdir)
 
 VER_MAJOR	= 1
 VER_MINOR	= 00
@@ -44,11 +62,9 @@ VERSION		= $(VER_MAJOR).$(VER_MINOR).$(VER_RELEASE)
 
 LIBRARY_DEFAULT	= lib$(NAME).a
 LIBRARY_DEBUG	= lib$(NAME)_g.a
+LIBRARY_TEST	= lib$(NAME)_tg.a
 LIBRARY_PROFILE	= lib$(NAME)_pg.a
 LIBRARY_SHARED	= lib$(NAME)$(shlib_ext)
-
-
-PRJ_TOPDIR	= ../..
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
@@ -61,13 +77,14 @@ VPATH		= $(ARCH_VPATH):.
 #
 #
 
-
 SRC_DEFINES	= 
 PRJ_DEFINES	= -DVERSION=\"$(VERSION)\" $(ARCH_DEFINES)
 
 DEFAULT_DEFINES = -DMDB_DEFAULT=1
-DEBUG_DEFINES	= -DMDB_DEBUG=1 -DSTLUTILS_DEBUG=1 	\
-		  -DMDD_DEBUG=1 -DMDF_DEBUG=1 # -DRBT_TEST=1
+DEBUG_DEFINES	= -DMDB_DEBUG=1 -DSTLUTILS_DEBUG=1 
+TEST_DEFINES	= -DMDB_TEST=1 -DMDB_DEBUG=1 
+		  -DMDD_TEST=1 -DMDF_DEBUG=1 -DRBT_TEST=1
+		  -DSTLUTILS_DEBUG=1
 PROFILE_DEFINES	= -DMDB_PROFILE=1
 SHARED_DEFINES	= -DMDB_SHARED=1
 
@@ -100,17 +117,19 @@ CPP_FLAGS		= $(ARCH_CPP_FLAGS)
 
 CC_FLAGS		= $(cc_warn) $(ARCH_CC_FLAGS)
 
-DEFAULT_CC_FLAGS	= $(cc_default) $(cc_optimize)
-DEBUG_CC_FLAGS		= $(cc_debug)
-PROFILE_CC_FLAGS	= $(cc_profile)
-SHARED_CC_FLAGS		= $(cc_shared) $(cc_optimize)
+DEFAULT_CC_FLAGS	= $(cc_default) $(cc_optimize_flags)
+DEBUG_CC_FLAGS		= $(cc_debug) $(cc_debug_flags)
+TEST_CC_FLAGS		= $(cc_test) $(cc_debug_flags)
+PROFILE_CC_FLAGS	= $(cc_profile) $(cc_profile_flags)
+SHARED_CC_FLAGS		= $(cc_shared) $(cc_shared_flags) $(cc_optimize_flags)
 
 CXX_FLAGS		= $(cxx_warn) $(ARCH_CXX_FLAGS)
 
-DEFAULT_CXX_FLAGS	= $(cxx_default) $(cxx_optimize)
-DEBUG_CXX_FLAGS		= $(cxx_debug)
-PROFILE_CXX_FLAGS	= $(cxx_profile)
-SHARED_CXX_FLAGS	= $(cxx_shared) $(cxx_optimize)
+DEFAULT_CXX_FLAGS	= $(cxx_default) $(cxx_optimize_flags)
+DEBUG_CXX_FLAGS		= $(cxx_debug) $(cxx_debug_flags)
+TEST_CXX_FLAGS		= $(cxx_test) $(cxx_debug_flags)
+PROFILE_CXX_FLAGS	= $(cxx_profile) $(cxx_profile_flags)
+SHARED_CXX_FLAGS	= $(cxx_shared) $(cxx_shared_flags) $(cxx_optimize_flags)
 
 # **** S H A R E D   D E P   L I B S *****
 
@@ -241,11 +260,11 @@ CXX_INLINES	=			\
 include Make/make.cfg.targets.$(makefile_type).$(make_cfg_ver)
 
 
-default debug profile shared:: proto
+default debug test profile shared:: proto
 
 default:: $(LIBRARY_$($(make_target)))
 
-debug profile shared:: 
+debug test profile shared:: 
 	$(hide) $(MAKE) make_target=$@ $(LIBRARY_$($@))
 
 all::	default debug profile shared
@@ -259,11 +278,12 @@ install_all:: install_lib_check
 install_all:: install_default install_debug install_profile install_shared
 	$(hide) echo Installation Complete!
 
-install_default:: default $(INSTALL_LIBDIR)/$(LIBRARY_DEFAULT)
-install_debug::   debug   $(INSTALL_LIBDIR)/$(LIBRARY_DEBUG)
-install_profile:: profile $(INSTALL_LIBDIR)/$(LIBRARY_PROFILE)
-install_shared::  shared  $(INSTALL_LIBDIR)/$(LIBRARY_SHARED)
-	$(hide) chmod +x $(INSTALL_LIBDIR)/$(LIBRARY_SHARED)
+install_default:: default $(INSTALL_LIB_DIR)/$(LIBRARY_DEFAULT)
+install_debug::   debug   $(INSTALL_LIB_DIR)/$(LIBRARY_DEBUG)
+install_test::    debug   $(INSTALL_LIB_DIR)/$(LIBRARY_TEST)
+install_profile:: profile $(INSTALL_LIB_DIR)/$(LIBRARY_PROFILE)
+install_shared::  shared  $(INSTALL_LIB_DIR)/$(LIBRARY_SHARED)
+	$(hide) chmod +x $(INSTALL_LIB_DIR)/$(LIBRARY_SHARED)
 
 
 test::	default
@@ -280,6 +300,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.17  1998/02/02 15:38:30  houghton
+# Changed to use MakeConfigs 5.04.
+#
 # Revision 2.16  1997/12/19 14:37:58  houghton
 # Added cc_default cxx_default.
 #
@@ -334,6 +357,6 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 
-
-
-
+# Local Variables:
+# mode:makefile
+# End:
