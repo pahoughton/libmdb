@@ -136,6 +136,7 @@ tDavlTreeOffset01( LibTest & tester )
 	   ++ them )
 	{
 	  -- ts;
+	  tester.getDump() << "ts: " << ts << " it: " << *them << endl;
 	  TEST( t.del( *them, 0 ) );
 	  TESTR( t.error(), t.good() );
 	  TESTR( "size match", t.size() == ts );
@@ -326,6 +327,9 @@ tDavlTreeOffset01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/14 10:46:03  houghton
+// Added debuging output. (THIS TEST IS CURRENTLY NOT WORKING.).
+//
 // Revision 2.1  1997/07/11 17:39:02  houghton
 // Initial Version.
 //
