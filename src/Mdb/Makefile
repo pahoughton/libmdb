@@ -150,6 +150,7 @@ USER_HH_INCS	=			\
 	MdbConfig.hh                    \
 	MdbVersion.hh                   \
 	MdbUtils.hh			\
+	MapBatch.hh			\
 	MapFile.hh			\
 	MapMem.hh			\
 	MapMemDynamic.hh		\
@@ -176,6 +177,7 @@ USER_HH_INCS	=			\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
+	MapBatch.ii			\
 	MapFile.ii			\
 	MapMem.ii			\
 	MapMemDynamic.ii		\
@@ -278,6 +280,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.11  1997/08/10 20:36:49  houghton
+# Added MapBatch.hh & MapBatch.ii.
+#
 # Revision 2.10  1997/07/25 15:59:13  houghton
 # Added DRBSet.hh, DRBSet.ii, DRBTree.hh and DRBTree.ii.
 #
