@@ -119,7 +119,7 @@ DashTableBase::insert( Hash hash, Loc cur, EffDate effDate, Loc node )
 {
   Loc	    prev;
   
-  for( ; cur; cur = dashNode( cur ).nextEff )
+  for( prev = cur ; cur; cur = dashNode( cur ).nextEff )
     {
       // if cur is before the new node
       // insert the new node in front of cur
@@ -226,6 +226,9 @@ DashTableBase::erase( Hash hash, Loc node )
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/14 13:42:54  houghton
+// Change: initialize prev from cur. (eliminate a compiler warning)
+//
 // Revision 2.2  1997/07/13 11:05:33  houghton
 // Changed constructor args.
 // Cleanup.
