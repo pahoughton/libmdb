@@ -74,7 +74,7 @@ $(libs_build_dir)/libStlUtils-4:
 
 $(stlutils_hh): $(libs_build_dir)/libStlUtils-4
 	cd $(libs_build_dir)						      \
-	&& $(MAKE) -f libStlUtils-4/Makefile setup
+	&& $(MAKE) -f libStlUtils-4/Makefile setup $(exports)
 	$(TOOL_DIR)/bin/make -C $(libs_build_dir)/libStlUtils-4		      \
 	    install_all $(exports) 
 
@@ -96,6 +96,9 @@ setup: check_cvs $(stlutils_hh) gen_setup_cfg
 
 #
 # $Log$
+# Revision 1.3  2000/01/03 14:18:49  houghton
+# Bug-Fix: forgot to use exports.
+#
 # Revision 1.2  1999/11/09 10:54:36  houghton
 # Added gen_setup_cfg target.
 #
