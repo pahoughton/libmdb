@@ -76,6 +76,14 @@ MapBatch<T>::~MapBatch( void )
 
 template< class T >
 inline
+const char *
+MapBatch<T>::getFileName( void ) const
+{
+  return( map.getFileName() );
+}
+
+template< class T >
+inline
 bool
 MapBatch<T>::good( void ) const
 {
@@ -140,6 +148,9 @@ MapBatch<T>::dump( const char * prefix, bool showVer ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.9  1999/06/24 10:26:36  houghton
+// Added getFileName().
+//
 // Revision 2.8  1999/05/01 12:57:40  houghton
 // Reworked constructors.
 //

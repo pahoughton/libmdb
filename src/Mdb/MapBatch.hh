@@ -205,6 +205,7 @@ public:
     return( map.sync( beg, len, async ) );
   };
   
+  inline const char *	getFileName( void ) const;
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -294,6 +295,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.10  1999/06/24 10:26:29  houghton
+// Added getFileName().
+//
 // Revision 2.9  1999/05/01 12:57:38  houghton
 // Reworked constructors.
 //
