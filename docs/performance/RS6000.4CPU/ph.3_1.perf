@@ -1,0 +1,10 @@
+ph.3_1      1 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.386167 user: 6.220000 sys: 0.000000
+ph.3_1      2 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.845593 user: 5.850000 sys: 0.000000
+ph.3_1      3 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.841517 user: 5.850000 sys: 0.000000
+ph.3_1      4 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.839404 user: 5.840000 sys: 0.000000
+ph.3_1      5 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.849784 user: 5.850000 sys: 0.000000
+ph.3_1      1 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.206444 user: 6.210000 sys: 0.000000
+ph.3_1      2 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.851780 user: 5.850000 sys: 0.000000
+ph.3_1      3 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.042658 user: 5.910000 sys: 0.000000
+ph.3_1      4 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.838508 user: 5.850000 sys: 0.000000
+ph.3_1      5 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.837990 user: 5.840000 sys: 0.000000

@@ -1,0 +1,15 @@
+prb.3_2     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.554788 user: 15.350000 sys: 0.000000
+prb.3_2     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.927831 user: 14.940000 sys: 0.000000
+prb.3_2     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.098755 user: 15.020000 sys: 0.000000
+prb.3_2     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 14.926180 user: 14.920000 sys: 0.000000
+prb.3_2     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.115773 user: 15.010000 sys: 0.000000
+prb.3_2     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.795524 user: 0.800000 sys: 0.000000
+prb.3_2     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.265123 user: 0.270000 sys: 0.000000
+prb.3_2     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.246903 user: 0.240000 sys: 0.000000
+prb.3_2     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.245368 user: 0.250000 sys: 0.000000
+prb.3_2     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.268623 user: 0.270000 sys: 0.000000
+prb.3_2     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 17.006076 user: 16.860000 sys: 0.000000
+prb.3_2     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.421498 user: 16.430000 sys: 0.000000
+prb.3_2     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.624295 user: 16.500000 sys: 0.000000
+prb.3_2     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.373854 user: 16.370000 sys: 0.000000
+prb.3_2     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.403785 user: 16.410000 sys: 0.000000

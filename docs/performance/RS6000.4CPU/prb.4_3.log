@@ -1,0 +1,501 @@
+07/27/97 11:01:47 DEBUG LogPerfData.C:89 prb.4_3     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 17.761285 user: 17.030000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             17.761285
+    user time diff:             17.030000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2445508
+    data size diff:         626704
+    stack size diff:             0
+    page reclaims diff:       7812
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        391
+
+07/27/97 11:02:04 DEBUG LogPerfData.C:89 prb.4_3     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 17.381789 user: 16.970000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             17.381789
+    user time diff:             16.970000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2436892
+    data size diff:         631284
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        522
+
+07/27/97 11:02:22 DEBUG LogPerfData.C:89 prb.4_3     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 17.516434 user: 16.810000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             17.516434
+    user time diff:             16.810000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2413916
+    data size diff:         625332
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        238
+
+07/27/97 11:02:39 DEBUG LogPerfData.C:89 prb.4_3     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.809477 user: 16.720000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             16.809477
+    user time diff:             16.720000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2400992
+    data size diff:         621984
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:         82
+
+07/27/97 11:02:56 DEBUG LogPerfData.C:89 prb.4_3     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.956337 user: 16.760000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             16.956337
+    user time diff:             16.760000
+    sys time diff:               0.000000
+    max rss diff:               12
+    shared mem size diff:  2406736
+    data size diff:         630408
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:         44
+
+07/27/97 11:02:56 DEBUG PerfTable.INC:146 RBSet< Key, LessKey >:
+@(#) libMdb - 1.01.01.a.01
+    RBTreeBase - RBTreeBase.C - Compiled: Jul 25 1997 12:07:56
+    CVS Tag: ALPHA_1_01
+    $Id$
+    Good
+    table:Good
+    table:mgr:Good
+    table:mgr:mem::Good
+    table:mgr:mem::MapMemDynamic::Good
+    table:mgr:mem::MapMemDynamic::MapMem::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::name:          ../data/PerfRBSet.mdd.4.rbt
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::perm:          -rw-rw-r--
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::owner/group:   houghton/tools
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::access:        R
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::map size:      32002048
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::base addr:     0x30000000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::end addr:      0x31e85000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::page size:     4096
+    table:mgr:mem::MapMemDynamic::MapMem::version:  1296319493
+    table:mgr:mem::MapMemDynamic::MapMem::type:     Dynamic addr
+    table:mgr:mem::MapMemDynamic::MapMem::map to:   0x0
+    table:mgr:mem::MapMemDynamic::MapMem::map size: 32002048
+    table:mgr:mem::MapMemDynamic::MapMem::owner:    0
+    table:mgr:mem::MapMemDynamic::allocCount:   1000001
+    table:mgr:mem::MapMemDynamic::freeCount:    1
+    table:mgr:mem::MapMemDynamic::key( 0):      132
+    table:mgr:mem::minChunkSize: 32
+    table:mgr:mem::allocSize:    4096
+    table:mgr:mem::chunkSize:    32000036
+    table:mgr:mem::freeSize:     1888
+    table:mgr:mem::next:         124
+    table:mgr:mem::prev:         32000160
+    table:mgr:mem::freeNext:     32000160
+    table:mgr:mem::freePrev:     32000160
+    table:headerLoc:       132
+    table:version:         1382437889
+    table:count:           1000000
+    table:first:           164
+    table:last:            32000136
+
+07/27/97 11:05:46 DEBUG LogPerfData.C:89 prb.4_3     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 16.416670 user: 16.150000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             16.416670
+    user time diff:             16.150000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2319140
+    data size diff:         568480
+    stack size diff:             0
+    page reclaims diff:       7812
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:         85
+
+07/27/97 11:06:02 DEBUG LogPerfData.C:89 prb.4_3     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.711773 user: 15.700000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             15.711773
+    user time diff:             15.700000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2254520
+    data size diff:         558920
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          6
+
+07/27/97 11:06:18 DEBUG LogPerfData.C:89 prb.4_3     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.961284 user: 15.750000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             15.961284
+    user time diff:             15.750000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2261700
+    data size diff:         560700
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:         24
+
+07/27/97 11:06:33 DEBUG LogPerfData.C:89 prb.4_3     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.767114 user: 15.740000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             15.767114
+    user time diff:             15.740000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2260264
+    data size diff:         560344
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:         97
+
+07/27/97 11:06:49 DEBUG LogPerfData.C:89 prb.4_3     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 15.889076 user: 15.800000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:             15.889076
+    user time diff:             15.800000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:  2268880
+    data size diff:         562480
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        122
+
+07/27/97 11:06:49 DEBUG PerfTable.INC:146 RBSet< Key, LessKey >:
+@(#) libMdb - 1.01.01.a.01
+    RBTreeBase - RBTreeBase.C - Compiled: Jul 25 1997 12:07:56
+    CVS Tag: ALPHA_1_01
+    $Id$
+    Good
+    table:Good
+    table:mgr:Good
+    table:mgr:mem::Good
+    table:mgr:mem::MapMemDynamic::Good
+    table:mgr:mem::MapMemDynamic::MapMem::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::name:          ../data/PerfRBSet.mdd.4.rbt
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::perm:          -rw-rw-r--
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::owner/group:   houghton/tools
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::access:        R
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::map size:      32002048
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::base addr:     0x30000000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::end addr:      0x31e85000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::page size:     4096
+    table:mgr:mem::MapMemDynamic::MapMem::version:  1296319493
+    table:mgr:mem::MapMemDynamic::MapMem::type:     Dynamic addr
+    table:mgr:mem::MapMemDynamic::MapMem::map to:   0x0
+    table:mgr:mem::MapMemDynamic::MapMem::map size: 32002048
+    table:mgr:mem::MapMemDynamic::MapMem::owner:    0
+    table:mgr:mem::MapMemDynamic::allocCount:   1000001
+    table:mgr:mem::MapMemDynamic::freeCount:    1
+    table:mgr:mem::MapMemDynamic::key( 0):      132
+    table:mgr:mem::minChunkSize: 32
+    table:mgr:mem::allocSize:    4096
+    table:mgr:mem::chunkSize:    32000036
+    table:mgr:mem::freeSize:     1888
+    table:mgr:mem::next:         124
+    table:mgr:mem::prev:         32000160
+    table:mgr:mem::freeNext:     32000160
+    table:mgr:mem::freePrev:     32000160
+    table:headerLoc:       132
+    table:version:         1382437889
+    table:count:           1000000
+    table:first:           164
+    table:last:            32000136
+
+07/27/97 11:07:29 DEBUG LogPerfData.C:89 prb.4_3     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.870125 user: 0.870000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              0.870125
+    user time diff:              0.870000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   124932
+    data size diff:         725580
+    stack size diff:             0
+    page reclaims diff:       7473
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          0
+
+07/27/97 11:07:31 DEBUG LogPerfData.C:89 prb.4_3     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.247456 user: 0.250000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              0.247456
+    user time diff:              0.250000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:    35900
+    data size diff:         208800
+    stack size diff:             0
+    page reclaims diff:        311
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          3
+
+07/27/97 11:07:33 DEBUG LogPerfData.C:89 prb.4_3     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.232966 user: 0.230000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              0.232966
+    user time diff:              0.230000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:    33028
+    data size diff:         192096
+    stack size diff:             0
+    page reclaims diff:         26
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          0
+
+07/27/97 11:07:36 DEBUG LogPerfData.C:89 prb.4_3     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.229937 user: 0.230000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              0.229937
+    user time diff:              0.230000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:    33028
+    data size diff:         192096
+    stack size diff:             0
+    page reclaims diff:          1
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          0
+
+07/27/97 11:07:38 DEBUG LogPerfData.C:89 prb.4_3     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.231040 user: 0.230000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              0.231040
+    user time diff:              0.230000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:    33028
+    data size diff:         192096
+    stack size diff:             0
+    page reclaims diff:          1
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:          2
+
+07/27/97 11:07:38 DEBUG PerfTable.INC:146 RBSet< Key, LessKey >:
+@(#) libMdb - 1.01.01.a.01
+    RBTreeBase - RBTreeBase.C - Compiled: Jul 25 1997 12:07:56
+    CVS Tag: ALPHA_1_01
+    $Id$
+    Good
+    table:Good
+    table:mgr:Good
+    table:mgr:mem::Good
+    table:mgr:mem::MapMemDynamic::Good
+    table:mgr:mem::MapMemDynamic::MapMem::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::Good
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::name:          ../data/PerfRBSet.mdd.4.rbt
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::perm:          -rw-rw-r--
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::owner/group:   houghton/tools
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::access:        R
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::map size:      32002048
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::base addr:     0x30000000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::end addr:      0x31e85000
+    table:mgr:mem::MapMemDynamic::MapMem::MapFile::page size:     4096
+    table:mgr:mem::MapMemDynamic::MapMem::version:  1296319493
+    table:mgr:mem::MapMemDynamic::MapMem::type:     Dynamic addr
+    table:mgr:mem::MapMemDynamic::MapMem::map to:   0x0
+    table:mgr:mem::MapMemDynamic::MapMem::map size: 32002048
+    table:mgr:mem::MapMemDynamic::MapMem::owner:    0
+    table:mgr:mem::MapMemDynamic::allocCount:   1000001
+    table:mgr:mem::MapMemDynamic::freeCount:    1
+    table:mgr:mem::MapMemDynamic::key( 0):      132
+    table:mgr:mem::minChunkSize: 32
+    table:mgr:mem::allocSize:    4096
+    table:mgr:mem::chunkSize:    32000036
+    table:mgr:mem::freeSize:     1888
+    table:mgr:mem::next:         124
+    table:mgr:mem::prev:         32000160
+    table:mgr:mem::freeNext:     32000160
+    table:mgr:mem::freePrev:     32000160
+    table:headerLoc:       132
+    table:version:         1382437889
+    table:count:           1000000
+    table:first:           164
+    table:last:            32000136
+

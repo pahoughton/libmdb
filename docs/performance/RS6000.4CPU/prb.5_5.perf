@@ -1,0 +1,10 @@
+prb.5_5     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 20.021362 user: 16.130000 sys: 0.000000
+prb.5_5     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 20.937177 user: 15.740000 sys: 0.000000
+prb.5_5     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 19.315479 user: 15.770000 sys: 0.000000
+prb.5_5     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 18.683760 user: 15.760000 sys: 0.000000
+prb.5_5     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       asc    1000000  1000000 Times:  real: 19.165975 user: 15.810000 sys: 0.000000
+prb.5_5     1 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.904829 user: 0.760000 sys: 0.000000
+prb.5_5     2 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.332636 user: 0.250000 sys: 0.000000
+prb.5_5     3 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.366964 user: 0.250000 sys: 0.000000
+prb.5_5     4 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.313790 user: 0.240000 sys: 0.000000
+prb.5_5     5 of  5 mdd       0    1   24 RBSet< Key, LessKey > find       rand   1000000    10000 Times:  real: 0.226602 user: 0.230000 sys: 0.000000

@@ -1,0 +1,14 @@
+PerfHashSet  1 of  1 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> insert     asc          0  1000000 Times:  real: 98.281549 user: 9.870000 sys: 68.790000
+PerfHashSet  1 of  1 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.081597 user: 6.090000 sys: 0.000000
+PerfHashSet  1 of  1 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.088631 user: 6.100000 sys: 0.000000
+PerfHashSet  1 of  1 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.074686 user: 6.070000 sys: 0.000000
+PerfHashSet  1 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 6.082739 user: 6.070000 sys: 0.000000
+PerfHashSet  2 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.833525 user: 5.830000 sys: 0.000000
+PerfHashSet  3 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.825212 user: 5.820000 sys: 0.000000
+PerfHashSet  4 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.850953 user: 5.850000 sys: 0.000000
+PerfHashSet  5 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 5.820479 user: 5.820000 sys: 0.000000
+PerfHashSet  1 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       rand   1000000    50000 Times:  real: 0.569153 user: 0.570000 sys: 0.000000
+PerfHashSet  2 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       rand   1000000    50000 Times:  real: 0.341573 user: 0.340000 sys: 0.000000
+PerfHashSet  3 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       rand   1000000    50000 Times:  real: 0.341300 user: 0.340000 sys: 0.000000
+PerfHashSet  4 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       rand   1000000    50000 Times:  real: 0.341315 user: 0.340000 sys: 0.000000
+PerfHashSet  5 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       rand   1000000    50000 Times:  real: 0.341392 user: 0.340000 sys: 0.000000

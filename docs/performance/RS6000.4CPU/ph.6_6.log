@@ -1,0 +1,173 @@
+07/27/97 13:45:57 DEBUG LogPerfData.C:89 ph.6_6      1 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 9.543130 user: 6.200000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              9.543130
+    user time diff:              6.200000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   917600
+    data size diff:         228160
+    stack size diff:             0
+    page reclaims diff:       6859
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        360
+
+07/27/97 13:46:06 DEBUG LogPerfData.C:89 ph.6_6      2 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 8.778373 user: 5.710000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              8.778373
+    user time diff:              5.710000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   845080
+    data size diff:         212412
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        357
+
+07/27/97 13:46:15 DEBUG LogPerfData.C:89 ph.6_6      3 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 8.678871 user: 5.750000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              8.678871
+    user time diff:              5.750000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   851000
+    data size diff:         213900
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        343
+
+07/27/97 13:46:23 DEBUG LogPerfData.C:89 ph.6_6      4 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 8.713883 user: 5.830000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              8.713883
+    user time diff:              5.830000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   862840
+    data size diff:         216876
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        321
+
+07/27/97 13:46:32 DEBUG LogPerfData.C:89 ph.6_6      5 of  5 mdd       0    1   16 HashSet<Key,HashFunct,LessKey> find       asc    1000000  1000000 Times:  real: 8.858170 user: 5.780000 sys: 0.000000
+TimeIt:
+@(#) libClue - 3.02.04
+    TimeIt - ../arch/Unix/src/TimeIt.C - Compiled: Jul 25 1997 11:30:42
+    CVS Tag: PROD_3_02
+    $Id$
+    Good
+    real time diff:              8.858170
+    user time diff:              5.780000
+    sys time diff:               0.000000
+    max rss diff:                0
+    shared mem size diff:   855440
+    data size diff:         215016
+    stack size diff:             0
+    page reclaims diff:          0
+    page faults diff:            0
+    swaps diff:                  0
+    in block diff:               0
+    out block diff:              0
+    msgs sent diff:              0
+    msgs rcvd diff:              0
+    signals diff:                0
+    vol ctx swt diff:            0
+    invol ctx swt diff:        358
+
+07/27/97 13:46:32 DEBUG PerfTable.INC:148 HashSet<Key,HashFunct,LessKey>:
+@(#) libMdb - 1.01.01.a.01
+    HashTableBase - HashTableBase.C - Compiled: Jul 25 1997 12:07:37
+    CVS Tag: ALPHA_1_01
+    $Id$
+    Good
+    table:Good
+    table:HashTableBase::Good
+    table:HashTableBase::mgr:Good
+    table:HashTableBase::mgr:mem::Good
+    table:HashTableBase::mgr:mem::MapMemDynamic::Good
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::Good
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::Good
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::name:          ../data/PerfHashSet.mdd.4.data
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::perm:          -rw-rw-r--
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::owner/group:   houghton/tools
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::access:        R
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::map size:      24096768
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::base addr:     0x30000000
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::end addr:      0x316fb000
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::MapFile::page size:     4096
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::version:  1296319493
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::type:     Dynamic addr
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::map to:   0x0
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::map size: 24096768
+    table:HashTableBase::mgr:mem::MapMemDynamic::MapMem::owner:    0
+    table:HashTableBase::mgr:mem::MapMemDynamic::allocCount:   1000000
+    table:HashTableBase::mgr:mem::MapMemDynamic::freeCount:    1
+    table:HashTableBase::mgr:mem::minChunkSize: 24
+    table:HashTableBase::mgr:mem::allocSize:    4096
+    table:HashTableBase::mgr:mem::chunkSize:    24094084
+    table:HashTableBase::mgr:mem::freeSize:     2560
+    table:HashTableBase::mgr:mem::next:         124
+    table:HashTableBase::mgr:mem::prev:         24094208
+    table:HashTableBase::mgr:mem::freeNext:     24094208
+    table:HashTableBase::mgr:mem::freePrev:     24094208
+    table:HashTableBase::index:Good
+    table:HashTableBase::index:name:          ../data/PerfHashSet.mdd.4.hash
+    table:HashTableBase::index:perm:          -rw-rw-r--
+    table:HashTableBase::index:owner/group:   houghton/tools
+    table:HashTableBase::index:access:        R
+    table:HashTableBase::index:map size:      4001792
+    table:HashTableBase::index:base addr:     0x316fb000
+    table:HashTableBase::index:end addr:      0x31acc000
+    table:HashTableBase::index:page size:     4096
+    table:HashTableBase::version:    1296585730
+    table:HashTableBase::count:      1000000
+
