@@ -177,7 +177,7 @@ AvlTreeOffset<T>::destroy( void (* action)( T & rec ) )
   AVLTREE_CHECK_NORET();
 
   if( action ) destroyAction = action;
-  destroyTree( &(getTree()->root) );
+  getTree()->root = destroyTree( getTree()->root );
   getTree()->count = 0;
 }
 
@@ -193,7 +193,7 @@ AvlTreeOffset<T>::destroy(
   AVLTREE_CHECK_NORET();
 
   if( action ) destroyActionClosure = action;
-  destroyTree( &(getTree()->root), closure );
+  getTree()->root = destroyTree( getTree()->root, closure );
   getTree()->count = 0;
 }
 
@@ -349,7 +349,6 @@ inline
 const char *
 AvlTreeOffset<T>::error( void ) const
 {
-  static Str errStr;
   errStr.reset();
 
   // use the virtual class name (if defined)
@@ -477,7 +476,10 @@ AvlTreeOffset<T>::compare( const T & one, const T & two ) const
 template<class T>
 inline
 int
-AvlTreeOffset<T>::compareNode( const off_t one, const off_t two )
+AvlTreeOffset<T>::compareNode(
+  const AvlTreeOffsetBase::Loc one,
+  const AvlTreeOffsetBase::Loc two
+  )
 {
   return( compare( getNodeData( one ), getNodeData( two ) ) );
 }
@@ -486,7 +488,7 @@ AvlTreeOffset<T>::compareNode( const off_t one, const off_t two )
 template<class T>
 inline
 int
-AvlTreeOffset<T>::compareFind( const void * one, const off_t two ) const
+AvlTreeOffset<T>::compareFind( const void * one, const AvlTreeOffsetBase::Loc two ) const
 {
   return( compare( *((T*)one), getNodeData( two ) ) );
 }
@@ -524,7 +526,7 @@ AvlTreeOffset<T>::copy( T & dest, const T & src )
 template<class T>
 inline
 bool
-AvlTreeOffset<T>::walkNode( off_t root )
+AvlTreeOffset<T>::walkNode( AvlTreeOffsetBase::Loc root )
 {
   bool abort = true;
   if( walkAction )
@@ -539,7 +541,7 @@ AvlTreeOffset<T>::walkNode( off_t root )
 template<class T>
 inline
 bool
-AvlTreeOffset<T>::walkNode( off_t root, void * closure )
+AvlTreeOffset<T>::walkNode( AvlTreeOffsetBase::Loc root, void * closure )
 {
   bool abort = true;
   if( walkActionClosure )
@@ -555,7 +557,7 @@ AvlTreeOffset<T>::walkNode( off_t root, void * closure )
 template<class T>
 inline
 bool
-AvlTreeOffset<T>::walkNode( off_t root, void * closure ) const
+AvlTreeOffset<T>::walkNode( AvlTreeOffsetBase::Loc root, void * closure ) const
 {
   ConstWalkNodeWithClosure * wa = (ConstWalkNodeWithClosure *)closure;
 
@@ -568,7 +570,7 @@ AvlTreeOffset<T>::walkNode( off_t root, void * closure ) const
 template<class T>
 inline
 void
-AvlTreeOffset<T>::destroyNode( off_t root )
+AvlTreeOffset<T>::destroyNode( AvlTreeOffsetBase::Loc root )
 {
   if( destroyAction )
     {
@@ -583,7 +585,7 @@ AvlTreeOffset<T>::destroyNode( off_t root )
 template<class T>
 inline
 void
-AvlTreeOffset<T>::destroyNode( off_t root, void * closure )
+AvlTreeOffset<T>::destroyNode( AvlTreeOffsetBase::Loc root, void * closure )
 {
   if( destroyActionClosure )
     {
@@ -632,7 +634,7 @@ void
 AvlTreeOffset<T>::initTree(
   int (* cmp)( const T & one, const T & two ),
   T & (* cpy)( T & dest, const T & src),
-  off_t avlTree
+  AvlTreeOffsetBase::Loc avlTree
   )
 {
   compareRec = cmp;
@@ -676,6 +678,9 @@ AvlTreeOffset<T>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/19 10:12:54  houghton
+// Bug-Fix: changed how destroy calls destroyTree to work with the new version.
+//
 // Revision 2.1  1997/07/11 17:36:39  houghton
 // Initial Version.
 //
