@@ -12,6 +12,10 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/06/25 12:54:15  houghton
+// Added virtual getDataBase().
+// Removed dataBaseAddr.
+//
 // Revision 2.2  1997/06/19 12:00:50  houghton
 // Changed off_t to Loc
 //
@@ -61,9 +65,8 @@ protected:
   
   DavlTreeOffsetBase();
 
-  caddr_t   	getBaseData( void );
-  const caddr_t getBaseData( void ) const;
-  caddr_t 	setBaseData( void * newBase );
+  virtual caddr_t   	getBaseData( void ) = 0;
+  virtual const caddr_t getBaseData( void ) const = 0;
   
   void	    	initHist( Loc histOffset );
   void 	    	insertHist( Loc * firstHist, Loc newHist );
@@ -113,8 +116,6 @@ private:
   DavlTreeOffsetBase( const DavlTreeOffsetBase & copyFrom );
   DavlTreeOffsetBase & operator=( const DavlTreeOffsetBase & assignFrom );
 
-  caddr_t   baseDataAddr;
-
   bool	    walkHist;
   EffDate    walkWhen;
   
@@ -129,37 +130,13 @@ private:
 inline
 DavlTreeOffsetBase::DavlTreeOffsetBase( void )
 {
-  baseDataAddr = 0;
-}
-
-inline
-caddr_t 
-DavlTreeOffsetBase::getBaseData( void )
-{
-  return( baseDataAddr );
-}
-
-inline
-const caddr_t 
-DavlTreeOffsetBase::getBaseData( void ) const
-{
-  return( baseDataAddr );
-}
-
-inline
-caddr_t
-DavlTreeOffsetBase::setBaseData( void * newBase )
-{
-  caddr_t    oldBase = baseDataAddr;
-  baseDataAddr = (caddr_t)newBase;
-  return( oldBase );
 }
 
 inline
 DavlTreeOffsetBase::HistData *
 DavlTreeOffsetBase::hist( Loc data )
 {
-  return( (HistData *)( baseDataAddr + data ) );
+  return( (HistData *)( getBaseData() + data ) );
 }
 
 inline
