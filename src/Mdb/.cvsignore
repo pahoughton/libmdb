@@ -3,6 +3,7 @@
 .depend_profile
 .depend_shared
 .depend_test
+.installed.soundwave
 Templates.DB
 ir.out
 objects
