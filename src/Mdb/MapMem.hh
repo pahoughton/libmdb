@@ -48,16 +48,6 @@ public:
     MM_UNDEFINED
   };
 
-  enum MapError
-  {
-    E_OK,
-    E_MAPFILE,
-    E_FILESIZE,
-    E_VERSION,
-    E_BADTYPE,
-    E_UNDEFINED
-  };
-
   // use this to create an new map or open and existing one.
   MapMem( const char *	    fileName,
 	  MapType	    type,
@@ -66,7 +56,7 @@ public:
 	  bool		    create,
 	  MapAddr	    baseAddr,
 	  size_type	    size,
-	  MapMask	    permMask = 0777 );
+	  MapMask	    permMask = 02 );
 	  
 	  
   // use this to create a new map
@@ -75,13 +65,14 @@ public:
 	  MapType   	    type,
 	  MapVersion	    version,
 	  size_type	    size,
-	  MapMask	    permMask = 0777 );
+	  MapMask	    permMask = 02 );
 
   // use this to open an existing map
   MapMem( const char * 	    fileName,
 	  MapType   	    type,
 	  MapVersion	    version,
-	  ios::open_mode    mode = ios::in );
+	  ios::open_mode    mode = ios::in,
+	  bool		    overrideOwner = false );
 
   virtual ~MapMem( void );
   
@@ -90,6 +81,7 @@ public:
   MapType   	    getType( void ) const;
   const char *	    getTypeName( void ) const;
   size_type	    getMapSize( void ) const;
+  long		    getOwner( void ) const;
   
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
@@ -111,11 +103,23 @@ public:
     MapVersion	    version;
     unsigned long   base;
     unsigned long   size;
+    long	    owner;	    // pid of owner (writer)
   };
 
 protected:
 
 private:
+
+  enum ErrorNum
+  {
+    E_OK,
+    E_MAPFILE,
+    E_FILESIZE,
+    E_VERSION,
+    E_BADTYPE,
+    E_OWNER,
+    E_UNDEFINED
+  };
 
   MapMem( const MapMem & copyFrom );
   MapMem & operator=( const MapMem & assignFrom );
@@ -124,16 +128,18 @@ private:
   void	openMapMem( const char * fileName,
 		    MapType	    type,
 		    MapVersion	    version,
-		    ios::open_mode  mode );
+		    ios::open_mode  mode,
+		    bool	    overrideOwner );
   
-  inline const MapInfo * 	getMapInfo( void ) const;
-  inline MapInfo *		getMapInfo( void );
+  inline const MapInfo * 	mapInfo( void ) const;
+  inline MapInfo *		mapInfo( void );
   
   static const char * ErrorStrings[];
   static const char * TypeStrings[];
   
-  MapError  	mapError;
+  ErrorNum	errorNum;
   int	    	osErrno;
+  
 };
 
 
@@ -229,6 +235,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/07/13 11:18:01  houghton
+// Cleanup
+// Added owner.
+//
 // Revision 2.6  1997/06/05 13:42:56  houghton
 // Changed for AIX: had to make MapInfo a public member.
 //

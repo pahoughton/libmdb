@@ -38,13 +38,14 @@ const char * MapMem::ErrorStrings[] =
   ": file to small",
   ": incorect version",
   ": map type mismatch",
+  ": already owned by another process",
   0
 };
 
 const char * MapMem::TypeStrings[] =
 {
-  "MapFixed",
-  "MapDynamic",
+  "Fixed addr",
+  "Dynamic addr",
   0
 };
 
@@ -63,13 +64,13 @@ MapMem::MapMem(
   MapMask	    permMask
   )
   : MapFile( fileName, baseAddr, mode, create, size, permMask ),
-    mapError( E_OK ),
+    errorNum( E_OK ),
     osErrno( 0 )
 {
   if( create )
     createMapMem( type, version, baseAddr );
   else
-    openMapMem( fileName, type, version, mode );
+    openMapMem( fileName, type, version, mode, false );
 }
 
   
@@ -95,27 +96,36 @@ MapMem::MapMem(
   const char *	    fileName,
   MapType   	    type,
   MapVersion	    version,
-  ios::open_mode    mode
+  ios::open_mode    mode,
+  bool		    overrideOwner
   )
   : MapFile( fileName, 0, mode )
 {
-  openMapMem( fileName, type, version, mode );
+  openMapMem( fileName, type, version, mode, overrideOwner );
 }
 
 MapMem::~MapMem( void )
 {
+  if( mapInfo() && mapInfo()->owner == getpid() )
+    mapInfo()->owner = 0;
 }
 
 unsigned long
 MapMem::getMapVersion( void ) const
 {
-  return( (getMapInfo()) ? getMapInfo()->version : 0 );
+  return( (mapInfo()) ? mapInfo()->version : 0 );
 }
 	
 MapMem::MapType
 MapMem::getType( void  ) const
 {
-  return( (getMapInfo()) ? getMapInfo()->type : MM_UNDEFINED );
+  return( (mapInfo()) ? mapInfo()->type : MM_UNDEFINED );
+}
+
+long
+MapMem::getOwner( void ) const
+{
+  return( mapInfo() ? mapInfo()->owner : -1 );
 }
 
 const char *
@@ -127,7 +137,7 @@ MapMem::getTypeName( void ) const
 bool
 MapMem::good( void ) const
 {
-  return( mapError == E_OK && MapFile::good() );
+  return( errorNum == E_OK && MapFile::good() );
 }
 
 
@@ -141,28 +151,31 @@ MapMem::error( void ) const
   
   if( good() )
     {
-      errStr << ": Ok";
+      errStr << ": ok";
     }
   else
     {
-      int errCnt = 0;
-      
-      if( mapError > E_MAPFILE && mapError < E_UNDEFINED )
-	{
-	  errCnt++;
-	  errStr << ErrorStrings[ mapError ];
-	}
-	  
-      if( ! MapFile::good() )
-	{
-	  errCnt++;
-	  errStr << ": " << MapFile::error();
-	}
+      size_t eSize = errStr.size();
 
-      if( ! errCnt )
+      if( ! MapFile::good() )
+	errStr << ": " << MapFile::error();
+
+      switch( errorNum )
 	{
-	  errStr << ": unknown error";
+	case E_OWNER:
+	  errStr << ": already owned by "
+		 << ( mapInfo() ? mapInfo()->owner : -1 );
+	  break;
+
+	default:
+	  if( errorNum > E_MAPFILE && errorNum < E_UNDEFINED )
+	    errStr << ErrorStrings[ errorNum ];
+	  break;
 	}
+      
+      if( eSize == errStr.size() )
+        errStr << ": unknown error";
+      
     }
   return( errStr.cstr() );
 }
@@ -201,12 +214,13 @@ MapMem::dumpInfo(
 
   MapFile::dumpInfo( dest, pre, false );
 
-  if( getMapInfo() != 0 )
+  if( mapInfo() != 0 )
     {
-      dest << prefix << "map Ver:  " << getMapVersion() << '\n'
+      dest << prefix << "version:  " << getMapVersion() << '\n'
 	   << prefix << "type:     " << getTypeName() << '\n'
 	   << prefix << "map to:   " << (void *)getMapToAddr() << '\n'
-	   << prefix << "map Size: " << getMapSize() << '\n'
+	   << prefix << "map size: " << getMapSize() << '\n'
+	   << prefix << "owner:    " << mapInfo()->owner << '\n'
 	;
     }
   else
@@ -222,17 +236,18 @@ MapMem::createMapMem( MapType type, MapVersion version, MapAddr baseAddr )
 {
   osErrno = 0;
   
-  if( getMapInfo() != 0 )
+  if( mapInfo() != 0 )
     {
-      getMapInfo()->type	= type;
-      getMapInfo()->version	= version;
-      getMapInfo()->base	= (unsigned long)baseAddr;      
-      getMapInfo()->size	= getSize();
-      mapError = E_OK;
+      mapInfo()->type	    = type;
+      mapInfo()->version    = version;
+      mapInfo()->base	    = (unsigned long)baseAddr;      
+      mapInfo()->size	    = getSize();
+      mapInfo()->owner	    = getpid();
+      errorNum = E_OK;
     }
   else
     {
-      mapError = E_MAPFILE;
+      errorNum = E_MAPFILE;
     }
 }
 
@@ -241,7 +256,8 @@ MapMem::openMapMem(
   const char *	    fileName,
   MapType   	    type,
   MapVersion	    version,
-  ios::open_mode    mode
+  ios::open_mode    mode,
+  bool		    overrideOwner
   )
 {
   if( ! MapFile::good() )
@@ -249,40 +265,57 @@ MapMem::openMapMem(
 
   if( getSize() < sizeof( MapInfo ) )
     {
-      mapError = E_FILESIZE;
+      errorNum = E_FILESIZE;
       return;
     }
 
-  const MapInfo * info = getMapInfo();
+  const MapInfo * info = mapInfo();
 
   if( ! info )
     return;
 
   if( info->type != type )
     {
-      mapError = E_BADTYPE;
+      errorNum = E_BADTYPE;
+      unmap();
       return;
     }
 
   if( info->version != version )
     {
-      mapError = E_VERSION;
+      errorNum = E_VERSION;
+      unmap();
       return;
     }
 
+  
   MapAddr   mapToAddr = (MapAddr)info->base;
   
   unmap();
 
-  map( fileName, mapToAddr, mode );
-      
-  mapError = E_OK;
+  if( map( fileName, mapToAddr, mode ) )
+    {
+      if( mode & ios::out )
+	{
+	  if( mapInfo()->owner && ! overrideOwner )
+	    {
+	      errorNum = E_OWNER;
+	      return;
+	    }
+	  mapInfo()->owner = getpid();
+	}
+    }
+  errorNum = E_OK;
 
 }
 
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/07/13 11:17:48  houghton
+// Cleanup
+// Added owner.
+//
 // Revision 2.7  1997/06/27 12:15:06  houghton
 // Cleanup dumpInfo output.
 //
