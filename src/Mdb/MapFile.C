@@ -1,51 +1,31 @@
 //
 // File:        MapFile.C
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+//  Compiled sources for MapFile
+//  
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     11/18/94 11:13 
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// $Log$
-// Revision 2.6  1997/04/21 12:11:59  houghton
-// Added getErrno.
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
 //
-// Revision 2.5  1997/04/04 20:48:54  houghton
-// Cleanup.
-//
-// Revision 2.4  1997/03/07 11:48:23  houghton
-// Add dumpInfo.
-//
-// Revision 2.3  1997/03/03 14:32:06  houghton
-// Moved construtors to .C from .hh (no longer inline).
-//
-// Revision 2.2  1996/02/29 19:09:25  houghton
-// Added case to return from mmap call.
-//
-// Revision 2.1  1995/11/10 12:42:28  houghton
-// Change to Version 2
-//
-// Revision 1.4  1995/11/05  16:32:32  houghton
-// Revised
-//
-// Revision 1.1  1995/02/13  16:08:48  houghton
-// New Style Avl an memory management. Many New Classes
-//
-//
-static const char * RcsId =
-"$Id$";
 
 #include "MapFile.hh"
 
 #include <Str.hh>
 
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <errno.h>
 
 #ifdef Linux
 #include <sys/stat.h>
-#include <fcntl.h>
 
 //
 // linux has an else construct on MAP_FIXED, so it does
@@ -58,67 +38,82 @@ static const char * RcsId =
 extern "C" size_t getpagesize( void );
 #endif
 
+#if defined( MDB_DEBUG )
+#include "MapFile.ii"
+#endif
+
+MDB_VERSION(
+  MapFile,
+  "$Id$");
+
+
 MapFile::MapFile()
+  : mapFd( 0 ),
+    mapMode( ios::in ),
+    mapSize( 0 ),
+    mapBase( 0 ),
+    refCount( 0 ),
+    pageSize( getpagesize() ),
+    osErrno( ENOENT )
 {
-  mapFd     	= 0;
-  mapMode   	= ios::in;
-  mapSize   	= 0;
-  mapBase   	= 0;
-  osErrno   	= ENOENT;
-  pageSize  	= getpagesize();  
+}
+
+MapFile::MapFile(
+  const char *	    fileName,
+  MapAddr	    baseAddr,
+  ios::open_mode    mode,
+  bool		    create,
+  size_type	    size,
+  MapMask	    permMask
+  )
+  : fileStat( fileName ),
+    mapFd( 0 ),
+    mapMode( mode ),
+    mapSize( 0 ),
+    mapBase( 0 ),
+    refCount( 0 ),
+    pageSize( getpagesize() ),
+    osErrno( 0 )
+{
+  if( create )
+    createMap( fileName, baseAddr, size, permMask );
+  else
+    map( fileName, baseAddr, mode );
 }
 
 MapFile::MapFile(
   const char * 	    fileName,
-  caddr_t    	    baseAddr,
+  MapAddr    	    baseAddr,
   ios::open_mode    mode
   )
-  : fileStat( fileName )
+  : fileStat( fileName ),
+    mapFd( 0 ),
+    mapMode( mode ),
+    mapSize( 0 ),
+    mapBase( 0 ),
+    refCount( 0 ),
+    pageSize( getpagesize() ),
+    osErrno( 0 )
 {
-  osErrno = 0;
-  pageSize = getpagesize();
   map( fileName, baseAddr, mode );
 }
 
 MapFile::MapFile(
   const char * 	    fileName,
-  size_t	    size,
-  caddr_t    	    baseAddr,
-  unsigned short    permMask
+  size_type	    size,
+  MapAddr    	    baseAddr,
+  MapMask	    permMask
   )
-  : fileStat( fileName )
+  : fileStat( fileName ),
+    mapFd( 0 ),
+    mapMode( (ios::open_mode)(ios::in | ios::out) ),
+    mapSize( 0 ),
+    mapBase( 0 ),
+    refCount( 0 ),
+    pageSize( getpagesize() ),
+    osErrno( 0 )
 {
-  mapMode = (ios::open_mode)(ios::in | ios::out);  
-  mapSize = 0;
-  mapBase = 0;
-  osErrno = 0;
-
-  pageSize = getpagesize();
-  
-  unsigned short origMask = 0;
-
-  if( permMask != 0 )
-    {
-      origMask = umask( permMask );
-    }
-
-  unlink( fileName );
-
-  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
-    {
-      osErrno = errno;
-      return;
-    }
-
-  fileStat( mapFd, true );
-  
-  if( permMask != 0 )
-    {
-      umask( origMask );
-    }
-  
-  setSize( size, baseAddr );
-  
+  createMap( fileName, baseAddr, size, permMask );
 }
 
   
@@ -128,10 +123,10 @@ MapFile::~MapFile( void )
 }
 
 
-size_t
+MapFile::size_type
 MapFile::map(
   const char *	    fileName,
-  caddr_t    	    baseAddr,
+  MapAddr    	    baseAddr,
   ios::open_mode    mode
   )
 {
@@ -197,7 +192,7 @@ MapFile::map(
 
   mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
-  if( mapBase == (caddr_t)-1 )
+  if( mapBase == (MapAddr)-1 )
     {
       mapSize = 0;
       osErrno = errno;
@@ -206,12 +201,20 @@ MapFile::map(
   return( mapSize );
 }
   
+void
+MapFile::unmap( void )
+{
+  if( mapBase != 0 && mapSize != 0 )
+    munmap( mapBase, mapSize );
   
+  if( mapFd != 0 )
+    close( mapFd );
+}
   
-size_t
+MapFile::size_type
 MapFile::setSize(
-  size_t    	size,
-  caddr_t    	baseAddr
+  size_type    	size,
+  MapAddr    	baseAddr
   )
 {
 
@@ -276,7 +279,7 @@ MapFile::setSize(
     
   mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
-  if( mapBase == (caddr_t)-1 )
+  if( mapBase == (MapAddr)-1 )
     {
       mapSize = 0;
       osErrno = errno;
@@ -311,6 +314,12 @@ MapFile::getAccess( void  ) const
     }
 }
 
+MapFile::size_type
+MapFile::getPageSize( void )
+{
+  return( getpagesize() );
+}
+
   
 bool
 MapFile::good( void ) const
@@ -328,7 +337,7 @@ MapFile::error( void ) const
   
   if( osErrno == 0 )
     {
-      errStr << ": Ok";
+      errStr << ": ok";
     }
   else
     {
@@ -343,24 +352,18 @@ MapFile::getErrno( void ) const
   return( osErrno );
 }
 
-ostream &
-MapFile::getStats( ostream & dest ) const
+const char *
+MapFile::getClassName( void ) const
 {
-  dest << MapFile::getClassName() << ": stats" << '\n'
-       << "    Status:        " << MapFile::error() << '\n'
-       << "    Name:          " << fileStat.getName() << '\n'
-       << "    Perm:          " << fileStat.getModeString() << '\n'
-       << "    Owner/Group:   " << fileStat.getUserName() << '/'
-       <<                          fileStat.getGroupName() << '\n'
-       << "    Access:        " << getAccess() << '\n'
-       << "    Map Size:      " << getSize() << '\n'
-       << "    Base Addr:     " << (void *)getBase() << '\n'
-       << "    End Addr:      " << (void *)getEnd() << '\n'
-       << "    Page Size:     " << getPageSize() << endl
-    ;
-
-  return( dest );
+  return( "MapFile" );
 }
+
+const char *
+MapFile::getVersion( bool withPrjVer ) const
+{
+  return( version.getVer( withPrjVer ) );
+}
+
 
 ostream &
 MapFile::dumpInfo(
@@ -371,7 +374,7 @@ MapFile::dumpInfo(
 {
   if( showVer )
     dest << MapFile::getClassName() << ":\n"
-	 << RcsId << '\n' ;
+	 << MapFile::getVersion() << '\n' ;
       
   if( ! MapFile::good() )
     dest << prefix << "Error: " << MapFile::error() << '\n';
@@ -392,10 +395,77 @@ MapFile::dumpInfo(
   return( dest );
 }
   
+void
+MapFile::createMap(
+  const char *	    fileName,
+  MapAddr	    baseAddr,
+  size_type	    size,
+  MapMask	    permMask
+  )
+{
+  unsigned short origMask = 0;
 
-    
+  if( permMask != 0777 )
+    {
+      origMask = umask( permMask );
+    }
+
+  unlink( fileName );
+
+  if( (mapFd = open( fileName, O_RDWR | O_CREAT, 0666 ) ) < 0 )
+    {
+      osErrno = errno;
+      return;
+    }
+
+  fileStat( mapFd, true );
   
+  if( permMask != 0777 )
+    {
+      umask( origMask );
+    }
+  
+  setSize( size, baseAddr );
+  
+}
 
+
+// Revision Log:
+//
+// $Log$
+// Revision 2.7  1997/06/05 11:19:10  houghton
+// Cleanup.
+// Change to be part of libMdb (vs Clue1).
+// Added types size_type, MapAddr, MapMask and change to use them.
+// Added constructor that can create or open existing.
+// Added createMap and openMap methods.
+//
+// Revision 2.6  1997/04/21 12:11:59  houghton
+// Added getErrno.
+//
+// Revision 2.5  1997/04/04 20:48:54  houghton
+// Cleanup.
+//
+// Revision 2.4  1997/03/07 11:48:23  houghton
+// Add dumpInfo.
+//
+// Revision 2.3  1997/03/03 14:32:06  houghton
+// Moved construtors to .C from .hh (no longer inline).
+//
+// Revision 2.2  1996/02/29 19:09:25  houghton
+// Added case to return from mmap call.
+//
+// Revision 2.1  1995/11/10 12:42:28  houghton
+// Change to Version 2
+//
+// Revision 1.4  1995/11/05  16:32:32  houghton
+// Revised
+//
+// Revision 1.1  1995/02/13  16:08:48  houghton
+// New Style Avl an memory management. Many New Classes
+//
+//
+// Copyright:
 //
 //              This software is the sole property of
 // 
@@ -407,3 +477,4 @@ MapFile::dumpInfo(
 //                      All Rights Reserved.  
 // 
 //
+
