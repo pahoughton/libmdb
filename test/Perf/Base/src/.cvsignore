@@ -6,4 +6,6 @@ Perf_g
 Perf_pg
 gmon.out
 objects
+perf.info
+perf.log
 perf.out
