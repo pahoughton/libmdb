@@ -1,0 +1,118 @@
+#ifndef _MapBatch_ii_
+#define _MapBatch_ii_
+//
+// File:        MapBatch.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MapBatch
+//
+// Author:      Paul Houghton - (paul.houghton@wcom.com)
+// Created:     08/10/97 13:50
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *	    fileName,
+  ios::open_mode    mode,
+  bool		    create,
+  MapMask	    permMask
+  )
+  : map( fileName, 0, mode, create, permMask ),
+    endPos( create ? map.getBase() : map.getEnd() ) 
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::~MapBatch( void )
+{
+  if( (map.getMode() & ios::out ) && endPos )
+    {
+      size_type	realSize = endPos - map.getBase();
+      map.unmap();
+      
+      truncate( map.getFileName(), realSize );
+    }
+}
+
+template< class T >
+inline
+bool
+MapBatch<T>::good( void ) const
+{
+  return( map.good() );
+}
+
+template< class T >
+inline
+const char * 
+MapBatch<T>::error( void ) const
+{
+  return( map.error() );
+}
+
+template< class T >
+inline
+const char *
+MapBatch<T>::getClassName( void ) const
+{
+  return( "MapBatch<T>" );
+}
+
+template< class T >
+inline
+ostream &
+MapBatch<T>::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  )
+{
+  
+  if( showVer )
+    dest << MapBatch::getClassName() << ":\n"
+      ;
+
+  if( ! MapBatch::good() )
+    dest << prefix << "Error: " << MapBatch::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  Str pre;
+  pre = prefix;
+  pre << "map:";
+  map.dumpInfo( dest, pre, false );
+
+  dest << prefix << "endpos:     " << (void*)endPos << '\n'
+    ;
+  
+  return( dest );
+}
+
+template< class T >
+inline
+DumpInfo< MapBatch<T> >
+MapBatch<T>::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< MapBatch<T> >( *this, prefix, showVer ) );
+}
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1997/08/10 20:33:01  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MapBatch_ii_ 
