@@ -420,22 +420,26 @@ public:
     
     if( node && hist )
       {
+
 	Loc h = drbNode( node ).hist;
 
-	for( ; h && h != hist && history( h ).when > eff;
+	// look down the chain for the first effective
+	// record for this node
+	for( ; h && history( h ).when > eff;
 	     h = history( h ).next );
-
-	// ok, now we should have a hist who's when is before eff
 
 	// no record found that had a when less that eff
 	if( ! h )
 	  return( false );
+	
+	// ok, now we should have a hist who's when is before eff
 	
 	if( h == hist )
 	  {
 	    // we stoped at the same record was the one we where passed.
 	    // so, it is the one in effect if it's when is before (or =)
 	    // the the effdate and it is not a 'del' rec.
+	    
 	    return( history( h ).when <= eff && ! history( h ).del );
 	  }
 	else
@@ -475,7 +479,22 @@ public:
       ;
     return( dest );
   };
-    
+
+  ostream & dumpHist( ostream & dest, const_iterator it ) const {
+    dest << "node:     " << it.node << '\n';
+
+    for( Loc h = drbNode( it.node ).hist; h ; h = history( h ).next )
+      {
+	dest << "    hist:   " << h << '\n'
+	     << "    when:   " << history( h ).when << '\n'
+	     << "    del:    " << history( h ).del << '\n'
+	     << '\n'
+	  ;
+      }
+    return( dest );
+  };
+
+		      
 protected:
 
   friend iterator;
@@ -802,6 +821,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1998/03/03 20:56:39  houghton
+// Bug-Fix: effective() would lie.
+//
 // Revision 2.10  1997/11/03 13:38:57  houghton
 // Bug-Fix: changed to alloc the hist node before getting the address of
 //     node's hist.
