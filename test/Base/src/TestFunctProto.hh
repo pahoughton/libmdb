@@ -27,6 +27,7 @@ bool	tMapMemDynamicDynamic( LibTest & tester );
 bool	tAvlTreeOffset( LibTest & tester );
 bool	tDavlTreeOffset( LibTest & tester );
 bool	tHash( LibTest & tester );
+bool	tDash( LibTest & tester );
 bool	tRBTree( LibTest & tester );
 bool	tDRBTree( LibTest & tester );
 
@@ -35,6 +36,9 @@ bool tHashTable( LibTest & tester );
 // Revision Log:
 //
 // $Log$
+// Revision 1.5  1997/07/22 19:45:46  houghton
+// Added Dash test.
+//
 // Revision 1.4  1997/07/16 16:38:25  houghton
 // Added MapFile & DRBTree tests.
 //

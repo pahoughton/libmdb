@@ -182,6 +182,8 @@ CXX_C_SOURCES	=			\
 	tHashTable01.C			\
 	tHash.C				\
 	tHash01.C			\
+	tDash.C				\
+	tDash01.C			\
 	tRBTree.C			\
 	tRBTree01.C			\
 	tRBTree02.C			\
@@ -189,6 +191,8 @@ CXX_C_SOURCES	=			\
 	tDRBTree.C			\
 	tDRBTree01.C			\
 	tDRBTree02.C			\
+	tDRBTree03.C			\
+	tDRBTree04.C			\
 	$(ARCH_CXX_C_SOURCES)           \
 
 
@@ -238,6 +242,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.7  1997/07/22 19:45:40  houghton
+# Added Dash test.
+#
 # Revision 1.6  1997/07/19 10:35:21  houghton
 # Moved define TEST_DATA_DIR to TestConfigs.hh.
 #

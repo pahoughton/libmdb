@@ -38,6 +38,7 @@ LibTest::TestItem   TestList[] =
   { "DRBTree", tDRBTree },
   { "HashTable", tHashTable },
   { "Hash", tHash },
+  { "Dash", tDash },
   { "AvlTreeOffset", tAvlTreeOffset },
   // { "DavlTreeOffset", tDavlTreeOffset }, NOT READY!
   { 0, 0 }
@@ -63,6 +64,9 @@ main( int argc, char * argv[] )
 // Revision Log:
 //
 // $Log$
+// Revision 1.7  1997/07/22 19:45:51  houghton
+// Added Dash test.
+//
 // Revision 1.6  1997/07/19 10:35:41  houghton
 // Added HashTable test.
 //
