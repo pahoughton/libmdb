@@ -1,6 +1,5 @@
-// Hey Emacs this is really -*- c++ -*-
-//
 // File:        AvlTreeMethods.INC
+// Project:	Mdb
 // Desc:        
 //
 //  This is about as strange as it gets! These are the algorithims
@@ -14,7 +13,7 @@
 //  I'm using the preprocessor (cpp) to differenciate between the two.
 //
 //  This file is included in 'AvlTreeOffsetBase.C' and 
-//  'AvlTreeAddrBase.C'. Just befor it is included, the following 
+//  'AvlTreeAddrBase.C'. Just before it is included, the following 
 //  macros are defined:
 //
 //  	ClassName   	= the name of the class
@@ -42,36 +41,19 @@
 //    G.M. Adelson-Velskii and E.M. Landis. Doklady Akademia Nauk SSSR, 146,
 //    (1962), 263-66; English translation in Soviet Math, 3, 1259-63
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 //  	    	This source is based on an Avl libraray
 //  	    	(avl.c) written by: Brad Appleton on 03/01/89
 //
 // Created:     12/13/94 11:21 
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// $Log$
-// Revision 2.3  1997/06/25 12:49:52  houghton
-// Added dumpNode and reworked dumpTree to use it.
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
 //
-// Revision 2.2  1995/12/04 11:19:16  houghton
-// Changed to eliminate compile warnings.
-//
-// Revision 2.1  1995/11/10  12:42:01  houghton
-// Change to Version 2
-//
-// Revision 1.4  1995/11/05  16:32:25  houghton
-// Revised
-//
-// Revision 1.2  1995/02/13  16:15:39  houghton
-// Fix comment character
-//
-// # Revision 1.1  1995/02/13  16:08:31  houghton
-// # New Style Avl an memory management. Many New Classes
-// #
-//
-const char AvlTreeMethodsRcsId[] =
-"$Id$";
+
 
 #include <algorithm>
 #include <iomanip>
@@ -145,7 +127,7 @@ NodeDataType
 ClassName::findNode(
   NodeDataType 	root,
   const void *	key
-  )
+  ) const
 {
 
   for( int diff = compareFind( key, root );
@@ -213,7 +195,8 @@ ClassName::findNode(
 short
 ClassName::deleteNode(
   NodeDataType *    root,
-  NodeDataType *    key,
+  const void *	    key,
+  NodeDataType *    delNode,
   int	    	    minMax
   )
 {
@@ -223,13 +206,13 @@ ClassName::deleteNode(
 
   if( *root == 0 )
     {
-      *key = 0;
+      *delNode = 0;
       return( 0 );
     }
 
   if( diff == 0 )
     {
-      diff = compareNode( *key , *root );
+      diff = compareFind( key , *root );
     }
   else
     {
@@ -246,8 +229,8 @@ ClassName::deleteNode(
 
   if( diff < 0 )
     {
-      dec = -deleteNode( &( NODE( *root )->subTree[ LEFT ] ), key, minMax );
-      if( *key == 0 )
+      dec = -deleteNode( &( NODE( *root )->subTree[ LEFT ] ), key, delNode, minMax );
+      if( *delNode == 0 )
 	{
 	  return( 0 );
 	}
@@ -256,8 +239,8 @@ ClassName::deleteNode(
     {
       if( diff > 0 )
 	{
-	  dec = deleteNode( &( NODE( *root )->subTree[ RIGHT ] ), key, minMax );
-	  if( *key == 0 )
+	  dec = deleteNode( &( NODE( *root )->subTree[ RIGHT ] ), key, delNode, minMax );
+	  if( *delNode == 0 )
 	    {
 	      return( 0 );
 	    }
@@ -268,7 +251,7 @@ ClassName::deleteNode(
 
 	  NodeDataType     origRoot = *root;
 
-	  *key = *root;
+	  *delNode = *root;
 
 	  
 	  switch( getNodeType( *root ) )
@@ -292,14 +275,14 @@ ClassName::deleteNode(
 	      // to this possition (ie root) and set its subtrees to
 	      // our subtrees.
 	      
-	      dec = deleteNode( &( NODE( *root )->subTree[ RIGHT ] ), key, -1 );
+	      dec = deleteNode( &( NODE( *root )->subTree[ RIGHT ] ), key, delNode, -1 );
 
-	      NODE( *key )->subTree[ LEFT ]  = NODE( *root )->subTree[ LEFT ];
-	      NODE( *key )->subTree[ RIGHT ] = NODE( *root )->subTree[ RIGHT ];
-	      NODE( *key )->bal	    	     = NODE( *root )->bal;
+	      NODE( *delNode )->subTree[ LEFT ]  = NODE( *root )->subTree[ LEFT ];
+	      NODE( *delNode )->subTree[ RIGHT ] = NODE( *root )->subTree[ RIGHT ];
+	      NODE( *delNode )->bal	    	     = NODE( *root )->bal;
 
-	      *root = *key;
-	      *key = origRoot;
+	      *root = *delNode;
+	      *delNode = origRoot;
 	      break;
 
 	    default:	    // can't happen
@@ -375,6 +358,45 @@ ClassName::walkTree(
   NodeDataType	root,
   void *    	closure
   )
+{
+
+  bool	abort = false;
+  
+  if( root == 0 )
+    {
+      return( abort );
+    }
+
+  if( NODE( root )->subTree[ LEFT ] != 0 )
+    {
+      abort = walkTree( NODE( root )->subTree[ LEFT ], closure );
+    }
+
+  if( abort ) return ( abort );
+  
+  abort = walkNode( root, closure );
+  
+  if( abort ) return ( abort );
+  
+  if( NODE( root )->subTree[ RIGHT ] != 0 )
+    {
+      abort = walkTree( NODE( root )->subTree[ RIGHT ], closure );
+    }
+  
+  return( abort );
+}
+
+
+// **********************************************************************
+// walkTree - execute 'walkNode' at each node in the tree
+//  	Returns false if the entire tree was walked
+//  	Returns true if the walk was aborted
+// **********************************************************************
+bool
+ClassName::walkTree(
+  NodeDataType	root,
+  void *    	closure
+  ) const
 {
 
   bool	abort = false;
@@ -487,7 +509,7 @@ ClassName::walkTree(
 //  	Returns 'dest'
 // **********************************************************************
 ostream &
-ClassName::dumpTree(
+ClassName::dumpAvlTree(
   const NodeDataType 	root,
   ostream & 	    	dest,
   int	    	    	level
@@ -500,14 +522,14 @@ ClassName::dumpTree(
   
   if( NODE( root )->subTree[ RIGHT ] != 0 )
     {
-      dumpTree( NODE( root )->subTree[ RIGHT ], dest, level + 1 );
+      dumpAvlTree( NODE( root )->subTree[ RIGHT ], dest, level + 1 );
     }
 
   dumpNode( dest, root, level ) << '\n';
   
   if( NODE( root )->subTree[ LEFT ] != 0 )
     {
-      dumpTree( NODE( root )->subTree[ LEFT ], dest, level + 1 );
+      dumpAvlTree( NODE( root )->subTree[ LEFT ], dest, level + 1 );
     }
 
   return( dest );
@@ -540,6 +562,14 @@ ClassName::dumpNode(
   dest << " key: ";
   dumpKey( dest, root );
 
+  return( dest );
+}
+
+ostream &
+ClassName::dumpKey(
+  ostream & dest,
+  const NodeDataType CLUE_UNUSED( node ) ) const
+{
   return( dest );
 }
 
@@ -775,9 +805,48 @@ ClassName::balance(
   return( (special) ? 0 : 1 );
 }
 
+// Revision Log:
 //
-// This software is a modificed version of Brad Appleton's
-// 'c' avl library.
+// $Log$
+// Revision 2.4  1997/07/13 10:58:47  houghton
+// Reworked deleteNode to work without creating a copy of the key
+//     in the map.
+// Added walkTree() const
+// Renamed dumpTree to dumpAvlTree.
+// Added dumpKey.
 //
-// It is public domain.
+// Revision 2.3  1997/06/25 12:49:52  houghton
+// Added dumpNode and reworked dumpTree to use it.
 //
+// Revision 2.2  1995/12/04 11:19:16  houghton
+// Changed to eliminate compile warnings.
+//
+// Revision 2.1  1995/11/10  12:42:01  houghton
+// Change to Version 2
+//
+// Revision 1.4  1995/11/05  16:32:25  houghton
+// Revised
+//
+// Revision 1.2  1995/02/13  16:15:39  houghton
+// Fix comment character
+//
+// Revision 1.1  1995/02/13  16:08:31  houghton
+// New Style Avl an memory management. Many New Classes
+//
+
+// Copyright:
+//
+//  This software is a modificed version of Brad Appleton's
+//  'c' avl library.
+//
+//  It is public domain.
+//
+
+//
+// Emacs doc mode
+//
+// Local Variables:
+// mode:c++
+// End:
+//
+
