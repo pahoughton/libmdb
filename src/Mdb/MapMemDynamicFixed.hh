@@ -8,32 +8,9 @@
 // Author:      Paul Houghton - (houghton@cworld.wiltel.com)
 // Created:     11/18/94 10:09
 //
-// Revision History:
+// Revision History: (See Revision Log at end of file)
 //
 // 
-// $Log$
-// Revision 2.4  1997/03/07 11:49:33  houghton
-// Add dumpInfo.
-//
-// Revision 2.3  1997/03/03 14:32:47  houghton
-// Added virtual destructor.
-//
-// Revision 2.2  1996/11/06 18:07:27  houghton
-// Renamed Clue.hh to ClueUtils.hh.
-//
-// Revision 2.1  1995/11/10 12:42:31  houghton
-// Change to Version 2
-//
-// Revision 1.5  1995/11/05  16:32:35  houghton
-// Revised
-//
-// Revision 1.2  1995/03/02  16:35:36  houghton
-// Linux ports & new Classes
-//
-// Revision 1.1  1995/02/13  16:08:50  houghton
-// New Style Avl an memory management. Many New Classes
-//
-//
 
 #include <ClueConfig.hh>
 
@@ -41,7 +18,9 @@
 #include <MapMem.hh>
 #include <Record.hh>
 
-#include <iostream.h>
+#include <DumpInfo.hh>
+
+#include <iostream>
 
 #define MMF_VERSION 0x4d4d4602	// 'MMF2'
 
@@ -99,9 +78,16 @@ public:
   virtual bool	    	good( void ) const;
   virtual const char *	error( void ) const;    
   virtual const char * 	getClassName( void ) const;
+  virtual const char *  getVersion( bool withPrjVer = true ) const;
   virtual ostream &	dumpInfo( ostream &	dest,
 				  const char *  prefix = "    ",
 				  bool		showVer = false ) const;
+
+  static const ClassVersion version;
+
+  inline
+  DumpInfo< MapMemFixedDynamic >  dump( const char *	prefix = "    ",
+					bool		showVer = true ) const;
   struct FreeList
   {
     unsigned long next;
@@ -265,7 +251,6 @@ operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
 }
 
 
-#endif // ! def _MapMemFixedDynamic_hh_ 
 //
 //              This software is the sole property of
 // 
@@ -277,3 +262,32 @@ operator<<( ostream & dest, const MapMemFixedDynamic & mmf )
 //                      All Rights Reserved.  
 // 
 //
+// $Log$
+// Revision 2.5  1997/03/08 10:28:40  houghton
+// Cleanup.
+// Added dump.
+// Added ClassVersion.
+//
+// Revision 2.4  1997/03/07 11:49:33  houghton
+// Add dumpInfo.
+//
+// Revision 2.3  1997/03/03 14:32:47  houghton
+// Added virtual destructor.
+//
+// Revision 2.2  1996/11/06 18:07:27  houghton
+// Renamed Clue.hh to ClueUtils.hh.
+//
+// Revision 2.1  1995/11/10 12:42:31  houghton
+// Change to Version 2
+//
+// Revision 1.5  1995/11/05  16:32:35  houghton
+// Revised
+//
+// Revision 1.2  1995/03/02  16:35:36  houghton
+// Linux ports & new Classes
+//
+// Revision 1.1  1995/02/13  16:08:50  houghton
+// New Style Avl an memory management. Many New Classes
+//
+//
+#endif // ! def _MapMemFixedDynamic_hh_ 
