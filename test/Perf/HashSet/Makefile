@@ -47,7 +47,7 @@ PROGRAM_STATIC	= $(NAME)_static
 PRJ_TOPDIR	= ../../..
 
 # include any arch specific makefile component
--include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
+-include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.Perf
 
 VPATH		= $(ARCH_VPATH):.
 
@@ -137,8 +137,10 @@ DEBUG_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 PROFILE_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 STATIC_LD_LIBDIRS	= $(DEFAULT_LD_LIBDIRS)
 
-DEFAULT_LD_LIBS		= -lPerf -lMdb -lClue -lCommon -lGnuRegex
-DEBUG_LD_LIBS		= -lPerf_g -lMdb_g -lClue_g -lCommon -lGnuRegex
+DEFAULT_LD_LIBS		= -lPerf -lMdb -lClue -lCommon -lGnuRegex	\
+			  $(ARCH_DEFAULT_LD_LIBS)
+DEBUG_LD_LIBS		= -lPerf_g -lMdb_g -lClue_g -lCommon -lGnuRegex	\
+			  $(ARCH_DEFAULT_LD_LIBS)
 PROFILE_LD_LIBS		= $(DEFAULT_LD_LIBS)
 STATIC_LD_LIBS		= $(DEFAULT_LD_LIBS)
 
@@ -237,6 +239,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.2  1997/07/28 16:52:10  houghton
+# Changed arch Makefile name.
+#
 # Revision 1.1  1997/07/25 13:41:45  houghton
 # Initial Version.
 #
