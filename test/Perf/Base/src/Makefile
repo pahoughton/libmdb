@@ -44,7 +44,7 @@ PROGRAM_PROFILE	= $(NAME)_pg
 PROGRAM_STATIC	= $(NAME)_static
 
 
-PRJ_TOPDIR	= ../../..
+PRJ_TOPDIR	= ../../../..
 
 # include any arch specific makefile component
 -include $(PRJ_TOPDIR)/src/arch/$(arch)/Makefile.$(NAME)
@@ -221,6 +221,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.3  1997/07/19 19:54:57  houghton
+# Fixed PRJ_TOPDIR.
+#
 # Revision 1.2  1997/07/14 10:51:43  houghton
 # Added ARCH_*_LD_LIBS.
 #
