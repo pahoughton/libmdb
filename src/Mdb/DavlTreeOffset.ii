@@ -645,7 +645,6 @@ inline
 const char *
 DavlTreeOffset<K,D>::error( void ) const
 {
-  static Str errStr;
   errStr.reset();
 
   errStr << getClassName();
@@ -1230,6 +1229,10 @@ DavlTreeOffset<K,D>::initTree(
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/19 10:23:56  houghton
+// Port(Sun5): errStr is now declared in AvlTreeOffsetBase. The Sun5
+//     compile could not handle the local static variable.
+//
 // Revision 2.1  1997/07/11 17:37:08  houghton
 // Initial Version.
 //
