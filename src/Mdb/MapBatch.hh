@@ -74,7 +74,7 @@ public:
   inline MapBatch( const char *	    fileName,
 		   ios::open_mode   mode = ios::in,
 		   bool		    create = false,
-		   MapMask	    permMask = 02 );
+		   MapFile::MapMask permMask = 02 );
   
   virtual ~MapBatch( void );
 
@@ -83,7 +83,7 @@ public:
   };
   
   inline const_iterator		end( void ) const {
-    return( (const_iterator)endPos(void) );
+    return( (const_iterator)endPos );
   };
   
   inline const_reverse_iterator	rbegin( void ) const {
@@ -241,6 +241,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/08/17 01:38:39  houghton
+// Bug-Fix: MapMask is part of MapFile
+// Bug-Fix: endPos is not a function :)
+//
 // Revision 2.2  1997/08/10 20:31:58  houghton
 // Cleanup.
 // Added some methods.
