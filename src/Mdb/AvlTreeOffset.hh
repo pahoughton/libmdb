@@ -14,6 +14,9 @@
 //
 // 
 // $Log$
+// Revision 2.3  1997/03/03 14:31:36  houghton
+// Removed definition of getClassName - it is inlined at the decl.
+//
 // Revision 2.2  1996/04/27 13:14:43  houghton
 // Bug-Fix: inline keyword was missing from AvlTreeOffset<T>::copy()
 //
@@ -504,15 +507,6 @@ const MultiMemOffset *
 AvlTreeOffset<T>::getMemMgr( void ) const
 {
   return( mem );
-}
-
-// getClassName - return the name of the class
-template<class T>
-inline
-const char *
-AvlTreeOffset<T>::getClassName( void ) const
-{
-  return( "AvlTreeOffset<T>" );
 }
 
 // good - return true if no detected error otherwize false
