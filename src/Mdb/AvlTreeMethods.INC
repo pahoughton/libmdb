@@ -51,9 +51,12 @@
 // Revision History:
 //
 // $Log$
-// Revision 1.1  1995/02/13 16:08:31  houghton
-// New Style Avl an memory management. Many New Classes
+// Revision 1.2  1995/02/13 16:15:39  houghton
+// Fix comment character
 //
+// # Revision 1.1  1995/02/13  16:08:31  houghton
+// # New Style Avl an memory management. Many New Classes
+// #
 //
 static const char * IncRcsId =
 "$Id$";
