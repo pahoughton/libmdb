@@ -24,6 +24,8 @@
 #include <MdbConfig.hh>
 #include <RBTreeBase.hh>
 #include <iostream>
+#include <iterator>
+#include <pair>
 
 template< class Key, class Value, class KeyOfValue, class LessKey >
 class RBTree : public RBTreeBase
@@ -448,6 +450,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.4  1997/07/19 10:29:41  houghton
+// Bug-Fix: added include <pair> and <iterator>
+//
 // Revision 2.3  1997/07/14 10:39:19  houghton
 // Port(AIX): iterator could not access the protected next & prev
 //     methods. So I wrote nextNode & prevNode wrappers to provide access.
