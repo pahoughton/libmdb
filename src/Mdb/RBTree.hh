@@ -52,12 +52,12 @@ public:
       : table( from.table ), node( from.node ) {} ;
 
     inline iterator &	    operator ++ ( void ) {
-      if( table ) table->next( node );
+      if( table ) table->nextNode( node );
       return( *this );
     };
 
     inline iterator &	    operator -- ( void ) {
-      if( table ) table->prev( node );
+      if( table ) table->prevNode( node );
       return( *this );
     };
 
@@ -116,12 +116,12 @@ public:
       : table( from.table ), node( from.node ) {} ;
 
     inline const_iterator &    operator ++ ( void ) {
-      if( table ) table->next( node );
+      if( table ) table->nextNode( node );
       return( *this );
     };
 
     inline const_iterator &    operator -- ( void ) {
-      if( table ) table->prev( node );
+      if( table ) table->prevNode( node );
       return( *this );
     };
 
@@ -308,6 +308,10 @@ public:
       
 protected:
 
+  friend class iterator;
+  friend class const_iterator;
+  friend class DumpTreeMethods;
+  
   inline Loc		findNode( const Key & key ) const {
     Loc	    parent = headerLoc;
     Loc	    node = root();
@@ -332,6 +336,14 @@ protected:
     return( lessKeyObj( keyOf( value( one ) ), keyOf( value( two ) ) ) );
   };
 
+  inline Loc		    nextNode( Loc & node ) const {
+    return( next( node ) );
+  };
+  
+  inline Loc		    prevNode( Loc & node ) const {
+    return( prev( node ) );
+  };
+  
 
   LessKey	lessKeyObj;
   KeyOfValue	keyOf;
@@ -436,6 +448,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/14 10:39:19  houghton
+// Port(AIX): iterator could not access the protected next & prev
+//     methods. So I wrote nextNode & prevNode wrappers to provide access.
+//
 // Revision 2.2  1997/07/13 11:31:31  houghton
 // Cleanup.
 // Major rework.

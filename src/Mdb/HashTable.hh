@@ -61,12 +61,12 @@ public:
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
     inline iterator &	    operator ++ ( void ) {
-      if( table ) table->next( hash, node );
+      if( table ) table->nextNode( hash, node );
       return( *this );
     };
     
     inline iterator &	    operator -- ( void ) {
-      if( table ) table->prev( hash, node );
+      if( table ) table->prevNode( hash, node );
       return( *this );
     };
 
@@ -128,12 +128,12 @@ public:
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
     inline const_iterator &	operator ++ ( void ) {
-      if( table ) table->next( hash, node );
+      if( table ) table->nextNode( hash, node );
       return( *this );
     };
     
     inline const_iterator &	operator -- ( void ) {
-      if( table ) table->prev( hash, node );
+      if( table ) table->prevNode( hash, node );
       return( *this );
     };
 
@@ -150,7 +150,7 @@ public:
     };
     
     inline const_referance	operator * ( void ) const {
-      return( table ? table->value( node ) : Value() );
+      return( table->value( node ) );
     };
 
     inline bool		operator == ( const const_iterator & rhs ) const {
@@ -339,14 +339,28 @@ public:
   
 protected:
 
+  friend class iterator;
+  friend class const_iterator;
+  friend class TableDumpMethods;
+  
+  inline Loc	nextNode( Hash & hash, Loc & node  ) const {
+    return( next( hash, node ) );
+  };
+  
+  inline Loc	prevNode( Hash & hash, Loc & node ) const {
+    return( prev( hash, node ) );
+  };
+  
   HashFunct	hashFunct;
   KeyOfValue	keyOf;
   LessKey	lessKey;
   
 private:
 
-  HashTable( const HashTable & from );
-  HashTable & operator =( const HashTable & from );
+  // these are prevented by HashTableBase
+  //
+  // HashTable( const HashTable & from );
+  // HashTable & operator =( const HashTable & from );
 
   
 };
@@ -438,6 +452,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/14 10:38:40  houghton
+// Port(AIX): iterator could not access the protected next & prev
+//     methods. So I wrote nextNode & prevNode wrappers to provide access.
+//
 // Revision 2.2  1997/07/13 11:11:58  houghton
 // Changed to use MultiMemOffset.
 // Added erase( iterator it ).
