@@ -67,15 +67,15 @@ check_cvs:
 	  exit 1;							      \
 	fi
 
-$(libs_build_dir)/libStlUtils-4:
+$(libs_build_dir)/$(LIB_STLUTILS):
 	cd $(libs_build_dir)						      \
-	&& cvs $(tools_cvsroot) co libStlUtils-4
+	&& cvs $(tools_cvsroot) co $(LIB_STLUTILS)
 
 
-$(stlutils_hh): $(libs_build_dir)/libStlUtils-4
+$(stlutils_hh): $(libs_build_dir)/$(LIB_STLUTILS)
 	cd $(libs_build_dir)						      \
-	&& $(MAKE) -f libStlUtils-4/Makefile setup $(exports)
-	$(TOOL_DIR)/bin/make -C $(libs_build_dir)/libStlUtils-4		      \
+	&& $(MAKE) -f $(LIB_STLUTILS)/Makefile setup $(exports)
+	$(TOOL_DIR)/bin/make -C $(libs_build_dir)/$(LIB_STLUTILS)	      \
 	    install_all $(exports) 
 
 gen_setup_cfg:
@@ -96,6 +96,9 @@ setup: check_cvs $(stlutils_hh) gen_setup_cfg
 
 #
 # $Log$
+# Revision 1.5  2000/05/30 13:01:46  houghton
+# Changed to use LIB_STLUTILS variable (vs libStlUtils-4).
+#
 # Revision 1.4  2000/05/26 11:44:59  houghton
 # Changed Project to Version 3.
 #
