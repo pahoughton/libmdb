@@ -24,6 +24,9 @@
 #include <ClueConfig.hh>
 #include <MdbVersion.hh>
 
+#define MDB_TYPE_SIZE	    unsigned long
+#define MDB_TYPE_LOC	    long
+#define MDB_TYPE_ADDR	    char *
 
 //
 // Detail Documentation
@@ -109,6 +112,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:28:07  houghton
+// Added MDB_TYPE_SIZE, MDB_TYPE_LOC & MDB_TYPE_ADDR.
+//
 // Revision 2.1  1997/06/05 11:29:12  houghton
 // Initial Version.
 //
