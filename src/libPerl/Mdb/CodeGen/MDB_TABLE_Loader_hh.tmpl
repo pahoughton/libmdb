@@ -103,6 +103,7 @@ protected:
 
   DateTime	minHistDate;
   size_t	procRecCount;
+  size_t	dupRecCount;
   
   ErrorNum	errorNum;
   
@@ -210,6 +211,9 @@ DumpRec( ostream & dest, const %TABLE%Loader::DataRec & obj );
    Revision Log:
   
    $Log$
+   Revision 1.2  2003/08/08 09:18:13  houghton
+   Added generic ingore dups logic.
+
    Revision 1.1  2003/06/08 18:03:40  houghton
    Initial Version
 

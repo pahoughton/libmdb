@@ -90,7 +90,7 @@ bool
   bool status( true );
 
   procRecCount = 0;
-
+  dupRecCount = 0;
   {
     const FileBatch< DataRec >	batch( dataFn );
     
@@ -116,12 +116,32 @@ bool
 	DumpRec( (*_LibLog), rec ) << endl;
       }
     
-      if( ! (*table).add( rec ) ) {
-	LLgError << "add failed - " << (*table).error()
-		 << " from:\n"
-		 << "    " << dataFn << ":" << procRecCount
-		 << endl;
-	status = false;
+      {
+	Table::pair_iterator_bool insIt(
+	  (*table).insert( rec ) );
+
+	if( ! insIt.second ) {
+	  if( insIt.first != (*table).end() ) {
+	    // NOTE dups only outpu for debug - will not be fixed
+	    LLgDebug << "add failed DUP:\n"
+		     << "   Existing:\n"
+		     << DumpItRec( (*insIt.first) ) << '\n'
+		     << "   New:\n"
+		     << DumpItRec( rec ) << '\n'
+		     << "   Input:\n"
+		     << DumpItRec( *them ) << '\n'
+		     << endl;
+	    ++ dupRecCount;
+	  } else {
+	    LLgError << "add failed - " << (*table).error()
+		     << " from:\n"
+		     << "    " << dataFn << ":" << procRecCount
+		     << DumpItRec( *them ) << '\n'
+		     << DumpItRec( rec ) << '\n'
+		     << endl;
+	    status = false;
+	  }
+	}
       } 
     }
   }
@@ -134,6 +154,7 @@ bool
     << "Load " << (*table).getClassName() 
     << ( status ? " complete." : " FAILED." ) << '\n'
     << "       data recs processed: " << procRecCount << '\n'
+    << "               dup records: " << dupRecCount << '\n'
     << "                table size: " << (*table).size() << '\n'
     << endl;
 
