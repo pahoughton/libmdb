@@ -37,11 +37,11 @@ public:
 
   typedef long		EffDate;
   
-  DashTableBase( ChunkMgr &	chunkMgr,
-		 const char *	indexFileName,
-		 ios::open_mode	mode = ios::in,
-		 unsigned short	permMask = 0,
-		 bool		create = false );
+  DashTableBase( MultiMemOffset *   memMgr,
+		 const char *	    indexFileName,
+		 ios::open_mode	    mode = ios::in,
+		 bool		    create = false,
+		 unsigned short	    permMask = 02 );
 
   virtual ~DashTableBase( void );
 
@@ -175,6 +175,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  1997/07/13 11:06:08  houghton
+// Changed constructor permMask default value.
+//
 // Revision 2.2  1997/06/05 13:42:01  houghton
 // Changed for AIX: had to make DashNodeBase a public member.
 //
