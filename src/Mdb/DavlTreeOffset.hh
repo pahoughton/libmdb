@@ -22,11 +22,10 @@
 //
 
 #include <MdbConfig.hh>
-
-#include <MultiMemOffset.hh>
 #include <DavlTreeOffsetBase.hh>
-#include <Str.hh>
-
+#include <MultiMemOffset.hh>
+#include <DumpInfo.hh>
+#include <ctime>
 #include <limits.h>
 
 template<class K, class D>
@@ -515,6 +514,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.7  1997/07/19 10:22:56  houghton
+// Bug-Fix: added include <DumpInfo.hh> and <ctime>.
+//
 // Revision 2.6  1997/07/13 11:08:06  houghton
 // Cleanup.
 // Moved inline definitions to .ii.
