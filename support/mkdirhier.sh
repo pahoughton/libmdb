@@ -1,25 +1,30 @@
 #!/usr/bin/ksh
 #
-# Title:        mkdirhier.sh
-# Project:	DocTools
+# File:         mkdirhier.sh
+# Project:	Mdb %PP%
+# Item:   	%PI% (%PF%)
 # Desc:
-# 
+#
+#   Create directory and all missing parent directories.
+#   
+# Notes:
+#
 #   $XConsortium: mkdirhier.sh,v 1.7 94/03/24 15:46:34 gildea Exp $
 #   Courtesy of Paul Eggert
 #   
-# Notes:
-# 
-# Author:	Paul Houghton - (paul.houghton@wcom.com)
+# Author:	Paul Houghton - <paul.houghton@wcom.com>
 # Created:	06/11/00 17:05
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
 #
-#   $Id$
-# 
+#   %PID%
+#
+
 
 newline='
 '
@@ -85,16 +90,17 @@ done
 
 exit $status
 
+
 #
-# $Log$
-# Revision 1.1  2000/07/24 09:59:54  houghton
-# Initial Version.
+# Revision Log:
 #
-# Revision 1.1  2000/06/11 22:59:37  houghton
-# Initial Version.
+#
+# %PL%
 #
 #
 
+# Set XEmacs mode
+#
 # Local Variables:
 # mode:ksh
 # End:

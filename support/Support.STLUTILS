@@ -1,0 +1,76 @@
+#
+# File:         Support.STLUTILS
+# Project:	Mdb (%PP%)
+# Item:   	%PI% (%PF%)
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author:	Paul Houghton - <paul.houghton@wcom.com>
+# Created:	07/26/01 13:16
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
+#
+#   %PID%
+#
+
+STLUTILS_SUPPORT_TYPE	= LIB
+STLUTILS_NAME		= StlUtils
+STLUTILS_VER		= 6
+STLUTILS_DOC_HTML	= $(WWW_OBJECT_REP_ROOT)/GenCxx/StlUtils
+
+STLUTILS_API_PKG_URI	= $(STLUTILS_EXTRACT_DIR)/$(STLUTILS_build_dir)/docs/html/Devel/JavaApi
+STLUTILS_API_DOC_URI	= $(WWW_OBJECT_REP_ROOT)/GenCxx/StlUtils/Devel/JavaApi
+
+STLUTILS_DESC_CMD	= \
+	cat $(STLUTILS_EXTRACT_DIR)/$(STLUTILS_build_dir)/src/config/.prjdesc.txt
+STLUTILS_CLASSPATH	= \
+
+STLUTILS_INC_DIRS	= $(INSTALL_INC_DIR)
+STLUTILS_LIB_DIRS	= $(INSTALL_LIB_DIR)
+STLUTILS_LIBS		= StlUtils
+STLUTILS_SUPPORT_ITMES	= GZIP MAKE_CONFIGS DOCTOOLS COMMON GNUREGEX
+STLUTILS_EXTRACT_DIR	= $(libs_build_dir)
+STLUTILS_build_dir	= $(STLUTILS_NAME)-$(STLUTILS_VER)
+STLUTILS_tar		= $(STLUTILS_NAME)-$(STLUTILS_VER).tar.gz
+STLUTILS_target	= \
+	$(INSTALL_INC_DIR)/StlUtilsVersion.hh
+
+
+$(STLUTILS_target): $(tools_archive_dir)/$(STLUTILS_tar)
+	$(hide) echo -n "+ Installing $(STLUTILS_NAME) ..."	\
+	&& cd $(STLUTILS_EXTRACT_DIR)				\
+	&& rm -rf $(STLUTILS_build_dir)				\
+	&& $(zcat_cmd) $< | tar xf -				\
+	&& $(make_cmd) -f $(STLUTILS_build_dir)/Setup.Makefile	\
+		setup						\
+		TOOL_DIR=$(TOOL_DIR)				\
+		INSTALL_BASE_DIR=$(TOOL_DIR)			\
+		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+	&& $(make_cmd) -C $(STLUTILS_build_dir) check		\
+	&& $(make_cmd) -C $(STLUTILS_build_dir) install_all	\
+		check_install=false				\
+	&& $(make_cmd) -C $(STLUTILS_build_dir)/docs html	\
+	&& [ -f $@ ]						\
+	&& touch $@						\
+	&& echo " Done -" `date`
+
+
+#
+# Revision Log:
+#
+# %PL%
+#
+
+# Set XEmacs mode
+#
+# Local Variables:
+# mode:makefile
+# End:

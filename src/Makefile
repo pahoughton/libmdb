@@ -1,81 +1,76 @@
 #
-# Title:        Makefile
-# Project:	Mdb
+# File:         Makefile
+# Project:	Mdb %PP%
+# Item:   	%PI% (%PF%)
 # Desc:
-# 
-#   
-# 
+#
+#   This Makefile builds the targets in all the source subdirectories.
+#
 # Notes:
-# 
-# Author:	Paul Houghton - (paul.houghton@wcom.com)
-# Created:	10/20/98 06:53
+#
+# Author:	Paul Houghton <Paul.Houghton@wcom.com>
+# Created:	07/26/01 using GenProject 6.01.01
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
 #
-#   $Id$
-# 
+#   %PID%
+#
 
-make_cfg_ver	= 5.06
 show_commands 	= # true
 check_install	= true
 
-# Include standard MakeConfig configuration for GNU make required
+PRJ_TOPDIR	= ..
+config_dir	= $(PRJ_TOPDIR)/src/config
+
+include $(config_dir)/00-Makefile.cfg
 include Make/make.cfg.$(make_cfg_ver)
 
-PRJ_TOPDIR	= ..
-CFG_DIR		= $(PRJ_TOPDIR)/src/config
+LIB_SUBDIRS	=	\
+	Mdb
 
-include $(CFG_DIR)/00-Makefile.cfg
+SUBDIRS		=	\
+	$(LIB_SUBDIRS)
 
+TARGETS		= $(standard_targets)	\
+	debug				\
+	test				\
+	depend				\
+	depend_all			\
+	depend_default			\
+	depend_debug depend_test
 
-depend depend_all depend_test depend_default depend_debug:
-	$(hide) $(MAKE) -C Mdb $@ $(exports)
+HELP_TARGETS	= $(TARGETS)
+PHONY_TARGETS	= $(TARGETS)
 
-all default debug:
-	$(hide) $(MAKE) -C Mdb $@ $(exports)
+include Make/make.cfg.targets.common.$(make_cfg_ver)
 
-clean realclean:
-	$(hide) $(MAKE) -C Mdb $@ $(exports)
-	$(hide) $(MAKE) -C $(DOC_DIR) $@ $(exports)
-	$(hide) $(MAKE) -C $(TEST_DIR) $@ $(exports)
-
-test:
-	$(hide) $(MAKE) -C Mdb $@ $(exports)
-
-check: test
-	$(hide) $(MAKE) -C $(TEST_DIR) $@ $(exports)
-
-install_docs:
-	$(hide) $(MAKE) -C $(DOC_DIR) $@ $(exports)
-
-install_all install install_default install_debug: install_docs
-	$(hide) $(MAKE) -C Mdb $@ $(exports)
+$(TARGETS)::
+	$(call make_subdirs,$@,$(SUBDIRS),$($(@)_exports) $(exports))
 
 install_lib_all:
-	$(hide) $(MAKE) -C Mdb install_all $(exports)
+	$(call make_subdirs,install_all,$(LIB_SUBDIRS),$($(@)_exports) $(exports))
 
+install install_all::
 
-
-
+check:: test
+	$(call make_subdirs,$@,$(PRJ_TOPDIR)/test,$($(@)_exports) $(exports))
 
 
 #
-# $Log$
-# Revision 1.3  1999/11/09 10:54:00  houghton
-# Changed to use Setup.cfg.
+# Revision Log:
 #
-# Revision 1.2  1999/10/30 11:50:28  houghton
-# Changed (complete rework) to support setup and other new targets.
 #
-# Revision 1.1  1998/10/23 13:15:54  houghton
-# Initial Version.
+# %PL%
 #
 #
 
+# Set XEmacs mode
+#
 # Local Variables:
 # mode:makefile
 # End:

@@ -22,11 +22,11 @@
 //
 
 #include <MdbConfig.hh>
+#include <MultiMemOffset.hh>
 #include <DumpInfo.hh>
 #include <iostream>
 #include <iterator>
 
-class MultiMemOffset;
 
 template <class Value>
 class MapMemDlist
@@ -532,6 +532,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  2001/07/27 00:47:31  houghton
+// *** empty log message ***
+//
 // Revision 2.5  2000/05/27 14:02:49  houghton
 // Port: Sun CC 5.0.
 //

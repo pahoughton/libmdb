@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE contents
+	PUBLIC "-//DocTools//DTD Table of Contents//EN" 
+	       "dtd/DocTools/contents.dtd" [
+
+ <!ENTITY TOP.DIR ".">
+ <!ENTITY % projectEntity
+	PUBLIC "-//Project//ENTITY Project Variables//EN"
+	       "./dtd/project.ent">
+ %projectEntity;
+]>
+
+<?xml-stylesheet
+    href="xsl/DocTools/html/contents.xsl"
+    type="text/xsl" ?>
+
+<contents>
+  <dochead>
+    <title>
+       &PRJ.NAME; &PRJ.VER; Project Documentation
+    </title>
+    <subtitle>
+       
+    </subtitle>
+    <docdesc>
+      &PRJ.DESC;
+    </docdesc>
+    <keywords>
+       &PRJ.NAME;
+    </keywords>
+    <authorgrp>
+      <author fullname="Paul Houghton"
+	      email="Paul.Houghton@wcom.com"/>
+    </authorgrp>
+    <projectname>
+      &PRJ.NAME;
+    </projectname>
+    <docversion
+        created="02/13/01 08:56"
+        verprj="%PP%"
+        veritem="%PI% (%PF%)"
+	verlastmodby="%PO%"
+        verlastmod="%PRT%"
+        verversion="%PIV%"
+	verstatus="%PS%"
+        verversionid="%PID%"/>
+    <contact>&PRJ.XML.CONTACT;</contact>
+  </dochead>
+
+  <toc>
+    <item>
+      <doc usedesc="yes">ReleaseNotes</doc>
+    </item>
+    <item>
+      <subdir usedesc="yes">User</subdir>
+    </item>
+    <item>
+      <subdir usedesc="yes">Devel</subdir>
+    </item>
+    <item>
+      <doc>Contacts</doc>
+    </item>
+  </toc>
+  
+</contents>
+
+<!-- Revision Log:
+
+#
+# %PL%
+#
+
+-->
+
+<!-- Xemacs Local Variables -->
+
+<!-- Local Variables: -->
+<!-- mode:xml -->
+<!-- End: -->

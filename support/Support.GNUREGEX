@@ -1,0 +1,77 @@
+#
+# File:         Support.GNUREGEX
+# Project:	StlUtils (%PP%)
+# Item:   	%PI% (%PF%)
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author:	Paul Houghton - <paul.houghton@wcom.com>
+# Created:	07/26/01 06:47
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
+#
+#   %PID%
+#
+
+GNUREGEX_SUPPORT_TYPE	= LIB
+GNUREGEX_NAME		= GnuRegex
+GNUREGEX_VER		= 3
+GNUREGEX_DOC_HTML	= $(WWW_OBJECT_REP_ROOT)/GenC/GnuRegex
+
+GNUREGEX_API_PKG_URI	= $(GNUREGEX_EXTRACT_DIR)/$(GNUREGEX_build_dir)/docs/html/Devel/JavaApi
+GNUREGEX_API_DOC_URI	= $(WWW_OBJECT_REP_ROOT)/GenC/GnuRegex/Devel/JavaApi
+
+GNUREGEX_DESC_CMD	= \
+	cat $(GNUREGEX_EXTRACT_DIR)/$(GNUREGEX_build_dir)/src/config/.prjdesc.txt
+GNUREGEX_CLASSPATH	= \
+
+GNUREGEX_INC_DIRS	= $(INSTALL_INC_DIR)
+GNUREGEX_LIB_DIRS	= $(INSTALL_LIB_DIR)
+GNUREGEX_LIBS		= GnuRegex
+GNUREGEX_SUPPORT_ITMES	= GZIP MAKE_CONFIGS DOCTOOLS 
+GNUREGEX_EXTRACT_DIR	= $(libs_build_dir)
+GNUREGEX_build_dir	= $(GNUREGEX_NAME)-$(GNUREGEX_VER)
+GNUREGEX_tar		= $(GNUREGEX_NAME)-$(GNUREGEX_VER).tar.gz
+GNUREGEX_target	= \
+	$(INSTALL_INC_DIR)/GnuRegex.h
+
+
+$(GNUREGEX_target): $(tools_archive_dir)/$(GNUREGEX_tar)
+	$(hide) echo -n "+ Installing $(GNUREGEX_NAME) ..."	\
+	&& cd $(GNUREGEX_EXTRACT_DIR)				\
+	&& rm -rf $(GNUREGEX_build_dir)				\
+	&& $(zcat_cmd) $< | tar xf -				\
+	&& $(make_cmd) -f $(GNUREGEX_build_dir)/Setup.Makefile	\
+		setup						\
+		TOOL_DIR=$(TOOL_DIR)				\
+		INSTALL_BASE_DIR=$(TOOL_DIR)			\
+		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+	&& $(make_cmd) -C $(STLUTILS_build_dir) check		\
+	&& $(make_cmd) -C $(GNUREGEX_build_dir) install_all	\
+		check_install=false				\
+	&& $(make_cmd) -C $(GNUREGEX_build_dir)/docs html	\
+	&& [ -f $@ ]						\
+	&& touch $@						\
+	&& echo " Done -" `date`
+
+
+
+#
+# Revision Log:
+#
+# %PL%
+#
+
+# Set XEmacs mode
+#
+# Local Variables:
+# mode:makefile
+# End:

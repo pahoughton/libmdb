@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE XCatalog PUBLIC "-//DTD XCatalog//EN" "XCatalog.dtd" >
+<XCatalog>
+
+  <Delegate PublicID="-//DocTools//"
+	    HRef="file://%TOOL_DIR%/share/dtd/DocTools/XCatalog.xml"/>
+
+  <Delegate PublicID="-//W3C//"
+	    HRef="file://%TOOL_DIR%/share/dtd/w3c/XCatalog.xml" />
+</XCatalog>
+
+<!-- Revision Log:
+
+  %PL%
+
+-->
+
+<!-- Xemacs Local Variables -->
+
+<!-- Local Variables: -->
+<!-- mode:xml -->
+<!-- End: -->

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE prjdoc
+	PUBLIC "-//DocTools//DTD General Project Doc//EN" 
+	       "dtd/DocTools/prjdoc.dtd" [
+
+ <!ENTITY TOP.DIR "..">
+ <!ENTITY % projectEntity
+	PUBLIC "-//Project//ENTITY Project Variables//EN"
+	       "../dtd/project.ent">
+ %projectEntity;
+]>
+<?xml-stylesheet
+    href="xsl/DocTools/html/prjdoc.xsl"
+    type="text/xsl" ?>
+
+<prjdoc>
+  <dochead>
+    <title>
+       &PRJ.NAME; Project Support Installation Documentation
+    </title>
+    <subtitle>
+       
+    </subtitle>
+    <docdesc>
+      Describes how to install a specific version of &PRJ.NAME; as a
+      support tool for your project. It gives instructions for setting
+      up your environement and has a link to a Makefile that can be
+      used to setup and install the neccessary files.
+    </docdesc>
+    <keywords>
+       
+    </keywords>
+    <authorgrp>
+      <author fullname="Paul Houghton"
+	      email="paul.houghton@wcom.com"/>
+    </authorgrp>
+    <projectname>
+      &PRJ.NAME;
+    </projectname>
+    <docversion
+        created="06/21/01 14:13"
+        verprj="%PP%"
+        veritem="%PI% (%PF%)"
+	verlastmodby="%PO%"
+        verlastmod="%PRT%"
+        verversion="%PIV%"
+	verstatus="%PS%"
+        verversionid="%PID%"/>
+    <contact>&PRJ.XML.CONTACT;</contact>
+  </dochead>
+
+  <body>
+     <p>
+      Note: these instructions assume you are using ksh for your shell
+      You should also check <doc>Prerequisites</doc> before you get started.
+    </p>
+    <sect>
+      <heading id="DirEnv">
+	Directory Structure and Environment Variables
+      </heading>
+      <sectbody>
+	<p>
+	  The setup and installation process retrieves and installs a
+	  number of components needed by &PRJ.NAME;. To accommodate
+	  the automated setup and installation, a specific
+	  subdirectory structure is required. The root of this
+	  subdirectory structure is referenced by the TOOL_DIR
+	  environment variable.
+	</p>
+	<p>
+	  You can use any existing directory for TOOL_DIR. I recommend
+	  creating a Support directory at the same level as your
+	  project's top directory. For example, lets say your project
+	  is currently in the directory /Projects/CoolStuff. The first
+	  thing you would do is create a 'Devel' directory at the same
+	  level as your current project directory, then you would move
+	  your project directory into the Devel directory. Now create
+	  a Support directory at the same level as your project
+	  directory. This new 'Support' directory will be used for all
+	  the external support tools and libraries your project needs.
+      </p>
+      <p>
+	Here are the commands you would need to execute:
+      </p>
+      <p>
+	<indent>
+	  <code>
+	    cd /Projects<br/>
+	    mkdir Devel<br/>
+	    mv CoolStuff Devel<br/>
+	    cd Devel
+	    mkdir Support
+	    export TOOL_DIR=/Projects/Devel/Support<br/>
+	    PATH=$TOOL_DIR/bin:$PATH<br/>
+	    MANPATH=$TOOL_DIR/man:$MANPATH<br/>
+	  </code>
+	</indent>
+      </p>
+      <p>
+	You should update your ~/.profile to include the settings of the
+	TOOL_DIR, PATH and MANPATH environment variables.
+      </p>
+      </sectbody>
+    </sect>
+
+    <sect>
+      <heading>
+	Creating a Project with
+	<subdir dir="&MAKE.CONFIGS;">MakeConfigs</subdir>
+	<doc doc="&MAKE.CONFIGS;/User/GenProject">GenProject</doc>
+      </heading>
+      <sectbody>
+	<p>
+	  The best way to automatically setup &PRJ.NAME; with your
+	  project is to use
+	  <doc doc="&MAKE.CONFIGS;/User/GenProject">GenProject</doc>
+	  which will create a
+	  project directory structure with Makefiles and other common
+	  project files. There is one small issue though, you have to
+	  have MakeConfigs installed before you can run GenProject to
+	  setup your project for you. If MakeConfigs is already
+	  installed on the system you will be using for development,
+	  just run GenProject according to its documentation. 
+	</p>
+	<p>
+	  If MakeConfigs is not installed, first setup your directories
+	  and environment as described above in
+	  <xref ref="DirEnv" term="DirEnv" />. Then follow the instructions in
+	  the Standalone Installation instructions of MakeConfigs
+	  starting at
+	  <doc doc="&MAKE.CONFIGS;/User/StandaloneInstall"
+	       ref="Retrieve">
+	    Retrieving MakeConfigs
+	  </doc>.
+	  Once this is complete, you can run GenProject to create you
+	  project directories and files.
+	</p>
+      </sectbody>
+    </sect>
+
+    <sect>
+      <heading>
+	Adding Setup Instructions To A
+	<subdir dir="&MAKE.CONFIGS;">MakeConfigs</subdir>
+	Support.Makefile
+      </heading>
+      <sectbody>
+	<p>
+	  If you used GenProject or have a MakeConfigs Support.Makefile
+	  under your project's 'support' directory, added the contents of this
+	  <ulink url="Support.Makefile.txt">Support.Makefile</ulink>
+	  to your Support.Makefile
+	</p>
+      </sectbody>
+    </sect>
+
+  </body>
+  
+</prjdoc>
+
+<!-- Revision Log:
+
+#
+# %PL%
+#
+
+-->
+
+<!-- Xemacs Local Variables -->
+
+<!-- Local Variables: -->
+<!-- mode:xml -->
+<!-- End: -->

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE prjdoc
+	PUBLIC "-//DocTools//DTD General Project Doc//EN" 
+	       "dtd/DocTools/prjdoc.dtd" [
+
+ <!ENTITY TOP.DIR "..">
+ <!ENTITY % projectEntity
+	PUBLIC "-//Project//ENTITY Project Variables//EN"
+	       "../dtd/project.ent">
+ %projectEntity;
+]>
+<?xml-stylesheet
+    href="xsl/DocTools/html/prjdoc.xsl"
+    type="text/xsl" ?>
+
+<prjdoc>
+  <dochead>
+    <title>
+       &PRJ.NAME; Version Control Documentation
+    </title>
+    <subtitle>
+       
+    </subtitle>
+    <docdesc>
+      Describes which version management software is used.
+    </docdesc>
+    <keywords>
+       
+    </keywords>
+    <authorgrp>
+      <author fullname="Paul Houghton"
+	      email="paul.houghton@wcom.com"/>
+    </authorgrp>
+    <projectname>
+      &PRJ.NAME;
+    </projectname>
+    <docversion
+        created="06/21/01 14:13"
+        verprj="%PP%"
+        veritem="%PI% (%PF%)"
+	verlastmodby="%PO%"
+        verlastmod="%PRT%"
+        verversion="%PIV%"
+	verstatus="%PS%"
+        verversionid="%PID%"/>
+    <contact>&PRJ.XML.CONTACT;</contact>
+  </dochead>
+
+  <body>
+    <sect>
+      <heading>Version Control Software</heading>
+      <sectbody>
+	<p>
+	  The version of &PRJ.NAME; are managed by
+	  <ulink url="&WWW.TOOLS.DIR;/Dimmensions.html">
+	    Dimensions</ulink>. The information needed to retrieve a
+	  specific version is in the
+	  <doc doc="%TOP.DIR;/ReleaseNotes">Release Notes</doc>. The
+	  primary development workset is <b>FIXME</b>.
+	</p>
+      </sectbody>
+    </sect>
+  </body>
+  
+</prjdoc>
+
+<!-- Revision Log:
+
+#
+# %PL%
+#
+
+-->
+
+<!-- Xemacs Local Variables -->
+
+<!-- Local Variables: -->
+<!-- mode:xml -->
+<!-- End: -->

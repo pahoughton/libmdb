@@ -17,6 +17,7 @@
 
 #include "RBTreeBase.hh"
 #include <Str.hh>
+#include <StlUtilsMisc.hh>
 #include <iomanip>
 
 #if defined( MDB_DEBUG )
@@ -1583,6 +1584,9 @@ RBTreeBase::setError( ErrorNum err )
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  2001/07/27 00:47:31  houghton
+// *** empty log message ***
+//
 // Revision 2.7  1999/07/17 08:39:37  houghton
 // Improved Error output.
 //

@@ -1,0 +1,76 @@
+#
+# File:         Support.Makefile
+# Project:	Mdb %PP%
+# Item:   	%PI% (%PF%)
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author:	Paul Houghton <Paul.Houghton@wcom.com>
+# Created:	07/26/01 using GenProject 6.01.01
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
+#
+#   %PID%
+#
+DOCTOOLS_SUPPORT_TYPE	= TOOL
+DOCTOOLS_NAME		= DocTools
+DOCTOOLS_VER		= 2
+DOCTOOLS_DOC_HTML	= $(WWW_TOOLS_ROOT)/DocTools
+
+DOCTOOLS_API_PKG_URI	= $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_build_dir)/docs/html/Devel/JavaApi
+DOCTOOLS_API_DOC_URI	= $(WWW_TOOLS_ROOT)/DocTools/Devel/JavaApi
+
+DOCTOOLS_DESC_CMD	= \
+	cat $(DOCTOOLS_EXTRACT_DIR)/$(DOCTOOLS_build_dir)/src/config/.prjdesc.txt
+DOCTOOLS_CLASSPATH	= \
+	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xml.Element-$(DOCTOOLS_VER).jar \
+	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xml-$(DOCTOOLS_VER).jar \
+	$(INSTALL_JAVA_DIR)/$(DOCTOOLS_NAME)/com.wcom.cisid.DocTools.Xslt-$(DOCTOOLS_VER).jar \
+
+DOCTOOLS_SUPPORT_ITMES	= GZIP MAKE_CONFIGS JAVA ORO XERCES_JAVA XALAN ECS HTML_STREAM XML_WRITER POD_TREE
+DOCTOOLS_EXTRACT_DIR	= $(tools_build_dir)
+DOCTOOLS_build_dir	= $(DOCTOOLS_NAME)-$(DOCTOOLS_VER)
+DOCTOOLS_tar		= $(DOCTOOLS_NAME)-$(DOCTOOLS_VER).tar.gz
+DOCTOOLS_target	= \
+	$(TOOL_DIR)/share/dtd/DocTools/contents.dtd
+
+
+$(DOCTOOLS_target): $(tools_archive_dir)/$(DOCTOOLS_tar)
+	$(hide) echo -n "+ Installing $(DOCTOOLS_NAME) ..."	\
+	&& cd $(DOCTOOLS_EXTRACT_DIR)				\
+	&& rm -rf $(DOCTOOLS_build_dir)				\
+	&& $(zcat_cmd) $< | tar xf -				\
+	&& $(make_cmd) -f $(DOCTOOLS_build_dir)/Setup.Makefile	\
+		setup						\
+		TOOL_DIR=$(TOOL_DIR)				\
+		INSTALL_BASE_DIR=$(TOOL_DIR)			\
+		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+	&& $(make_cmd) -C $(DOCTOOLS_build_dir) install_all	\
+		check_install=false				\
+	&& $(make_cmd) -C $(DOCTOOLS_build_dir)/docs html	\
+	&& [ -f $@ ]						\
+	&& touch $@						\
+	&& echo " Done -" `date`
+
+
+#
+# Revision Log:
+#
+#
+# %PL%
+#
+#
+
+# Set XEmacs mode
+#
+# Local Variables:
+# mode:makefile
+# End:

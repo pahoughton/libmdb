@@ -1,72 +1,59 @@
 #
-# Title:        Makefile
-# Project:	Mdb
+# File:         Setup.Makefile
+# Project:	Mdb %PP%
+# Item:   	%PI% (%PF%)
 # Desc:
-# 
-#   
-# 
+#
+#   This Makefile builds the targets in all the test subdirectories.
+#
 # Notes:
-# 
-# Author:	Paul Houghton - (paul.houghton@wcom.com)
-# Created:	10/20/98 06:55
+#
+# Author:	Paul Houghton <Paul.Houghton@wcom.com>
+# Created:	07/26/01 using GenProject 6.01.01
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
 #
-#   $Id$
-# 
+#   %PID%
+#
 
-make_cfg_ver	= 5.06
 show_commands 	= # true
+force	 	= # true
 
-# Include standard MakeConfig configuration for GNU make required
+PRJ_TOPDIR	= ..
+config_dir	= $(PRJ_TOPDIR)/src/config
+
+include $(config_dir)/00-Makefile.cfg
 include Make/make.cfg.$(make_cfg_ver)
 
-INSTALL_BIN_DIR	= $(local_bindir)
-INSTALL_INC_DIR = $(local_incdir)
-INSTALL_LIB_DIR = $(local_libdir)
-INSTALL_MAN_DIR = $(local_mandir)
+SUBDIRS		= Base/src
 
-exports	    = 					\
-	INSTALL_BIN_DIR=$(INSTALL_BIN_DIR)	\
-	INSTALL_INC_DIR=$(INSTALL_INC_DIR)	\
-	INSTALL_LIB_DIR=$(INSTALL_LIB_DIR)	\
-	INSTALL_MAN_DIR=$(INSTALL_MAN_DIR)	\
-	show_commands=$(show_commands)		\
-	check_install=$(check_install)		\
+TARGETS		= $(standard_targets) debug
 
-depend depend_all depend_test depend_default depend_debug:
-	$(hide) $(MAKE) -C Base/src $@ $(exports)
+HELP_TARGETS	= $(TARGETS)
+PHONY_TARGETS	= $(TARGETS)
 
-all default debug:
-	$(hide) $(MAKE) -C Base/src $@ $(exports)
+include Make/make.cfg.targets.common.$(make_cfg_ver)
 
-clean realclean:
-	$(hide) $(MAKE) -C Base/src $@ $(exports)
-
-test:
-	$(hide) $(MAKE) -C Base/src $@ $(exports)
-
-check:
-	$(hide) $(MAKE) -C Base/src $@ $(exports)
-
-
+$(TARGETS)::
+	$(call make_subdirs,$@,$(SUBDIRS),$($(@)_exports) $(exports))
 
 
 
 #
-# $Log$
-# Revision 1.2  1999/10/30 11:50:50  houghton
-# Added check target.
+# Revision Log:
 #
-# Revision 1.1  1998/10/23 13:20:33  houghton
-# Initial Version.
+#
+# %PL%
 #
 #
 
+# Set XEmacs mode
+#
 # Local Variables:
 # mode:makefile
 # End:

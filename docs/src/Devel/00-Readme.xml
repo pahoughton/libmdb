@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE contents
+	PUBLIC "-//DocTools//DTD Table of Contents//EN" 
+	       "dtd/DocTools/contents.dtd" [
+
+ <!ENTITY TOP.DIR "..">
+ <!ENTITY % projectEntity
+	PUBLIC "-//Project//ENTITY Project Variables//EN"
+	       "../dtd/project.ent">
+ %projectEntity;
+]>
+
+<?xml-stylesheet
+    href="xsl/DocTools/html/contents.xsl"
+    type="text/xsl" ?>
+
+<contents>
+  <dochead>
+    <title>
+       &PRJ.NAME; Developer Documentation
+    </title>
+    <subtitle>
+       
+    </subtitle>
+    <docdesc>
+      Project Developer documentation. This includes APIs and
+      information about the Support Tools used.
+    </docdesc>
+    <keywords>
+       
+    </keywords>
+    <authorgrp>
+      <author fullname="Paul Houghton"
+	      email="Paul.Houghton@wcom.com"/>
+    </authorgrp>
+    <projectname>
+      &PRJ.NAME;
+    </projectname>
+    <docversion
+        created="06/13/01 15:14"
+        verprj="%PP%"
+        veritem="%PI% (%PF%)"
+	verlastmodby="%PO%"
+        verlastmod="%PRT%"
+        verversion="%PIV%"
+	verstatus="%PS%"
+        verversionid="%PID%"/>
+    <contact>&PRJ.XML.CONTACT;</contact>
+  </dochead>
+
+  <toc>
+    <item>
+      <doc>SupportTools</doc>
+    </item>
+    <item>
+      <subdir dir="JavaApi" usedesc="no">
+	Java Packages Api Docs
+      </subdir>
+      <desc>
+	<p>
+	  Java doc API docs for packages provided by &PRJ.NAME;.
+	</p>
+      </desc>
+    </item>
+  </toc>
+
+</contents>
+
+<!-- Revision Log:
+
+#
+# %PL%
+#
+-->
+
+<!-- Xemacs Local Variables -->
+
+<!-- Local Variables: -->
+<!-- mode:xml -->
+<!-- End: -->

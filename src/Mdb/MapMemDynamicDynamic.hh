@@ -167,6 +167,7 @@ private:
 };
 
 #if !defined( inline )
+#include <StlUtilsMisc.hh>
 #include <MapMemDynamicDynamic.ii>
 #else
 #undef inline
@@ -324,6 +325,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.3  2001/07/27 00:47:31  houghton
+// *** empty log message ***
+//
 // Revision 2.2  1997/10/01 14:02:52  houghton
 // Chaged so that 'keys' have to be reserved to be set.
 // Increased the number of keys from 16 to 32.

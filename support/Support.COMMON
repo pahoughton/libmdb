@@ -1,0 +1,75 @@
+#
+# File:         Support.COMMON
+# Project:	StlUtils (%PP%)
+# Item:   	%PI% (%PF%)
+# Desc:
+#
+#   
+#
+# Notes:
+#
+# Author:	Paul Houghton - <paul.houghton@wcom.com>
+# Created:	07/26/01 06:46
+#
+# Revision History: (See end of file for Revision Log)
+#
+#   Last Mod By:    %PO%
+#   Last Mod:	    %PRT%
+#   Version:	    %PIV%
+#   Status:	    %PS%
+#
+#   %PID%
+#
+
+COMMON_SUPPORT_TYPE	= LIB
+COMMON_NAME		= Common
+COMMON_VER		= 4
+COMMON_DOC_HTML	= $(WWW_OBJECT_REP_ROOT)/GenC/Common
+
+COMMON_API_PKG_URI	= $(COMMON_EXTRACT_DIR)/$(COMMON_build_dir)/docs/html/Devel/JavaApi
+COMMON_API_DOC_URI	= $(WWW_OBJECT_REP_ROOT)/GenC/Common/Devel/JavaApi
+
+COMMON_DESC_CMD	= \
+	cat $(COMMON_EXTRACT_DIR)/$(COMMON_build_dir)/src/config/.prjdesc.txt
+COMMON_CLASSPATH	= \
+
+COMMON_INC_DIRS	= $(INSTALL_INC_DIR)
+COMMON_LIB_DIRS	= $(INSTALL_LIB_DIR)
+COMMON_LIBS		= Common
+COMMON_SUPPORT_ITMES	= GZIP MAKE_CONFIGS DOCTOOLS 
+COMMON_EXTRACT_DIR	= $(libs_build_dir)
+COMMON_build_dir	= $(COMMON_NAME)-$(COMMON_VER)
+COMMON_tar		= $(COMMON_NAME)-$(COMMON_VER).tar.gz
+COMMON_target	= \
+	$(INSTALL_INC_DIR)/Common.h
+
+
+$(COMMON_target): $(tools_archive_dir)/$(COMMON_tar)
+	$(hide) echo -n "+ Installing $(COMMON_NAME) ..."	\
+	&& cd $(COMMON_EXTRACT_DIR)				\
+	&& rm -rf $(COMMON_build_dir)				\
+	&& $(zcat_cmd) $< | tar xf -				\
+	&& $(make_cmd) -f $(COMMON_build_dir)/Setup.Makefile	\
+		setup						\
+		TOOL_DIR=$(TOOL_DIR)				\
+		INSTALL_BASE_DIR=$(TOOL_DIR)			\
+		INSTALL_DOC_HTML_DIR=$(INSTALL_DOC_HTML_DIR)	\
+	&& $(make_cmd) -C $(STLUTILS_build_dir) check		\
+	&& $(make_cmd) -C $(COMMON_build_dir) install_all	\
+		check_install=false				\
+	&& $(make_cmd) -C $(COMMON_build_dir)/docs html	\
+	&& [ -f $@ ]						\
+	&& touch $@						\
+	&& echo " Done -" `date`
+
+#
+# Revision Log:
+#
+# %PL%
+#
+
+# Set XEmacs mode
+#
+# Local Variables:
+# mode:makefile
+# End:

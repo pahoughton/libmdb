@@ -35,8 +35,8 @@ public:
   typedef RBTree< Key, Value, KeyOfValue, LessKey >	self;
   
   typedef ptrdiff_t	    difference_type;
-  typedef const Value &	    const_referance;
-  typedef Value &	    referance;
+  typedef const Value &	    const_reference;
+  typedef Value &	    reference;
   
   struct RBNode : public RBNodeBase
   {
@@ -201,6 +201,7 @@ public:
     const RBTree< Key, Value, KeyOfValue, LessKey > *	table;
     RBTreeBase::Loc					node;
   };
+
   
 #if defined( STDCXX_PARTIAL_SPECIALIZATION )
   typedef ::reverse_iterator< iterator >	reverse_iterator;
@@ -520,6 +521,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  2001/07/27 00:47:31  houghton
+// *** empty log message ***
+//
 // Revision 2.10  2000/05/27 14:02:49  houghton
 // Port: Sun CC 5.0.
 //
