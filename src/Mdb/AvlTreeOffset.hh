@@ -14,6 +14,9 @@
 //
 // 
 // $Log$
+// Revision 2.5  1997/03/13 02:22:14  houghton
+// Added dumpInfo method.
+//
 // Revision 2.4  1997/03/07 11:47:05  houghton
 // Chagned getCount() to counst.
 //
@@ -90,6 +93,10 @@ public:
   virtual const char * 	getClassName( void ) const { return "AvlTreeOffset"; };
   virtual bool	    	good( void ) const;
   virtual const char * 	error( void ) const;
+
+  virtual ostream &	dumpInfo( ostream &	dest = cerr,
+				  const char *	prefix = "    ",
+				  bool		showVer = false ) const;
   
 protected:
 
@@ -572,6 +579,41 @@ AvlTreeOffset<T>::error( void ) const
   return( errStr.cstr() );
 }
 
+template< class T >
+inline
+ostream &
+AvlTreeOffset<T>::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( ! AvlTreeOffset<T>::good() )
+    dest << prefix << "Error: " << AvlTreeOffset<T>::error() << '\n';
+  else
+    dest << prefix << "Good\n";
+
+  Str pre;
+
+  if( mem )
+    {
+      pre = prefix;
+      pre << "mem:" ;
+      mem->dumpInfo( dest, pre, false );
+    }
+  else
+    {
+      dest << "No mem manager!\n";
+    }
+
+  dest << prefix << "tree:        " << tree << '\n'
+       << prefix << "node size:   " << getNodeSize() << '\n'
+       << prefix << "node count:  " << getCount() << '\n'
+    ;
+  
+  
+  return( dest );
+}  
 //
 // Protected
 //
