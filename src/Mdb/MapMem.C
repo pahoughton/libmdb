@@ -270,8 +270,11 @@ MapMem::openMapMem(
       return;
     }
 
+  MapAddr   mapToAddr = (MapAddr)info->base;
+  
   unmap();
-  map( fileName, (caddr_t)info->base, mode );
+
+  map( fileName, mapToAddr, mode );
       
   mapError = E_OK;
 
@@ -280,6 +283,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 2.6  1997/06/09 11:57:50  houghton
+// Bug-Fix: have to grab the base before I unmap.
+//
 // Revision 2.5  1997/06/05 11:23:36  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
