@@ -184,9 +184,8 @@ public:
 	      {
 		last = loc;
 	      }
-	    
-	    return( pair_iterator_bool( iterator( this, loc ), true ) );
 	  }
+	return( pair_iterator_bool( iterator( this, loc ), true ) );
       }
     else
       {
@@ -399,6 +398,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1998/10/27 15:33:19  houghton
+// Bug-Fix: if inserting to 'end' there was no 'return' statement.
+//
 // Revision 2.1  1998/10/23 13:20:17  houghton
 // Initial Version.
 //
