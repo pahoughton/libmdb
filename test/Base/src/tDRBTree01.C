@@ -28,6 +28,7 @@
 
 typedef DRBTree< long, long, MdbIdent< long, long >, less< long > >   Tree;
 
+bool
 tDRBTree01( LibTest & tester )
 {
   {
@@ -38,6 +39,8 @@ tDRBTree01( LibTest & tester )
 				  1,
 				  02 );
 
+    TESTR( mmdd.error(), mmdd.good() );
+    
     MultiMemOffsetMapDynamic	mmo( &mmdd, false );
 
     TESTR( mmo.error(), mmo.good() );
@@ -88,13 +91,15 @@ tDRBTree01( LibTest & tester )
     }
        
   }
-
   return( true );
 }
 
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:37:34  houghton
+// Bug-Fix: forgot to declare return type.
+//
 // Revision 2.1  1997/07/16 16:38:54  houghton
 // Initial Version (work in progress).
 //

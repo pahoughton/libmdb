@@ -42,6 +42,7 @@ operator < ( const Rec & one, const Rec & two )
 
 typedef DRBTree< Rec, Rec, MdbIdent< Rec, Rec >, less< Rec > >   Tree;
 
+bool
 tDRBTree02( LibTest & tester )
 {
   {
@@ -133,6 +134,9 @@ tDRBTree02( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/19 10:37:48  houghton
+// Bug-Fix: forgot to declare return type.
+//
 // Revision 2.1  1997/07/16 16:38:55  houghton
 // Initial Version (work in progress).
 //
