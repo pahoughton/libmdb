@@ -74,9 +74,16 @@ public:
 
   
   inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode = ios::in,
-		   bool		    create = false,
-		   MapFile::MapMask permMask = 02 );
+		   ios::open_mode   mode = ios::in );
+		   
+  inline MapBatch( const char *	    fileName,
+		   ios::open_mode   mode
+		   MapFile::MapMask permMask );
+  
+  inline MapBatch( const char *	    fileName,
+		   ios::open_mode   mode 
+		   bool		    create 
+		   MapFile::MapMask permMask );
   
   virtual ~MapBatch( void );
 
@@ -145,6 +152,17 @@ public:
     return( true );
   };
   
+  inline bool		append( const_reference rec ) {
+    if( endPos + sizeof( value_type ) >= map.getSize() ) {
+      if( ! map.grow( sizeof( value_type ), 0 ) )
+	return( false );
+    }
+    iterator tmp( end() );
+    *tmp = rec;
+    endPos += sizeof( value_type );
+    return( true );
+  };
+    
   inline iterator	append( void ) {
     if( endPos + sizeof( value_type ) >= map.getSize() ) {
       if( ! map.grow( sizeof( value_type ), 0 ) )
@@ -155,7 +173,23 @@ public:
     return( tmp );
   };
 
+  inline bool		write( iterator it ) {
+    // dummy function
+    return( true );
+  };
 
+  inline bool		pop( void ) {
+    if( endPos >= sizeof( value_type ) )
+      {
+	endPos -= sizeof( value_type );
+	return( true );
+      }
+    else
+      {
+	return( false );
+      }
+  };
+    
   inline const_reference    operator [] ( size_type rec ) const {
     return( *(begin() + rec) );
   };
@@ -260,6 +294,12 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1999/03/02 12:57:19  houghton
+// Changed constructors.
+// Added append().
+// Added write().
+// Added pop().
+//
 // Revision 2.7  1997/12/19 12:41:05  houghton
 // Added operator [].
 //
