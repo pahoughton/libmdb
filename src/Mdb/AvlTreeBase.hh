@@ -2,6 +2,7 @@
 #define _AvlTreeBase_hh_
 //
 // File:        AvlTreeBase.hh
+// Project:	Mdb
 // Desc:        
 //
 //  NO PUBLIC INTERFACE
@@ -9,43 +10,19 @@
 //  Base class for Avl Trees. Provides proteced construtor to
 //  prevent direct instantiation. 
 //
-//  DataTypes:
-//
-//  	NodeType - enum type of node 
-//  	Balance  - enum balance of node's sub trees
-//  	SubTree  - node subtrees
-//
-// Notes:
-//
-//  For more information on the Avl Balanced Tree Algorithims, see:
-//    G.M. Adelson-Velskii and E.M. Landis. Doklady Akademia Nauk SSSR, 146,
-//    (1962), 263-66; English translation in Soviet Math, 3, 1259-63
-//
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+// Author:      Paul Houghton - (paul.houghton@wcom.com)
 //  	    	The source in this class is based on an Avl libraray
 //  	    	(avl.c) written by: Brad Appleton on 03/01/89
 //
 // Created:     12/14/94 06:30 
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// 
-// $Log$
-// Revision 2.3  1997/06/25 12:49:10  houghton
-// Added typedef Addr, Loc & size_type.
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
 //
-// Revision 2.2  1997/06/19 11:59:52  houghton
-// Changed include ClueConfig to include MdbConfig.
-//
-// Revision 2.1  1995/11/10 12:42:00  houghton
-// Change to Version 2
-//
-// Revision 1.3  1995/11/05  16:32:24  houghton
-// Revised
-//
-// Revision 1.1  1995/02/13  16:08:31  houghton
-// New Style Avl an memory management. Many New Classes
-//
+//  $Id$
 //
 
 #include <MdbConfig.hh>
@@ -55,9 +32,9 @@ class AvlTreeBase
 
 public:
 
-  typedef caddr_t   Addr;
-  typedef off_t	    Loc;
-  typedef size_t    size_type;
+  typedef MDB_TYPE_ADDR	    Addr;
+  typedef MDB_TYPE_LOC	    Loc;
+  typedef MDB_TYPE_SIZE	    size_type;
   
   enum NodeType
   {
@@ -87,11 +64,55 @@ protected:
   
 private:
   
-  
 };
 
 
-#endif // ! def _AvlTreeBase_hh_ 
+//
+// Notes:
+//
+//  For more information on the Avl Balanced Tree Algorithims, see:
+//    G.M. Adelson-Velskii and E.M. Landis. Doklady Akademia Nauk SSSR, 146,
+//    (1962), 263-66; English translation in Soviet Math, 3, 1259-63
+//
+// Detail Documentation
+//
+//  Data Types: 
+//
+//  	AvlTreeBase	class
+//
+//	Addr	    an address.
+//	Loc	    the type used to refer to an offset.
+//	size_type   the type used for sizes.
+//	
+//  	NodeType    enum type of node 
+//  	Balance     enum balance of node's sub trees
+//  	SubTree	    node subtrees
+//
+//  Constructors:
+//
+//  	AvlTreeBase( void );
+//
+//  Destructors:
+//
+//  Public Interface: NONE
+//
+//  Protected Interface:
+//
+//  Private Methods:
+//
+//  Associated Functions:
+//
+// Example:
+//
+// See Also:
+//
+// Files:
+//
+// Documented Ver:
+//
+// Tested Ver:
+//
+// Copyright:
 //
 //              This software is the sole property of
 // 
@@ -103,3 +124,26 @@ private:
 //                      All Rights Reserved.  
 // 
 //
+// Revision Log:
+//
+// $Log$
+// Revision 2.4  1997/07/13 10:56:35  houghton
+// Cleanup.
+//
+// Revision 2.3  1997/06/25 12:49:10  houghton
+// Added typedef Addr, Loc & size_type.
+//
+// Revision 2.2  1997/06/19 11:59:52  houghton
+// Changed include ClueConfig to include MdbConfig.
+//
+// Revision 2.1  1995/11/10 12:42:00  houghton
+// Change to Version 2
+//
+// Revision 1.3  1995/11/05  16:32:24  houghton
+// Revised
+//
+// Revision 1.1  1995/02/13  16:08:31  houghton
+// New Style Avl an memory management. Many New Classes
+//
+//
+#endif // ! def _AvlTreeBase_hh_ 
