@@ -41,7 +41,7 @@
 //    G.M. Adelson-Velskii and E.M. Landis. Doklady Akademia Nauk SSSR, 146,
 //    (1962), 263-66; English translation in Soviet Math, 3, 1259-63
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 //  	    	This source is based on an Avl libraray
 //  	    	(avl.c) written by: Brad Appleton on 03/01/89
 //
@@ -808,6 +808,9 @@ ClassName::balance(
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.2  2003/07/19 09:11:13  houghton
 // Port to 64 bit.
 //

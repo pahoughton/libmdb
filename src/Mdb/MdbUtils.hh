@@ -9,7 +9,7 @@
 //
 // Quick Start: - short example of class usage
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     07/02/97 06:27
 //
 // Revision History: (See end of file for Revision Log)
@@ -114,6 +114,9 @@ struct MdbIdent {
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

@@ -18,7 +18,7 @@
 //
 //  All of the functionallity is obtain from the RBTree<> template class.
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     07/10/97 05:47
 //
 // Revision History: (See end of file for Revision Log)
@@ -348,6 +348,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.2  2002/02/28 15:12:59  houghton
 // Port(Forte 6.2) Added typename to eliminate warnings.
 //

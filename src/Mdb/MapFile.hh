@@ -21,7 +21,7 @@
 //
 //  This class was originally part of libStlUtils1
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     11/11/94 06:46
 //
 // Revision History: (See end of file for Revision Log)
@@ -420,6 +420,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.3  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.2  2003/07/19 09:11:13  houghton
 // Port to 64 bit.
 //

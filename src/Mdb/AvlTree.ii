@@ -2,8 +2,7 @@
 #define _AvlTree_ii_
 //
 // File:        AvlTree.ii
-// Project:	Mdb (%PP%)
-// Item:	%PI% (%PF%)
+// Project:	Mdb ()
 // Desc:        
 //
 //  Inline source for AvlTree. See AvlTree.hh for class
@@ -11,17 +10,18 @@
 //
 // Notes:
 //
-// Author(s):   Paul Houghton - (paul.houghton@wcom.com)
+// Author(s):   Paul Houghton - (paul.houghton@mci.com)
 // Created:     07/30/01 04:57
 //
 // Revision History: (See end of file for Revision Log)
 //
-//  Last Mod By:    %PO%
-//  Last Mod:	    %PRT%
-//  Version:	    %PIV%
-//  Status:	    %PS%
+//  $Author$ 
+//  $Date$ 
+//  $Name$ 
+//  $Revision$ 
+//  $State$ 
 //
-//  %PID%
+//  $Id$ 
 //
 
 

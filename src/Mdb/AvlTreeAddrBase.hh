@@ -2,8 +2,7 @@
 #define _AvlTreeAddrBase_hh_
 /**
   File:         AvlTreeAddrBase.hh
-  Project:	Mdb (%PP%)
-  Item: 	%PI% (%PF%)
+  Project:	Mdb ()
   Desc:
   
     NO PUBLIC INTERFACE
@@ -28,17 +27,18 @@
     The source in this class is based on an Avl libraray
     (avl.c) written by: Brad Appleton on 03/01/89
 		
-  Author:      Paul Houghton - (paul.houghton@wcom.com)
+  Author:      Paul Houghton - (paul.houghton@mci.com)
   Created:     12/14/94 07:11
 
   Revision History: (See end of file for Revision Log)
   
-    Last Mod By:    %PO%
-    Last Mod:	    %PRT%
-    Version:	    %PIV%
-    Status:	    %PS%
+    $Author$ 
+    $Date$ 
+    $Name$ 
+    $Revision$ 
+    $State$ 
   
-  %PID%
+  $Id$ 
   
 **/
 
@@ -276,6 +276,9 @@ private:
 //
 // 
 // $Log$
+// Revision 4.3  2003/08/09 12:43:22  houghton
+// Changed ver strings.
+//
 // Revision 4.2  2001/07/30 11:15:02  houghton
 // *** empty log message ***
 //

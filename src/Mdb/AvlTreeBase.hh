@@ -10,7 +10,7 @@
 //  Base class for Avl Trees. Provides proteced construtor to
 //  prevent direct instantiation. 
 //
-// Author:      Paul Houghton - (paul.houghton@wcom.com)
+// Author:      Paul Houghton - (paul.houghton@mci.com)
 //  	    	The source in this class is based on an Avl libraray
 //  	    	(avl.c) written by: Brad Appleton on 03/01/89
 //
@@ -127,6 +127,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:42  houghton
 // Change Major Version to 4
 //

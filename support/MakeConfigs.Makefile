@@ -1,7 +1,6 @@
 #
 # File:         MakeConfigs.Makefile
-# Project:	Mdb %PP%
-# Item:   	%PI% (%PF%)
+# Project:	Mdb 
 # Desc:
 # 
 #   This Makefile is used to install the correct version of
@@ -17,17 +16,18 @@
 #   MakeConfigs setup target installs GNU make to be used by other
 #   Makefiles.
 # 
-# Author:	Paul Houghton <paul.houghton@wcom.com>
+# Author:	Paul Houghton <paul.houghton@mci.com>
 # Created:	03/05/01 04:44
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    %PO%
-#   Last Mod:	    %PRT%
-#   Version:	    %PIV%
-#   Status:	    %PS%
+#   $Author$ 
+#   $Date$ 
+#   $Name$ 
+#   $Revision$ 
+#   $State$ 
 #
-#   %PID%
+#   $Id$ 
 #
 
 SHELL	= /bin/ksh

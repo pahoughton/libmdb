@@ -5,7 +5,7 @@
 //
 //  Compiled sources for MultiMemOffsetMapFixed
 //  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     01/28/95 08:41 
 //
 // Revision History: (See end of file for Revision Log)
@@ -121,6 +121,9 @@ MultiMemOffsetMapFixed::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:44  houghton
 // Change Major Version to 4
 //

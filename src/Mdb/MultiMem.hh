@@ -2,25 +2,25 @@
 #define _MultiMem_hh_
 /**
   File:         MultiMem.hh
-  Project:	Mdb (%PP%)
-  Item: 	%PI% (%PF%)
+  Project:	Mdb ()
   Desc:        
   
     
   
   Notes:
   
-  Author:      Paul Houghton - (paul.houghton@wcom.com)
+  Author:      Paul Houghton - (paul.houghton@mci.com)
   Created:     05/13/95 16:01
   
   Revision History: (See end of file for Revision Log)
   
-    Last Mod By:    %PO%
-    Last Mod:	    %PRT%
-    Version:	    %PIV%
-    Status:	    %PS%
+    $Author$ 
+    $Date$ 
+    $Name$ 
+    $Revision$ 
+    $State$ 
   
-  %PID%
+  $Id$ 
 **/
 
 
@@ -59,6 +59,9 @@ extern MultiMem MultiMemMalloc;
 //
 // 
 // $Log$
+// Revision 4.3  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.2  2001/07/30 12:03:29  houghton
 // *** empty log message ***
 //

@@ -1,7 +1,6 @@
 #
 # File:         Setup.Makefile
-# Project:	Mdb %PP%
-# Item:   	%PI% (%PF%)
+# Project:	Mdb 
 # Desc:
 #
 #   This is the top level Setup.Makefile used to install/verify all
@@ -10,17 +9,18 @@
 #
 # Notes:
 #
-# Author:	Paul Houghton <Paul.Houghton@wcom.com>
+# Author:	Paul Houghton <Paul.Houghton@mci.com>
 # Created:	07/26/01 using GenProject 6.01.01
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    %PO%
-#   Last Mod:	    %PRT%
-#   Version:	    %PIV%
-#   Status:	    %PS%
+#   $Author$ 
+#   $Date$ 
+#   $Name$ 
+#   $Revision$ 
+#   $State$ 
 #
-#   %PID%
+#   $Id$ 
 #
 
 SHELL	= /bin/ksh
@@ -42,7 +42,7 @@ PROJECT_VER_PROD	= $(PROJECT_VER_MAJOR).$(PROJECT_VER_MINOR)
 PROJECT_VER_PREV	= 0.00.00
 
 PROJECT_CONTACT_NAME	= Paul Houghton
-PROJECT_CONTACT_EMAIL	= Paul.Houghton@wcom.com
+PROJECT_CONTACT_EMAIL	= Paul.Houghton@mci.com
 
 PROJECT_DESC	=							\
     The Mdb library is a collection of classes that provide high	\
@@ -66,7 +66,7 @@ RUN_BASE_DIR		= $(TOOL_DIR)
 INSTALL_BASE_DIR	= $(TOOL_DIR)
 
 make_cfg_ver		= 6.01
-tools_host		= sideswipe.wcom.com
+tools_host		= sideswipe.mci.com
 tools_host_dir		= pub/tools
 
 CONFIG_VARS	=		\

@@ -5,7 +5,7 @@
 //
 //  Compiled sources for DavlTreeOffsetBase
 //  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     01/13/95 07:14 
 //
 // Revision History: (See end of file for Revision Log)
@@ -532,6 +532,9 @@ DavlTreeOffsetBase::destroyNode( Loc root, void * closure )
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

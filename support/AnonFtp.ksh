@@ -1,8 +1,7 @@
 #!/usr/bin/ksh
 #
 # Title:        AnonFtp.ksh
-# Project:	Mdb %PP%
-# Item:   	%PI% (%PF%)
+# Project:	Mdb 
 # Desc:
 # 
 #   This is a simple shell script to fetch the tools needed
@@ -13,17 +12,18 @@
 # 
 # Notes:
 # 
-# Author:	Paul Houghton - (paul.houghton@wcom.com)
+# Author:	Paul Houghton - (paul.houghton@mci.com)
 # Created:	10/28/99 15:29
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    %PO%
-#   Last Mod:	    %PRT%
-#   Version:	    %PIV%
-#   Status:	    %PS%
+#   $Author$ 
+#   $Date$ 
+#   $Name$ 
+#   $Revision$ 
+#   $State$ 
 #
-#   %PID%
+#   $Id$ 
 # 
 
 # set -x
@@ -64,7 +64,7 @@ fi
 
 cat << EOF > $cmdfile
 open $host
-user anonymous $ftp_user@wcom.com
+user anonymous $ftp_user@mci.com
 binary
 cd $remote_dir
 get $remote_fn
@@ -100,6 +100,9 @@ exit $exit_code
 #
 # 
 # $Log$
+# Revision 4.2  2003/08/09 12:43:25  houghton
+# Changed ver strings.
+#
 # Revision 4.1  2001/07/27 00:57:44  houghton
 # Change Major Version to 4
 #

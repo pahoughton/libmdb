@@ -9,7 +9,7 @@
 //
 // Quick Start: - short example of class usage
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     05/19/97 04:43
 //
 // Revision History: (See end of file for Revision Log)
@@ -235,6 +235,9 @@ operator >> ( istream & src, const HashTableBase & dest );
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

@@ -14,8 +14,8 @@
 //  char ...) as `T'. Classes may contain function pointers which
 //  would be no be valid in a file.
 //
-// Author:      Charles B. Reeves - (charles.reeves@wcom.com)
-//		Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Charles B. Reeves - (charles.reeves@mci.com)
+//		Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     07/28/97 19:25
 //
 // Revision History: (See end of file for Revision Log)
@@ -303,6 +303,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.4  2003/08/09 12:43:23  houghton
+// Changed ver strings.
+//
 // Revision 4.3  2001/08/08 14:10:00  houghton
 // *** empty log message ***
 //

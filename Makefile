@@ -1,7 +1,6 @@
 #
 # Title:        Makefile
-# Project:	Mdb %PP%
-# Item:   	%PI% (%PF%)
+# Project:	Mdb 
 # Desc:
 # 
 #   This is the Top Level Makefile for Mdb. Before you build
@@ -11,17 +10,18 @@
 # 
 # Notes:
 # 
-# Author:	Paul Houghton <Paul.Houghton@wcom.com>
+# Author:	Paul Houghton <Paul.Houghton@mci.com>
 # Created:	07/26/01 using GenProject 6.01.01
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    %PO%
-#   Last Mod:	    %PRT%
-#   Version:	    %PIV%
-#   Status:	    %PS%
+#   $Author$ 
+#   $Date$ 
+#   $Name$ 
+#   $Revision$ 
+#   $State$ 
 #
-#   %PID%
+#   $Id$ 
 # 
 
 #

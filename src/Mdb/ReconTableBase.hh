@@ -9,7 +9,7 @@
 //
 // Quick Start: - short example of class usage
 //
-// Author:      Paul Houghton 719-527-7834 - (paul.houghton@wcom.com)
+// Author:      Paul Houghton 719-527-7834 - (paul.houghton@mci.com)
 // Created:     07/31/00 05:44
 //
 // Revision History: (See end of file for Revision Log)
@@ -207,6 +207,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:44  houghton
 // Change Major Version to 4
 //

@@ -1,8 +1,7 @@
 #!/usr/bin/ksh
 #
 # File:         mkdirhier.sh
-# Project:	Mdb %PP%
-# Item:   	%PI% (%PF%)
+# Project:	Mdb 
 # Desc:
 #
 #   Create directory and all missing parent directories.
@@ -12,17 +11,18 @@
 #   $XConsortium: mkdirhier.sh,v 1.7 94/03/24 15:46:34 gildea Exp $
 #   Courtesy of Paul Eggert
 #   
-# Author:	Paul Houghton - <paul.houghton@wcom.com>
+# Author:	Paul Houghton - <paul.houghton@mci.com>
 # Created:	06/11/00 17:05
 #
 # Revision History: (See end of file for Revision Log)
 #
-#   Last Mod By:    %PO%
-#   Last Mod:	    %PRT%
-#   Version:	    %PIV%
-#   Status:	    %PS%
+#   $Author$ 
+#   $Date$ 
+#   $Name$ 
+#   $Revision$ 
+#   $State$ 
 #
-#   %PID%
+#   $Id$ 
 #
 
 

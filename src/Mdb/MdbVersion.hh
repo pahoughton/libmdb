@@ -9,7 +9,7 @@
 //
 // Quick Start: - short example of class usage
 //
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     05/08/97 06:26
 //
 // Revision History: (See end of file for Revision Log)
@@ -129,6 +129,9 @@ const char VERID_##name_[] =						      \
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

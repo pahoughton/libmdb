@@ -5,7 +5,7 @@
 //
 //  Compiled sources for MapMemDynamic
 //  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
+// Author:      Paul A. Houghton - (paul.houghton@mci.com)
 // Created:     05/20/97 06:14
 //
 // Revision History: (See end of file for Revision Log)
@@ -183,6 +183,9 @@ MapMemDynamic::openMapMemDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/08/09 12:43:24  houghton
+// Changed ver strings.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //
