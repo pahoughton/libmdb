@@ -307,7 +307,7 @@ MapFile::sync(
     }
 }
 
-#if defined( Sun5 )
+#if defined( Sun5 ) && defined( STUPID )
 static char sunWriteData[ 8192 * 8 ];
 #endif
 
@@ -339,7 +339,7 @@ MapFile::setSize(
   if( size >= mapSize )
     {
 
-#if defined( Sun5 )
+#if defined( Sun5 ) && defined( STUPID )
 
       // THIS IS SLOW AND STUPID, BUT ...
       //
@@ -548,6 +548,9 @@ MapFile::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 2.20  2000/07/31 13:06:05  houghton
+// Change Sun5 don't prewrite map files (os bug fixed).
+//
 // Revision 2.19  1999/03/02 12:58:00  houghton
 // Added totalMapped static variable.
 //
