@@ -59,7 +59,7 @@ public:
   typedef MDB_U64_T	u64;
 #endif
   
-  typedef MDB_U32_T	    size_type;
+  typedef size_t	    size_type;
   
   typedef MDB_TYPE_ADDR	    MapAddr;
   typedef unsigned short    MapMask;	// map permision mask (i.e. umask)
@@ -159,7 +159,7 @@ private:
 
   long		    refCount;
   
-  size_type    	    pageSize;
+  int    	    pageSize;
 
   int	    	    osErrno;
 
@@ -420,6 +420,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

@@ -112,7 +112,7 @@ MapMem::~MapMem( void )
     mapInfo()->owner = 0;
 }
 
-unsigned long
+MapMem::MapVersion
 MapMem::getMapVersion( void ) const
 {
   return( (mapInfo()) ? mapInfo()->version : 0 );
@@ -124,7 +124,7 @@ MapMem::getType( void  ) const
   return( (mapInfo()) ? (MapType)mapInfo()->type : MM_UNDEFINED );
 }
 
-long
+MapMem::MapOwner
 MapMem::getOwner( void ) const
 {
   return( mapInfo() ? mapInfo()->owner : -1 );
@@ -314,6 +314,9 @@ MapMem::openMapMem(
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

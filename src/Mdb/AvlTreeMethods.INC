@@ -550,7 +550,7 @@ ClassName::dumpNode(
   dest << setw( (level * 5) + 1 ) << root << ' '
        << level;
 
-  long destFmtFlags = dest.setf(ios::showpos);
+  int destFmtFlags = dest.setf(ios::showpos);
 
   dest << ':' << NODE( root )->bal << ' ';
 
@@ -808,6 +808,9 @@ ClassName::balance(
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:42  houghton
 // Change Major Version to 4
 //

@@ -67,7 +67,7 @@ MultiMemOffsetMapDynamic::getBase( void ) const
   return( mem->getBase() );
 }
 
-long
+MultiMemOffsetMapDynamic::KeyValue
 MultiMemOffsetMapDynamic::getKey( unsigned short key ) const
 {
   return( mem->getKey( key ) );
@@ -82,7 +82,7 @@ MultiMemOffsetMapDynamic::reserveKey( unsigned short  key )
 bool
 MultiMemOffsetMapDynamic::setNewKey( 
   unsigned short    key,
-  long		    value
+  KeyValue	    value
   )
 {
   return( mem->setNewKey( key, value ) );
@@ -91,7 +91,7 @@ MultiMemOffsetMapDynamic::setNewKey(
 bool
 MultiMemOffsetMapDynamic::setKey(
   unsigned short    key,
-  long		    value
+  KeyValue	    value
   )
 {
   return( mem->setKey( key, value ) );
@@ -208,6 +208,9 @@ MultiMemOffsetMapDynamic::dumpInfo(
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:44  houghton
 // Change Major Version to 4
 //

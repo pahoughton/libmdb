@@ -39,8 +39,8 @@ class MapMem : public MapFile
 
 public:
 
+  typedef MapAddr	    MapBaseAddr;
   typedef MDB_U32_T	    MapVersion;
-  typedef MDB_U32_T	    MapBaseAddr;
   typedef MDB_S32_T	    MapOwner;
 
   typedef MapFile::s16	    s16;
@@ -247,6 +247,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

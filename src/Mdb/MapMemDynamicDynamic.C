@@ -72,7 +72,7 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 		   mode,
 		   create,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     DwordAlign( max( allocSize,
+		     QwordAlign( max( allocSize,
 				      MapFile::getPageSize())) ),
 		   permMask )
 {
@@ -91,7 +91,7 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   : MapMemDynamic( fileName,
 		   MDD_VERSION,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     DwordAlign( max( allocSize,
+		     QwordAlign( max( allocSize,
 				      MapFile::getPageSize())) ),
 		   permMask )
 {
@@ -192,7 +192,7 @@ MapMemDynamicDynamic::allocate( size_type size )
   if( ! good() )
     return( 0 );
 
-  size_type    chunkSize = max( DwordAlign( size + sizeof( Node ) ),
+  size_type    chunkSize = max( QwordAlign( size + sizeof( Node ) ),
 				mapInfo()->minChunkSize );
 
   ++ mapInfo()->allocCount;
@@ -815,19 +815,19 @@ MapMemDynamicDynamic::createMapMemDynamicDynamic(
   if( mapInfo() != 0 && MapMemDynamic::good() )
     {
       mapInfo()->minChunkSize	=
-	DwordAlign( max( (size_type) (minChunkSize + sizeof( Node ) ),
+	QwordAlign( max( (size_type) (minChunkSize + sizeof( Node ) ),
 			 (size_type) sizeof( FreeNode) ) );
       
-      mapInfo()->allocSize	= DwordAlign( max( allocSize,
+      mapInfo()->allocSize	= QwordAlign( max( allocSize,
 						   MapFile::getPageSize()) );
       mapInfo()->chunkSize	= 0;
       mapInfo()->freeSize	= ( getMapSize() -
-				    DwordAlign(
+				    QwordAlign(
 				      sizeof( MapDynamicDynamicInfo ) ));
 
       mapInfo()->freeCount  = 1;
       
-      freeList().next	    = DwordAlign( sizeof( MapDynamicDynamicInfo ) );
+      freeList().next	    = QwordAlign( sizeof( MapDynamicDynamicInfo ) );
       freeList().prev	    = freeList().next;
       freeList().nextFree   = freeList().next; 
       freeList().prevFree   = freeList().next;
@@ -863,6 +863,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

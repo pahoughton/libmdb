@@ -659,7 +659,7 @@ MapMemDynamicFixed::createMapMemDynamicFixed(
 {
   if( mapInfo() != 0 && MapMemDynamic::good() )
     {
-      mapInfo()->recSize = DwordAlign( max( recSize,
+      mapInfo()->recSize = QwordAlign( max( recSize,
 					    (size_type)sizeof(FreeNode) ) );
 
       mapInfo()->allocNumRecs = max( allocNumRecs,
@@ -729,6 +729,9 @@ MapMemDynamicFixed::openMapMemDynamicFixed( void )
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //

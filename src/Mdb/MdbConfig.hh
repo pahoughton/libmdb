@@ -38,8 +38,8 @@
 #define MDB_S64_T	    STLUTILS_S64_T
 #endif
 
-#define MDB_TYPE_SIZE	    MDB_U32_T
-#define MDB_TYPE_LOC	    MDB_S32_T
+#define MDB_TYPE_SIZE	    size_t
+#define MDB_TYPE_LOC	    off_t
 #define MDB_TYPE_ADDR	    char *
 
 //
@@ -126,6 +126,9 @@
 // Revision Log:
 //
 // $Log$
+// Revision 4.2  2003/07/19 09:11:13  houghton
+// Port to 64 bit.
+//
 // Revision 4.1  2001/07/27 00:57:43  houghton
 // Change Major Version to 4
 //
