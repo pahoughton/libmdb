@@ -36,7 +36,7 @@ public:
 class LessLong
 {
 public:
-  bool	operator () ( const long & one, const long & two ) {
+  bool	operator () ( const long & one, const long & two ) const {
     return( one < two );
   };
 };
@@ -121,6 +121,9 @@ tHashTable01( LibTest & tester )
 // Revision Log:
 //
 // $Log$
+// Revision 1.3  1997/07/22 19:47:28  houghton
+// Bug-Fix: LessLong::operator () changed to const.
+//
 // Revision 1.2  1997/07/19 10:39:40  houghton
 // Port(Sun5): HashTableBase::Hash was renamed to HashValue.
 //
