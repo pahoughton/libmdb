@@ -28,11 +28,11 @@
 
 inline
 RBTreeBase::ConstNodeBase::ConstNodeBase(
-  const ChunkMgr &  chunkMgr,
+  const MultiMemOffset &  memMgr,
   Loc		    loc
   )
   : nodeLoc( loc ),
-    mgr( chunkMgr )
+    mgr( memMgr )
 {
 }
 
@@ -95,6 +95,14 @@ RBTreeBase::ConstNodeBase::operator -- ( void )
 }
 
 inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator = ( Loc rhs )
+{
+  nodeLoc = rhs;
+  return( *this );
+}
+
+inline
 void
 RBTreeBase::ConstNodeBase::next( void )
 {
@@ -137,12 +145,7 @@ RBTreeBase::ConstNodeBase::prev( void )
     {
       if( left() )
 	{
-	  ConstNodeBase leftNode( mgr, left() );
-	  while( leftNode.right() )
-	    {
-	      leftNode.nodeLoc = leftNode.right();
-	    }
-	  nodeLoc = leftNode.loc();
+	  for( nodeLoc = left(); right() ; nodeLoc = right() );
 	}
       else
 	{
@@ -161,9 +164,9 @@ RBTreeBase::ConstNodeBase::prev( void )
 // * * * NodeBase * * * 
 
 inline
-RBTreeBase::NodeBase::NodeBase( ChunkMgr & chunkMgr, Loc nodeLoc )
-  : ConstNodeBase( chunkMgr, nodeLoc ),
-    mgr( chunkMgr )
+RBTreeBase::NodeBase::NodeBase( MultiMemOffset & memMgr, Loc nodeLoc )
+  : ConstNodeBase( memMgr, nodeLoc ),
+    mgr( memMgr )
 {
 }
 
@@ -236,18 +239,34 @@ RBTreeBase::NodeBase::rbNode( void )
   return( *((RBNodeBase *)(mgr.address( nodeLoc ))) );
 }
 
+// * * * RBTreeBase * * *
+
+inline
+RBTreeBase::size_type
+RBTreeBase::size( void ) const
+{
+  return( header().count );
+}
+
+inline
+bool
+RBTreeBase::empty( void ) const
+{
+  return( size() == 0 );
+}
+
 inline
 RBTreeBase::RBTreeHeader &
 RBTreeBase::header( void )
 {
-  return( *((RBTreeHeader *)(mgr.address( headerLoc )) ) );
+  return( *((RBTreeHeader *)(mgr->address( headerLoc )) ) );
 }
 
 inline
 const RBTreeBase::RBTreeHeader &
 RBTreeBase::header( void ) const
 {
-  return( *((const RBTreeHeader *)(mgr.address( headerLoc )) ) );
+  return( *((const RBTreeHeader *)(mgr->address( headerLoc )) ) );
 }
 
 inline
@@ -294,89 +313,128 @@ RBTreeBase::last( void ) const
 }
 
 inline
+RBTreeBase::Loc
+RBTreeBase::next( Loc & node ) const
+{
+  ConstNodeBase n( *mgr, node );
+  n.next();
+  node = n.loc();
+  return( node );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::prev( Loc & node ) const
+{
+  ConstNodeBase p( *mgr, node );
+  p.prev();
+  node = p.loc();
+  return( node );
+}
+    
+inline
 RBTreeBase::NodeBase
 RBTreeBase::parent( const ConstNodeBase & node )
 {
-  return( NodeBase( mgr, node.parent() ) );
+  return( NodeBase( *mgr, node.parent() ) );
 }
 
 inline
 RBTreeBase::NodeBase
 RBTreeBase::parent( Loc loc )
 {
-  return( parent( ConstNodeBase( mgr, loc ) ) );
+  return( parent( ConstNodeBase( *mgr, loc ) ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::parent( const ConstNodeBase & node ) const
 {
-  return( ConstNodeBase( mgr, node.parent() ) );
+  return( ConstNodeBase( *mgr, node.parent() ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::parent( Loc loc ) const
 {
-  return( parent( ConstNodeBase( mgr, loc ) ) );
+  return( parent( ConstNodeBase( *mgr, loc ) ) );
 }
 
 inline
 RBTreeBase::NodeBase
 RBTreeBase::left( const ConstNodeBase & node )
 {
-  return( NodeBase( mgr, node.left() ) );
+  return( NodeBase( *mgr, node.left() ) );
 }
 
 inline
 RBTreeBase::NodeBase
 RBTreeBase::left( Loc loc )
 {
-  return( left( ConstNodeBase( mgr, loc ) ) );
+  return( left( ConstNodeBase( *mgr, loc ) ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::left( const ConstNodeBase & node ) const
 {
-  return( ConstNodeBase( mgr, node.left() ) );
+  return( ConstNodeBase( *mgr, node.left() ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::left( Loc loc ) const
 {
-  return( left( ConstNodeBase( mgr, loc ) ) );
+  return( left( ConstNodeBase( *mgr, loc ) ) );
 }
 
 inline
 RBTreeBase::NodeBase
 RBTreeBase::right( const ConstNodeBase & node )
 {
-  return( NodeBase( mgr, node.right() ) );
+  return( NodeBase( *mgr, node.right() ) );
 }
 
 inline
 RBTreeBase::NodeBase
 RBTreeBase::right( Loc loc )
 {
-  return( right( ConstNodeBase( mgr, loc ) ) );
+  return( right( ConstNodeBase( *mgr, loc ) ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::right( const ConstNodeBase & node ) const
 {
-  return( ConstNodeBase( mgr, node.right() ) );
+  return( ConstNodeBase( *mgr, node.right() ) );
 }
 
 inline
 RBTreeBase::ConstNodeBase
 RBTreeBase::right( Loc loc ) const
 {
-  return( right( ConstNodeBase( mgr, loc ) ) );
+  return( right( ConstNodeBase( *mgr, loc ) ) );
 }
 
+inline
+RBTreeBase::NodeBase
+RBTreeBase::minimum( const NodeBase & node )
+{
+  NodeBase m = node;
+  while( m.left() )
+    m = m.left();
+  return( m );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::maximum( const NodeBase & node )
+{
+  NodeBase m = node;
+  while( m.right() )
+    m = m.right();
+  return( m );
+}
 
 
 #if defined( inline )
@@ -386,6 +444,11 @@ RBTreeBase::right( Loc loc ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:34:04  houghton
+// Cleanup.
+// Added size() & empty().
+// Changed to use MultiMemOffset.
+//
 // Revision 2.1  1997/06/05 11:29:14  houghton
 // Initial Version.
 //
