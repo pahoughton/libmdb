@@ -31,6 +31,9 @@
 //
 // 
 // $Log$
+// Revision 2.2  1997/06/19 11:59:52  houghton
+// Changed include ClueConfig to include MdbConfig.
+//
 // Revision 2.1  1995/11/10 12:42:00  houghton
 // Change to Version 2
 //
@@ -42,7 +45,7 @@
 //
 //
 
-#include <ClueConfig.hh>
+#include <MdbConfig.hh>
 
 class AvlTreeBase
 {
