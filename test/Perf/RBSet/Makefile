@@ -156,6 +156,26 @@ STATIC_DEP_LIBS		=
 # **** S O U R C E   F I L E S ****
 
 CXX_C_SOURCES	=			\
+	PerfTable_4.C			\
+	Insert_4.C			\
+	Find_4.C			\
+	Erase_4.C			\
+	Iterate_4.C			\
+	PerfTable_128.C			\
+	Insert_128.C			\
+	Find_128.C			\
+	Erase_128.C			\
+	Iterate_128.C			\
+	PerfTable_512.C			\
+	Insert_512.C			\
+	Find_512.C			\
+	Erase_512.C			\
+	Iterate_512.C			\
+	PerfTable_1024.C		\
+	Insert_1024.C			\
+	Find_1024.C			\
+	Erase_1024.C			\
+	Iterate_1024.C			\
 	AppParam.C                      \
 	main.C                          \
 	$(ARCH_CXX_C_SOURCES)           \
@@ -217,6 +237,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.2  1997/07/25 13:52:33  houghton
+# Added a bunch of new sources.
+#
 # Revision 1.1  1997/07/21 10:29:40  houghton
 # Initial version.
 #
