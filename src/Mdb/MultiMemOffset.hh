@@ -2,16 +2,183 @@
 #define _MultiMemOffset_hh_
 //
 // File:        MultiMemOffset.hh
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton - (houghton@cworld.wiltel.com)
+//
+//
+// Quick Start: - short example of class usage
+//
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     01/09/95 09:47
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
 //
-// 
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+#include <MdbConfig.hh>
+#include <MapMemDynamic.hh>
+#include <cstddef>
+#include <iostream>
+
+#if defined( MDB_DEBUG )
+#define inline
+#endif
+
+
+class MultiMemOffset
+{
+
+public:
+
+  typedef MapMemDynamic::Loc	    Loc;
+  typedef MapMemDynamic::size_type  size_type;
+  typedef void *		    Addr;
+  
+  MultiMemOffset( void );
+  
+  virtual ~MultiMemOffset( void );
+  
+  virtual Loc		allocate( size_type size );
+  virtual void		release( Loc offset );
+
+  virtual Addr		address( Loc offset );
+  virtual const Addr	address( Loc loc ) const;
+  
+  virtual Loc		location( void * addr );
+  
+  virtual void *	getBase( void );
+  virtual const void *	getBase( void ) const;
+
+  virtual ostream & 	getStats( ostream & dest ) const;
+
+
+  virtual bool	    	good( void ) const;
+  virtual const char * 	error( void ) const;
+  virtual const char *	getClassName( void ) const;
+  virtual const char *  getVersion( bool withPrjVer = true ) const;
+  virtual ostream &     dumpInfo( ostream &	dest = cerr,
+				  const char *  prefix = "    ",
+                                  bool          showVer = true ) const;
+
+  static const ClassVersion version;
+
+protected:
+
+private:
+
+  MultiMemOffset( const MultiMemOffset & from );
+  MultiMemOffset & operator =( const MultiMemOffset & from );
+
+  int	osErrno;
+  
+};
+
+extern MultiMemOffset MultiMemOffsetMalloc;
+
+#if !defined( inline )
+#include <MultiMemOffset.ii>
+#else
+#undef inline
+
+
+#endif
+
+
+//
+// Detail Documentation
+//
+//  Data Types: - data types defined by this header
+//
+//  	MultiMemOffset	class
+//
+//  Constructors:
+//
+//  	MultiMemOffset( );
+//
+//  Destructors:
+//
+//  Public Interface:
+//
+//	virtual ostream &
+//	write( ostream & dest ) const;
+//	    write the data for this class in binary form to the ostream.
+//
+//	virtual istream &
+//	read( istream & src );
+//	    read the data in binary form from the istream. It is
+//	    assumed it stream is correctly posistioned and the data
+//	    was written to the istream with 'write( ostream & )'
+//
+//	virtual ostream &
+//	toStream( ostream & dest ) const;
+//	    output class as a string to dest (used by operator <<)
+//
+//	virtual istream &
+//	fromStream( istream & src );
+//	    Set this class be reading a string representation from
+//	    src. Returns src.
+//
+//  	virtual Bool
+//  	good( void ) const;
+//  	    Return true if there are no detected errors associated
+//  	    with this class, otherwise false.
+//
+//  	virtual const char *
+//  	error( void ) const;
+//  	    Return a string description of the state of the class.
+//
+//  	virtual const char *
+//  	getClassName( void ) const;
+//  	    Return the name of this class (i.e. MultiMemOffset )
+//
+//  	virtual const char *
+//  	getVersion( bool withPrjVer = true ) const;
+//  	    Return the version string of this class.
+//
+//	virtual ostream &
+//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
+//	    output detail info to dest. Includes instance variable
+//	    values, state info & version info.
+//
+//	static const ClassVersion version
+//	    Class and project version information. (see ClassVersion.hh)
+//
+//  Protected Interface:
+//
+//  Private Methods:
+//
+//  Associated Functions:
+//
+//  	ostream &
+//  	operator <<( ostream & dest, const MultiMemOffset & src );
+//
+//	istream &
+//	operator >> ( istream & src, MultiMemOffset & dest );
+//
+// Example:
+//
+// See Also:
+//
+// Files:
+//
+// Documented Ver:
+//
+// Tested Ver:
+//
+// Revision Log:
+//
 // $Log$
+// Revision 2.4  1997/06/19 12:03:14  houghton
+// Changed to be part of libMdb.
+// Cleanup.
+// Changed void * and off_t to Addr and Loc.
+//
 // Revision 2.3  1997/03/13 02:40:59  houghton
 // Added getOffset.
 // Added dumpInfo.
@@ -29,77 +196,8 @@
 // New Style Avl an memory management. Many New Classes
 //
 //
-
-#include <ClueConfig.hh>
-
-#include <iostream>
-#include <cstddef>
-#include <sys/types.h>
-
-class MultiMemOffset
-{
-
-public:
-
-  MultiMemOffset();
-
-  virtual ~MultiMemOffset() {};
-
-  virtual off_t	    getMem( size_t size );
-  virtual void 	    freeMem( off_t offset );
-
-  virtual void *    getAddr( off_t offset );
-  virtual off_t	    getOffset( void * addr );
-  
-  virtual void *	    getBase( void );
-  virtual const void *	    getBase( void ) const;
-
-  virtual ostream & 	getStats( ostream & dest ) const;
-
-  virtual const char * 	getClassName( void ) const;
-  virtual bool	        good( void ) const;
-  virtual const char *	error( void ) const;
-
-  virtual ostream &	dumpInfo( ostream &	dest = cerr,
-				  const char *	prefix = "    ",
-				  bool		showVer = true ) const;
-  
-  friend inline ostream & operator<<( ostream & dest, const MultiMemOffset & mmo );
-  
-protected:
-
-private:
-
-  MultiMemOffset( const MultiMemOffset & copyFrom );
-  MultiMemOffset & operator=( const MultiMemOffset & assignFrom );
-
-  int	oserrno;
-  
-};
-
-extern MultiMemOffset MultiMemOffsetMalloc;
-
-//
-// Inline methods
 //
 
-inline
-MultiMemOffset::MultiMemOffset( void )
-{
-  oserrno = 0;
-}
-
-
-inline
-ostream &
-operator<<( ostream & dest, const MultiMemOffset & mmo )
-{
-  return( mmo.getStats( dest ) );
-}
-
-
-
-#endif // ! def _MultiMemOffset_hh_ 
 //
 //              This software is the sole property of
 // 
@@ -111,4 +209,5 @@ operator<<( ostream & dest, const MultiMemOffset & mmo )
 //                      All Rights Reserved.  
 // 
 //
+#endif // ! def _MultiMemOffset_hh_ 
 

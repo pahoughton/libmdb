@@ -1,14 +1,162 @@
 //
 // File:        MultiMemOffset.C
+// Project:	Mdb
 // Desc:        
-//              
 //
-// Author:      Paul Houghton x2309 - (houghton@shoe.wiltel.com)
+//  Compiled sources for MultiMemOffset
+//  
+// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
 // Created:     01/28/95 08:25 
 //
-// Revision History:
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+
+#include "MultiMemOffset.hh"
+#include <Str.hh>
+#include <cerrno>
+
+#if defined( MDB_DEBUG )
+#include "MultiMemOffset.ii"
+#endif
+
+MDB_VERSION(
+  MultiMemOffset,
+  "$Id$");
+
+
+MultiMemOffset MultiMemOffsetMalloc;
+
+MultiMemOffset::MultiMemOffset( void )
+  : osErrno( 0 )
+{
+}
+
+MultiMemOffset::~MultiMemOffset( void )
+{
+}
+
+MultiMemOffset::Loc
+MultiMemOffset::allocate( size_type size )
+{
+  void * mem = malloc( size );
+  if( ! mem )
+    osErrno = errno;
+  
+  return( (Loc)mem );
+}
+
+void
+MultiMemOffset::release( Loc offset )
+{
+  free( (void *)offset );
+}
+
+MultiMemOffset::Addr
+MultiMemOffset::address( Loc offset )
+{
+  return( (Addr)offset );
+}
+
+const MultiMemOffset::Addr
+MultiMemOffset::address( Loc offset ) const
+{
+  return( (const Addr)offset );
+}
+
+MultiMemOffset::Loc
+MultiMemOffset::location( const Addr addr )
+{
+  return( (Loc)addr );
+}
+
+void *
+MultiMemOffset::getBase( void )
+{
+  return( (void *)0 );
+}
+
+const void *
+MultiMemOffset::getBase( void ) const
+{
+  return( (void *)0 );
+}
+bool
+MultiMemOffset::good( void ) const
+{
+  return( osErrno == 0 );
+}
+
+const char *
+MultiMemOffset::error( void ) const
+{
+  static Str errStr;
+
+  errStr = MultiMemOffset::getClassName();
+
+  if( good() )
+    {
+       errStr += ": ok";
+    }
+  else
+    {
+      size_t eSize = errStr.size();
+
+      if( osErrno != 0 )
+	errStr << ": " << strerror( osErrno );
+      
+      if( eSize == errStr.size() )
+        errStr << ": unknown error";
+    }
+
+  return( errStr.c_str() );
+}
+
+const char *
+MultiMemOffset::getClassName( void ) const
+{
+  return( "MultiMemOffset" );
+}
+
+const char *
+MultiMemOffset::getVersion( bool withPrjVer ) const
+{
+  return( version.getVer( withPrjVer ) );
+}
+
+
+ostream &
+MultiMemOffset::dumpInfo(
+  ostream &	dest,
+  const char *	prefix,
+  bool		showVer
+  ) const
+{
+  if( showVer )
+    dest << MultiMemOffset::getClassName() << ":\n"
+	 << MultiMemOffset::getVersion() << '\n';
+
+  if( ! MultiMemOffset::good() )
+    dest << prefix << "Error: " << MultiMemOffset::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  dest << "using malloc\n";
+
+  return( dest );
+}
+
+// Revision Log:
 //
 // $Log$
+// Revision 2.5  1997/06/19 12:03:11  houghton
+// Changed to be part of libMdb.
+// Cleanup.
+// Changed void * and off_t to Addr and Loc.
+//
 // Revision 2.4  1997/04/04 20:50:34  houghton
 // Cleanup.
 //
@@ -29,120 +177,6 @@
 // New Style Avl an memory management. Many New Classes
 //
 //
-static const char * RcsId =
-"$Id$";
-
-#include "MultiMemOffset.hh"
-#include "Str.hh"
-#include <cerrno>
-
-MultiMemOffset MultiMemOffsetMalloc;
-
-off_t
-MultiMemOffset::getMem( size_t size )
-{
-  void * mem = malloc( size );
-  if( ! mem )
-    {
-      oserrno = errno;
-    }
-  
-  return( (off_t)mem );
-}
-
-void
-MultiMemOffset::freeMem( off_t offset )
-{
-  free( (void *)offset );
-}
-
-void *
-MultiMemOffset::getAddr( off_t offset )
-{
-  return( (void *)offset );
-}
-
-off_t
-MultiMemOffset::getOffset( void * addr )
-{
-  return( (off_t)addr );
-}
-
-void *
-MultiMemOffset::getBase( void )
-{
-  return( (void *)0 );
-}
-
-const void *
-MultiMemOffset::getBase( void ) const
-{
-  return( (void *)0 );
-}
-
-const char *
-MultiMemOffset::getClassName( void ) const
-{
-  return( "MultiMemOffset" );
-}
-
-bool
-MultiMemOffset::good( void ) const
-{
-  return( oserrno == 0 );
-}
-
-const char *
-MultiMemOffset::error( void ) const
-{
-  static Str errStr;
-  errStr.reset();
-
-  errStr << MultiMemOffset::getClassName();
-  
-  if( good() )
-    {
-      errStr << ": Ok";
-    }
-  else
-    {
-      errStr << ": " << strerror( oserrno );
-    }
-  return( errStr.cstr() );
-}
-
-
-ostream &
-MultiMemOffset::getStats( ostream & dest ) const
-{
-  dest << MultiMemOffset::getClassName() << ": stats" << '\n'
-       << "    Status:  " << error() << '\n'
-       << "    Using:   malloc" << endl
-    ;
-  
-  return( dest );
-}
-
-ostream &
-MultiMemOffset::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
-  ) const
-{
-  if( showVer )
-    dest << MultiMemOffset::getClassName() << ":\n"
-	 << RcsId << '\n';
-  
-  if( ! MultiMemOffset::good() )
-    dest << prefix << "Error: " << MultiMemOffset::error() << '\n';
-  else
-    dest << prefix << "Good" << '\n';
-  
-  dest << "using malloc\n";
-
-  return( dest );
-}
 
 //
 //              This software is the sole property of
