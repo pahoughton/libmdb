@@ -103,6 +103,7 @@ MapMemDynamicDynamic::allocate( size_type size )
     expand( chunkSize );
 
   mapInfo()->chunkCount++;
+  
   while( good() )
     {
       for( off_t f = mapInfo()->freeList.next;
@@ -716,6 +717,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.11  1997/06/25 12:55:26  houghton
+// Cleanup.
+//
 // Revision 2.10  1997/06/19 12:02:02  houghton
 // Changed to be part of libMdb.
 //
