@@ -27,13 +27,13 @@ template< class Key,
           class LessKey >
 inline
 DashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::DashTable(
-  ChunkMgr &		chunkMgr,
+  MultiMemOffset *	memMgr,
   const char *		indexFileName,
   ios::open_mode	mode,
   bool			create,
   unsigned short	permMask
   )
-  : DashTableBase( chunkMgr, indexFileName, mode, permMask, create )
+  : DashTableBase( memMgr, indexFileName, mode, permMask, create )
 {
 }
 
@@ -53,6 +53,10 @@ DashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::getNodeSize( void )
 // Revision Log:
 // 
 // $Log$
+// Revision 2.3  1997/07/22 19:43:35  houghton
+// Cleanup.
+// Changed to use MultiMemOffset (vs ChunkMgr).
+//
 // Revision 2.2  1997/07/13 11:04:33  houghton
 // Added rbegin() & rend().
 //
