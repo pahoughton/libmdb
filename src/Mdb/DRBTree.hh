@@ -624,7 +624,7 @@ protected:
     for( next( node ); node != headerLoc; next( node ) )
       {
 	for( hist = drbNode( node ).hist;
-	     history( hist ).del ;
+	     hist && history( hist ).del ;
 	     hist = history( hist ).next );
 
 	  if( hist )
@@ -639,7 +639,7 @@ protected:
     if( history( hist ).next )
       {
 	for( hist = history( hist ).next;
-	     history( hist ).del;
+	     hist && history( hist ).del;
 	     hist = history( hist ).next );
 	
 	if( hist )
@@ -917,6 +917,10 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.5  2003/09/18 15:16:38  houghton
+// Bug-Fix was getting into infinate loop because I was not testing hist
+// == 0 in nextNode and nextHist methods
+//
 // Revision 4.4  2003/09/04 20:50:44  houghton
 // Changed eff date type & changed dumpHist output.
 //
