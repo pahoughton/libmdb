@@ -18,6 +18,7 @@
 #include "MapFile.hh"
 
 #include <Str.hh>
+#include <ClueUtils.hh>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -219,9 +220,8 @@ MapFile::setSize(
 {
 
   if( mapFd == 0 )
-    {
-      return( 0 );
-    }
+    return( 0 );
+  
 
   if( (mapMode & ios::out ) == 0 )
     {
@@ -230,17 +230,16 @@ MapFile::setSize(
     }
       
   if( mapSize != 0 )
-    {
-      munmap( mapBase, mapSize );
-    }
+    munmap( mapBase, mapSize );
+    
 
   
   if( size >= mapSize )
     {
-      mapSize = size + (pageSize - (size % pageSize) );
+      mapSize = Align( size, pageSize );
       
       char	buf = 0;
-      if( lseek( mapFd, mapSize, SEEK_SET ) < 0 ||
+      if( lseek( mapFd, mapSize - 1, SEEK_SET ) < 0 ||
 	  write( mapFd, &buf, 1 ) != 1 ) 
 	{
 	  osErrno = errno;
@@ -249,33 +248,17 @@ MapFile::setSize(
     }
   else
     {
-      mapSize = size + (pageSize - (size % pageSize) );
+      mapSize = Align( size, pageSize );
       
-      if( ftruncate( mapFd, mapSize + 1 ) != 0)
+      if( ftruncate( mapFd, mapSize ) != 0)
 	{
 	  osErrno = errno;
 	  return( 0 );
 	}
     }
-	
 
-  int mapType = MAP_SHARED;
-  
-  if( baseAddr == 0 )
-    {
-      mapType |= MAP_VARIABLE;
-    }
-  else
-    {
-      mapType |= MAP_FIXED;
-    }
-
-  int mapProt = PROT_READ;
-
-  if( mapMode | ios::out )
-    {
-      mapProt |= PROT_WRITE;
-    }
+  int mapType = ( MAP_SHARED | ( baseAddr == 0 ? MAP_VARIABLE : MAP_FIXED ) );
+  int mapProt = ( PROT_READ | ( ( mapMode | ios::out ) ? PROT_WRITE : 0 ) );
     
   mapBase = (char *)mmap( baseAddr, mapSize, mapProt, mapType, mapFd, 0 );
 
@@ -433,6 +416,9 @@ MapFile::createMap(
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/07/13 11:14:52  houghton
+// Cleanup
+//
 // Revision 2.7  1997/06/05 11:19:10  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).

@@ -28,27 +28,27 @@ inline
 void *
 MapMem::getMapToAddr( void ) const
 {
-  return( (getMapInfo()) ? (void*)getMapInfo()->base : 0 );
+  return( (mapInfo()) ? (void*)mapInfo()->base : 0 );
 }
 
 inline
 MapMem::size_type
 MapMem::getMapSize( void ) const
 {
-  return( (getMapInfo()) ? getMapInfo()->size : 0 );
+  return( (mapInfo()) ? mapInfo()->size : 0 );
 }
 
 
 inline
 MapMem::MapInfo *
-MapMem::getMapInfo( void )
+MapMem::mapInfo( void )
 {
   return( (MapInfo *)MapFile::getBase() );
 }
 
 inline
 const MapMem::MapInfo *
-MapMem::getMapInfo( void ) const
+MapMem::mapInfo( void ) const
 {
   return( (const MapInfo *)MapFile::getBase() );
 }
@@ -62,6 +62,9 @@ MapMem::getMapInfo( void ) const
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/13 11:18:09  houghton
+// Cleanup
+//
 // Revision 2.1  1997/06/05 11:29:11  houghton
 // Initial Version.
 //
