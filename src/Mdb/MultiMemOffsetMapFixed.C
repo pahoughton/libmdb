@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.4  1997/04/04 20:50:37  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/03/13 02:41:24  houghton
 // Cleanup dumpInfo output.
 //
@@ -67,6 +70,10 @@ MultiMemOffsetMapFixed::dumpInfo(
   bool		showVer
   ) const
 {
+  if( showVer )
+    dest << MultiMemOffsetMapFixed::getClassName() << ":\n"
+	 << RcsId << "\n";
+  
   if( ! MultiMemOffsetMapFixed::good() )
     dest << prefix << "Error: " << MultiMemOffsetMapFixed::error() << '\n';
   else

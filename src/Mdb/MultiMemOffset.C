@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.4  1997/04/04 20:50:34  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/03/13 02:40:53  houghton
 // Added getOffset.
 // Added dumpInfo.
@@ -127,6 +130,10 @@ MultiMemOffset::dumpInfo(
   bool		showVer
   ) const
 {
+  if( showVer )
+    dest << MultiMemOffset::getClassName() << ":\n"
+	 << RcsId << '\n';
+  
   if( ! MultiMemOffset::good() )
     dest << prefix << "Error: " << MultiMemOffset::error() << '\n';
   else

@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.4  1997/04/04 20:49:11  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/03/07 11:49:12  houghton
 // Add dumpInfo.
 //
@@ -52,6 +55,39 @@ const char * MapMem::TypeStrings[] =
   "MapDynamic",
   0
 };
+
+
+//
+// Constructor for creating a new map
+//
+MapMem::MapMem(
+  const char * 	    fileName,
+  caddr_t	    baseAddr,
+  MapType   	    type,
+  unsigned long	    version,
+  unsigned long	    size,
+  unsigned short    permMask
+  )
+  : MapFile( fileName, size, baseAddr, permMask )
+{
+  osErrno = 0;
+  mapFileName = fileName;
+  
+  mapInfo = (MapInfo *)MapFile::getBase();
+  
+  if( mapInfo != 0 )
+    {
+      mapInfo->type     = type;
+      mapInfo->version  = version;
+      mapInfo->base	= (unsigned long)baseAddr;      
+      mapInfo->size	= getSize();
+      mapError = E_OK;
+    }
+  else
+    {
+      mapError = E_MAPFILE;
+    }
+}
 
 
 // constructor for opening an existing map
@@ -116,6 +152,31 @@ MapMem::MapMem(
 MapMem::~MapMem( void )
 {
 }
+
+unsigned long
+MapMem::getVersion( void ) const
+{
+  return( (mapInfo) ? mapInfo->version : 0 );
+}
+	
+MapMem::MapType
+MapMem::getType( void  ) const
+{
+  return( (mapInfo) ? mapInfo->type : MM_UNDEFINED );
+}
+
+const char *
+MapMem::getTypeName( void ) const
+{
+  return( TypeStrings[ getType() ]  );
+}
+
+bool
+MapMem::good( void ) const
+{
+  return( mapError == E_OK && MapFile::good() );
+}
+
 
 const char *
 MapMem::error( void ) const
@@ -189,6 +250,10 @@ MapMem::dumpInfo(
   bool		showVer
   ) const
 {
+  if( showVer )
+    dest << MapMem::getClassName() << ":\n"
+	 << RcsId << '\n';
+      
   if( ! MapMem::good() )
     dest << prefix << "Error: " << MapMem::error() << '\n';
   else

@@ -9,6 +9,9 @@
 // Revision History:
 //
 // $Log$
+// Revision 2.5  1997/04/04 20:48:54  houghton
+// Cleanup.
+//
 // Revision 2.4  1997/03/07 11:48:23  houghton
 // Add dumpInfo.
 //
@@ -89,7 +92,7 @@ MapFile::MapFile(
 
   pageSize = getpagesize();
   
-  unsigned short origMask;
+  unsigned short origMask = 0;
 
   if( permMask != 0 )
     {
@@ -279,7 +282,39 @@ MapFile::setSize(
   return( mapSize );
 }
 
+const char *
+MapFile::getFileName( void ) const
+{
+  return( fileStat.getName() );
+}
+
+const char *
+MapFile::getAccess( void  ) const
+{
+  if( mapMode & ios::in )
+    {
+      if( mapMode & ios::out )
+	{
+	  return( "RW" );
+	}
+      else
+	{
+	  return( "R" );
+	}
+    }
+  else
+    {
+      return( "W" );
+    }
+}
+
   
+bool
+MapFile::good( void ) const
+{
+  return( osErrno == 0 );
+}
+
 const char *
 MapFile::error( void ) const
 {
@@ -325,6 +360,10 @@ MapFile::dumpInfo(
   bool		showVer
   ) const
 {
+  if( showVer )
+    dest << MapFile::getClassName() << ":\n"
+	 << RcsId << '\n' ;
+      
   if( ! MapFile::good() )
     dest << prefix << "Error: " << MapFile::error() << '\n';
   else

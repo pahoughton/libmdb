@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.5  1997/04/04 20:49:02  houghton
+// Cleanup.
+//
 // Revision 2.4  1997/03/07 11:48:41  houghton
 // Add dumpInfo.
 //
@@ -160,34 +163,6 @@ MapFile::shrink(
 
 
 inline
-const char *
-MapFile::getFileName( void ) const
-{
-  return( fileStat.getName() );
-}
-
-inline
-const char *
-MapFile::getAccess( void  ) const
-{
-  if( mapMode & ios::in )
-    {
-      if( mapMode & ios::out )
-	{
-	  return( "RW" );
-	}
-      else
-	{
-	  return( "R" );
-	}
-    }
-  else
-    {
-      return( "W" );
-    }
-}
-
-inline
 size_t
 MapFile::getSize( void ) const
 {
@@ -213,13 +188,6 @@ size_t
 MapFile::getPageSize( void ) const
 {
   return( pageSize );
-}
-
-inline
-bool
-MapFile::good( void ) const
-{
-  return( osErrno == 0 );
 }
 
 inline

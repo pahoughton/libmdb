@@ -12,6 +12,9 @@
 //
 // 
 // $Log$
+// Revision 2.4  1997/04/04 20:49:33  houghton
+// Cleanup.
+//
 // Revision 2.3  1997/03/07 11:49:01  houghton
 // Add dumpInfo.
 //
@@ -122,65 +125,11 @@ private:
 // Inline methods
 //
 
-//
-// Constructor for creating a new map
-//
-inline
-MapMem::MapMem(
-  const char * 	    fileName,
-  caddr_t	    baseAddr,
-  MapType   	    type,
-  unsigned long	    version,
-  unsigned long	    size,
-  unsigned short    permMask
-  )
-  : MapFile( fileName, size, baseAddr, permMask )
-{
-  osErrno = 0;
-  mapFileName = fileName;
-  
-  mapInfo = (MapInfo *)MapFile::getBase();
-  
-  if( mapInfo != 0 )
-    {
-      mapInfo->type     = type;
-      mapInfo->version  = version;
-      mapInfo->base	= (unsigned long)baseAddr;      
-      mapInfo->size	= getSize();
-      mapError = E_OK;
-    }
-  else
-    {
-      mapError = E_MAPFILE;
-    }
-}
-
-inline
-unsigned long
-MapMem::getVersion( void ) const
-{
-  return( (mapInfo) ? mapInfo->version : 0 );
-}
-	
 inline
 void *
 MapMem::getMapToAddr( void ) const
 {
   return( (mapInfo) ? (void*)mapInfo->base : 0 );
-}
-
-inline
-MapMem::MapType
-MapMem::getType( void  ) const
-{
-  return( (mapInfo) ? mapInfo->type : MM_UNDEFINED );
-}
-
-inline
-const char *
-MapMem::getTypeName( void ) const
-{
-  return( TypeStrings[ getType() ]  );
 }
 
 inline
@@ -190,13 +139,6 @@ MapMem::getMapSize( void ) const
   return( (mapInfo) ? mapInfo->size : 0 );
 }
 
-
-inline
-bool
-MapMem::good( void ) const
-{
-  return( mapError == E_OK && MapFile::good() );
-}
 
 inline
 MapMem::MapInfo *
