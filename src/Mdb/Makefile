@@ -114,7 +114,7 @@ SHARED_CXX_FLAGS	= $(cxx_shared) $(cxx_optimize)
 
 # **** S H A R E D   D E P   L I B S *****
 
-SHDEP_LIBS		= -lc
+SHDEP_LIBS		= -L$(beta_libdir) -lClue_s -lCommon_s -lc
 
 # **** I N S T A L L ****
 
@@ -274,6 +274,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.8  1997/07/21 10:50:13  houghton
+# Added dependant libs to SHLIB_DEP_LIB.
+#
 # Revision 2.7  1997/07/16 19:21:18  houghton
 # Added DavlTreeOffsetBase.ii.
 #
