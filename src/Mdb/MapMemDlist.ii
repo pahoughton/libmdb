@@ -1,0 +1,56 @@
+#ifndef _MapMemDlist_ii_
+#define _MapMemDlist_ii_
+//
+// File:        MapMemDlist.ii
+// Project:	Mdb
+// Desc:        
+//
+//  	Inline source for MapMemDlist
+//
+// Author:      Paul Houghton - (paul.houghton@wcom.com)
+// Created:     08/18/98 10:03
+//
+// Revision History: (See end of file for Revision Log)
+//
+//  Last Mod By:    $Author$
+//  Last Mod:	    $Date$
+//  Version:	    $Revision$
+//
+//  $Id$
+//
+
+template< class Value >
+inline
+bool
+MapMemDlist< Value >::good( void ) const
+{
+  return( dataMgr && (*dataMgr).good() );
+}
+
+template< class Value >
+inline
+const char * 
+MapMemDlist< Value >::error( void ) const
+{
+  return( dataMgr ? (*dataMgr).error() : "MapMemDlist: no dataMgr" );
+}
+
+
+#if defined( FIXME )	  
+inline
+DumpInfo< MapMemDlist >
+MapMemDlist::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< MapMemDlist >( *this, prefix, showVer ) );
+}
+#endif
+
+
+// Revision Log:
+// 
+// $Log$
+// Revision 2.1  1998/10/23 13:20:21  houghton
+// Initial Version.
+//
+//
+#endif // ! def _MapMemDlist_ii_ 
