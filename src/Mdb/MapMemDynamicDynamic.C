@@ -419,7 +419,7 @@ MapMemDynamicDynamic::expand( size_type minSize )
     << '\n' ;
 #endif
   
-  if( _LibLog->willOutput( LogLevel::App2 ) )
+  if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
     dumpFreeList( *_LibLog ) << endl;
   
   size_type amount = max( minSize, (size_type)(mapInfo()->allocSize ));
@@ -450,7 +450,7 @@ MapMemDynamicDynamic::expand( size_type minSize )
 	<< '\n' << dump( " post: " )
 	<< '\n' << "  ORIG: " << origSize <<  '\n';
 #endif
-      if( _LibLog->willOutput( LogLevel::App2 ) )
+      if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
 	dumpNodes( *_LibLog ) << endl;
 
       getFreeNode( origSize )->next = 0;
@@ -473,7 +473,7 @@ MapMemDynamicDynamic::expand( size_type minSize )
 	<< '\n' << dump( " post: " )
 	<< '\n' << "  ORIG: " << origSize <<  '\n';
       
-      if( _LibLog->willOutput( LogLevel::App2 ) )
+      if( _LibLog && _LibLog->willOutput( LogLevel::App2 ) )
 	dumpNodes( *_LibLog ) << endl;
 #endif
     }
@@ -715,6 +715,9 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 // Revision Log:
 //
 // $Log$
+// Revision 2.8  1997/06/09 11:58:26  houghton
+// Bug-Fix: check if there is a _LibLog before I try to use it.
+//
 // Revision 2.7  1997/06/05 11:27:59  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
