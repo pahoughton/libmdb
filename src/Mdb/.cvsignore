@@ -2,4 +2,5 @@
 .depend_default
 .depend_profile
 .depend_shared
+Templates.DB
 objects
