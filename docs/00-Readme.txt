@@ -1,10 +1,10 @@
 #
 #
-# Title:        00-Readme.txt
-# Project:	Traffic
+# Title:        libMdb/docs/00-Readme.txt
+# Project:	Mdb
 # Desc:
 # 
-#   
+#   Readme file for libMdb.
 # 
 # Notes:
 # 
@@ -21,94 +21,36 @@
 # 
 
 
-Howdy,
+Howdy, I suppose your looking for some documentation?
 
-Hopefully, this collection of headers and expamples will give you a
-general feel for how the Mapped Memory classes I've developed can be
-used. The classes are very flexable and not well documented. They are
-all based on using Unix Mapped Memory for data storage and retieval.
+The documentation for the classes in this library is split into three
+primary parts. They are:
 
-The two examples I included should help you understand some of the
-posibilities available.
+    General Library Documentation:
 
-Here is a short explination of the files included:
+	libMdb/docs/00-Readme.txt:	this file.
+	libMdb/docs/Description.txt:	general library description.
+	libMdb/docs/Classes.txt:	short description of each class.
+	
+    Class Usage Documentation
 
-AvlTreeBase.hh
+	This is found in the header file (i.e. libMdb/src/Class.hh)
+	for each class just below the class definition
 
-    This is a base class for balanced binary AVL trees.
-    
-AvlTreeOffsetBase.hh:
+    Design Documentation:
 
-    AvlTreeOffsetBase : public AvlTreeBase
+	This is found in libMdb/docs/design/.
 
-    This is the base class for AvlTreeOffset.
-
-AvlTreeOffset.hh:
-
-    AvlTreeOffset : public AvlTreeOffsetBase
-    
-    This template class provides an Avl Tree that
-    does not use any memory addresses. All links are accomplished with
-    offsets.
-
-MapFile.hh:
-
-    This class provides a basic interaface to Unix's mapped memory
-    functions. It uses the mmap and munmap system calls.
-
-MapMem.hh
-
-    MapMem : public MapFile.
-
-    This is the base class for both the MapMemFixedDynamic and
-    MapMemDynamciDynamic classes.
-
-MapMemDynamciDynamci.hh
-
-    MapMemDynamciDynamc : public MapMem
-
-    This class provides a managed mapped memory region that dyanmic
-    sized chunks can be allocated and deallocated from.
-
-MapMemFixedDynamic.hh
-
-    MapMemFixedDynamic : public MapMem
-
-    This class provides a managed mapped memory region that fixed
-    sized chunks can be allocated and deallocated from.
-
-MultiMem.hh
-MultiMemOffset.hh
-MultiMemOffsetMapFixed.hh
-
-    These classes are used by the AvlTreeOffset class to access the
-    MapMemFixedDynamic class.
-
-
-MultiKeyData.C
-
-    This is an incomplete example that uses AvlTreeOffset and
-    MapMemDynamicDynamic to create a multi key'd data set.
-
-StaticFixed.C
-
-    This incomplete example shows how MapFile can be used directly to
-    create a fixed data set that can be accessed as an array.
-
-src/
-
-    This directory contains the primary sources for the Mapped Memory
-    classes.
-
-examples/
-
-    This direcory contains examples of AvlTreeOffset & MapMem usage from other
-    projects. 
-    
+There is also example source code for the classes in the
+'libMdb/example' directory. This source should help you get a feel for
+how to use the classes in your application.
     
     
 #
 # $Log$
+# Revision 1.2  1997/07/25 13:39:38  houghton
+# Complete rewrite.
+#
 # Revision 1.1  1997/06/05 11:28:50  houghton
 # Initial Version.
 #
