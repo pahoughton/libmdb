@@ -162,6 +162,7 @@ STATIC_DEP_LIBS		=
 
 CXX_C_SOURCES	=			\
 	main.C				\
+	tMapMemDynamicDynamic.C		\
 	tHashTable.C                   \
 	tHashTable01.C                 \
 	$(ARCH_CXX_C_SOURCES)           \
@@ -213,6 +214,9 @@ test:	default
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 1.2  1997/06/27 12:15:59  houghton
+# Added tMapMemDynamicDynamic.
+#
 # Revision 1.1  1997/06/05 11:30:11  houghton
 # Initial Version.
 #

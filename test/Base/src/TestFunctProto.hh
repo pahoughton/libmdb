@@ -21,11 +21,16 @@
 //  $Id$
 //
 
+bool	tMapMemDynamicDynamic( LibTest & tester );
+
 bool tHashTable( LibTest & tester );
 
 // Revision Log:
 //
 // $Log$
+// Revision 1.2  1997/06/27 12:16:04  houghton
+// Added tMapMemDynamicDynamic.
+//
 // Revision 1.1  1997/06/05 11:30:11  houghton
 // Initial Version.
 //
