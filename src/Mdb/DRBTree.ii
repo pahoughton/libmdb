@@ -20,11 +20,6 @@
 //
 
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
-
-
 template< class Key, class Value, class KeyOfValue, class LessKey >
 inline
 DRBTree< Key, Value, KeyOfValue, LessKey >::DRBTree(
@@ -105,13 +100,12 @@ DRBTree< Key, Value, KeyOfValue, LessKey >::getClassName( void ) const
   return( "DRBTree<>" );
 }
 
-#if defined( inline )
-#undef inline
-#endif
-
 // Revision Log:
 // 
 // $Log$
+// Revision 2.2  1997/07/28 16:49:25  houghton
+// Bug-Fix: should never define 'inline'.
+//
 // Revision 2.1  1997/07/16 16:37:07  houghton
 // Initial Version (work in progress).
 //
