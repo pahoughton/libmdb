@@ -34,8 +34,8 @@ include Make/make.cfg.$(make_cfg_ver)
 
 NAME		= Mdb
 
-INSTALL_LIBDIR	= $(alpha_libdir)
-INSTALL_INCDIR	= $(alpha_incdir)
+INSTALL_LIBDIR	= $(beta_libdir)
+INSTALL_INCDIR	= $(beta_incdir)
 
 VER_MAJOR	= 1
 VER_MINOR	= 00
@@ -141,18 +141,32 @@ hold = \
 
 
 USER_H_INCS	=			\
-	tree.h                          \
 	$(ARCH_USER_H_INCS)             \
 
 USER_HH_INCS	=			\
 	ChunkMgr.hh                     \
 	MdbConfig.hh                    \
 	MdbVersion.hh                   \
-	RBTreeBase.hh                   \
+	MapFile.hh			\
+	MapMem.hh			\
+	MapMemDynamic.hh		\
+	MapMemDynamicDynamic.hh		\
+	HashTableBase.hh		\
+	DashTableBase.hh		\
+	DashTable.hh			\
+	Dash.hh				\
 	$(ARCH_USER_HH_INCS)            \
 
 USER_II_INCS	=			\
-	RBTreeBase.ii                   \
+	ChunkMgr.ii                     \
+	MapFile.ii			\
+	MapMem.ii			\
+	MapMemDynamic.ii		\
+	MapMemDynamicDynamic.ii		\
+	HashTableBase.ii		\
+	DashTableBase.ii		\
+	DashTable.ii			\
+	Dash.ii				\
 	$(ARCH_USER_II_INCS)            \
 
 USER_INCLUDES	=		\
@@ -233,6 +247,9 @@ FORCE:
 # =MAKEFILE_LOG=
 #
 # $Log$
+# Revision 2.2  1997/06/05 13:44:02  houghton
+# Fixed up install values.
+#
 # Revision 2.1  1997/06/05 11:29:11  houghton
 # Initial Version.
 #
