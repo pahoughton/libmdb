@@ -20,7 +20,6 @@
 #include <MdbConfig.hh>
 #include <MapMemDynamic.hh>
 
-#include <ClueUtils.hh>
 #include <DumpInfo.hh>
 
 #include <iostream>
@@ -232,6 +231,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 1.7  1997/06/18 14:14:47  houghton
+// Removed include ClueUtils.
+//
 // Revision 1.6  1997/06/05 11:27:20  houghton
 // Cleanup.
 // Change to be part of libMdb (vs Clue1).
