@@ -28,13 +28,13 @@ MDB_VERSION(
 
 
 DashTableBase::DashTableBase(
-  ChunkMgr &	    chunkMgr,
+  MultiMemOffset *  memMgr,
   const char *	    indexFileName,
   ios::open_mode    mode,
-  unsigned short    permMask,
-  bool		    create
+  bool		    create,
+  unsigned short    permMask
   )
-  : HashTableBase( chunkMgr, indexFileName, mode, permMask, create )
+  : HashTableBase( memMgr, indexFileName, mode, permMask, create )
 {
 }
 
@@ -188,7 +188,7 @@ DashTableBase::insert( Hash hash, Loc cur, EffDate effDate, Loc node )
 }
 
 //
-// insert a new node when ther is no other nodes with the same key
+// insert a new node when there is no other nodes with the same key
 HashTableBase::Loc
 DashTableBase::insert( Hash hash, EffDate effDate, Loc node )
 {
@@ -217,7 +217,7 @@ DashTableBase::erase( Hash hash, Loc node )
     }
   else
     {
-      mgr.release( node );
+      mgr->release( node );
       -- header().count;
       return( true );
     }
@@ -226,6 +226,10 @@ DashTableBase::erase( Hash hash, Loc node )
 // Revision Log:
 //
 // $Log$
+// Revision 2.2  1997/07/13 11:05:33  houghton
+// Changed constructor args.
+// Cleanup.
+//
 // Revision 2.1  1997/06/05 11:29:09  houghton
 // Initial Version.
 //
