@@ -315,7 +315,7 @@ public:
 	     hist = history( hist ).next );
 	
 	if( hist )
-	  return( const_iterator( this, node, hist ) );
+	  return( history( hist ).del ? end() : const_iterator( this, node, hist ) );
 	else
 	  return( end() );
       }
@@ -917,6 +917,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.7  2005/11/18 20:09:50  houghton
+// Bug-Fix: const find() was not check del flag.
+//
 // Revision 4.6  2004/04/19 20:26:48  houghton
 // Fixed warning messages.
 //
