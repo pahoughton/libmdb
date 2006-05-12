@@ -169,11 +169,11 @@ public:
     };
 #endif
     
-    inline bool		    operator == ( const setf::iterator & rhs ) const {
+    inline bool		    operator == ( const typename self::iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node );
     };
 
-    inline bool		    operator != ( const setf::iterator & rhs ) const {
+    inline bool		    operator != ( const typename self::iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
     
@@ -521,6 +521,9 @@ private:
 // Revision Log:
 //
 // $Log$
+// Revision 4.5  2006/05/12 09:57:48  houghton
+// Cleanup.
+//
 // Revision 4.4  2004/04/19 20:26:48  houghton
 // Fixed warning messages.
 //
