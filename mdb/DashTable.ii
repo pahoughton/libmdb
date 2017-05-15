@@ -29,7 +29,7 @@ inline
 DashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::DashTable(
   MultiMemOffset *	memMgr,
   const char *		indexFileName,
-  ios::open_mode	mode,
+  ios::openmode	mode,
   bool			create,
   unsigned short	permMask
   )

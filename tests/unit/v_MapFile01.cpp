@@ -1,37 +1,30 @@
-//
-// File:        tMapFile01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tMapFile01
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/16/97 07:45
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-16 (cc) Paul Houghton - (paul4hough@gmail.com)
 
-#include <MapFile.hh>
-#include "TestConfig.hh"
-#include <LibTest.hh>
-#include <Compare.hh>
+#include <mdb/MapFile.hpp>
+#include <clue/compare>
+#include <valid/verify.hpp>
+
 #include <cstdio>
 
-bool
-tMapFile01( LibTest & tester )
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
+
+valid::verify &
+v_MapFile01( void )
 {
+  static VVDESC( "mdb::MapFile01" );
+
   static const char * TestFn = TEST_DATA_DIR "/tMapFile01.map";
 
   remove( TestFn );
-  
+
   {
     // MapFile( const char *	fileName,
     //		MapAddr		baseAddr,
-    //		ios::open_mode  mode,
+    //		std::ios::openmode  mode,
     //		bool		create,
     //		size_type	size,
     //		MapMask		permMask );
@@ -50,21 +43,21 @@ tMapFile01( LibTest & tester )
 
     MapFile	t( TestFn,
 		   0,
-		   (ios::open_mode)(ios::in | ios::out),
+		   (std::ios::openmode)(std::ios::in | std::ios::out),
 		   true,
 		   0,
 		   02 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     TEST( ::compare( t.getFileName(), TestFn ) == 0 );
     TEST( ::compare( t.getAccess(), "-rw-rw-r--" ) );
-    TEST( t.getMode() == (ios::open_mode)(ios::in | ios::out) );
+    TEST( t.getMode() == (std::ios::openmode)(std::ios::in | std::ios::out) );
     TEST( t.getSize() > 0 );
     TEST( t.getBase() != 0 );
     TEST( t.getEnd() == t.getBase() + t.getSize() );
     TEST( t.getPageSize() > 0 );
-    
+
     memset( t.getBase(), 0x00, t.getSize() );
 
     {
@@ -88,18 +81,5 @@ tMapFile01( LibTest & tester )
 
   }
 
-  return( true );
+  return( VALID_VALIDATOR );
 }
-    
-
-      
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 2.1  1997/07/16 16:38:55  houghton
-// Initial Version (work in progress).
-//
-//

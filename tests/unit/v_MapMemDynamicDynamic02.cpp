@@ -1,58 +1,50 @@
-//
-// File:        tMapMemDynamicDynamic02.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tMapMemDynamicDynamic02
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     06/27/97 06:34
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-06-27 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MapMemDynamicDynamic.hh>
-#include "TestConfig.hh"
-#include <LibTest.hh>
+#include <mdb/MapMemDynamicDynamic.hpp>
+#include <valid/verify.hpp>
 
 #include <algorithm>
 #include <vector>
 
 #include <cstring>
 
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
 #define MAX_VALUE_SIZE	256
 
 // interesting Sun5 problem, the static.allocater in vector<>
 // remembers 'Data' across sources, so it gets the size wrong.
+using namespace mdb;
+using namespace clue;
+
 
 struct MMDD02Data
 {
   MMDD02Data( MapMemDynamicDynamic::Loc l = 0, long s = 0) : loc(l), size(s) {};
   MapMemDynamicDynamic::Loc	loc;
   long				size;
-  unsigned char			value[ MAX_VALUE_SIZE + 1];  
+  unsigned char			value[ MAX_VALUE_SIZE + 1];
 };
 
-typedef vector<MMDD02Data> DataList;
+typedef std::vector<MMDD02Data> DataList;
 
 static const long  TotalChunks = 10000;
 
-typedef	    vector< int >   DataIndex;
+typedef	    std::vector< int >   DataIndex;
 
-bool
-tMapMemDynamicDynamic02( LibTest & tester )
+valid::verify &
+v_MapMemDynamicDynamic02( void )
 {
+  static VVDESC( "mdb::MapMemDynamicDynamic02" );
+
   DataList	data;
   DataIndex	dataIndex;
-  
+
   {
     MMDD02Data d;
     d.loc = 0;
-    
+
     for( int i = 0; i < TotalChunks; ++ i )
       {
 	dataIndex.push_back( i );
@@ -63,8 +55,6 @@ tMapMemDynamicDynamic02( LibTest & tester )
       }
   }
 
-  TESTP( true );
-    
   {
     MapMemDynamicDynamic    t( TEST_DATA_DIR "/tMMDD02.mdd",
 			       1,
@@ -76,12 +66,10 @@ tMapMemDynamicDynamic02( LibTest & tester )
 	 ++ them )
       {
 	(*them).loc = t.allocate( (*them).size );
-	TESTR( t.error(), (*them).loc );
+	TEST( (*them).loc );
 	memcpy( t.address( (*them).loc ), (*them).value, (*them).size );
       }
 
-    TESTP( true );
-    
     // random release all
     {
       DataIndex	    randRelIndex( dataIndex );
@@ -92,31 +80,29 @@ tMapMemDynamicDynamic02( LibTest & tester )
 	   them != randRelIndex.end();
 	   ++ them )
 	{
-	  TESTR( "bad value.",
-		 memcmp( t.address( data[ (*them) ].loc ),
+	  TEST( memcmp( t.address( data[ (*them) ].loc ),
 			 data[ (*them) ].value,
 			 data[ (*them) ].size ) == 0 );
-	  
+
 	  t.release( data[ (*them) ].loc );
 	  data[ (*them) ].loc = 0;
 	}
     }
-    TESTP( true );
-    
+
     TEST( t.getChunkSize() == 0 );
 
     // rand allocate & release
-    
+
     {
       DataIndex	randDataIndex( dataIndex );
-      
+
       random_shuffle( randDataIndex.begin(), randDataIndex.end() );
 
       DataIndex		    allocIndex;
       DataIndex::iterator   randThem = randDataIndex.begin();
 
       // tester.getDump() << "\n  Rand a/r test." << endl;
-      
+
       for( long testCount = 0; testCount < 15000; ++ testCount )
 	{
 	  if( (rand() % 2) == 1 )
@@ -129,7 +115,7 @@ tMapMemDynamicDynamic02( LibTest & tester )
 		  TEST( data[ (*randThem) ].loc == 0 );
 		  data[ (*randThem) ].loc =
 		    t.allocate( data[ (*randThem) ].size );
-		  TESTR( t.error(), data[ (*randThem) ].loc );
+		  TEST( data[ (*randThem) ].loc );
 		  memcpy( t.address( data[ (*randThem) ].loc ),
 			  data[ (*randThem) ].value,
 			  data[ (*randThem) ].size );
@@ -139,7 +125,7 @@ tMapMemDynamicDynamic02( LibTest & tester )
 		}
 	      else
 		{
-		  TESTR( "ran out of index values", false );
+		  TEST( false );
 		}
 	    }
 	  else
@@ -148,16 +134,15 @@ tMapMemDynamicDynamic02( LibTest & tester )
 		{
 		  // release one
 		  random_shuffle( allocIndex.begin(), allocIndex.end() );
-		  
-		  TESTR( "not allocated", data[ allocIndex.back() ].loc );
-		  
-		  TESTR( "bad value.",
-			 memcmp( t.address( data[ allocIndex.back() ].loc ),
+
+		  TEST( data[ allocIndex.back() ].loc );
+
+		  TEST( memcmp( t.address( data[ allocIndex.back() ].loc ),
 				 data[ allocIndex.back() ].value,
 				 data[ allocIndex.back() ].size ) == 0 );
-		  
+
 		  t.release( data[ allocIndex.back() ].loc );
-		  TESTR( t.error(), t.good() );
+		  TEST( t.good() );
 		  data[ allocIndex.back() ].loc = 0;
 		  allocIndex.pop_back();
 		  // tester.getDump() << 'R';
@@ -167,27 +152,5 @@ tMapMemDynamicDynamic02( LibTest & tester )
 	}
     }
   }
-
-  return( true );
+  return( VALID_VALIDATOR );
 }
-    
-
-  
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.3  1997/08/18 10:28:06  houghton
-// Port(Sun5): had to rename the 'Data' structure. The sun compiler was
-//     using the same structure across .C files.
-//
-// Revision 2.2  1997/07/19 10:40:08  houghton
-// Bug-Fix: added include <cstring>
-//
-// Revision 2.1  1997/07/11 17:39:18  houghton
-// Initial Version.
-//
-//

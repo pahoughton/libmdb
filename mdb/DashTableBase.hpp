@@ -1,34 +1,11 @@
-#ifndef _DashTableBase_hh_
-#define _DashTableBase_hh_
-//
-// File:        DashTableBase.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     06/02/97 08:36
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+#ifndef _mdb_DashTableBase_hpp_
+#define _mdb_DashTableBase_hpp_
+// 1997-06-02 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <HashTableBase.hh>
+#include <mdb/HashTableBase.hpp>
 #include <iostream>
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
-
+namespace mdb {
 
 class DashTableBase : public HashTableBase
 {
@@ -36,24 +13,19 @@ class DashTableBase : public HashTableBase
 public:
 
   typedef long		EffDate;
-  
+
   DashTableBase( MultiMemOffset *   memMgr,
 		 const char *	    indexFileName,
-		 ios::open_mode	    mode = ios::in,
+		 std::ios::openmode mode = std::ios::in,
 		 bool		    create = false,
 		 unsigned short	    permMask = 02 );
 
   virtual ~DashTableBase( void );
 
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual const char *	getClassName( void ) const;
-  virtual const char *  getVersion( bool withPrjVer = true ) const;
-  virtual ostream &     dumpInfo( ostream &	dest = cerr,
-				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const;
-
-  static const ClassVersion version;
+  virtual bool		    good( void ) const;
+  virtual const char *	    error( void ) const;
+  virtual std::ostream &    dumpInfo( std::ostream &	dest = std::cerr,
+				      const char *	prefix = "    " ) const;
 
   struct DashNodeBase : public HashNodeBase
   {
@@ -66,15 +38,15 @@ protected:
 
   inline const DashNodeBase &	dashNode( Loc node ) const;
   inline DashNodeBase &		dashNode( Loc node );
-  
+
   Loc		insert( HashValue hash, Loc cur, EffDate eff, Loc node );
   Loc		insert( HashValue hash, EffDate eff, Loc node );
-  
+
   bool		erase( HashValue hash, Loc node );
 
   inline Loc	next( HashValue & hash, Loc & node  ) const;
   inline Loc	prev( HashValue & hash, Loc & node ) const;
-  
+
 private:
 
   DashTableBase( const DashTableBase & from );
@@ -82,118 +54,55 @@ private:
 
 };
 
-#if !defined( inline )
-#include <DashTableBase.ii>
-#else
-#undef inline
+inline
+const DashTableBase::DashNodeBase &
+DashTableBase::dashNode( Loc node ) const
+{
+  return( *( (const DashNodeBase *)(mgr->address( node )) ) );
+}
+
+inline
+DashTableBase::DashNodeBase &
+DashTableBase::dashNode( Loc node )
+{
+  return( *( (DashNodeBase *)(mgr->address( node )) ) );
+}
+
+inline
+HashTableBase::Loc
+DashTableBase::next( HashValue & hash, Loc & node ) const
+{
+  if( dashNode( node ).nextEff )
+    {
+      node = dashNode( node ).nextEff;
+      return( node );
+    }
+  else
+    {
+      // rewind to the first node with the same key
+      for( Loc prevEff = dashNode( node ).prevEff;
+	   prevEff;
+	   node = prevEff, prevEff = dashNode( node ).prevEff );
+
+      return( HashTableBase::next( hash, node ) );
+    }
+}
+
+inline
+DashTableBase::Loc
+DashTableBase::prev( HashValue & hash, Loc & node ) const
+{
+  if( dashNode( node ).prevEff )
+    {
+      node = dashNode( node ).prevEff;
+      return( node );
+    }
+  else
+    {
+      return( HashTableBase::prev( hash, node ) );
+    }
+}
 
 
-#endif
-
-
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	DashTableBase	class
-//
-//  Constructors:
-//
-//  	DashTableBase( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. DashTableBase )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const DashTableBase & src );
-//
-//	istream &
-//	operator >> ( istream & src, DashTableBase & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:42  houghton
-// Change Major Version to 4
-//
-// Revision 2.4  1997/07/19 10:18:49  houghton
-// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
-//     'Hash' was conflicting with the 'Hash' template class.
-//
-// Revision 2.3  1997/07/13 11:06:08  houghton
-// Changed constructor permMask default value.
-//
-// Revision 2.2  1997/06/05 13:42:01  houghton
-// Changed for AIX: had to make DashNodeBase a public member.
-//
-// Revision 2.1  1997/06/05 11:29:09  houghton
-// Initial Version.
-//
-//
-#endif // ! def _DashTableBase_hh_ 
-
+}; // namespace mdb
+#endif // ! def _mdb_DashTableBase_hpp_

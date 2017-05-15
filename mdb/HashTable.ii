@@ -31,7 +31,7 @@ inline
 HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::HashTable(
   MultiMemOffset *  memMgr,
   const char *	    indexFileName,
-  ios::open_mode    mode,
+  ios::openmode    mode,
   bool		    create,
   unsigned short    permMask
   )

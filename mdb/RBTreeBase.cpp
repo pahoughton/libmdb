@@ -1,34 +1,14 @@
-//
-// File:        RBTreeBase.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for RBTreeBase
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     05/08/97 03:01
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-05-08 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "RBTreeBase.hh"
-#include <Str.hh>
-#include <StlUtilsMisc.hh>
+#include "RBTreeBase.hpp"
+#include <clue/Str.hpp>
+#include <clue/Clue.hpp>
+
 #include <iomanip>
 
-#if defined( MDB_DEBUG )
-#include "RBTreeBase.ii"
-#endif
+namespace mdb {
 
-MDB_VERSION(
-  RBTreeBase,
-  "$Id$");
-
-Str RBTreeBase::errStr;
+clue::Str RBTreeBase::errStr;
 
 #if defined( RBT_TEST )
 
@@ -113,7 +93,7 @@ RBTreeBase::RBTreeBase(
 {
   if( ! mgr || ! mgr->good() )
     return;
-  
+
   if( create )
     {
       if( ! (headerLoc = mgr->allocate( sizeof( RBTreeHeader ) ) ) )
@@ -125,7 +105,7 @@ RBTreeBase::RBTreeBase(
       root()		    = 0;
       first()		    = headerLoc;
       last()		    = headerLoc;
-      
+
       if( ! mgr->setNewKey( treeKey, headerLoc ) )
 	{
 	  errorNum = E_BADTREEKEY;
@@ -164,7 +144,7 @@ RBTreeBase::insertNode(
       //    parent is header ( i.e. empty tree )
       // or inserting a dup key
       // or node < parent
-      
+
       parentNode.left() = node.loc();  // if header, this is first
       if( parentNode.loc() == headerLoc )
 	{
@@ -188,7 +168,7 @@ RBTreeBase::insertNode(
       // and not a dup
       // and node > parent
       parentNode.right() = node.loc();
-      
+
       if( parentNode.loc() == last() )
 	{
 	  RBT_TEST_FUNCT( insNode_P_LAST );
@@ -205,13 +185,13 @@ RBTreeBase::insertNode(
   node.set( parentNode.loc(), 0, 0, Red );
 
   NodeBase  bal( *mgr, node.loc() );
-	  
+
   while( bal.loc() != root() &&
 	 parent( bal ).color() == Red )
     {
       if( bal.parent() == parent( bal.parent() ).left() )
 	{
-	  //     
+	  //
 	  //             n         n
 	  //           p    or   p
 	  //         b             b
@@ -221,7 +201,7 @@ RBTreeBase::insertNode(
 	  if( bppr.loc() && bppr.color() == Red )
 	    {
 	      RBT_TEST_FUNCT( insNode_BPPR_RED );
-	      
+
 	      parent( bal ).color() = Black;
 	      bppr.color() = Black;
 	      parent( bal.parent() ).color() = Red;
@@ -234,7 +214,7 @@ RBTreeBase::insertNode(
 		  //             n
 		  //         n       c
 		  RBT_TEST_FUNCT( insNode_B_EQ_BPR );
-		  
+
 		  bal = bal.parent();
 		  rotate_left( bal.loc() );
 		}
@@ -256,7 +236,7 @@ RBTreeBase::insertNode(
 	  if( bppl.loc() && bppl.color() == Red )
 	    {
 	      RBT_TEST_FUNCT( insNode_BPPL_RED );
-	      
+
 	      parent( bal ).color() = Black;
 	      bppl.color() = Black;
 	      parent( bal.parent() ).color() = Red;
@@ -264,11 +244,11 @@ RBTreeBase::insertNode(
 	    }
 	  else
 	    {
-	      
+
 	      if( bal.loc() == parent( bal ).left() )
 		{
 		  RBT_TEST_FUNCT( insNode_B_EQ_BPL );
-		  
+
 		  bal = bal.parent();
 		  rotate_right( bal.loc() );
 		}
@@ -287,7 +267,7 @@ RBTreeBase::insertNode(
 
   NodeBase rootNode( *mgr, root() );
   rootNode.color() = Black;
-  
+
   return( node.loc() );
 }
 
@@ -295,7 +275,7 @@ RBTreeBase::insertNode(
 RBTreeBase::Loc
 RBTreeBase::insert( Loc nodeLoc )
 {
-  
+
   NodeBase  node( *mgr, nodeLoc );
   NodeBase  parentNode( *mgr, headerLoc );
   NodeBase  currentNode( *mgr, root() );
@@ -305,7 +285,7 @@ RBTreeBase::insert( Loc nodeLoc )
   while( currentNode.loc() )
     {
       parentNode = currentNode.loc();
-	  
+
       smaller = lessKey( node.loc(), currentNode.loc() );
 
       currentNode = ( smaller ? currentNode.left() : currentNode.right() );
@@ -338,7 +318,7 @@ RBTreeBase::insert( Loc nodeLoc )
       return( prevParentNode.loc() );
     }
 }
-  
+
 bool
 RBTreeBase::erase( Loc loc )
 {
@@ -348,7 +328,7 @@ RBTreeBase::erase( Loc loc )
   NodeBase xp( *mgr, 0 );
 
   -- header().count;
-  
+
   if( ! y.left() )
     {
       RBT_TEST_FUNCT( erase_NO_LEFT );
@@ -373,7 +353,7 @@ RBTreeBase::erase( Loc loc )
     {
       left( z ).parent() = y.loc();
       y.left() = z.left();
-      
+
       if( y.loc() != z.right() )
 	{
 	  xp = y.parent();
@@ -397,7 +377,7 @@ RBTreeBase::erase( Loc loc )
 	  RBT_TEST_FUNCT( erase_YNZ_YZR );
 	  xp = y.loc();
 	}
-      
+
       if( root() == z.loc() )
 	{
 	  RBT_TEST_FUNCT( erase_YNZ_Z_EQ_ROOT );
@@ -418,7 +398,7 @@ RBTreeBase::erase( Loc loc )
 	}
 
       y.parent() = z.parent();
-      ::swap( y.color(), z.color() );
+      std::swap( y.color(), z.color() );
       y = z.loc();
     }
   else
@@ -435,7 +415,7 @@ RBTreeBase::erase( Loc loc )
 	  RBT_TEST_FUNCT( erase_YZ_NX );
 	}
 #endif
-      
+
       if( z.loc() == root() )
 	{
 	  RBT_TEST_FUNCT( erase_YZ_Z_EQ_ROOT );
@@ -454,7 +434,7 @@ RBTreeBase::erase( Loc loc )
 	      parent( z ).right() = x.loc();
 	    }
 	}
-      
+
       if( z.loc() == first() )
 	{
 	  if( ! z.right() )
@@ -505,7 +485,7 @@ RBTreeBase::erase( Loc loc )
 		  RBT_TEST_FUNCT( erase_X_EQ_XPL_TB );
 		}
 #endif
-	      
+
 	      if( ( tmp.left() == 0 || left( tmp ).color() == Black ) &&
 		  ( tmp.right() == 0 || right( tmp ).color() == Black ) )
 		{
@@ -621,16 +601,16 @@ RBTreeBase::erase( Loc loc )
       RBT_TEST_FUNCT( erase_Y_RED );
     }
 #endif
-  
+
   return( true );
 }
-	  
+
 #if defined( FIXME )
   NodeBase node( *mgr, loc );
   NodeBase one( *mgr, loc );
   NodeBase two( *mgr, loc );
   NodeBase bal( *mgr, loc );
-  
+
   if( ! node.left() )
     {
       RBT_TEST_FUNCT( ++ erase_NO_LEFT );
@@ -651,13 +631,13 @@ RBTreeBase::erase( Loc loc )
 	}
     }
 
-  
+
   if( one.loc() != node.loc() )
     {
       // node had a left and a right
       // relink one inplace of node
       RBT_TEST_FUNCT( ++ erase_LR_UNLINK );
-      
+
       left( node ).parent() = one.loc();
       one.left() = node.left();
 
@@ -666,7 +646,7 @@ RBTreeBase::erase( Loc loc )
 	  // we went down left more that one node.
 	  RBT_TEST_FUNCT( ++ erase_N1NR );
 	  if( two.loc() )
-	    { 
+	    {
 	      RBT_TEST_FUNCT( ++ erase_N1NRT );
 	      two.parent() = one.parent();
 	    }
@@ -684,7 +664,7 @@ RBTreeBase::erase( Loc loc )
 	  if( two.loc() )
 	    {
 	      RBT_TEST_FUNCT( ++ erase_1NRT );
-	      two.parent() = one.loc(); 
+	      two.parent() = one.loc();
 	    }
 	  else
 	    {
@@ -717,7 +697,7 @@ RBTreeBase::erase( Loc loc )
       one.parent() = node.parent();
 
       ::swap( one.color(), node.color() );
-      
+
       one = node.loc();
     }
   else
@@ -732,7 +712,7 @@ RBTreeBase::erase( Loc loc )
 	{
 	  bal = one.loc();
 	}
-      
+
       if( node.loc() == root() )
 	{
 	  RBT_TEST_FUNCT( ++ erase_ORT );
@@ -751,7 +731,7 @@ RBTreeBase::erase( Loc loc )
 	      parent( node ).right() = two.loc();
 	    }
 	}
-      
+
       if( node.loc() == first() )
 	{
 	  if( ! node.right() )
@@ -770,7 +750,7 @@ RBTreeBase::erase( Loc loc )
 		first() = headerLoc;
 	    }
 	}
-      
+
       if( node.loc() == last() )
 	{
 	  if( ! node.left() )
@@ -806,7 +786,7 @@ RBTreeBase::erase( Loc loc )
 		  rotate_left( two.parent() );
 		  tmp = parent( two ).right();
 		}
-	      
+
 	      if( left( tmp ).color() == Black &&
 		  right( tmp ).color() == Black )
 		{
@@ -844,7 +824,7 @@ RBTreeBase::erase( Loc loc )
 		  rotate_right( two.parent() );
 		  tmp = parent( two ).left();
 		}
-	      
+
 	      if( right( tmp ).color() == Black &&
 		  left( tmp ).color() == Black )
 		{
@@ -880,7 +860,7 @@ RBTreeBase::erase( Loc loc )
 }
 #endif
 
-	    
+
 void
 RBTreeBase::rotate_right( Loc loc )
 {
@@ -915,7 +895,7 @@ RBTreeBase::rotate_right( Loc loc )
 	  parent( node ).left() = nLeft.loc();
 	}
     }
-  
+
   nLeft.right() = node.loc();
   node.parent() = nLeft.loc();
 }
@@ -957,7 +937,7 @@ RBTreeBase::rotate_left( Loc loc )
   nRight.left() = node.loc();
   node.parent() = nRight.loc();
 }
-  
+
 bool
 RBTreeBase::good( void ) const
 {
@@ -967,9 +947,9 @@ RBTreeBase::good( void ) const
 const char *
 RBTreeBase::error( void ) const
 {
-  static Str myErrStr;
+  static clue::Str myErrStr;
 
-  errStr = RBTreeBase::getClassName();
+  errStr = "RBTreeBase";
 
   if( good() )
     {
@@ -1015,42 +995,26 @@ RBTreeBase::error( void ) const
   return( myErrStr.c_str() );
 }
 
-const char *
-RBTreeBase::getClassName( void ) const
-{
-  return( "RBTreeBase" );
-}
 
-const char *
-RBTreeBase::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 RBTreeBase::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << RBTreeBase::getClassName() << ":\n"
-	 << RBTreeBase::getVersion() << '\n';
 
   if( ! RBTreeBase::good() )
     dest << prefix << "Error: " << RBTreeBase::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  
+
   if( mgr )
     {
-      Str pre;
+      clue::Str pre;
       pre = prefix;
       pre << "mgr:";
-      mgr->dumpInfo( dest, pre, false );
+      mgr->dumpInfo( dest, pre );
     }
   else
     {
@@ -1132,30 +1096,30 @@ RBTreeBase::dumpInfo(
        << prefix << "erase_X_NE_XPL_NTL:     " <<erase_X_NE_XPL_NTL  << '\n'
     ;
 #endif
-    
+
   return( dest );
 
 }
 
-ostream &
-RBTreeBase::dumpRBTree( ostream & dest, const DumpMethods & meth ) const
+std::ostream &
+RBTreeBase::dumpRBTree( std::ostream & dest, const DumpMethods & meth ) const
 {
 
-  dest << "Header: " << setw( 4 ) << headerLoc
+  dest << "Header: " << std::setw( 4 ) << headerLoc
 	   << (( header().color == Red ) ? ":R" : ":b" )
-	   << setw(5) << header().parent
-	   << setw(5) << header().left
-	   << setw(5) << header().right
+	   << std::setw(5) << header().parent
+	   << std::setw(5) << header().left
+	   << std::setw(5) << header().right
 	   << '\n'
 	;
 
   if( root() == 0 )
     return( dest );
-  
+
   ConstNodeBase	    node( *mgr, root() );
   long		    level = 0;
 
-  
+
   for( ; node.loc() != first() ; )
     {
       ConstNodeBase parentNode( *mgr, node.parent() );
@@ -1194,17 +1158,17 @@ RBTreeBase::dumpRBTree( ostream & dest, const DumpMethods & meth ) const
 
   for( ; node.loc() != headerLoc; )
     {
-      dest << setw( 4 ) //(level * 2) + 4 )
+      dest << std::setw( 4 ) //(level * 2) + 4 )
 	   << node.loc()
 	   << (( node.color() == Red ) ? ":R" : ":b" )
-	   << setw(2) << level
-	   << setw(5) << node.parent()
-	   << setw(5) << node.left()
-	   << setw(5) << node.right()
+	   << std::setw(2) << level
+	   << std::setw(5) << node.parent()
+	   << std::setw(5) << node.left()
+	   << std::setw(5) << node.right()
 	   << ' '
 	;
       meth.dumpNode( dest, node.loc() ) << '\n';
-      
+
       if( node.right() )
 	{
 	  ++ level;
@@ -1234,18 +1198,18 @@ RBTreeBase::dumpRBTree( ostream & dest, const DumpMethods & meth ) const
 }
 
 bool
-RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
+RBTreeBase::testNode( std::ostream & dest, const ConstNodeBase & node ) const
 {
-  
+
   if( node.left() && ! lessKey( node.left(), node.loc() ) )
     {
-      dest << "Error: " << node.left() << ' ' << node.loc() << endl;
+      dest << "Error: " << node.left() << ' ' << node.loc() << std::endl;
       return( false );
     }
-	
+
   if( node.right() && ! lessKey( node.loc(), node.right() ) )
     {
-      dest << "Error: " << node.loc() << ' ' << node.right() << endl;
+      dest << "Error: " << node.loc() << ' ' << node.right() << std::endl;
       return( false );
     }
 
@@ -1254,24 +1218,24 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
 
   {
     ConstNodeBase  p( *mgr, node.loc() );
-    
+
     for( ; p.parent() != headerLoc; p = p.parent() )
       {
 	// dest << p.loc() << ":" << ((p.color() == Red) ? "R " : "b " );
 	if( isRed && parent( p ).color() == Red )
 	  {
 	    dest << "\nN(" << p.loc() << ") & p(" << p.parent()
-		 << ") both RED." << endl;
+		 << ") both RED." << std::endl;
 	    return( false );
 	  }
 	isRed = parent( p ).color() == Red;
       }
     // if( p.loc() != node.loc() )
-    //  dest << p.loc() << ":" << ((p.color() == Red) ? "R " : "b " ) << endl;
+    //  dest << p.loc() << ":" << ((p.color() == Red) ? "R " : "b " ) << std::endl;
 
     if( p.loc() != root() )
       {
-	dest << "Top parent not ROOT!" << endl;
+	dest << "Top parent not ROOT!" << std::endl;
 	return( false );
       }
   }
@@ -1279,7 +1243,7 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
   long lLevel = 0;
   long rMaxLevel = 0;
   long rLevel = 0;
-  
+
   if( node.left() )
     {
       ConstNodeBase	l( *mgr, node.loc() );
@@ -1289,7 +1253,7 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
 
       lMaxLevel = lLevel;
       // now at smallest node of sub tree;
-      
+
       for( ; l.loc() != node.loc(); )
 	{
 	  if( l.right() )
@@ -1297,7 +1261,7 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
 	      ++ lLevel;
 	      for( l = l.right(); l.left(); l = l.left() )
 		++ lLevel;
-	      lMaxLevel = max( lMaxLevel, lLevel );
+	      lMaxLevel = std::max( lMaxLevel, lLevel );
 	    }
 	  else
 	    {
@@ -1335,7 +1299,7 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
 	      ++ rLevel;
 	      for( r = r.left(); r.right(); r = r.right() )
 		++ rLevel;
-	      rMaxLevel = max( rMaxLevel, rLevel );
+	      rMaxLevel = std::max( rMaxLevel, rLevel );
 	    }
 	  else
 	    {
@@ -1355,52 +1319,52 @@ RBTreeBase::testNode( ostream & dest, const ConstNodeBase & node ) const
 
   if( abs( rMaxLevel - lMaxLevel ) > 4 )
     {
-      dest << "TestNode: " << setw(4) << node.loc()
-	   << " d: " << setw(3) << abs( rMaxLevel - lMaxLevel )
+      dest << "TestNode: " << std::setw(4) << node.loc()
+	   << " d: " << std::setw(3) << abs( rMaxLevel - lMaxLevel )
 	   << " l: " << lMaxLevel
 	   << " r: " << rMaxLevel
-	   << endl;
+	   << std::endl;
       return( false );
     }
   return( true );
 }
 
 bool
-RBTreeBase::testTree( ostream & dest ) const
+RBTreeBase::testTree( std::ostream & dest ) const
 {
   ConstNodeBase	    node( *mgr, first() );
   ConstNodeBase	    prev( *mgr, 0 );
-  
+
   size_type	    cnt = 0;
 
   if( header().count == 0 )
     {
       if( first() != headerLoc )
 	{
-	  dest << "Empty: first not header: " << first() << endl;
+	  dest << "Empty: first not header: " << first() << std::endl;
 	  return( false );
 	}
       if( last() != headerLoc )
 	{
-	  dest << "Empty: last not header: " << last() << endl;
+	  dest << "Empty: last not header: " << last() << std::endl;
 	  return( false );
 	}
 
       if( root() )
 	{
-	  dest << "Empty: root not 0: " << root() << endl;
+	  dest << "Empty: root not 0: " << root() << std::endl;
 	  return( false );
 	}
 
       return( true );
     }
-  
+
   if( node.left() )
     {
-      dest << "First has left" << endl;
+      dest << "First has left" << std::endl;
       return( false );
     }
-  
+
   for( ; node.loc() != headerLoc ; node.next() )
     {
       if( ! testNode( dest, node ) )
@@ -1411,21 +1375,21 @@ RBTreeBase::testTree( ostream & dest ) const
 	  if( ! lessKey( prev.loc(), node.loc() ) )
 	    {
 	      dest << "Prev Error: " << node.loc()
-		   << " " << prev.loc() << endl;
+		   << " " << prev.loc() << std::endl;
 	      return( false );
 	    }
 	  prev = node.loc();
 	}
-      
+
       ++ cnt;
     }
 
   if( cnt != size() )
     {
-      dest << "Size: " << size() << " count: " << cnt << endl;
+      dest << "Size: " << size() << " count: " << cnt << std::endl;
       return( false );
     }
-  
+
   return( true );
 }
 
@@ -1439,7 +1403,7 @@ RBTreeBase::allTested( void ) const
   if( ins_NOT_FIRST == 0 ) { ret = false; }
   if( ins_NOT_SMALLER == 0 ) { ret = false; }
   if( ins_DUP_FAIL == 0 ) { ret = false; }
-  
+
   if( insNode_P_HEADER == 0 ) { ret = false; }
   if( insNode_N_LT_P == 0 ) { ret = false; }
   if( insNode_P_FIRST == 0 ) { ret = false; }
@@ -1451,21 +1415,21 @@ RBTreeBase::allTested( void ) const
   if( insNode_BPPL_RED == 0 ) { ret = false; }
   if( insNode_B_EQ_BPL == 0 ) { ret = false; }
   if( insNode_BPPL_BLACK == 0 ) { ret = false; }
-  
+
   if( rr_NLR == 0 ) { ret = false; }
   if( rr_N_EQ_ROOT == 0 ) { ret = false; }
   if( rr_NPR == 0 ) { ret = false; }
   if( rr_NPL == 0 ) { ret = false; }
-  
+
   if( rl_NRL == 0 ) { ret = false; }
   if( rl_N_EQ_ROOT == 0 ) { ret = false; }
   if( rl_NPL == 0 ) { ret = false; }
   if( rl_NPR == 0 ) { ret = false; }
-  
+
   if( erase_NO_LEFT == 0 ) { ret = false; }
   if( erase_NO_RIGHT == 0 ) { ret = false; }
   if( erase_LEFT_RIGHT == 0 ) { ret = false; }
-  
+
   if( erase_YNZ_YNZR_NX == 0 ) { ret = false; }
   if( erase_YNZ_YNZR_X == 0 ) { ret = false; }
   if( erase_YNZ_YZR == 0 ) { ret = false; }
@@ -1498,7 +1462,7 @@ RBTreeBase::allTested( void ) const
   if( erase_X_NE_XPL_TL == 0 ) { ret = false; }
   if( erase_X_NE_XPL_NTL == 0 ) { ret = false; }
 #endif
-  
+
   return( ret );
 }
 
@@ -1570,10 +1534,10 @@ RBTreeBase::resetTested( void ) const
   erase_X_NE_XPL_TL = 0;
   erase_X_NE_XPL_NTL = 0;
 #endif
-  
+
 }
- 
-  
+
+
 bool
 RBTreeBase::setError( ErrorNum err )
 {
@@ -1581,42 +1545,4 @@ RBTreeBase::setError( ErrorNum err )
   return( good() );
 }
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 2.8  2001/07/27 00:47:31  houghton
-// *** empty log message ***
-//
-// Revision 2.7  1999/07/17 08:39:37  houghton
-// Improved Error output.
-//
-// Revision 2.6  1997/10/01 14:03:29  houghton
-// Chaged to reserve 'keys' set.
-// Changed to use portable multi platform types.
-//
-// Revision 2.5  1997/08/18 10:24:10  houghton
-// Port(Sun5): had to add static errStr to be used by template sub
-//     classes (DBTree). The sun compiler gets a dup symbol error.
-//
-// Revision 2.4  1997/07/25 13:48:40  houghton
-// Cleanup.
-//
-// Revision 2.3  1997/07/14 10:40:43  houghton
-// Port(AIX): added a bool constructor for the '? :' operator.
-//
-// Revision 2.2  1997/07/13 11:33:36  houghton
-// Cleanup.
-// Changed to use MultiMemOffset.
-// Added testing & debuging methods().
-// Major rework of erase().
-//
-// Revision 2.1  1997/06/05 11:29:13  houghton
-// Initial Version.
-//
-//
+}; // namespace mdb

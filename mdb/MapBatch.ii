@@ -24,7 +24,7 @@ template< class T >
 inline
 MapBatch<T>::MapBatch(
   const char *	    fileName,
-  ios::open_mode    mode
+  ios::openmode    mode
   )
   : map( fileName, 0, mode, false, 02 ),
     endPos( map.getSize() )
@@ -35,7 +35,7 @@ template< class T >
 inline
 MapBatch<T>::MapBatch(
   const char *	    fileName,
-  ios::open_mode    mode,
+  ios::openmode    mode,
   MapFile::MapMask  permMask
   )
   : map( fileName,
@@ -53,7 +53,7 @@ template< class T >
 inline
 MapBatch<T>::MapBatch(
   const char *	    fileName,
-  ios::open_mode    mode,
+  ios::openmode    mode,
   bool		    create,
   MapFile::MapMask  permMask
   )

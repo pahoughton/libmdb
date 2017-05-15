@@ -1,34 +1,20 @@
 #ifndef _DRBTree_hh_
 #define _DRBTree_hh_
-//
-// File:        DRBTree.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-// NOTE: FIXME
-//
-//	I am storing the key multible times. This should be avoided!
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     07/16/97 04:19
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+/* 1997-07-16 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <RBTreeBase.hh>
+   FIXME
+
+   I am storing the key multible times. This should be avoided!
+*/
+
+#include <mdb/RBTreeBase.hpp>
+
 #include <iostream>
+#include <iomanip>
 #include <iterator>
 #include <utility>
+
+namespace mdb {
 
 template< class Key, class Value, class KeyOfValue, class LessKey >
 class DRBTree : public RBTreeBase
@@ -37,11 +23,11 @@ class DRBTree : public RBTreeBase
 public:
 
   typedef DRBTree< Key, Value, KeyOfValue, LessKey >	self;
-  
+
   typedef ptrdiff_t	    difference_type;
   typedef const Value &	    const_referance;
   typedef Value &	    referance;
-  
+
   typedef time_t	    EffDate;
 
   struct DRBNode : public RBNodeBase
@@ -59,11 +45,11 @@ public:
 
   class const_iterator;
   class iterator
-    : public std::iterator< bidirectional_iterator_tag,
-                       Value,
-                       difference_type,
-                       Value *,
-                       Value & >
+    : public std::iterator< std::bidirectional_iterator_tag,
+			    Value,
+			    difference_type,
+			    Value *,
+			    Value & >
   {
   public:
 
@@ -98,17 +84,15 @@ public:
     inline Value &	operator * ( void ) {
       return( table->history( hist ).value );
     };
-    
+
     inline bool		operator == ( const iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node && hist == rhs.hist );
     };
-    
-#if defined( STLUTILS_RELOPS_BROKEN )
+
     inline bool		operator != ( const iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
-#endif
-    
+
     inline iterator &	operator = ( const iterator & rhs ) {
       table = rhs.table;
       node = rhs.node;
@@ -133,11 +117,11 @@ public:
   };
 
   class const_iterator
-    : public std::iterator< bidirectional_iterator_tag,
-                         Value,
-                         difference_type,
-                         const Value *,
-                         const Value & >
+    : public std::iterator< std::bidirectional_iterator_tag,
+			    Value,
+			    difference_type,
+			    const Value *,
+			    const Value & >
   {
   public:
 
@@ -159,7 +143,7 @@ public:
       if( table ) table->nextkey( node, hist );
       return( *this );
     };
-		    
+
     inline const_iterator &    operator -- ( void ) {
       if( table ) table->prevHist( node, hist );
       return( *this );
@@ -177,29 +161,27 @@ public:
       return( it );
     };
 
-      
+
     inline const Value &    operator * ( void ) const {
       return( table->history( hist ).value );
     };
-    
+
     inline bool		    operator == ( const const_iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node && hist == rhs.hist );
     };
-    
-#if defined( STLUTILS_RELOPS_BROKEN )
+
     inline bool		operator != ( const const_iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
-#endif
-    
+
     inline bool	    operator == ( const typename self::iterator & rhs ) const {
       return( table == rhs.table && node == rhs.node && hist == rhs.hist );
     };
-    
+
     inline bool	    operator != ( const typename self::iterator & rhs ) const {
       return( ! (*this == rhs) );
     }
-    
+
     inline const_iterator & operator = ( const const_iterator & rhs ) {
       table = rhs.table;
       node = rhs.node;
@@ -209,7 +191,7 @@ public:
 
     inline const_iterator & operator = (
       const typename self::iterator & rhs ) {
-      
+
       table = rhs.table;
       node = rhs.node;
       hist = rhs.hist;
@@ -231,49 +213,37 @@ public:
     RBTreeBase::Loc					hist;
   };
 
-#if defined( STDCXX_PARTIAL_SPECIALIZATION )
-  typedef ::reverse_iterator< iterator >	reverse_iterator;
-  typedef ::reverse_iterator< const_iterator >	const_reverse_iterator;
-#else
-  typedef std::reverse_iterator< const_iterator,
-    typename const_iterator::iterator_category,
-    typename const_iterator::value_type,
-    typename const_iterator::reference,
-    typename const_iterator::pointer,
-    typename const_iterator::difference_type > const_reverse_iterator;
-  typedef std::reverse_iterator<
-    iterator,
-    typename iterator::iterator_category,
-    typename iterator::value_type,
-    typename iterator::reference,
-    typename iterator::pointer,
-    typename iterator::difference_type > reverse_iterator;
-#endif
-    
-  typedef pair< iterator, bool >    pair_iterator_bool;
-  
+  typedef std::reverse_iterator< iterator >	    reverse_iterator;
+  typedef std::reverse_iterator< const_iterator >   const_reverse_iterator;
+
+  typedef std::pair< iterator, bool >    pair_iterator_bool;
+
   inline DRBTree( MultiMemOffset *  memMgr,
 		  unsigned short    treeKey = 0,
-		  bool		    create = false );
+		  bool		    create = false )
+    : RBTreeBase( memMgr, treeKey, create ),
+      histMgr( memMgr ) {};
 
   inline DRBTree( MultiMemOffset *  memMgr,
 		  MultiMemOffset *  histMemMgr,
 		  unsigned short    treeKey = 0,
-		  bool		    create = false );
+		  bool		    create = false )
+    : RBTreeBase( memMgr, treeKey, create ),
+      histMgr( histMemMgr ) {};
 
-  virtual ~DRBTree( void );
+  virtual ~DRBTree( void ) {};
 
   inline pair_iterator_bool	insert( const Value & rec, EffDate eff ) {
     Loc node = mgr->allocate( sizeof( DRBNode ) );
     Loc hist = histMgr->allocate( sizeof( DRBHist ) );
-    
+
     if( node && hist )
       {
 	history( hist ).value	= rec;
 	history( hist ).when	= eff;
 	history( hist ).next	= 0;
 	history( hist ).del	= 0;
-	
+
 	drbNode( node ).hist	= hist;
 
 	Loc insLoc = RBTreeBase::insert( node );
@@ -284,9 +254,9 @@ public:
 	else
 	  {
 	    mgr->release( node );
-	    
+
 	    ++ header().count;
-  
+
 	    Loc * h = &(drbNode( insLoc ).hist);
 	    for( ; *h && history( *h ).when > eff ;
 		 h = &(history( *h ).next) );
@@ -313,7 +283,7 @@ public:
 	Loc hist = drbNode( node ).hist;
 	for( ; hist && history( hist ).when > eff;
 	     hist = history( hist ).next );
-	
+
 	if( hist )
 	  return( history( hist ).del ? end() : const_iterator( this, node, hist ) );
 	else
@@ -333,7 +303,7 @@ public:
 	Loc hist = drbNode( node ).hist;
 	for( ; hist && history( hist ).when > eff;
 	     hist = history( hist ).next );
-	
+
 	if( hist )
 	  return( history( hist ).del ? end() : iterator( this, node, hist ) );
 	else
@@ -351,10 +321,10 @@ public:
       {
 	Loc hist = drbNode( node ).hist;
 
-	// return the newest (latest eff date) non deleted history 
+	// return the newest (latest eff date) non deleted history
 	for( ; hist && history( hist ).del;
 	     hist = history( hist ).next );
-	
+
 	if( hist )
 	  return( history( hist ).del ? end() :
 		  const_iterator( this, node, hist ) );
@@ -366,17 +336,17 @@ public:
 	return( end() );
       }
   };
-  
+
   inline iterator	    lower_bound( const Key & key ) {
     Loc node = findNode( key );
     if( node != headerLoc )
       {
 	Loc hist = drbNode( node ).hist;
 
-	// return the newest (latest eff date) non deleted history 
+	// return the newest (latest eff date) non deleted history
 	for( ; hist && history( hist ).del;
 	     hist = history( hist ).next );
-	
+
 	if( hist )
 	  return( history( hist ).del ? end() :
 		  iterator( this, node, hist ) );
@@ -388,7 +358,7 @@ public:
 	return( end() );
       }
   };
-  
+
   inline bool		    erase( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
@@ -397,7 +367,7 @@ public:
     else
       return( false );
   };
-  
+
   inline bool		    erase( const iterator & pos, EffDate eff ) {
     if( pos.node != headerLoc )
       return( eraseNode( pos.node, eff ) );
@@ -414,9 +384,9 @@ public:
     }
     return( true );
   };
-    
-    
-    
+
+
+
   inline bool		    trim( const Key & key, EffDate eff ) {
     Loc node = findNode( key );
     if( node != headerLoc &&
@@ -426,7 +396,7 @@ public:
       }
     return( true );
   };
-	
+
   inline bool		trim( EffDate eff ) {
     Loc node = first();
     for(Loc nNode; node != headerLoc; node = nNode )
@@ -438,19 +408,19 @@ public:
       }
     return( true );
   };
-    
+
   inline const_iterator	    begin( void ) const {
     return( const_iterator( this, first(), firstHist( first() ) ) );
   };
-  
+
   inline const_iterator	    end( void ) const {
     return( const_iterator( this, headerLoc, 0 ) );
   };
-  
+
   inline iterator	    begin( void ) {
     return( iterator( this, first(), firstHist( first() ) ) );
   };
-  
+
   inline iterator	    end( void ) {
     return( iterator( this, headerLoc, 0 ) );
   };
@@ -481,7 +451,7 @@ public:
   inline bool		effective( const const_iterator & it, EffDate eff ) const {
     Loc node = it.node;
     Loc hist = it.hist;
-    
+
     if( node && hist )
       {
 
@@ -495,15 +465,15 @@ public:
 	// no record found that had a when less that eff
 	if( ! h )
 	  return( false );
-	
+
 	// ok, now we should have a hist who's when is before eff
-	
+
 	if( h == hist )
 	  {
 	    // we stoped at the same record was the one we where passed.
 	    // so, it is the one in effect if it's when is before (or =)
 	    // the the effdate and it is not a 'del' rec.
-	    
+
 	    return( history( h ).when <= eff && ! history( h ).del );
 	  }
 	else
@@ -523,7 +493,7 @@ public:
 
   inline size_type	histSize( void ) const {
     size_type count( 0 );
-    
+
     for( const_iterator them = begin();
 	 them != end();
 	 them.nextkey() )
@@ -535,21 +505,60 @@ public:
       }
     return( count );
   };
-    
-    
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual const char *	getClassName( void ) const;
-#if defined( FIXME )
-  virtual const char *  getVersion( bool withPrjVer = true ) const;
-  virtual ostream &     dumpInfo( ostream &	dest = cerr,
-				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const;
 
-  static const ClassVersion version;
-#endif
 
-  ostream & dumpNode( ostream & dest, const_iterator it ) const {
+  virtual bool		    good( void ) const {
+    return( RBTreeBase::good() && histMgr && histMgr->good() );
+  }
+  virtual const char *	    error( void ) const {
+
+    static std::string errStr;
+
+    errStr = "DRBTree<Key, Value, KeyOfValue, LessKey>";
+
+    if( good() ) {
+      errStr += ": ok";
+    } else {
+      size_t eSize = errStr.size();
+
+      if( ! RBTreeBase::good() ) {
+	errStr += ": ";
+	errStr += RBTreeBase::error();
+      }
+
+      if( ! histMgr )
+	errStr += ": no hist mem mgr.";
+
+      if( histMgr && ! histMgr->good() ) {
+	errStr += ": histMgr: ";
+	errStr += histMgr->error();
+      }
+
+      if( eSize == errStr.size() )
+        errStr += ": unknown error";
+    }
+
+    return( errStr.c_str() );
+  }
+
+
+  virtual std::ostream &  dumpInfo( std::ostream &  dest = std::cerr,
+				    const char *    prefix = "    " ) const {
+    if( ! good() )
+      dest << prefix << "Error: " << error() << '\n';
+    else
+      dest << prefix << "Good" << '\n';
+
+    RBTreeBase::dumpInfo( dest, prefix );
+    if( histMgr ) {
+      std::string pre("histmgr:");
+      (*histMgr).dumpInfo( dest, pre.c_str() );
+    }
+    return( dest );
+  };
+
+
+  std::ostream & dumpNode( std::ostream & dest, const_iterator it ) const {
     dest << "node:      " << it.node << '\n'
 	 << "hist:      " << it.hist << '\n'
 	 << "next hist: " << (it.hist ? history( it.hist ).next : 0 ) << '\n'
@@ -559,38 +568,38 @@ public:
     return( dest );
   };
 
-  ostream & dumpHist( ostream &		dest,
-		      const_iterator	it,
-		      const char *	prefix = "   ",
-		      int		nameWidth = 0,
-		      bool		locs = false ) const {
+  std::ostream & dumpHist( std::ostream &		dest,
+			   const_iterator	it,
+			   const char *	prefix = "   ",
+			   int		nameWidth = 0,
+			   bool		locs = false ) const {
     if( locs )
       dest << prefix
-	   << setw( nameWidth ) << "node"
+	   << std::setw( nameWidth ) << "node"
 	   << ": '" << it.node << "'\n";
 
     for( Loc h = drbNode( it.node ).hist; h ; h = history( h ).next )
       {
 	if( locs )
-	  dest << prefix << setw( nameWidth ) << "hist"
+	  dest << prefix << std::setw( nameWidth ) << "hist"
 	       << ": '" << h << "'\n";
 
 	dest << prefix
-	     << setw( nameWidth ) << "when"
+	     << std::setw( nameWidth ) << "when"
 	     << ": '" << DateTime( history( h ).when ) << "' ("
 	     << history( h ).when << ")\n"
 	     << prefix
-	     << setw( nameWidth ) << "del"
+	     << std::setw( nameWidth ) << "del"
 	     << ": '" << (history( h ).del ? 'Y' : 'N') << "'\n"
 	  ;
-	
+
 	if( ! history( h ).del )
 	  dest << history( h ).value << '\n';
       }
     return( dest );
   };
 
-		      
+
 protected:
 
   friend iterator;
@@ -607,7 +616,7 @@ protected:
   inline const DRBHist &    history( Loc hist ) const {
     return( *((const DRBHist *)histMgr->address( hist ) ) );
   };
-  
+
   inline DRBHist &	    history( Loc hist ) {
     return( *((DRBHist *)histMgr->address( hist ) ) );
   };
@@ -619,7 +628,7 @@ protected:
   inline DRBNode &	    drbNode( Loc node ) {
     return( *((DRBNode *)mgr->address( node ) ) );
   };
-  
+
   inline Loc	nextkey(  Loc & node, Loc & hist ) const {
     for( next( node ); node != headerLoc; next( node ) )
       {
@@ -634,14 +643,14 @@ protected:
     hist = 0;
     return( hist );
   };
-    
+
   inline Loc	nextHist( Loc & node, Loc & hist ) const {
     if( history( hist ).next )
       {
 	for( hist = history( hist ).next;
 	     hist && history( hist ).del;
 	     hist = history( hist ).next );
-	
+
 	if( hist )
 	  return( hist );
       }
@@ -650,12 +659,12 @@ protected:
   };
 
   inline Loc	prevHist( Loc & node, Loc & hist ) const {
-    
+
     if( hist && hist != drbNode( node ).hist )
       {
 	Loc pHist = drbNode( node ).hist;
 	Loc gHist = pHist;
-	
+
 	for( ; history( pHist ).next != hist; pHist = history( pHist ).next )
 	  {
 	    if( history( pHist ).del == 0 )
@@ -667,7 +676,7 @@ protected:
 	    hist = pHist;
 	    return( hist );
 	  }
-	
+
 	if( history( gHist ).del == 0 )
 	  {
 	    hist = gHist;
@@ -683,7 +692,7 @@ protected:
       {
 	Loc nHist = drbNode( node ).hist;
 	Loc gHist = nHist;
-	
+
 	for( ; history( nHist ).next; nHist = history( nHist ).next )
 	  {
 	    if( history( nHist ).del == 0 )
@@ -716,7 +725,7 @@ protected:
 	 hist = history( hist ).next );
     return( hist );
   };
-  
+
   inline Loc		findNode( const Key & key ) const {
     Loc	    parent = headerLoc;
     Loc	    node = root();
@@ -741,10 +750,10 @@ protected:
     // we allocate hist first so 'h' will not become invalid.
     Loc hist = histMgr->allocate( sizeof( DRBHist ) );
     Loc * h = &(drbNode( node ).hist);
-    
+
     for( ; *h && history( *h ).when > eff ;
 	 h = &(history( *h ).next) );
-    
+
     if( *h && history( *h ).when == eff )
       {
 	history( *h ).del = 1;
@@ -756,14 +765,14 @@ protected:
 	if( hist )
 	  {
 	    ++ header().count;
-	    
+
 	    keyOf( history( hist ).value )  =
 	      keyOf( history( drbNode( node ).hist ).value );
-	    
+
 	    history( hist ).when	    = eff;
 	    history( hist ).next	    = 0;
 	    history( hist ).del		    = 1;
-	    
+
 	    history( hist ).next = *h;
 	    *h = hist;
 	  }
@@ -776,7 +785,7 @@ protected:
   };
 
   inline bool		trimNode( Loc node, EffDate eff ) {
-    
+
     Loc prevHist    = 0;
     Loc hist	    = drbNode( node ).hist;
     for( ; hist && history( hist ).when >= eff;
@@ -785,12 +794,12 @@ protected:
 	if( history( hist ).del == 0 )
 	  prevHist = hist;
       }
-    
+
     if( hist )
       {
 	Loc trimHist = history( hist ).next;
 	Loc nextHist;
-	
+
 	if( ! prevHist )
 	  {
 	    trimHist = hist;
@@ -801,7 +810,7 @@ protected:
 	    trimHist = history( prevHist ).next;
 	    history( prevHist ).next = 0;
 	  }
-	
+
 	for( ; trimHist; trimHist = nextHist )
 	  {
 	    nextHist = history( trimHist ).next;
@@ -809,10 +818,10 @@ protected:
 	    -- header().count;
 	  }
       }
-    
+
     return( true );
   };
-  
+
   inline bool	lessKey( Loc one, Loc two ) const {
     return( lessKeyObj( keyOf( nodeValue( one ) ),
 			keyOf( nodeValue( two ) ) ) );
@@ -820,9 +829,9 @@ protected:
 
   LessKey	lessKeyObj;
   KeyOfValue	keyOf;
-  
+
   MultiMemOffset *  histMgr;
-  
+
 private:
 
   // DRBTree( const DRBTree & from );
@@ -830,174 +839,9 @@ private:
 
 };
 
-#include <DRBTree.ii>
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	DRBTree	class
-//
-//  Constructors:
-//
-//  	DRBTree( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. DRBTree )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const DRBTree & src );
-//
-//	istream &
-//	operator >> ( istream & src, DRBTree & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.7  2005/11/18 20:09:50  houghton
-// Bug-Fix: const find() was not check del flag.
-//
-// Revision 4.6  2004/04/19 20:26:48  houghton
-// Fixed warning messages.
-//
-// Revision 4.5  2003/09/18 15:16:38  houghton
-// Bug-Fix was getting into infinate loop because I was not testing hist
-// == 0 in nextNode and nextHist methods
-//
-// Revision 4.4  2003/09/04 20:50:44  houghton
-// Changed eff date type & changed dumpHist output.
-//
-// Revision 4.3  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.2  2002/02/28 15:12:46  houghton
-// Port(Forte 6.2) Added typename to eliminate warnings.
-//
-// Revision 4.1  2001/07/27 00:57:42  houghton
-// Change Major Version to 4
-//
-// Revision 2.15  2000/05/27 14:02:49  houghton
-// Port: Sun CC 5.0.
-//
-// Revision 2.14  1999/11/04 17:26:57  houghton
-// Added histSize().
-// Changed output of dumpHist().
-//
-// Revision 2.13  1999/03/02 12:56:10  houghton
-// Added lower_bound().
-//
-// Revision 2.12  1998/10/23 13:17:01  houghton
-// Changed include <pair> to <utility>
-// Added const_iterator::operator != ( const iterator & rhs );
-//
-// Revision 2.11  1998/03/03 20:56:39  houghton
-// Bug-Fix: effective() would lie.
-//
-// Revision 2.10  1997/11/03 13:38:57  houghton
-// Bug-Fix: changed to alloc the hist node before getting the address of
-//     node's hist.
-//
-// Revision 2.9  1997/11/03 12:03:21  houghton
-// Added a method to check if a record is effective for a specfic date.
-//
-// Revision 2.8  1997/08/20 14:07:51  houghton
-// Chagned lower_bound() args, it did not use the effective date so,
-//     it no longer accepts the argument.
-//
-// Revision 2.7  1997/08/20 10:35:19  houghton
-// Bug-Fix: was allocating sizeof( DRBNode ) for hist
-//     (changed to sizeof(DRBHist ).
-// Changed lower_bound to return the newest non deleted hist.
-//
-// Revision 2.6  1997/08/17 01:38:06  houghton
-// Added lower_bound.
-// Added nextkey.
-//
-// Revision 2.5  1997/07/25 15:57:43  houghton
-// Added const_reverse_iterator
-// Added reverse_iterator
-// Added eraseNode()
-// Added erase( const iterator & pos, EffDate eff )
-// Added erase( const iterator & first, const iterator & last,  EffDate eff )
-// Added rbegin(), rend(), rbegin() const, rend() const.
-//
-// Revision 2.4  1997/07/25 13:44:06  houghton
-// Bug-Fix: number of records was not being updated.
-//
-// Revision 2.3  1997/07/22 19:42:01  houghton
-// Cleanup.
-// Bug-Fix: Many.
-// Added trim functionallity.
-//
-// Revision 2.2  1997/07/19 10:17:22  houghton
-// Bug-Fix: added include <pair> and <iterator>.
-//
-// Revision 2.1  1997/07/16 16:37:02  houghton
-// Initial Version (work in progress).
-//
-//
-#endif // ! def _DRBTree_hh_ 
 
+}; // namespace mdb
+
+#endif // ! def _DRBTree_hh_

@@ -1,36 +1,15 @@
-//
-// File:        MapMemDynamicDynamic.C
-// Project:	StlUtils
-// Desc:        
-//
-//  Compiled sources for MapMemDynamicDynamic
-//  
-// Author:      Paul A. Houghton - (houghton@cshore.mci.com)
-// Created:     03/07/97 05:24
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-03-07 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "MapMemDynamicDynamic.hh"
-#include <Str.hh>
-#include <LibLog.hh>
-#include <StlUtilsMisc.hh>
+#include "MapMemDynamicDynamic.hpp"
+#include <clue/Str.hpp>
+#include <clue/LibLog.hpp>
+#include <clue/Clue.hpp>
 #include <algorithm>
 #include <iomanip>
 #include <cstring>
 #include <assert.h>
 
-#if defined( MDB_DEBUG )
-#include "MapMemDynamicDynamic.ii"
-#endif
-
-MDB_VERSION(
-  MapMemDynamicDynamic,
-  "$Id$");
+namespace mdb {
 
 const char * MapMemDynamicDynamic::ErrorStrings[] =
 {
@@ -61,7 +40,7 @@ static long	expandLastNode = 0;
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
-  ios::open_mode    mode,
+  std::ios::openmode    mode,
   bool		    create,
   size_type	    minChunkSize,
   size_type	    allocSize,
@@ -72,8 +51,8 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 		   mode,
 		   create,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     QwordAlign( max( allocSize,
-				      MapFile::getPageSize())) ),
+		     clue::QwordAlign( std::max( allocSize,
+					   MapFile::getPageSize())) ),
 		   permMask )
 {
   if( create )
@@ -86,13 +65,13 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char * 	    fileName,
   size_type	    minChunkSize,
   size_type	    allocSize,
-  MapMask    permMask  
+  MapMask    permMask
   )
   : MapMemDynamic( fileName,
 		   MDD_VERSION,
 		   ( sizeof( MapDynamicDynamicInfo ) +
-		     QwordAlign( max( allocSize,
-				      MapFile::getPageSize())) ),
+		     clue::QwordAlign( std::max( allocSize,
+						 MapFile::getPageSize())) ),
 		   permMask )
 {
   createMapMemDynamicDynamic( minChunkSize, allocSize );
@@ -100,7 +79,7 @@ MapMemDynamicDynamic::MapMemDynamicDynamic(
 
 MapMemDynamicDynamic::MapMemDynamicDynamic(
   const char *	    fileName,
-  ios::open_mode    mode,
+  std::ios::openmode    mode,
   bool		    overrideOwner
   )
   : MapMemDynamic( fileName, MDD_VERSION, mode, overrideOwner )
@@ -119,30 +98,30 @@ MapMemDynamicDynamic::allocFreeNode( Loc f, size_type chunkSize )
     {
       // this node is big enough to split into the allocated
       // node and another free node
-      
+
       Loc	nf = f + chunkSize;
-      
+
       freeNode( nf ).next	= freeNode( f ).next;
       freeNode( nf ).prev	= f;
       freeNode( nf ).nextFree	= freeNode( f ).nextFree;
       freeNode( nf ).prevFree	= freeNode( f ).prevFree;
-      
+
       // insert the new free node into the freeList
       setFreePrevNext( f, nf );
       setFreeNextPrev( f, nf );
-      
+
       // change prev->next to non free
       if( freeNode( f ).prev )
 	freeNode( freeNode( f ).prev ).next = f;
-      
+
       // change next->prev to free 'nf'
       setNextPrev( f, -nf );
-      
+
       freeNode( f ).next = -nf;	// node's next is a free 'nf'
-      
+
       mapInfo()->chunkSize += chunkSize;
       mapInfo()->freeSize  -= chunkSize;
-      
+
 #if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "allocate( " << setw( 4 ) << chunkSize << " ) split: "
@@ -155,31 +134,31 @@ MapMemDynamicDynamic::allocFreeNode( Loc f, size_type chunkSize )
   else
     {
       // not big enough to split so give the whole node
-      
+
       // remove 'f' from free list
       setFreePrevNext( f, freeNode( f ).nextFree );
       setFreeNextPrev( f, freeNode( f ).prevFree );
-      
+
       // change next->prev to non free
       if( freeNode( f ).next )
 	freeNode( freeNode( f ).next ).prev = f;
-      
+
       // change prev->next to non free
       if( freeNode( f ).prev )
 	freeNode( freeNode( f ).prev ).next = f;
-      
+
       mapInfo()->chunkSize  += freeNodeSize( f );
       mapInfo()->freeSize   -= freeNodeSize( f );
-      
+
       -- mapInfo()->freeCount;
-      
+
 #if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "allocate( " << setw( 4 ) << chunkSize << " ) whole: "
 	<< setw( 6 ) << "n: " << nodeLoc( f )
 	<< setw( 6 ) << "a: " << freeNodeSize( f )
 	<< endl;
-      
+
       ++ allocWhole;
 #endif
     }
@@ -192,13 +171,13 @@ MapMemDynamicDynamic::allocate( size_type size )
   if( ! good() )
     return( 0 );
 
-  size_type    chunkSize = max( QwordAlign( size + sizeof( Node ) ),
-				mapInfo()->minChunkSize );
+  size_type    chunkSize = std::max( clue::QwordAlign( size + sizeof( Node ) ),
+				     mapInfo()->minChunkSize );
 
   ++ mapInfo()->allocCount;
 
   Loc f;
-  
+
   for( f = freeList().nextFree;
        f;
        f = freeNode( f ).nextFree )
@@ -210,7 +189,7 @@ MapMemDynamicDynamic::allocate( size_type size )
 
       return( allocFreeNode( f, chunkSize ) );
     }
-  
+
   // no free chunks or i didn't find one large enough
   expand( chunkSize );
 
@@ -225,7 +204,7 @@ MapMemDynamicDynamic::release( Loc offset )
 {
   if( ! good() )
     return;
-  
+
   Loc		f = freeLoc( offset );
 
   -- mapInfo()->allocCount;
@@ -252,9 +231,9 @@ MapMemDynamicDynamic::release( Loc offset )
       // change prev->next to a free 'f'
       if( freeNode( f ).prev )
 	freeNode( freeNode( f ).prev ).next = -f;
-      
+
       ++ mapInfo()->freeCount;
-      
+
 #if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "release ( " << offset << " ) only."
@@ -269,16 +248,16 @@ MapMemDynamicDynamic::release( Loc offset )
 	  // prev is a free node, join with this node
 
 	  Loc		prevF = abs( freeNode( f ).prev );
-	  
+
 	  if( freeNode( f ).next < 0 )
 	    {
 	      // and next is a free node, join all three
 
 	      Loc		nextF = abs( freeNode( f ).next );
-	      
+
 	      freeNode( prevF ).next	    = freeNode( nextF ).next;
 	      freeNode( prevF ).nextFree    = freeNode( nextF ).nextFree;
-	      
+
 	      setFreeNextPrev( nextF, prevF );
 
 #if defined( MDD_TEST )
@@ -301,7 +280,7 @@ MapMemDynamicDynamic::release( Loc offset )
 	      ++ relJoinPS;
 #endif
 	    }
-	  
+
 	  // changed next->prev to free 'prevF'
 	  setNextPrev( prevF, -prevF );
 	}
@@ -310,13 +289,13 @@ MapMemDynamicDynamic::release( Loc offset )
 	  if( freeNode( f ).next < 0 )
 	    {
 	      // next is a free node, join with this node
-	      
+
 	      Loc	    nextF = abs( freeNode( f ).next );
-	      
+
 	      // put 'f' in the list where 'nextF' was
 	      setFreePrevNext( nextF, f );
 	      setFreeNextPrev( nextF, f );
-	      
+
 	      freeNode( f ).nextFree	= freeNode( nextF ).nextFree;
 	      freeNode( f ).prevFree	= freeNode( nextF ).prevFree;
 
@@ -326,10 +305,10 @@ MapMemDynamicDynamic::release( Loc offset )
 	      // change prev->next to free 'f'
 	      if( freeNode( f ).prev )
 		freeNode( freeNode( f ).prev ).next = - f;
-	      
+
 	      // change next->prev to free 'f'
 	      setNextPrev( f, -f );
-		  
+
 #if defined( MDD_TEST )
 	      _LLg( LogLevel::Test )
 		<< "release ( " << offset << " ) join self next."
@@ -342,7 +321,7 @@ MapMemDynamicDynamic::release( Loc offset )
 	      // can't join with anybody so just put into free list.
 
 	      ++ mapInfo()->freeCount;
-	      
+
 	      // first changed next->prev and prev->next to free 'f'
 
 	      if( freeNode( f ).prev )
@@ -350,18 +329,18 @@ MapMemDynamicDynamic::release( Loc offset )
 
 	      if( freeNode( f ).next )
 		freeNode( freeNode( f ).next ).prev = - f;
-	      
+
 	      if( freeList().prevFree < f )
 		{
 		  // 'f' is after the last free.
-		  
+
 		  freeNode( f ).prevFree = freeList().prevFree;
 		  freeNode( f ).nextFree = 0;
-		  
+
 		  freeNode( freeNode( f ).prevFree ).nextFree = f;
-		  
+
 		  freeList().prevFree = f;
-		  
+
 #if defined( MDD_TEST )
 		  _LLg( LogLevel::Test )
 		    << "release ( " << offset << " ) Last."
@@ -376,11 +355,11 @@ MapMemDynamicDynamic::release( Loc offset )
 		      // 'f' is before the first free.
 		      freeNode( f ).prevFree = 0;
 		      freeNode( f ).nextFree = freeList().nextFree;
-		      
+
 		      freeNode( freeNode( f ).nextFree ).prevFree = f;
-		      
+
 		      freeList().nextFree = f;
-		      
+
 #if defined( MDD_TEST )
 		      _LLg( LogLevel::Test )
 			<< "release ( " << offset << " ) first."
@@ -391,19 +370,19 @@ MapMemDynamicDynamic::release( Loc offset )
 		  else
 		    {
 		      // firstFree < f < lastFree so ...
-		      
+
 		      // find out if I'm closer to the begining or
 		      // end of the free list
 
 		      Loc nextF;
 		      Loc prevF;
-		      
+
 		      if( ( freeList().prevFree - f ) <
 			  ( f - freeList().nextFree ) )
 			{
 			  // closer to the last of the free list
 			  prevF = freeList().prevFree;
-			  
+
 			  for( prevF =  freeNode( prevF ).prevFree;
 			       prevF > f;
 			       prevF =  freeNode( prevF ).prevFree );
@@ -432,7 +411,7 @@ MapMemDynamicDynamic::release( Loc offset )
 			    << "release ( " << offset << " ) Middle beg."
 			    << endl;
 			  ++ relMiddleBeg;
-			  
+
 			  assert( prevF < f && f < nextF );
 #endif
 			}
@@ -457,35 +436,35 @@ MapMemDynamicDynamic::release( Loc offset )
     {
       size_type	shrinkAmount = ( freeNodeSize(  freeList().prevFree ) -
 				 mapInfo()->allocSize );
-      
+
       // shrink by all but one alloc unit;
 #if defined( MDD_TEST )
       _LLg( LogLevel::Test )
 	<< "SHRINK: pre: amount: " << shrinkAmount
 	<< '\n' << dump( " pre: " )
 	<< '\n' ;
-      
+
       if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	dumpNodes( *_LibLog ) << endl;
 #endif
-      
+
       size_type origSize = getMapSize();
-      
+
       size_type newSize =
 	shrink( shrinkAmount, (caddr_t)(mapInfo()->base) );
-  
+
       mapInfo()->size = getSize();
-  
+
       mapInfo()->freeSize -= (origSize - newSize);
-  
+
 #if defined( MDD_TEST )
       ++ shrunkMap;
-      
+
       _LLg( LogLevel::Test )
 	<< "SHRINK: post: "
 	<< '\n' << dump( " post: " )
 	<< '\n' ;
-      
+
       if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	dumpNodes( *_LibLog ) << endl;
 
@@ -513,21 +492,21 @@ MapMemDynamicDynamic::expand( size_type minAmount )
     return( false );
 
   size_type	origSize = getMapSize();
-  
+
   size_type	lastFreeSize = ( freeList().prevFree ?
 				 freeNodeSize( freeList().prevFree ) : 0 );
-  
-  size_type	amount = max( ( minAmount > lastFreeSize ?
-				( (minAmount - lastFreeSize) +  1 ) :
-				minAmount ),
-			      (size_type)(mapInfo()->allocSize ));
+
+  size_type	amount = std::max( ( minAmount > lastFreeSize ?
+				     ( (minAmount - lastFreeSize) +  1 ) :
+				     minAmount ),
+				   (size_type)(mapInfo()->allocSize ));
 
   // Note: if the minAmount is > lastFreeSize, then expand is probably
   //	being called because there is not enough room for a specific node.
   //    With this in mind, I only expand just enough to ensure the last
   //    free node is big enough to accomidate an allocate request for
   //	'minAmount'.
-  
+
 #if defined( MDD_TEST )
   _LLg( LogLevel::Test )
     << "EXPAND: pre: \n"
@@ -541,9 +520,9 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
   if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
     dumpNodes( *_LibLog ) << endl;
-  
+
 #endif
-  
+
   if( grow( amount, (caddr_t)mapInfo()->base ) == 0 )
     {
       errorNum = E_MAPMEM;
@@ -553,11 +532,11 @@ MapMemDynamicDynamic::expand( size_type minAmount )
   mapInfo()->size = getSize();
 
   mapInfo()->freeSize += getMapSize() - origSize;
-  
+
   // now add these recs to the free list
 
   if( lastFreeSize + freeList().prevFree != origSize )
-    {       
+    {
 #if defined( MDD_TEST )
       if( freeList().prevFree )
 	{
@@ -571,7 +550,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 	    << "EXPAND: post empty free list: \n";
 	  ++ expandFreeEmpty;
 	}
-      
+
       if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	{
 	  dumpInfo( *_LibLog, " post: " ) << endl;
@@ -582,7 +561,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
       freeNode( origSize ).next = 0;
       freeNode( origSize ).prev = freeList().prev;
-      
+
       if( freeList().prev )
 	{
 	  freeNode( freeList().prev ).next = - origSize;
@@ -596,7 +575,7 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 
       freeNode( origSize ).nextFree = 0;
       freeNode( origSize ).prevFree = freeList().prevFree;
-      
+
       if( freeList().prevFree )
 	{
 	  freeNode( freeList().prevFree ).nextFree = origSize;
@@ -607,15 +586,15 @@ MapMemDynamicDynamic::expand( size_type minAmount )
 	  freeList().nextFree = origSize;
 	  freeList().prevFree = origSize;
 	}
-      
+
       ++ mapInfo()->freeCount;
-      
+
 #if defined( MDD_TEST )
-      
+
       _LLg( LogLevel::Test )
 	<< "EXPAND: post last not free done: "
 	<< '\n' << dump( " post: " ) << '\n';
-      
+
       if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	dumpNodes( *_LibLog ) << endl;
 
@@ -625,11 +604,11 @@ MapMemDynamicDynamic::expand( size_type minAmount )
   else
     {
       ++ expandLastNode;
-      
+
       _LLg( LogLevel::Test )
 	<< "EXPAND: post last is free done: "
 	<< '\n' << dump( " post: " ) << '\n';
-      
+
       if( _LibLog && _LibLog->willOutput( LogLevel::Test ) )
 	dumpNodes( *_LibLog ) << endl;
 
@@ -650,9 +629,9 @@ MapMemDynamicDynamic::good( void ) const
 const char *
 MapMemDynamicDynamic::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = MapMemDynamicDynamic::getClassName();
+  errStr = "MapMemDynamicDynamic";
 
   if( good() )
     {
@@ -665,7 +644,7 @@ MapMemDynamicDynamic::error( void ) const
       if( errorNum > E_MAPMEM && errorNum < E_UNDEFINED )
 	errStr << ErrorStrings[ errorNum ];
 
-      
+
       if( ! MapMemDynamic::good() )
 	  errStr << ": " << MapMem::error();
 
@@ -676,40 +655,24 @@ MapMemDynamicDynamic::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-MapMemDynamicDynamic::getClassName( void ) const
-{
-  return( "MapMemDynamicDynamic" );
-}
 
-const char *
-MapMemDynamicDynamic::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 MapMemDynamicDynamic::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << MapMemDynamicDynamic::getClassName() << ":\n"
-	 << MapMemDynamicDynamic::getVersion() << '\n';
 
   if( ! MapMemDynamicDynamic::good() )
     dest << prefix << "Error: " << MapMemDynamicDynamic::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
-  pre << MapMemDynamic::getClassName() << "::";
+  pre << "MapMemDynamic::";
 
-  MapMemDynamic::dumpInfo( dest, pre, false );
+  MapMemDynamic::dumpInfo( dest, pre );
 
   if( mapInfo() )
     {
@@ -737,7 +700,7 @@ MapMemDynamicDynamic::dumpInfo(
 	   << prefix << "expand empty: " << expandFreeEmpty << '\n'
 	   << prefix << "expand last:  " << expandLastNode << '\n'
 #endif
-	;      
+	;
     }
   else
     {
@@ -747,65 +710,65 @@ MapMemDynamicDynamic::dumpInfo(
   return( dest );
 }
 
-ostream &
-MapMemDynamicDynamic::dumpFreeList( ostream & dest ) const
+std::ostream &
+MapMemDynamicDynamic::dumpFreeList( std::ostream & dest ) const
 {
   if( ! good() )
     {
-      dest << error() << endl;
+      dest << error() << std::endl;
       return( dest );
     }
-  
+
   dest << "FreeList Dump: count: " << mapInfo()->freeCount
        << " size: " << mapInfo()->freeSize
        << " first: " << freeList().nextFree
        << " last: " << freeList().prevFree << '\n' ;
   dest << "FreeList Nodes:    node    size    prev    next\n";
-  
+
   for( off_t f = freeList().nextFree;
        f;
        f = freeNode( f ).nextFree )
     {
-      
+
       dest << "Free Node:       "
-	   << setw(6) << f
-	   << setw(8) << freeNodeSize( f )
-	   << setw(8) << freeNode( f ).prevFree
-	   << setw(8) << freeNode( f ).nextFree
+	   << std::setw(6) << f
+	   << std::setw(8) << freeNodeSize( f )
+	   << std::setw(8) << freeNode( f ).prevFree
+	   << std::setw(8) << freeNode( f ).nextFree
 	   << '\n'
 	;
     }
   return( dest );
 }
 
-ostream &
-MapMemDynamicDynamic::dumpNodes( ostream & dest ) const
+std::ostream &
+MapMemDynamicDynamic::dumpNodes( std::ostream & dest ) const
 {
   dest << "Node List:         node    size    prev    next   prevF   nextF\n";
-  
+
   for( Loc n = ( (freeList().next == freeList().nextFree) ?
 		 - freeList().next : freeList().next );
        n;
        n = freeNode( abs( n ) ).next )
     {
       dest << "Node:            "
-	   << setw(6) << n
-	   << setw(8) << freeNodeSize( abs( n ) )
-	   << setw(8) << freeNode( abs( n ) ).prev
-	   << setw(8) << freeNode( abs( n ) ).next
+	   << std::setw(6) << n
+	   << std::setw(8) << freeNodeSize( abs( n ) )
+	   << std::setw(8) << freeNode( abs( n ) ).prev
+	   << std::setw(8) << freeNode( abs( n ) ).next
 	;
       if( n < 0 )
 	{
-	  dest << setw( 8 ) << freeNode( abs( n ) ).prevFree
-	       << setw( 8 ) << freeNode( abs( n ) ).nextFree
+	  dest << std::setw( 8 ) << freeNode( abs( n ) ).prevFree
+	       << std::setw( 8 ) << freeNode( abs( n ) ).nextFree
 	    ;
 	}
-      dest << endl;
+      dest << std::endl;
     }
 
   return( dest );
 }
-  
+
 void
 MapMemDynamicDynamic::createMapMemDynamicDynamic(
   size_type	minChunkSize,
@@ -815,28 +778,28 @@ MapMemDynamicDynamic::createMapMemDynamicDynamic(
   if( mapInfo() != 0 && MapMemDynamic::good() )
     {
       mapInfo()->minChunkSize	=
-	QwordAlign( max( (size_type) (minChunkSize + sizeof( Node ) ),
-			 (size_type) sizeof( FreeNode) ) );
-      
-      mapInfo()->allocSize	= QwordAlign( max( allocSize,
-						   MapFile::getPageSize()) );
+	clue::QwordAlign( std::max( (size_type) (minChunkSize + sizeof( Node ) ),
+				    (size_type) sizeof( FreeNode) ) );
+
+      mapInfo()->allocSize	= clue::QwordAlign( std::max( allocSize,
+							      MapFile::getPageSize()) );
       mapInfo()->chunkSize	= 0;
       mapInfo()->freeSize	= ( getMapSize() -
-				    QwordAlign(
+				    clue::QwordAlign(
 				      sizeof( MapDynamicDynamicInfo ) ));
 
       mapInfo()->freeCount  = 1;
-      
-      freeList().next	    = QwordAlign( sizeof( MapDynamicDynamicInfo ) );
+
+      freeList().next	    = clue::QwordAlign( sizeof( MapDynamicDynamicInfo ) );
       freeList().prev	    = freeList().next;
-      freeList().nextFree   = freeList().next; 
+      freeList().nextFree   = freeList().next;
       freeList().prevFree   = freeList().next;
 
       freeNode( freeList().next ).next = 0;
       freeNode( freeList().next ).prev = 0;
       freeNode( freeList().next ).nextFree = 0;
       freeNode( freeList().next ).prevFree = 0;
-      
+
       errorNum = E_OK;
     }
   else
@@ -859,81 +822,4 @@ MapMemDynamicDynamic::openMapMemDynamicDynamic( void )
 
 }
 
-  
-// Revision Log:
-//
-// $Log$
-// Revision 4.3  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.2  2003/07/19 09:11:13  houghton
-// Port to 64 bit.
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.16  1998/02/02 15:39:03  houghton
-// Cleanup test defines.
-//
-// Revision 2.15  1997/09/17 16:56:03  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.14  1997/07/19 10:27:42  houghton
-// Bug-Fix: changed calls from getpagesize to MapFile::getPageSize().
-//
-// Revision 2.13  1997/07/13 11:23:29  houghton
-// Cleanup
-// Reorderd release test to first check if node is after last.
-//
-// Revision 2.12  1997/06/27 12:15:30  houghton
-// Major rework to speed up 'release'.
-//
-// Revision 2.11  1997/06/25 12:55:26  houghton
-// Cleanup.
-//
-// Revision 2.10  1997/06/19 12:02:02  houghton
-// Changed to be part of libMdb.
-//
-// Revision 2.9  1997/06/18 14:14:36  houghton
-// Added include StlUtilsUtils.
-//
-// Revision 2.8  1997/06/09 11:58:26  houghton
-// Bug-Fix: check if there is a _LibLog before I try to use it.
-//
-// Revision 2.7  1997/06/05 11:27:59  houghton
-// Cleanup.
-// Change to be part of libMdb (vs StlUtils1).
-// Changed to be a subclass of MapMemDynamic (vs MapMem).
-// Added constructor that can create or open existing.
-// Changed to use new MapFile types.
-// Removed addRef, getRefCount & delRef methods (now in base class).
-// Changed getMem to allocate.
-// Changed freeMem to release.
-// Added createMapMemDynamicDynamic and openMapMemDynamicDynamic methods.
-//
-// Revision 2.6  1997/04/22 10:34:39  houghton
-// Added a check to seek if someone is trying to free an already free'd
-//     node. If so, log a warning and return.
-//
-// Revision 2.5  1997/04/04 20:50:09  houghton
-// Cleanup.
-// Added map owner to prevent to progs from opening the map in write
-//     mode at the same time.
-//
-// Revision 2.4  1997/03/19 16:23:40  houghton
-// Bug-Fix: stray character.
-//
-// Revision 2.3  1997/03/18 16:56:08  houghton
-// Bug-Fix: free p n x was not setting the next node's prev.
-// Added Lots of debug output using LibLog Levels App1 & App2. ifdef'd
-//     with STLUTILS1_DEBUG.
-//
-// Revision 2.2  1997/03/13 02:24:37  houghton
-// Bug-Fix: change calls to getSize to getMapSize.
-// Added refCount.
-// Minor changes for AIX port.
-//
-// Revision 2.1  1997/03/08 10:29:52  houghton
-// Initial partially tested version.
-//
-//
+}; // namespace mdb

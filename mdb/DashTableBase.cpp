@@ -1,38 +1,16 @@
-//
-// File:        DashTableBase.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for DashTableBase
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     06/02/97 08:40
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-06-02 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "DashTableBase.hh"
-#include <Str.hh>
+#include "DashTableBase.hpp"
+#include <clue/Str.hpp>
 
-#if defined( MDB_DEBUG )
-#include "DashTableBase.ii"
-#endif
-
-MDB_VERSION(
-  DashTableBase,
-  "$Id$");
-
+namespace mdb {
 
 DashTableBase::DashTableBase(
-  MultiMemOffset *  memMgr,
-  const char *	    indexFileName,
-  ios::open_mode    mode,
-  bool		    create,
-  unsigned short    permMask
+  MultiMemOffset *	memMgr,
+  const char *		indexFileName,
+  std::ios::openmode    mode,
+  bool			create,
+  unsigned short	permMask
   )
   : HashTableBase( memMgr, indexFileName, mode, permMask, create )
 {
@@ -51,9 +29,9 @@ DashTableBase::good( void ) const
 const char *
 DashTableBase::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = DashTableBase::getClassName();
+  errStr = "DashTableBase";
 
   if( good() )
     {
@@ -65,7 +43,7 @@ DashTableBase::error( void ) const
 
       if( ! HashTableBase::good() )
 	errStr << HashTableBase::error() ;
-      
+
       if( eSize == errStr.size() )
         errStr << ": unknown error";
     }
@@ -73,41 +51,25 @@ DashTableBase::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-DashTableBase::getClassName( void ) const
-{
-  return( "DashTableBase" );
-}
 
-const char *
-DashTableBase::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 DashTableBase::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << DashTableBase::getClassName() << ":\n"
-	 << DashTableBase::getVersion() << '\n';
 
   if( ! DashTableBase::good() )
     dest << prefix << "Error: " << DashTableBase::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
-  pre << HashTableBase::getClassName() << "::";
+  pre << "HashTableBase::";
 
-  HashTableBase::dumpInfo( dest, pre, false );
-    
+  HashTableBase::dumpInfo( dest, pre );
+
   return( dest );
 }
 
@@ -118,7 +80,7 @@ HashTableBase::Loc
 DashTableBase::insert( HashValue hash, Loc cur, EffDate effDate, Loc node )
 {
   Loc	    prev;
-  
+
   for( prev = cur ; cur; cur = dashNode( cur ).nextEff )
     {
       // if cur is before the new node
@@ -139,13 +101,13 @@ DashTableBase::insert( HashValue hash, Loc cur, EffDate effDate, Loc node )
 	    {
 	      dashNode( node ).next = dashNode( cur ).next;
 	      dashNode( node ).prev = dashNode( cur ).prev;
-	      
+
 	      if( dashNode( node ).next )
 		dashNode( dashNode( node ).next ).prev = node;
 
 	      if( dashNode( node ).prev )
 		dashNode( dashNode( node ).prev ).next = node;
-	      
+
 	      dashNode( cur ).next = 0;
 	      dashNode( cur ).prev = 0;
 
@@ -154,28 +116,28 @@ DashTableBase::insert( HashValue hash, Loc cur, EffDate effDate, Loc node )
 	      if( hashLoc( hash ) == cur )
 		{
 		  hashLoc( hash ) = node;
-		}	      
+		}
 	    }
 	  else
 	    {
 	      dashNode( node ).next = 0;
 	      dashNode( node ).prev = 0;
 	    }
-	  
+
 	  break;
 	}
-		
+
       prev = cur;
     }
-  
+
   if( ! cur )
     {
       // all current nodes are after the new node
       dashNode( node ).nextEff = 0;
       dashNode( node ).prevEff = prev;
-      
+
       dashNode( prev ).nextEff = node;
-      
+
       dashNode( node ).next = 0;
       dashNode( node ).prev = 0;
     }
@@ -183,7 +145,7 @@ DashTableBase::insert( HashValue hash, Loc cur, EffDate effDate, Loc node )
   dashNode( node ).when = effDate;
 
   ++ header().count;
-  
+
   return( node );
 }
 
@@ -223,27 +185,4 @@ DashTableBase::erase( HashValue hash, Loc node )
     }
 }
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:42  houghton
-// Change Major Version to 4
-//
-// Revision 2.4  1997/07/19 10:18:35  houghton
-// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
-//     'Hash' was conflicting with the 'Hash' template class.
-//
-// Revision 2.3  1997/07/14 13:42:54  houghton
-// Change: initialize prev from cur. (eliminate a compiler warning)
-//
-// Revision 2.2  1997/07/13 11:05:33  houghton
-// Changed constructor args.
-// Cleanup.
-//
-// Revision 2.1  1997/06/05 11:29:09  houghton
-// Initial Version.
-//
-//
+}; // namespace mdb

@@ -1,24 +1,3 @@
-#
-#
-# Title:        MapMemDynamicDynamic.txt
-# Project:	Mdb
-# Desc:
-# 
-#   
-# 
-# Notes:
-# 
-# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
-# Created:	06/27/97 07:53
-#
-# Revision History: (See end of file for Revision Log)
-#
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
-#
-#   $Id$
-# 
 
 Class Hierarchy
 
@@ -26,7 +5,7 @@ Class Hierarchy
       MapMemDynamic
         MapMem
 	  MapFile
-	  
+
 Class Description
 
     The MapMemDynamicDynamic class provides dynamic chunk management for a
@@ -56,7 +35,7 @@ Detail Design
 
 	struct Node
 	    Each chunk in the map file is prefix by this structure.
-	    
+
 	    long    next;
 		contains the offset of the next node in the map. A
 		negative value is used to indicate the next node is a
@@ -68,49 +47,49 @@ Detail Design
 		map. A negative value is used to indicate the previous
 		node is a 'free' node. The value '0' is used to
 		indicate this is the first node in the map.
-	
+
 
 	struct FreeNode : public Node
 	    Each free chunk in the map file uses this structure.
-	    
+
 	    Node::next
 		the offset to next node in the map (free or
 		allocated). This is always positive.
-		
+
 	    Node::prev
 		the offset to the previous node in the map (free or
 		allocated). This is always positive.
-		
+
 	    long    nextFree;
 		the offset to the next 'free' node in the map.
-		
+
 	    long    prevFree;
 		the offset to the previous free node in the map.
-	
-	
+
+
 	struct MapDynamicDynamicInfo : public MapDynamicInfo
-	
+
 	    This is the header for a map file. It is store at the
 	    first byte of the map file.
-	
+
 	    unsigned long   minChunkSize;
-		the minimum chunk size to allocate. 
-		
+		the minimum chunk size to allocate.
+
 	    unsigned long   allocSize;
 		the minimum number of bytes to expand the map by when
 		more space is needed.
-		
+
 	    unsigned long   chunkSize;
 		the total space allocated to all chunks in the map.
-		
+
 	    unsigned long   freeSize;
 		the total amount of free space.
-		
+
 	    struct FreeNode freeList;
 
 		Node::next
 		    the offset to the first node in the map.
-		    
+
 		Node::prev
 		    the offset to the last node in the map.
 
@@ -142,11 +121,11 @@ Detail Design
 	    1200    node    1024   -2048
 	    2048    free    1200    3000     200    4040
 	    3000    node   -2048   -4040
-	    4040    free    3000    0	    2048    0	     
+	    4040    free    3000    0	    2048    0
 
 
     Primary Methods:
-    
+
 	allocate( size_type s )
 
 	    Search the free list for the first node that is at least
@@ -183,13 +162,13 @@ Performance Characteristics:
 
 	Best Case: (no looping)
 	    The first free node is large enough to satisfy the
-	    request. 
+	    request.
 
 	Worst Case: (loop through all free nodes)
 	    None of the free nodes are large enough to satisfy the
 	    request. Loops through each free node to see if it is
 	    large enough, then expands the map and uses the last node.
-	    	    
+
     release( Loc loc )
 
 	Best Case: (no looping)
@@ -197,7 +176,7 @@ Performance Characteristics:
 	    No Free Nodes
 	    Join with either prev, next or both.
 	    'loc' will be first free Node.
-	    'loc' will be the last free node.    
+	    'loc' will be the last free node.
 
 	Worst Case: (loop through most free nodes)
 
@@ -208,31 +187,3 @@ Performance Characteristics:
 	    correct placement of loc. To minimize the search, there is
 	    a test to see if 'loc' is closer to the first or last free
 	    node.
-	    
-
-	    
-
-
-
-
-
-
-#
-# $Log$
-# Revision 4.1  2001/07/27 00:57:39  houghton
-# Change Major Version to 4
-#
-# Revision 2.1  1997/09/21 19:20:53  houghton
-# Changed version to 2
-#
-# Revision 1.2  1997/07/25 13:40:30  houghton
-# Cleanup.
-#
-# Revision 1.1  1997/07/11 17:36:29  houghton
-# Initial Version.
-#
-#
-
-# Local Variables:
-# mode:indented-text
-# End:

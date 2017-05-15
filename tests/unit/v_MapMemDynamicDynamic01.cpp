@@ -1,24 +1,8 @@
-//
-// File:        tMapMemDynamicDynamic01.C
-// Project:	StlUtils
-// Desc:        
-//
-//  Test for MapMemDynamicDynamic class
-//  
-// Author:      Paul A. Houghton - (houghton@cshore.wcom.com)
-// Created:     03/07/97 08:17
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-03-07 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MapMemDynamicDynamic.hh>
-#include "TestConfig.hh"
-#include <LibTest.hh>
-#include <LibLog.hh>
+#include <mdb/MapMemDynamicDynamic.hpp>
+#include <clue/LibLog.hpp>
+#include <valid/verify.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -33,6 +17,12 @@
 
 // interesting Sun5 problem, the static.allocater in vector<>
 // remembers 'Data' across sources, so it gets the size wrong.
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
+
 
 struct MMDD01Data
 {
@@ -41,31 +31,32 @@ struct MMDD01Data
   long				size;
 };
 
-typedef vector<MMDD01Data> DataList;
+typedef std::vector<MMDD01Data> DataList;
 
-bool
-tMapMemDynamicDynamic01( LibTest & tester )
+valid::verify &
+v_MapMemDynamicDynamic01( void )
 {
-  
+  static VVDESC( "mdb::MapMemDynamicDynamic01" );
+
 #if defined( MANUAL_REVIEW )
   Log	    l( tester.getDump(), LogLevel::Test );
-  
+
   _LibLog = &l;
 
   tester.getDump() << endl;
-  
+
   {
     MapMemDynamicDynamic    t( TEST_DATA_DIR "/tMMDD01.mdd",
 			       40,
 			       4096 );
-    
+
     TESTR( t.error(), t.good() );
 
     MMDD01Data	d;
     DataList	data;
 
     d.loc = 0;
-    
+
     d.size  =    3;	data.push_back( d );	// 0
     d.size  =   28;	data.push_back( d );	// 1
     d.size  =   30;	data.push_back( d );	// 2
@@ -111,7 +102,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -123,7 +114,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -135,7 +126,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -147,7 +138,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -159,7 +150,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -171,7 +162,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -183,7 +174,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -196,7 +187,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -208,7 +199,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -220,7 +211,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -232,7 +223,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -244,7 +235,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -254,17 +245,17 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     data[ 23 ].loc = t.allocate( data[ 23 ].size );
     TESTR( t.error(), data[ 23 ].loc );
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
     // expand new
-    
+
     d.size  = 6000;	data.push_back( d );	// 24
 
     data[ 24 ].loc = t.allocate( data[ 24 ].size );
     TESTR( t.error(), data[ 24 ].loc );
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -273,7 +264,7 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     data[ 25 ].loc = t.allocate( data[ 25 ].size );
     TESTR( t.error(), data[ 25 ].loc );
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
@@ -285,20 +276,20 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
-    
+
     // alloc first best fit
     d.size  = 20;	data.push_back( d );	// 26
 
     data[ 26 ].loc = t.allocate( data[ 26 ].size );
     TESTR( t.error(), data[ 26 ].loc );
-    
+
     t.dumpInfo( tester.getDump() );
     t.dumpNodes( tester.getDump() );
 
-    
+
     for( DataList::iterator them = data.begin();
 	 them != data.end();
 	 ++ them )
@@ -311,19 +302,19 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  }
       }
   }
-#else	// defined( MANUAL_REVIEW )  
+#else	// defined( MANUAL_REVIEW )
   {
     MapMemDynamicDynamic    t( TEST_DATA_DIR "/tMMDD01.mdd",
 			       40,
 			       4096 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     MMDD01Data	d;
     DataList	data;
 
     d.loc = 0;
-    
+
     d.size  =    3;	data.push_back( d );	// 0
     d.size  =   28;	data.push_back( d );	// 1
     d.size  =   30;	data.push_back( d );	// 2
@@ -355,13 +346,13 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	   ++ them )
 	{
 	  (*them).loc = t.allocate( (*them).size );
-	  TESTR( t.error(), (*them).loc != 0 );
+	  TEST( (*them).loc != 0 );
 
 	  char * chunk;
 
 	  chunk = (char *)t.address( (*them).loc );
-	
-	  TESTR( t.error(), chunk != 0 );
+
+	  TEST( chunk != 0 );
 
 	  memset( chunk, 0xff, (*them).size);
 	}
@@ -372,104 +363,104 @@ tMapMemDynamicDynamic01( LibTest & tester )
     // release 'only'
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'last'
     rNode = 14;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'join psn'
     rNode = 13;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'first'
     rNode = 5;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'join ps'
     rNode = 15;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'join sn'
     rNode = 11;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'mid beg'
     rNode = 7;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'last'
     rNode = 19;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'mid end'
     rNode = 17;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'last'
     rNode = 20;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release 'last'
     rNode = 22;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // release join psn last & shrink
     rNode = 21;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // allocate last node
     unsigned char *  chunk;
-    
+
     d.size  = 7990;	data.push_back( d );	// 23
 
     data.back().loc = t.allocate( data.back().size );
-    TESTR( t.error(), data.back().loc );
+    TEST( data.back().loc );
     chunk = (unsigned char *)t.address( data.back().loc );
-    TESTR( t.error(), chunk != 0 );
+    TEST( chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
     // expand new
-    
+
     d.size  = 6000;	data.push_back( d );	// 24
 
     data.back().loc = t.allocate( data.back().size );
-    TESTR( t.error(), data.back().loc );
+    TEST( data.back().loc );
     chunk = (unsigned char *)t.address( data.back().loc );
-    TESTR( t.error(), chunk != 0 );
+    TEST( chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
     // alloc find best fit
     d.size  = 124;	data.push_back( d );	// 25
 
     data.back().loc = t.allocate( data.back().size );
-    TESTR( t.error(), data.back().loc );
+    TEST( data.back().loc );
     chunk = (unsigned char *)t.address( data.back().loc );
-    TESTR( t.error(), chunk != 0 );
+    TEST( chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
     // release first node
     rNode = 0;
     t.release( data[rNode].loc );
     data[rNode].loc = 0;
-    
+
     // alloc first best fit
     d.size  = 20;	data.push_back( d );	// 26
 
     data.back().loc = t.allocate( data.back().size );
-    TESTR( t.error(), data.back().loc );
+    TEST( data.back().loc );
     chunk = (unsigned char *)t.address( data.back().loc );
-    TESTR( t.error(), chunk != 0 );
+    TEST( chunk != 0 );
     memset( chunk, 0xff, data.back().size );
 
     {
@@ -480,12 +471,12 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  if( (*them).loc )
 	    {
 	      chunk = (unsigned char *)t.address( (*them).loc );
-	    
-	      TESTR( t.error(), chunk != 0 );
+
+	      TEST( chunk != 0 );
 
 	      for( int c = 0; c < (*them).size; ++ c )
 		{
-		  TESTR( "bad value.", chunk[c] == 0xff );
+		  TEST( chunk[c] == 0xff );
 		}
 	    }
 	}
@@ -497,20 +488,20 @@ tMapMemDynamicDynamic01( LibTest & tester )
 #if 0
   vector< int > TestNodeSize;
   vector< int > TestIndex;
-  
+
   {
     for( int i = 0; i < 20 ; i++ )
       {
 	TestNodeSize.push_back( 40 ); //50 + (rand() % 20) );
 	TestIndex.push_back( i );
       }
-      
+
   }
 
   NodeList    nodes;
-    
+
   {
-    
+
     MapMemDynamicDynamic	t( "../data/mmdd.map", 16, 4096, 0 );
 
     cout << t.dump();
@@ -531,9 +522,9 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  t.dumpNodes( cout ) << endl;
 
 	  memset( t.getAddr( offset ), 0xff, *them );
-	  
+
 	  nodes.push_back( Node( offset, (*them) ) );
-	  
+
 	}
     }
 
@@ -546,25 +537,25 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  t.dumpNodes( cout ) << endl;
 	}
 
-    
+
     t.freeMem( nodes[ni + 3].offset );
     cout << "FREEMEM: " << nodes[ni].offset << endl;
     t.dumpNodes( cout ) << endl;
-    
+
     t.freeMem( nodes[ni + 1].offset );
     cout << "FREEMEM: " << nodes[ni].offset << endl;
     t.dumpNodes( cout ) << endl;
-    
+
     t.freeMem( nodes[ni + 2].offset );
     cout << "FREEMEM: " << nodes[ni].offset << endl;
     t.dumpNodes( cout ) << endl;
-    
+
     t.freeMem( nodes[ni].offset );
     cout << "FREEMEM: " << nodes[ni].offset << endl;
     t.dumpNodes( cout ) << endl;
 
     ni += 4;
-    
+
     {
       int cnt = 0;
       for( vector<int>::iterator them = TestNodeSize.begin();
@@ -577,12 +568,12 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  t.dumpNodes( cout ) << endl;
 
 	  memset( t.getAddr( offset ), 0xff, *them );
-	  
+
 	  nodes.push_back( Node( offset, (*them) ) );
-	  
+
 	}
     }
-	  
+
     for( ; ni < 15; ++ ni )
 	{
 	  t.freeMem( nodes[ni].offset );
@@ -602,12 +593,12 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	  t.dumpNodes( cout ) << endl;
 
 	  memset( t.getAddr( offset ), 0xff, *them );
-	  
+
 	  nodes.push_back( Node( offset, (*them) ) );
-	  
+
 	}
     }
-	  
+
   }
 #if 0
 
@@ -621,12 +612,12 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	       << endl;
 	}
     }
-    
+
     random_shuffle( TestIndex.begin(), TestIndex.end() );
 
     cout << t.dump() << endl;
     t.dumpNodes( cout );
-    
+
     //    int junk;
     //    cin >> junk;
   }
@@ -636,9 +627,9 @@ tMapMemDynamicDynamic01( LibTest & tester )
 
     //    int junk;
     //    cin >> junk;
-    
+
     MapMemDynamicDynamic	t( "../data/mmdd.map",
-				   (ios::open_mode)(ios::in | ios::out) );
+				   (std::ios::openmode)(ios::in | ios::out) );
 
     cout << t.dump() << endl;
     t.dumpNodes( cout );
@@ -652,53 +643,17 @@ tMapMemDynamicDynamic01( LibTest & tester )
 	       << " offset: " << nodes[ (*them) ].offset
 	       << " size: " << nodes[ (*them) ].size
 	       << endl;
-	  
+
 	  t.freeMem( nodes[ (*them) ].offset );
 	  t.dumpNodes( cout );
 	}
     }
-    
+
     cout << t.dump() << endl;
     t.dumpFreeList( cout );
   }
 #endif
 #endif
 
-  _LibLog = 0;
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.8  1997/09/17 16:56:13  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.7  1997/08/18 10:27:55  houghton
-// Port(Sun5): had to rename the 'Data' structure. The sun compiler was
-//     using the same structure across .C files.
-//
-// Revision 2.6  1997/07/14 10:47:48  houghton
-// Port(AIX): had to enclose for loop in '{}'.
-//
-// Revision 2.5  1997/07/13 11:35:44  houghton
-// Cleanup.
-// Rework.
-//
-// Revision 2.4  1997/06/27 12:16:22  houghton
-// Major rework.
-//
-// Revision 2.3  1997/03/19 16:23:51  houghton
-// Reworked test.
-//
-// Revision 2.2  1997/03/13 02:43:48  houghton
-// Added some tests.
-//
-// Revision 2.1  1997/03/08 10:30:26  houghton
-// Initial Version.
-//
-//

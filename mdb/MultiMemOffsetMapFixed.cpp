@@ -1,35 +1,13 @@
-//
-// File:        MultiMemOffsetMapFixed.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for MultiMemOffsetMapFixed
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     01/28/95 08:41 
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1995-01-28 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "MultiMemOffsetMapFixed.hh"
-#include <Str.hh>
+#include "MultiMemOffsetMapFixed.hpp"
+#include <clue/Str.hpp>
 
-#if defined( MDB_DEBUG )
-#include "MultiMemOffsetMapFixed.ii"
-#endif
-
-MDB_VERSION(
-  MultiMemOffsetMapFixed,
-  "$Id$");
-
+namespace mdb {
 
 MultiMemOffsetMapFixed::MultiMemOffsetMapFixed(
   const char * 	    fileName,
-  ios::open_mode    mode
+  std::ios::openmode    mode
   )
   : mem( fileName, mode )
 {
@@ -58,9 +36,9 @@ MultiMemOffsetMapFixed::good( void ) const
 const char *
 MultiMemOffsetMapFixed::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = MultiMemOffsetMapFixed::getClassName();
+  errStr = "MultiMemOffsetMapFixed";
 
   if( good() )
     {
@@ -72,7 +50,7 @@ MultiMemOffsetMapFixed::error( void ) const
 
       if( ! mem.good() )
 	errStr << ": " << mem.error();
-      
+
       if( eSize == errStr.size() )
         errStr << ": unknown error";
     }
@@ -80,85 +58,25 @@ MultiMemOffsetMapFixed::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-MultiMemOffsetMapFixed::getClassName( void ) const
-{
-  return( "MultiMemOffsetMapFixed" );
-}
-
-const char *
-MultiMemOffsetMapFixed::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-ostream &
+std::ostream &
 MultiMemOffsetMapFixed::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << MultiMemOffsetMapFixed::getClassName() << ":\n"
-	 << MultiMemOffsetMapFixed::getVersion() << '\n';
-  
+
   if( ! MultiMemOffsetMapFixed::good() )
     dest << prefix << "Error: " << MultiMemOffsetMapFixed::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
   pre << "mem:";
 
-  mem.dumpInfo( dest, pre, false );
+  mem.dumpInfo( dest, pre );
 
   return( dest );
 }
 
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 2.6  1997/06/19 12:03:48  houghton
-// Changed to be part of libMdb.
-// Cleanup.
-//
-// Revision 2.5  1997/06/18 14:16:03  houghton
-// Rework to use allocate and release.
-//
-// Revision 2.4  1997/04/04 20:50:37  houghton
-// Cleanup.
-//
-// Revision 2.3  1997/03/13 02:41:24  houghton
-// Cleanup dumpInfo output.
-//
-// Revision 2.2  1997/03/07 11:51:18  houghton
-// Add getBase() const.
-// Added dumpInfo.
-//
-// Revision 2.1  1995/11/10 12:42:38  houghton
-// Change to Version 2
-//
-// Revision 1.1  1995/02/13  16:08:52  houghton
-// New Style Avl an memory management. Many New Classes
-//
-
-//
-//              This software is the sole property of
-// 
-//                 The Williams Companies, Inc.
-//                        1 Williams Center
-//                          P.O. Box 2400
-//        Copyright (c) 1994 by The Williams Companies, Inc.
-// 
-//                      All Rights Reserved.  
-// 
-//
+}; // namespace mdb

@@ -1,42 +1,22 @@
-//
-// File:        HashTableBase.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for HashTableBase
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     05/19/97 05:08
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-05-19 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "HashTableBase.hh"
-#include <Str.hh>
+#include "HashTableBase.hpp"
+#include <clue/Str.hpp>
+
 #include <iomanip>
 
-#if defined( MDB_DEBUG )
-#include "HashTableBase.ii"
-#endif
-
-MDB_VERSION(
-  HashTableBase,
-  "$Id$");
+namespace mdb {
 
 const unsigned long HashTableBase::hashTableVersion = 0x4d485402;   // MHT02
 
 const HashTableBase::HashValue    HashTableBase::badHash( -1 );
 
 HashTableBase::HashTableBase(
-  MultiMemOffset *  memMgr,
-  const char *	    indexFileName,
-  ios::open_mode    mode,
-  bool		    create,
-  unsigned short    permMask
+  MultiMemOffset *	memMgr,
+  const char *		indexFileName,
+  std::ios::openmode    mode,
+  bool			create,
+  unsigned short	permMask
   )
   : mgr( memMgr ),
     index( 0 )
@@ -49,28 +29,28 @@ HashTableBase::HashTableBase(
 			       MapFile::getPageSize(),
 			       0,
 			       permMask );
-	  
+
 	  if( index && index->good() )
 	    {
 	      Header * hdr = (Header *)index->getBase();
 	      hdr->version = hashTableVersion;
 	      hdr->count = 0;
-	  
+
 	      for( Loc * l = (Loc *)(index->getBase() + sizeof( Header ));
 		   l < (Loc *)index->getEnd();
 		   ++ l )
 		*l = MultiMemOffset::badLoc;
-	      
+
 	      setError( E_OK );
 	    }
-	  
+
 	}
       else
 	{
 	  index = new MapFile( indexFileName,
 			       0,
 			       mode );
-	  
+
 	  if( index && index->good() )
 	    {
 	      Header * hdr = (Header *)index->getBase();
@@ -98,9 +78,9 @@ HashTableBase::good( void ) const
 const char *
 HashTableBase::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = HashTableBase::getClassName();
+  errStr = "HashTableBase";
 
   if( good() )
     {
@@ -131,13 +111,13 @@ HashTableBase::error( void ) const
 		     << " expected: " << hashTableVersion
 		;
 	      break;
-		  
+
 	    default:
 	      break;
 	    }
 	}
-	
-      
+
+
       if( eSize == errStr.size() )
         errStr << ": unknown error";
     }
@@ -145,78 +125,61 @@ HashTableBase::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-HashTableBase::getClassName( void ) const
-{
-  return( "HashTableBase" );
-}
-
-const char *
-HashTableBase::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 HashTableBase::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << HashTableBase::getClassName() << ":\n"
-	 << HashTableBase::getVersion() << '\n';
 
   if( ! HashTableBase::good() )
     dest << prefix << "Error: " << HashTableBase::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
   pre << "mgr:";
-  mgr->dumpInfo( dest, pre, false );
-  
+  mgr->dumpInfo( dest, pre );
+
   if( index )
     {
       pre = prefix;
       pre << "index:";
-      index->dumpInfo( dest, pre, false );
+      index->dumpInfo( dest, pre );
     }
 
   if( index && index->getBase() )
     {
       dest << prefix << "version:    "
 	   << ((const Header *)index->getBase())->version << '\n'
-	   << prefix << "count:      " 
+	   << prefix << "count:      "
 	   << ((const Header *)index->getBase())->count << '\n'
 	   << prefix << "endhash:    " << endHash() << '\n'
 	;
     }
-  
+
   return( dest );
 }
 
-ostream &
+std::ostream &
 HashTableBase::dumpTable(
-  ostream &		dest,
+  std::ostream &	dest,
   const DumpMethods &	meth
   ) const
 {
   dest << "hash      node  prev  next\n";
-  
+
   for( HashValue hash = first(); hash < endHash(); ++ hash )
     {
       for( Loc node = hashLoc( hash );
 	   node != 0;
 	   node = hashNode( node ).next )
 	{
-	  dest << setw(8) << hash
-	       << setw(6) << node
-	       << setw(6) << hashNode( node ).prev
-	       << setw(6) << hashNode( node ).next
+	  dest << std::setw(8) << hash
+	       << std::setw(6) << node
+	       << std::setw(6) << hashNode( node ).prev
+	       << std::setw(6) << hashNode( node ).next
 	       << ' '
 	    ;
 	  meth.dumpNode( dest, node ) << '\n';
@@ -225,8 +188,8 @@ HashTableBase::dumpTable(
   return( dest );
 }
 
-ostream &
-HashTableBase::dumpNode( ostream & dest, Loc STLUTILS_UNUSED( node ) ) const
+std::ostream &
+HashTableBase::dumpNode( std::ostream & dest, Loc  node ) const
 {
   return( dest );
 }
@@ -242,7 +205,7 @@ HashTableBase::insert( HashValue hash, Loc node )
   if( hLoc + sizeof( Loc ) >= index->getSize() )
     {
       size_t oSize = index->getSize();
-      
+
       if( index->setSize( hLoc + sizeof( Loc ), 0 ) < hLoc + sizeof( Loc ) )
 	return( MultiMemOffset::badLoc );
 
@@ -255,14 +218,14 @@ HashTableBase::insert( HashValue hash, Loc node )
 
   hashNode( node ).prev = 0;
   hashNode( node ).next = hashLoc( hash );
-      
+
   if( hashNode( node ).next )
     hashNode( hashNode( node ).next ).prev = node;
 
   hashLoc( hash ) = node;
-  
+
   ++ header().count;
-  
+
   return( node );
 }
 
@@ -281,7 +244,7 @@ HashTableBase::erase( HashValue hash, Loc node )
     hashNode( hashNode( node ).next ).prev = hashNode( node ).prev;
 
   mgr->release( node );
-  
+
   -- header().count;
   return( true );
 }
@@ -299,7 +262,7 @@ HashTableBase::erase(
 
   HashValue  curHash  = firstHash;
   Loc	curNode  = firstNode;
-  
+
   HashValue	nextHash = firstHash;
   Loc	nextNode = firstNode;
 
@@ -315,43 +278,12 @@ HashTableBase::erase(
   return( true );
 }
 
-  
+
 bool
 HashTableBase::setError( ErrorNum err )
 {
   errorNum = err;
   return( good() );
 }
-      
-// Revision Log:
-//
-// $Log$
-// Revision 4.3  2003/08/12 21:58:46  houghton
-// Bug-Fix: was not delete'ing index in destructor
-//
-// Revision 4.2  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.5  1997/09/17 16:55:58  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.4  1997/08/25 10:34:32  houghton
-// Reworked error output.
-// Added endhash() to dump output.
-//
-// Revision 2.3  1997/07/19 10:20:23  houghton
-// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
-//     'Hash' was conflicting with the 'Hash' template class.
-//
-// Revision 2.2  1997/07/13 11:14:05  houghton
-// Changed to use MultiMemOffset.
-// Changed dumpTable().
-// Added erase( first, last ).
-//
-// Revision 2.1  1997/06/05 11:29:10  houghton
-// Initial Version.
-//
-//
+
+}; // namespace mdb

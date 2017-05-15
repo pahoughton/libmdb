@@ -29,7 +29,7 @@ inline
 ReconTable< Rec, LessKey >::ReconTable(
   const FilePath &	tableFn,
   VersionNum		versionNum,
-  ios::open_mode	mode,
+  ios::openmode	mode,
   bool			create,
   MapFile::MapMask	permMask
   )

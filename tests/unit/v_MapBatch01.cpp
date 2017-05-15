@@ -1,25 +1,13 @@
-//
-// File:        tMapBatch01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tMapBatch01
-//  
-// Author:      Paul Houghton - (paul.houghton@wcom.com)
-// Created:     06/29/00 10:01
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 2000-06-29 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MapBatch.hh>
-#include "TestConfig.hh"
-#include <LibTest.hh>
-#include <Compare.hh>
-#include <cstdio>
+#include <mdb/MapBatch.hpp>
+#include <valid/verify.hpp>
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 struct TestRec
 {
@@ -31,31 +19,23 @@ struct TestRec
   char	    eol[ 1 ];
 };
 
-bool
-tMapBatch01( LibTest & tester )
+typedef MapBatch< TestRec >	    Batch;
+
+valid::verify &
+v_MapBatch01( void )
 {
+  static VVDESC( "mdb::MapBatch01" );
   static const char * TestFn = TEST_DATA_DIR "/tMapBatch01.map";
 
   remove( TestFn );
-  
-  {
-    typedef MapBatch< TestRec >	    Batch;
 
-    Batch	t( TestFn );
-    
+  VVWHEN( Batch	t( TestFn,
+		   std::ios::out|std::ios::in,
+		   true,
+		   02) );
+  {
+    VVTRUE( t.good() );
   }
 
-  return( true );
+  return( VALID_VALIDATOR );
 }
-    
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 1.1  2000/07/31 13:07:07  houghton
-// Initial Version.
-//
-//

@@ -1,33 +1,14 @@
 #ifndef _HashTable_hh_
 #define _HashTable_hh_
-//
-// File:        HashTable.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     05/19/97 04:43
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+// 1997-05-19 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <HashTableBase.hh>
-
-#include <DumpInfo.hh>
+#include <mdb/HashTableBase.hpp>
+#include <clue/DumpInfo.hpp>
 
 #include <iterator>
 #include <utility>
+
+namespace mdb {
 
 template< class Key,
           class Value,
@@ -39,19 +20,19 @@ class HashTable : public HashTableBase
 
 public:
   typedef HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > self;
-  
+
   typedef ptrdiff_t		    difference_type;
   typedef const Value &		    const_referance;
   typedef Value &		    referance;
-  
+
   struct HashNode : public HashNodeBase
   {
     Value   value;
   };
-  
+
   class const_iterator;
   class iterator
-    : public std::iterator< bidirectional_iterator_tag,
+    : public std::iterator< std::bidirectional_iterator_tag,
                             Value,
                             difference_type,
                             Value *,
@@ -61,7 +42,7 @@ public:
 
     inline iterator( void )
       : table( 0 ), hash( 0 ), node( 0 ) {} ;
-    
+
     inline iterator( const iterator & from )
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
@@ -69,7 +50,7 @@ public:
       if( table ) table->nextNode( hash, node );
       return( *this );
     };
-    
+
     inline iterator &	    operator -- ( void ) {
       if( table ) table->prevNode( hash, node );
       return( *this );
@@ -80,13 +61,13 @@ public:
       ++ *this;
       return( it );
     };
-    
+
     inline iterator	    operator -- ( int ) {
       iterator it( *this );
       -- *this;
       return( it );
     };
-    
+
     inline referance	    operator * ( void ) {
       return( table->value( node ) );
     };
@@ -94,13 +75,11 @@ public:
     inline bool		operator == ( const iterator & rhs ) const {
       return( table == rhs.table && hash == rhs.hash && node == rhs.node );
     }
-    
-#if defined( STLUTILS_RELOPS_BROKEN )
+
     inline bool		operator != ( const iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
-#endif
-    
+
     inline iterator &	operator = ( const iterator & rhs ) {
       table = rhs.table;
       hash = rhs.hash;
@@ -108,24 +87,24 @@ public:
       return( *this );
     };
 
-    
+
   protected:
     friend class HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >;
     friend class const_iterator;
-    
+
     inline iterator(
       HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
       HashTableBase::HashValue   aHash,
       HashTableBase::Loc    aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
-    
+
     HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
     HashTableBase::HashValue	    hash;
     HashTableBase::Loc	    node;
   };
 
   class const_iterator
-    : public std::iterator< bidirectional_iterator_tag,
+    : public std::iterator< std::bidirectional_iterator_tag,
                             Value,
                             difference_type,
                             const Value *,
@@ -135,7 +114,7 @@ public:
 
     inline const_iterator( void )
       : table( 0 ), hash( 0 ), node( 0 ) {} ;
-    
+
     inline const_iterator( const const_iterator & from )
       : table( from.table ), hash( from.hash ), node( from.node ) {} ;
 
@@ -146,7 +125,7 @@ public:
       if( table ) table->nextNode( hash, node );
       return( *this );
     };
-    
+
     inline const_iterator &	operator -- ( void ) {
       if( table ) table->prevNode( hash, node );
       return( *this );
@@ -157,13 +136,13 @@ public:
       ++ *this;
       return( it );
     };
-    
+
     inline const_iterator	operator -- ( int ) {
       const_iterator it( *this );
       -- *this;
       return( it );
     };
-    
+
     inline const_referance	operator * ( void ) const {
       return( table->value( node ) );
     };
@@ -171,77 +150,58 @@ public:
     inline bool		operator == ( const const_iterator & rhs ) const {
       return( table == rhs.table && hash == rhs.hash && node == rhs.node );
     }
-    
-#if defined( STLUTILS_RELOPS_BROKEN )
+
     inline bool		operator != ( const const_iterator & rhs ) const {
       return( ! (*this == rhs) );
     };
-#endif
-    
+
     inline bool	operator == ( const typename self::iterator & rhs ) const {
       return( table == rhs.table && hash == rhs.hash && node == rhs.node );
     }
-    
+
     inline bool	operator != ( const typename self::iterator & rhs ) const {
       return( ! (*this == rhs) );
     }
-    
+
     inline const_iterator & operator = ( const const_iterator & rhs ) {
       table = rhs.table;
       hash = rhs.hash;
-      node = rhs.node;      
+      node = rhs.node;
       return( *this );
     };
 
     inline const_iterator & operator = (
       const typename self::iterator & rhs ) {
-      
+
       table = rhs.table;
       hash = rhs.hash;
-      node = rhs.node;      
+      node = rhs.node;
       return( *this );
     };
 
-    
+
   protected:
     friend class HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >;
-    
+
     inline const_iterator(
       const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > * aTable,
       HashTableBase::HashValue   aHash,
       HashTableBase::Loc    aNode )
       : table( aTable ), hash( aHash ), node( aNode ) {};
-    
+
     const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > *    table;
     HashTableBase::HashValue	    hash;
     HashTableBase::Loc	    node;
   };
 
-#if defined( STDCXX_PARTIAL_SPECIALIZATION )
-  typedef ::reverse_iterator< iterator >	reverse_iterator;
-  typedef ::reverse_iterator< const_iterator >	const_reverse_iterator;
-#else
-  typedef std::reverse_iterator<
-    const_iterator,
-    typename const_iterator::iterator_category,
-    typename const_iterator::value_type,
-    typename const_iterator::reference,
-    typename const_iterator::pointer,
-    typename const_iterator::difference_type > const_reverse_iterator;
-  typedef std::reverse_iterator<
-    iterator,
-    typename iterator::iterator_category,
-    typename iterator::value_type,
-    typename iterator::reference,
-    typename iterator::pointer,
-    typename iterator::difference_type > reverse_iterator;
-#endif
-    
-  typedef pair< iterator, bool >    pair_iterator_bool;
-  
+  typedef std::reverse_iterator< iterator >	    reverse_iterator;
+  typedef std::reverse_iterator< const_iterator >   const_reverse_iterator;
+
+  typedef std::pair< iterator, bool >    pair_iterator_bool;
+
   inline HashTable( MultiMemOffset *	memMgr,
 		    const char *	indexFileName,
-		    ios::open_mode	mode = ios::in,
+		    std::ios::openmode	mode = std::ios::in,
 		    bool		create = false,
 		    unsigned short	permMask = 02 );
 
@@ -253,7 +213,7 @@ public:
 
     if( node )  // prevent dup keys
       return( pair_iterator_bool( iterator( this, hash, node ), false ) );
-    
+
     node = mgr->allocate( sizeof( HashNode ) );
     if( node ) {
       if( HashTableBase::insert( hash, node ) ) {
@@ -263,21 +223,21 @@ public:
     }
     return( pair_iterator_bool( end(), false ) );
   };
-  
-  
+
+
   inline const_iterator	    find( const Key & key ) const {
     HashValue    hash = hashFunct( key );
     Loc		 node = findNode( hash, key );
     return( node ? const_iterator( this, hash, node ) : end() );
   };
-    
+
   inline iterator	    find( const Key & key ) {
     HashValue    hash = hashFunct( key );
     Loc		 node = findNode( hash, key );
     return( node ? iterator( this, hash, node ) : end() );
   };
-  
-    
+
+
   inline bool		erase( const Key & key ) {
     iterator  it = find( key );
     if( it != end() )
@@ -294,12 +254,12 @@ public:
     return( HashTableBase::erase( first.hash, first.node,
 				  last.hash, last.node ) );
   };
-    
+
   inline const_iterator	    begin( void ) const {
     HashValue    hash = first();
     return( const_iterator( this, hash, hashLoc( hash ) ) );
   };
-  
+
   inline const_iterator	    end( void ) const {
     return( const_iterator( this, endHash(), 0 ) );
   };
@@ -308,7 +268,7 @@ public:
     HashValue    hash = first();
     return( iterator( this, hash, hashLoc( hash ) ) );
   };
-  
+
   inline iterator	    end( void ) {
     return( iterator( this, endHash(), 0 ) );
   };
@@ -331,24 +291,20 @@ public:
 
   inline const Value &	    value( Loc node ) const;
   inline Value &	    value( Loc node );
-  
+
   static size_type	    getNodeSize( void );
-  
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual const char *	getClassName( void ) const;
-  virtual const char *  getVersion( bool withPrjVer = true ) const;
-  virtual ostream &     dumpInfo( ostream &	dest = cerr,
-				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const;
+
+  virtual bool		    good( void ) const;
+  virtual const char *	    error( void ) const;
+  virtual std::ostream &    dumpInfo( std::ostream &	dest = std::cerr,
+				      const char *	prefix = "    " ) const;
 
   inline
   DumpInfo< HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > >
-  dump( const char *	prefix = "    ",
-	bool		showVer = true ) const {
+  dump( const char *	prefix = "    " ) const {
     return( DumpInfo<
 	    HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > >(
-	      *this, prefix, showVer ) );
+	      *this, prefix ) );
   };
 
   class TableDumpMethods : public HashTableBase::DumpMethods
@@ -358,18 +314,18 @@ public:
     TableDumpMethods(
       const HashTable< Key, Value, KeyOfValue, HashFunct, LessKey > & me ) :
       self( me ) {};
-    
-    virtual ostream &	dumpKey( ostream &	dest,
-				 const Key &	STLUTILS_UNUSED( key ) ) const {
-      return( dest );
-    };
-  
-    virtual ostream &	dumpValue( ostream &	 dest,
-				   const Value & STLUTILS_UNUSED( value ) ) const {
+
+    virtual std::ostream & dumpKey( std::ostream &  dest,
+				    const Key &	    key ) const {
       return( dest );
     };
 
-    virtual ostream &	    dumpNode( ostream & dest, Loc node ) const {
+    virtual std::ostream & dumpValue( std::ostream &	dest,
+				      const Value &	value ) const {
+      return( dest );
+    };
+
+    virtual std::ostream & dumpNode( std::ostream & dest, Loc node ) const {
       dumpKey( dest, self.keyOf( self.value( node ) ) );
       dest << ' ';
       dumpValue( dest, self.value( node ) );
@@ -384,17 +340,17 @@ public:
   // ostream &	dumpTable( ostream & dest,
   //			   const TableDumpMethods & meth ) const;
 
-  
+
 protected:
 
   friend class iterator;
   friend class const_iterator;
   friend class TableDumpMethods;
-  
+
   inline Loc	nextNode( HashValue & hash, Loc & node  ) const {
     return( next( hash, node ) );
   };
-  
+
   inline Loc	prevNode( HashValue & hash, Loc & node ) const {
     return( prev( hash, node ) );
   };
@@ -408,11 +364,11 @@ protected:
     }
     return( node );
   };
-    
+
   HashFunct	hashFunct;
   KeyOfValue	keyOf;
   LessKey	lessKey;
-  
+
 private:
 
   // these are prevented by HashTableBase
@@ -420,144 +376,207 @@ private:
   // HashTable( const HashTable & from );
   // HashTable & operator =( const HashTable & from );
 
-  
+
 };
 
-#include <HashTable.ii>
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	HashTable	class
-//
-//  Constructors:
-//
-//  	HashTable( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. HashTable )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const HashTable & src );
-//
-//	istream &
-//	operator >> ( istream & src, HashTable & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.4  2004/04/19 20:26:48  houghton
-// Fixed warning messages.
-//
-// Revision 4.3  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.2  2002/02/28 15:12:55  houghton
-// Port(Forte 6.2) Added typename to eliminate warnings.
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.9  2000/05/27 14:02:49  houghton
-// Port: Sun CC 5.0.
-//
-// Revision 2.8  1998/10/23 13:18:43  houghton
-// Changed include <pair> to include <utility>.
-//
-// Revision 2.7  1997/09/17 16:55:57  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.6  1997/07/25 15:58:44  houghton
-// Cleanup.
-// Reworked insert() and find() methods to use new findNode() method.
-//
-// Revision 2.5  1997/07/25 13:45:16  houghton
-// Changed so that only unique keys could be inserted.
-//
-// Revision 2.4  1997/07/19 10:20:03  houghton
-// Port(Sun5): HashTableBase::Hash was renamed to HashValue becuase
-//     'Hash' was conflicting with the 'Hash' template class.
-// Bug-Fix: added include <MutliMemOffset.hh>
-//
-// Revision 2.3  1997/07/14 10:38:40  houghton
-// Port(AIX): iterator could not access the protected next & prev
-//     methods. So I wrote nextNode & prevNode wrappers to provide access.
-//
-// Revision 2.2  1997/07/13 11:11:58  houghton
-// Changed to use MultiMemOffset.
-// Added erase( iterator it ).
-// Added erase( iterator first, iterator last ).
-// Added rbegin() & rend().
-// Added getNodeSize().
-// Reworked dumpTree().
-//
-// Revision 2.1  1997/06/05 11:29:10  houghton
-// Initial Version.
-//
-//
-#endif // ! def _HashTable_hh_ 
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::HashTable(
+  MultiMemOffset *	memMgr,
+  const char *		indexFileName,
+  std::ios::openmode    mode,
+  bool			create,
+  unsigned short	permMask
+  )
+  : HashTableBase( memMgr, indexFileName, mode, create, permMask )
+{
+}
 
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+HashTableBase::size_type
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::getNodeSize( void )
+{
+  return( sizeof( HashNode ) );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const Value &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
+  HashTableBase::Loc node
+  ) const
+{
+  return( ((const HashNode *)(mgr->address( node )))->value );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+Value &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::value(
+  HashTableBase::Loc node
+  )
+{
+  return( ((HashNode *)(mgr->address( node )))->value );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+bool
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::good( void ) const
+{
+  return( HashTableBase::good() );
+}
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+const char *
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::error( void ) const
+{
+  return( HashTableBase::error() );
+}
+
+
+template< class Key,
+          class Value,
+          class KeyOfValue,
+          class HashFunct,
+          class LessKey >
+inline
+std::ostream &
+HashTable< Key, Value, KeyOfValue, HashFunct, LessKey >::dumpInfo(
+  std::ostream &    dest,
+  const char *	    prefix
+  ) const
+{
+  if( ! HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::good() )
+    dest << prefix << "Error: "
+	 << HashTable<Key,Value,KeyOfValue,HashFunct,LessKey>::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  clue::Str pre;
+  pre = prefix;
+  pre << "HashTableBase::";
+
+  HashTableBase::dumpInfo( dest, pre );
+
+  return( dest );
+}
+
+
+
+
+#if 0
+template< class T >
+inline
+HashTableBase::Loc
+HashTable<T>::insert( HashTableBase::Key key, const T & rec )
+{
+  Loc recLoc = mgr->allocate( sizeof( T ) );
+
+  if( recLoc == ChunkMgr::badLoc )
+    return( recLoc );
+
+  *((T *)(mgr->address( recLoc ))) = rec;
+
+  return( HashTableBase::insert( key, recLoc ) );
+}
+
+template< class T >
+inline
+bool
+HashTable<T>::erase( HashTableBase::Key key )
+{
+  return( HashTableBase::erase( key ) );
+}
+
+template< class T >
+inline
+HashTableBase::Loc
+HashTable<T>::find( HashTableBase::Key key ) const
+{
+  return( HashTableBase::find( key ) );
+}
+
+template< class T >
+inline
+const T &
+HashTable<T>::get( HashTableBase::Key key ) const
+{
+  Loc recLoc = find( key );
+
+  if( recLoc != ChunkMgr::badLoc )
+    return( getRec( recLoc ) );
+  else
+    return( noRec );
+}
+
+template< class T >
+inline
+T &
+HashTable<T>::get( HashTableBase::Key key )
+{
+  Loc recLoc = find( key );
+
+  if( recLoc != ChunkMgr::badLoc )
+    return( getRec( recLoc ) );
+  else
+    return( noRec );
+}
+
+template< class T >
+inline
+DumpInfo< HashTable<T> >
+HashTable<T>::dump( const char * prefix, bool showVer ) const
+{
+  return( DumpInfo< HashTable<T> >( *this, prefix, showVer ) );
+}
+
+template< class T >
+inline
+const T &
+HashTable<T>::getRec( HashTableBase::Loc loc ) const
+{
+  return( *((const T *)mgr->address( loc ) ) );
+}
+
+template< class T >
+inline
+T &
+HashTable<T>::getRec( HashTableBase::Loc loc )
+{
+  return( *((T *)mgr->address( loc ) ) );
+}
+
+#endif
+
+}; // namespace mdb
+
+#endif // ! def _HashTable_hh_

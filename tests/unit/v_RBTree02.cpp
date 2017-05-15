@@ -1,31 +1,21 @@
-//
-// File:        tRBTree02.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tRBTree02
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/06/97 03:58
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-06 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <RBTree.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicFixed.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/RBTree.hpp>
+#include <mdb/MdbIdent.hpp>
+#include <mdb/MapMemDynamicFixed.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <LibTest.hh>
 #include <vector>
 #include <functional>
 #include <set>
 #include <algorithm>
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 struct Rec
 {
@@ -42,27 +32,26 @@ public:
 };
 
 inline
-ostream &
-operator << ( ostream & dest, const Rec & obj )
+std::ostream &
+operator << ( std::ostream & dest, const Rec & obj )
 {
   dest << obj.k;
   return( dest );
 }
 
 typedef RBTree< Rec, Rec, MdbIdent< Rec, Rec >, LessRec >   Tree;
-typedef vector< Rec >	List;
-typedef set< Rec, LessRec >   Set;
-typedef vector< long >	KeyList;
+typedef std::vector< Rec >	List;
+typedef std::set< Rec, LessRec >   Set;
+typedef std::vector< long >	KeyList;
 
 #define INSERT_TEST( value )						      \
     i.k = value;							      \
     i.v = i.k * 2;							      \
 									      \
     TEST( recSet.insert( i ).second );					      \
-    TESTR( t.error(), t.insert( i ).second );				      \
-    if( ! t.testTree( tester.getDump() ) )				      \
+    TEST( t.insert( i ).second );					\
+    if( ! t.testTree( std::cout ) )						\
       {									      \
-        t.dumpTree( tester.getDump() ) << '\n';				      \
 	TEST( false );							      \
       }									      \
 									      \
@@ -87,57 +76,57 @@ typedef vector< long >	KeyList;
       TEST( fc == t.size() );						      \
       TEST( t.size() == recSet.size() );				      \
     }
-		
 
-#define ERASE_TEST( value )						      \
-  {									      \
-    Rec e;								      \
-    e.k = value;							      \
-    recSet.erase( e );							      \
-    TESTR( "erase", t.erase( e ) );					      \
-    TESTR( "find e", t.find( e ) == t.end() );				      \
-    if( ! t.testTree( tester.getDump() ) )				      \
-      {									      \
-        t.dumpTree( tester.getDump() ) << '\n';				      \
-	TEST( false );							      \
-      }									      \
-    if( ! t.empty() )							      \
-      {									      \
-	long b = (*recSet.begin()).k;					      \
-	long e = (*recSet.rbegin()).k;					      \
-	long fc = 0;							      \
-	long nc = 0;							      \
-	Rec  f;								      \
-	for( b -= 1, e += 1; b <= e ; ++ b )				      \
-	  {								      \
-	    f.k = b;							      \
-	    if( recSet.find( f ) != recSet.end() )			      \
-	      {								      \
-		TESTR( "find", t.find( f ) != t.end() );		      \
-		TESTR( "k", (*t.find( f )).k == b );			      \
-		TESTR( "v", (*t.find( f )).v == ( b * 2 ) );		      \
-		++ fc;							      \
-	      }								      \
-	    else							      \
-	      {								      \
-		TESTR( "! find", t.find( f ) == t.end() );		      \
-		++ nc;							      \
-	      }								      \
-	  }								      \
-	TESTR( "fc", fc == t.size() );					      \
-	TESTR( "nc", nc > 1 );						      \
-	TESTR( "size", t.size() == recSet.size() );			      \
-      }									      \
+
+#define ERASE_TEST( value )				\
+  {							\
+    Rec e;						\
+    e.k = value;					\
+    recSet.erase( e );					\
+    TEST( t.erase( e ) );				\
+    TEST( t.find( e ) == t.end() );			\
+    if( ! t.testTree( std::cout ) )			\
+      {							\
+	TEST( false );					\
+      }							\
+    if( ! t.empty() )					\
+      {							\
+	long b = (*recSet.begin()).k;			\
+	long e = (*recSet.rbegin()).k;			\
+	long fc = 0;					\
+	long nc = 0;					\
+	Rec  f;						\
+	for( b -= 1, e += 1; b <= e ; ++ b )		\
+	  {						\
+	    f.k = b;					\
+	    if( recSet.find( f ) != recSet.end() )	\
+	      {						\
+		TEST( t.find( f ) != t.end() );		\
+		TEST( (*t.find( f )).k == b );		\
+		TEST( (*t.find( f )).v == ( b * 2 ) );	\
+		++ fc;					\
+	      }						\
+	    else					\
+	      {						\
+		TEST( t.find( f ) == t.end() );		\
+		++ nc;					\
+	      }						\
+	  }						\
+	TEST( fc == t.size() );				\
+	TEST( nc > 1 );					\
+	TEST( t.size() == recSet.size() );		\
+      }							\
   }
-    
-bool
-tRBTree02( LibTest & tester )
+
+valid::verify &
+v_RBTree02( void )
 {
+  static VVDESC( "mdb::RBTree02" );
   Set	  recSet;
 
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree02.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  Tree::getNodeSize(),
 				  1,
@@ -145,16 +134,15 @@ tRBTree02( LibTest & tester )
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     Rec	  i;
-    
-    TESTP( true );
-    tester.getDump() << "insert";
+
+    //tester.getDump() << "insert";
     INSERT_TEST( 15 );
     INSERT_TEST( 11 );
     {
@@ -163,7 +151,7 @@ tRBTree02( LibTest & tester )
 	  if( k == 11 || k == 15 )
 	    {
 	      i.k = k;
-	      TESTR( "ins dup", t.insert( i ).second == false );
+	      TEST( t.insert( i ).second == false );
 	    }
 	  else
 	    {
@@ -172,7 +160,6 @@ tRBTree02( LibTest & tester )
 	}
     }
 
-    TESTP( true );
     {
       for( long k = 9; k >= 0; -- k )
 	{
@@ -180,10 +167,9 @@ tRBTree02( LibTest & tester )
 	}
     }
 
-    TESTP( true );
     {
       KeyList randKeys;
-      
+
       for( long k = 20; k < 70; ++ k )
 	{
 	  randKeys.push_back( k );
@@ -198,23 +184,22 @@ tRBTree02( LibTest & tester )
 	  INSERT_TEST( *them );
 	}
     }
-    
+
   }
 
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree02.rbt",
-				  ios::in );
+				  std::ios::in );
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     const Tree    t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
-    TESTP( true );
-    tester.getDump() << "find";
+    //tester.getDump() << "find";
     {
       // find( const Key & key ) const
       Tree::const_iterator  it;
@@ -229,8 +214,7 @@ tRBTree02( LibTest & tester )
 	}
     }
 
-    TESTP( true );
-    tester.getDump() << "begin";
+    //tester.getDump() << "begin";
     {
       // begin() const
       // end() const
@@ -238,7 +222,7 @@ tRBTree02( LibTest & tester )
       Tree::const_iterator  them = t.begin();
       long  pk = -1;
       long  cnt = 0;
-      
+
       for( ; them != t.end() && rThem != recSet.end();
 	   ++ them, ++ rThem, ++ pk )
 	{
@@ -252,17 +236,16 @@ tRBTree02( LibTest & tester )
       TEST( cnt == t.size() );
     }
 
-    TESTP( true );
-    tester.getDump() << "rbegin";
+    // tester.getDump() << "rbegin";
     {
       // rbegin() const
       // rend() const
-      
+
       Set::reverse_iterator	    rThem = recSet.rbegin();
       Tree::const_reverse_iterator  them = t.rbegin();
       long  pk = (*rThem).k + 1;
       long  cnt = 0;
-      
+
       for( ; them != t.rend() && rThem != recSet.rend();
 	   ++ them, ++ rThem, -- pk )
 	{
@@ -275,24 +258,22 @@ tRBTree02( LibTest & tester )
       TEST( rThem == recSet.rend() );
       TEST( cnt == t.size() );
     }
-    TESTP( true );
   }
 
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree02.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  (std::ios::openmode)(std::ios::in|std::ios::out),
 				  false );
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
-    TESTP( true );
-    tester.getDump() << "erease";
+    //tester.getDump() << "erease";
     // t.dumpTree( tester.getDump() ) << '\n';
     ERASE_TEST( 69 );	// last
     ERASE_TEST( 0 );	// first
@@ -316,11 +297,10 @@ tRBTree02( LibTest & tester )
     ERASE_TEST( 7 );
     ERASE_TEST( 8 );
     ERASE_TEST( 2 );
-    
-    TESTP( true );
+
     {
       KeyList erList;
-      
+
       for( Tree::iterator them = t.begin();
 	   them != t.end();
 	   ++ them )
@@ -332,32 +312,32 @@ tRBTree02( LibTest & tester )
 	{
 	  ERASE_TEST( *erThem );
 	}
-      
+
     }
 
-    TESTP( t.size() == 0 );
+    TEST( t.size() == 0 );
     // t.dumpInfo( tester.getDump() );
     // t.dumpTree( tester.getDump() );
-    
+
   }
 
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree02.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  false );
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     long    first = 10;
     long    last = 200000;
     KeyList keys;
-    
+
     {
       for( long k = first; k < last; k += 2 )
 	{
@@ -366,8 +346,7 @@ tRBTree02( LibTest & tester )
     }
 
     random_shuffle( keys.begin(), keys.end() );
-    TESTP( true );
-    tester.getDump() << "insert";
+    //tester.getDump() << "insert";
     {
       Rec i;
       long progress = 0;
@@ -377,23 +356,22 @@ tRBTree02( LibTest & tester )
 	{
 	  i.k = *kThem;
 	  i.v = i.k * 2;
-	  
+
 	  TEST( recSet.insert( i ).second );
-	  TESTR( t.error(), t.insert( i ).second );
+	  TEST( t.insert( i ).second );
 	  ++ progress;
 	  if( (progress % 1000) == 0 )
-	    TESTP( true );
-	  
+	    TEST( true );
+
 	}
 
-      if( ! t.testTree( tester.getDump() ) )
+      if( ! t.testTree( std::cout ) )
 	{
-	  t.dumpTree( tester.getDump() ) << '\n';
+	  // t.dumpTree( tester.getDump() ) << '\n';
 	  TEST( false );
 	}
     }
-    TESTP( true );
-    tester.getDump() << "insert dup";
+    //tester.getDump() << "insert dup";
     {
       Rec i;
       for( KeyList::iterator kThem = keys.begin();
@@ -402,13 +380,12 @@ tRBTree02( LibTest & tester )
 	{
 	  i.k = *kThem;
 	  i.v = *kThem - 1;
-	  TESTR( "ins dup", ! t.insert( i ).second );
+	  TEST( ! t.insert( i ).second );
 	}
     }
-    TESTP( true );
     TEST( t.size() == keys.size() );
-    
-    tester.getDump() << "find";
+
+    //tester.getDump() << "find";
     {
       Tree::const_iterator  it;
       Rec		    r;
@@ -435,8 +412,7 @@ tRBTree02( LibTest & tester )
 
     random_shuffle( keys.begin(), keys.end() );
 
-    TESTP( true );
-    tester.getDump() << "erase";
+    //tester.getDump() << "erase";
     {
       Rec e;
       long progress = 0;
@@ -446,23 +422,23 @@ tRBTree02( LibTest & tester )
 	{
 	  e.k = *kThem;
 	  recSet.erase( e );
-	  TESTR( "erase", t.erase( e ) );
-	  TESTR( "find e", t.find( e ) == t.end() );
+	  TEST( t.erase( e ) );
+	  TEST( t.find( e ) == t.end() );
 	  ++ progress;
 	  if( (progress % 1000) == 0 )
 	    {
-	      if( ! t.testTree( tester.getDump() ) )
+	      if( ! t.testTree( std::cout ) )
 		{
-		  t.dumpTree( tester.getDump() ) << '\n';
+		  //t.dumpTree( tester.getDump() ) << '\n';
 		  TEST( false );
 		}
-	      TESTP( true );
+	      TEST( true );
 	    }
 	}
-      
-      if( ! t.testTree( tester.getDump() ) )
+
+      if( ! t.testTree( std::cout ) )
 	{
-	  t.dumpTree( tester.getDump() ) << '\n';
+	  //t.dumpTree( tester.getDump() ) << '\n';
 	  TEST( false );
 	}
     }
@@ -470,26 +446,5 @@ tRBTree02( LibTest & tester )
     TEST( t.size() == 0 );
 
   }
-    
-  return( true );
+  return( VALID_VALIDATOR );
 }
-	
-      
-    
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.3  1997/07/19 10:40:47  houghton
-// Bug-Fix: added include <algorithm>
-//
-// Revision 2.2  1997/07/14 10:50:06  houghton
-// Bug-Fix: added if( ! empty ) to ERASE_TEST. Not supose to use
-//     iterators when a collection is empty!
-//
-// Revision 2.1  1997/07/11 17:39:38  houghton
-// Initial Version.
-//
-//

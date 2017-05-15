@@ -1,24 +1,3 @@
-#
-#
-# Title:        MappedMemory.txt
-# Project:	Mdb
-# Desc:
-# 
-#   
-# 
-# Notes:
-# 
-# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
-# Created:	07/28/97 12:55
-#
-# Revision History: (See end of file for Revision Log)
-#
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
-#
-#   $Id$
-# 
 
 Overview
 
@@ -59,19 +38,19 @@ Overview
     when the operating system makes all of its disk writes (usually
     once a minute, but configurable).
 
-    
-    
+
+
 *** OLD JUNK TEXT ***
-    
+
     If
     multiple processes access the same file using mapped memory, only
-    
+
 
      Any regular file
-    can be mapped to memory. 
+    can be mapped to memory.
 
     The MapFile class provides a portable (across Unix systems)
-    interface to memory mapped files. 
+    interface to memory mapped files.
 
     A memroy mapped file is a regular file who's contents have been
     mapped to a memory address range for a process. This allows the
@@ -91,34 +70,4 @@ Overview
     to the file, that part will be read back into real memory.
 
     Most recently used is a complex algorithem that includes both the
-    frequency of access and how long ago the access occured.
-
-    
-
-    
-
-
-    
-
-
-
-
-#
-# $Log$
-# Revision 4.1  2001/07/27 00:57:39  houghton
-# Change Major Version to 4
-#
-# Revision 2.1  1997/09/21 19:20:53  houghton
-# Changed version to 2
-#
-# Revision 1.2  1997/08/10 20:31:20  houghton
-# Cleanup.
-#
-# Revision 1.1  1997/08/09 14:47:20  houghton
-# Initial Version (work in progress).
-#
-#
-
-# Local Variables:
-# mode:indented-text
-# End:
+    frequency of access and how long ago the access occur ed.

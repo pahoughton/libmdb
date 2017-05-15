@@ -27,7 +27,7 @@ inline
 HashSet< Key, HashFunct, LessKey >::HashSet(
   MultiMemOffset *	memMgr,
   const char *		indexFileName,
-  ios::open_mode	mode,
+  ios::openmode	mode,
   bool			create,
   unsigned short	permMask
   )

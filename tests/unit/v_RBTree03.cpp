@@ -1,30 +1,20 @@
-//
-// File:        tRBTree03.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tRBTree03
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/11/97 07:41
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-11 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <RBTree.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicFixed.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/RBTree.hpp>
+#include <mdb/MdbIdent.hpp>
+#include <mdb/MapMemDynamicFixed.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <LibTest.hh>
 #include <vector>
 #include <functional>
 #include <set>
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 struct Rec
 {
@@ -39,14 +29,15 @@ operator < ( const Rec & a, const Rec & b )
   return( a.k < b.k );
 }
 
-typedef RBTree< Rec, Rec, MdbIdent< Rec, Rec >, less< Rec > >   Tree;
+typedef RBTree< Rec, Rec, MdbIdent< Rec, Rec >, std::less< Rec > >   Tree;
 
-bool
-tRBTree03( LibTest & tester )
+valid::verify &
+v_RBTree03( void )
 {
+  static VVDESC( "mdb::RBTree03" );
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree03.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  Tree::getNodeSize(),
 				  1,
@@ -54,11 +45,11 @@ tRBTree03( LibTest & tester )
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     Rec	  i;
 
@@ -75,19 +66,5 @@ tRBTree03( LibTest & tester )
     TEST( t.empty() );
   }
 
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-
-    
-    
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.1  1997/07/11 17:39:42  houghton
-// Initial Version.
-//
-//

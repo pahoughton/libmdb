@@ -1,32 +1,10 @@
-//
-// File:        MultiMemOffsetMapDynamic.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for MultiMemOffsetMapDynamic
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     06/30/97 07:07
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-06-30 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "MultiMemOffsetMapDynamic.hh"
-#include "MapMemDynamic.hh"
-#include <Str.hh>
+#include "MultiMemOffsetMapDynamic.hpp"
+#include "MapMemDynamic.hpp"
+#include <clue/Str.hpp>
 
-#if defined( MDB_DEBUG )
-#include "MultiMemOffsetMapDynamic.ii"
-#endif
-
-MDB_VERSION(
-  MultiMemOffsetMapDynamic,
-  "$Id$");
-
+namespace mdb {
 
 MultiMemOffsetMapDynamic::MultiMemOffsetMapDynamic(
   MapMemDynamic *   mapMemMgr,
@@ -80,14 +58,14 @@ MultiMemOffsetMapDynamic::reserveKey( unsigned short  key )
 }
 
 bool
-MultiMemOffsetMapDynamic::setNewKey( 
+MultiMemOffsetMapDynamic::setNewKey(
   unsigned short    key,
   KeyValue	    value
   )
 {
   return( mem->setNewKey( key, value ) );
 }
-	    
+
 bool
 MultiMemOffsetMapDynamic::setKey(
   unsigned short    key,
@@ -105,17 +83,17 @@ MultiMemOffsetMapDynamic::good( void ) const
 }
 
 bool
-MultiMemOffsetMapDynamic::allocCopyStr( Loc & loc, const Str & src )
+MultiMemOffsetMapDynamic::allocCopyStr( Loc & loc, const clue::Str & src )
 {
   bool	status( true );
-  
+
   if( src.size() )
     {
       if( (loc = allocate( src.size() + 5 )) != 0 )
 	{
 	  char * tmp( address( loc ) );
-	  
-	  src.copy( tmp, Str::npos );
+
+	  src.copy( tmp, clue::Str::npos );
 	}
       else
 	{
@@ -126,15 +104,15 @@ MultiMemOffsetMapDynamic::allocCopyStr( Loc & loc, const Str & src )
     {
       loc = 0;
     }
-  
+
   return( status );
-}  
+}
 const char *
 MultiMemOffsetMapDynamic::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = MultiMemOffsetMapDynamic::getClassName();
+  errStr = "MultiMemOffsetMapDynamic";
 
   if( good() )
     {
@@ -153,7 +131,7 @@ MultiMemOffsetMapDynamic::error( void ) const
 	  if( ! mem->good() )
 	    errStr << ": " << mem->error();
 	}
-  
+
       if( eSize == errStr.size() )
         errStr << ": unknown error";
     }
@@ -161,29 +139,13 @@ MultiMemOffsetMapDynamic::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-MultiMemOffsetMapDynamic::getClassName( void ) const
-{
-  return( "MultiMemOffsetMapDynamic" );
-}
 
-const char *
-MultiMemOffsetMapDynamic::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 MultiMemOffsetMapDynamic::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << MultiMemOffsetMapDynamic::getClassName() << ":\n"
-	 << MultiMemOffsetMapDynamic::getVersion() << '\n';
 
   if( ! MultiMemOffsetMapDynamic::good() )
     dest << prefix << "Error: " << MultiMemOffsetMapDynamic::error() << '\n';
@@ -192,40 +154,17 @@ MultiMemOffsetMapDynamic::dumpInfo(
 
   if( mem )
     {
-      Str pre;
+      clue::Str pre;
       pre = prefix;
       pre << "mem::";
-      mem->dumpInfo( dest, pre, false );
+      mem->dumpInfo( dest, pre );
     }
   else
     {
       dest << prefix << "mem:      (NONE)" << '\n';
     }
-  
+
   return( dest );
 }
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.3  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.2  2003/07/19 09:11:13  houghton
-// Port to 64 bit.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 2.3  1999/10/28 14:22:21  houghton
-// Added allocCopyStr().
-//
-// Revision 2.2  1997/10/01 14:03:02  houghton
-// Chaged so that 'keys' have to be reserved to be set.
-// Increased the number of keys from 16 to 32.
-// Changed to use portable multi platform types.
-//
-// Revision 2.1  1997/07/11 17:37:39  houghton
-// Initial Version.
-//
-//
+}; // namespace mdb

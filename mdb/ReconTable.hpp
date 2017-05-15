@@ -1,35 +1,12 @@
-#ifndef _ReconTable_hh_
-#define _ReconTable_hh_
-//
-// File:        ReconTable.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul Houghton 719-527-7834 - (paul.houghton@mci.com)
-// Created:     07/31/00 06:13
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+#ifndef _mdb_ReconTable_hpp_
+#define _mdb_ReconTable_hpp_
+// 2000-07-31 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <ReconTableBase.hh>
-
-#include <DumpInfo.hh>
+#include <mdb/ReconTableBase.hpp>
+#include <clue/DumpInfo.hpp>
 #include <iostream>
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
+namespace mdb {
 
 template< class Rec, class LessKey >
 class ReconTable : public ReconTableBase
@@ -41,10 +18,10 @@ public:
   typedef const Rec *			const_iterator;
   typedef ReconTableBase::RecordNum	RecordNum;
   typedef ReconTableBase::VersionNum	VersionNum;
-  
+
   inline ReconTable( const FilePath &	tableFn,
 		     VersionNum		versionNum,
-		     ios::open_mode	mode = ios::in,
+		     std::ios::openmode	mode = std::ios::in,
 		     bool		create = false,
 		     MapFile::MapMask	permMask = 02 );
 
@@ -60,14 +37,14 @@ public:
   inline bool		    update( RecordNum r, const Rec & src );
 
   inline const Rec &	    operator [] ( RecordNum r ) const;
-  
+
 protected:
 
   inline const Rec &    record( RecordNum recNum ) const; // 0 is first rec
   inline Rec &          record( RecordNum recNum );       // ditto
-  
+
   LessKey	lessKey;
-  
+
 private:
 
   ReconTable( const ReconTable & from );
@@ -75,114 +52,98 @@ private:
 
 };
 
-#if !defined( inline )
-#include <ReconTable.ii>
-#else
-#undef inline
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::ReconTable(
+  const FilePath &	tableFn,
+  VersionNum		versionNum,
+  ios::openmode	mode,
+  bool			create,
+  MapFile::MapMask	permMask
+  )
+  : ReconTableBase( tableFn,
+		    mode,
+		    create,
+		    permMask,
+		    versionNum,
+		    sizeof( Rec ) )
+{
+}
 
-ostream &
-operator << ( ostream & dest, const ReconTable & src );
+template< class Rec, class LessKey >
+inline
+bool
+ReconTable< Rec, LessKey >::append( const Rec & rec )
+{
+  return( ReconTableBase::append( &rec ) );
+}
 
-istream &
-operator >> ( istream & src, const ReconTable & dest );
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::const_iterator
+ReconTable< Rec, LessKey >::begin( void ) const
+{
+  return( &(record( 0 )) );
+}
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::const_iterator
+ReconTable< Rec, LessKey >::end( void ) const
+{
+  if( ! good() )
+    return( &(record( 0 ) ) );
+  else
+    return( &(record( Net2Host( header().count ) )) );
+}
+
+template< class Rec, class LessKey >
+inline
+ReconTable< Rec, LessKey >::RecordNum
+ReconTable< Rec, LessKey >::rfind( const Rec & key ) const
+{
+  for( RecordNum r = size() - 1; r >= 0; -- r )
+    {
+      if( ! lessKey( record( r ), key )
+	  && ! lessKey( key, record( r ) ) )
+	return( r );
+    }
+  return( BadRec );
+}
+
+template< class Rec, class LessKey >
+inline
+bool
+ReconTable< Rec, LessKey >::update( RecordNum r, const Rec & rec )
+{
+  return( ReconTableBase::update( r, &rec ) );
+}
+
+template< class Rec, class LessKey >
+inline
+const Rec &
+ReconTable< Rec, LessKey >::operator [] ( RecordNum r ) const
+{
+  return( record( r ) );
+}
 
 
-#endif
+template< class Rec, class LessKey >
+inline
+const Rec &
+ReconTable< Rec, LessKey >::record( RecordNum recNum ) const
+{
+  return( *((const Rec *)(map.getBase() + recpos( recNum ) ) ) );
+}
+
+template< class Rec, class LessKey >
+inline
+Rec &
+ReconTable< Rec, LessKey >::record( RecordNum recNum )
+{
+  return( *((Rec *)(map.getBase() + recpos( recNum ) ) ) );
+}
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	ReconTable	class
-//
-//  Constructors:
-//
-//  	ReconTable( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. ReconTable )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const ReconTable & src );
-//
-//	istream &
-//	operator >> ( istream & src, ReconTable & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 1.1  2000/08/02 11:03:47  houghton
-// Initial Version.
-//
-//
-#endif // ! def _ReconTable_hh_ 
-
+}; // namespace mdb
+#endif // ! def _ReconTable_hh_

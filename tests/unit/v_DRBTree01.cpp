@@ -1,57 +1,48 @@
-//
-// File:        tDRBTree01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tDRBTree01
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/16/97 05:49
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-16 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <DRBTree.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicDynamic.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/DRBTree.hpp>
+#include <mdb/MdbIdent.hpp>
+#include <mdb/MapMemDynamicDynamic.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <LibTest.hh>
 #include <vector>
 #include <functional>
 
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
 
-typedef DRBTree< long, long, MdbIdent< long, long >, less< long > >   Tree;
+using namespace mdb;
+using namespace clue;
 
-bool
-tDRBTree01( LibTest & tester )
+
+typedef DRBTree< long, long, MdbIdent< long, long >, std::less< long > >   Tree;
+
+valid::verify &
+v_DRBTree01( void )
 {
+  static VVDESC( "mdb::DRBTree01" );
   {
     MapMemDynamicDynamic    mmdd( TEST_DATA_DIR "/tDRBTree01.drbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  1,
 				  1,
 				  02 );
 
-    TESTR( mmdd.error(), mmdd.good() );
-    
+    TEST( mmdd.good() );
+
     MultiMemOffsetMapDynamic	mmo( &mmdd, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     {
       Tree::pair_iterator_bool	ins;
-      
+
       for( long k = 4; k < 20; k += 2 )
 	{
 	  ins = t.insert( k, 0 );
@@ -62,7 +53,7 @@ tDRBTree01( LibTest & tester )
 
     {
       Tree::const_iterator  it;
-      
+
       for( long k = 0; k < 25; ++ k )
 	{
 	  it = t.find( k, 0 );
@@ -86,24 +77,10 @@ tDRBTree01( LibTest & tester )
 	  TEST( *them == k );
 	  k += 2;
 	}
-      TEST( them == t.end() );      
+      TEST( them == t.end() );
       TEST( k == 20 );
     }
-       
-  }
-  return( true );
-}
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 2.2  1997/07/19 10:37:34  houghton
-// Bug-Fix: forgot to declare return type.
-//
-// Revision 2.1  1997/07/16 16:38:54  houghton
-// Initial Version (work in progress).
-//
-//
+  }
+  return( VALID_VALIDATOR );
+}

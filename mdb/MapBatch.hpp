@@ -1,37 +1,18 @@
-#ifndef _MapBatch_hh_
-#define _MapBatch_hh_
-//
-// File:        MapBatch.hh
-// Project:	Mdb
-// Desc:        
-//
-//  This class is intended for creating and/or accessing a file
-//  containing a collection of fixed records.
-//
-// Notes:
-//
-//  You should only use a structure or  other base type (i.e. long,
-//  char ...) as `T'. Classes may contain function pointers which
-//  would be no be valid in a file.
-//
-// Author:      Charles B. Reeves - (charles.reeves@mci.com)
-//		Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     07/28/97 19:25
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+#ifndef _mdb_MapBatch_hpp_
+#define _mdb_MapBatch_hpp_
+/* 1997-07-28 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <MapFile.hh>
-#include <DumpInfo.hh>
-#include <iostream>
-#include <Str.hh>
+   create and/or accessing a file containing fixed records.
+*/
+
+#include <mdb/MapFile.hpp>
+#include <clue/DumpInfo.hpp>
+#include <iterator>
+#include <string>
+
+#include <unistd.h>
+
+namespace mdb {
 
 template <class T>
 class MapBatch
@@ -42,56 +23,42 @@ public:
   typedef T *		iterator;
   typedef const T *	const_iterator;
   typedef T		value_type;
-  typedef MDB_TYPE_SIZE	size_type;
+  typedef size_t	size_type;
   typedef ptrdiff_t	difference_type;
   typedef T &		reference;
   typedef const T &	const_reference;
-  
-  typedef T		Rec;
-  
-#if defined( STLUTILS_STD_ITERATORS )
 
-  typedef std::reverse_iterator< iterator,
-    random_access_iterator_tag,
-    value_type >					    reverse_iterator;
-  typedef std::reverse_iterator< const_iterator,
-    random_access_iterator_tag,
-    const value_type >				    const_reverse_iterator;
-  
-#else
-  typedef reverse_bidirectional_iterator< const_iterator,
-    value_type, const_reference, difference_type >	const_reverse_iterator;
-  
-  typedef reverse_bidirectional_iterator< iterator,
-    value_type, reference, difference_type >		reverse_iterator;
-#endif
-  
-  inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode = ios::in );
-		   
-  inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode,
-		   MapFile::MapMask permMask );
-  
-  inline MapBatch( const char *	    fileName,
-		   ios::open_mode   mode,
-		   bool		    create,
-		   MapFile::MapMask permMask );
-  
+  typedef T		Rec;
+
+  typedef std::reverse_iterator< const_iterator > const_reverse_iterator;
+  typedef std::reverse_iterator< iterator > reverse_iterator;
+
+  inline MapBatch( const char *		fileName,
+		   std::ios::openmode   mode = std::ios::in );
+
+  inline MapBatch( const char *		fileName,
+		   std::ios::openmode   mode,
+		   MapFile::MapMask	permMask );
+
+  inline MapBatch( const char *		fileName,
+		   std::ios::openmode   mode,
+		   bool			create,
+		   MapFile::MapMask	permMask );
+
   virtual ~MapBatch( void );
 
   inline const_iterator		begin( void ) const {
     return( (const_iterator)map.getBase() );
   };
-  
+
   inline const_iterator		end( void ) const {
     return( (const_iterator)(map.getBase() + endPos ));
   };
-  
+
   inline const_reverse_iterator	rbegin( void ) const {
     return( const_reverse_iterator( end() ) );
   };
-  
+
   inline const_reverse_iterator	rend( void ) const {
     return( const_reverse_iterator( begin() ) );
   };
@@ -103,20 +70,20 @@ public:
   inline const_reference    back( void ) const {
     return( *(end() - 1) );
   };
-  
-  
+
+
   inline iterator	    begin( void ) {
     return( (iterator)map.getBase() );
   };
-  
+
   inline iterator	    end( void ) {
     return( (iterator)(map.getBase() + endPos ));
   };
-  
+
   inline reverse_iterator   rbegin( void ) {
     return( reverse_iterator( end() ) );
   };
-  
+
   inline reverse_iterator   rend( void ) {
     return( reverse_iterator( begin() ) );
   };
@@ -128,7 +95,7 @@ public:
   inline reference	    back( void ) {
     return( *(end() - 1) );
   };
-  
+
   inline size_type	size( void ) const {
     return( size_type( end() - begin() ) );
   };
@@ -144,7 +111,7 @@ public:
     }
     return( true );
   };
-  
+
   inline bool		append( const_reference rec ) {
     if( endPos + sizeof( value_type ) >= map.getSize() ) {
       if( ! map.grow( sizeof( value_type ), 0 ) )
@@ -155,7 +122,7 @@ public:
     endPos += sizeof( value_type );
     return( true );
   };
-    
+
   inline iterator	append( void ) {
     if( endPos + sizeof( value_type ) >= map.getSize() ) {
       if( ! map.grow( sizeof( value_type ), 0 ) )
@@ -164,11 +131,6 @@ public:
     iterator tmp( end() );
     endPos += sizeof( value_type );
     return( tmp );
-  };
-
-  inline bool		write( iterator it ) {
-    // dummy function
-    return( true );
   };
 
   inline bool		pop( void ) {
@@ -182,181 +144,165 @@ public:
 	return( false );
       }
   };
-    
+
   inline const_reference    operator [] ( size_type rec ) const {
     return( *(begin() + rec) );
   };
-  
+
   inline reference	    operator [] ( size_type rec ) {
     return( *(begin() + rec) );
   };
-  
+
 
   inline bool		sync( size_type	beg = 0,
 			      size_type	len = MapFile::npos,
 			      bool	async = false ) {
     return( map.sync( beg, len, async ) );
   };
-  
-  inline const char *	getFileName( void ) const;
-  
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual const char *	getClassName( void ) const;
-  virtual ostream &     dumpInfo( ostream &	dest = cerr,
-				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const;
 
-  inline
-  DumpInfo< MapBatch<T> >   dump( const char *	prefix = "    ",
-				  bool		showVer = true ) const;
-    
+  inline const char *	getFileName( void ) const;
+
+  virtual bool		    good( void ) const;
+  virtual const char *	    error( void ) const;
+  virtual std::ostream &    dumpInfo( std::ostream &	dest = std::cerr,
+				      const char *	prefix = "    ") const;
+
+  inline DumpInfo< MapBatch<T> >
+  dump( const char * prefix = "    " ) const {
+    return( DumpInfo< MapBatch<T> >( *this, prefix ) );
+  }
+
+
 protected:
-  
+
   MapFile		map;
   MapFile::size_type    endPos;
 
 private:
-  
+
 };
 
-#include <MapBatch.ii>
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *		fileName,
+  std::ios::openmode    mode
+  )
+  : map( fileName, 0, mode, false, 02 ),
+    endPos( map.getSize() )
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *		fileName,
+  std::ios::openmode    mode,
+  MapFile::MapMask	permMask
+  )
+  : map( fileName,
+	 0,
+	 mode,
+	 false,
+	 permMask ),
+    endPos( (mode & std::ios::out)
+	    && map.getSize() )
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::MapBatch(
+  const char *		fileName,
+  std::ios::openmode    mode,
+  bool			create,
+  MapFile::MapMask	permMask
+  )
+  : map( fileName, 0, mode, create, permMask ),
+    endPos( create ? 0 : map.getSize() )
+{
+}
+
+template< class T >
+inline
+MapBatch<T>::~MapBatch( void )
+{
+  if( (map.getMode() & std::ios::out ) )
+    {
+      map.unmap();
+      truncate( map.getFileName(), endPos );
+    }
+}
+
+template< class T >
+inline
+const char *
+MapBatch<T>::getFileName( void ) const
+{
+  return( map.getFileName() );
+}
+
+template< class T >
+inline
+bool
+MapBatch<T>::good( void ) const
+{
+  return( map.good() );
+}
+
+template< class T >
+inline
+const char *
+MapBatch<T>::error( void ) const
+{
+  return( map.error() );
+}
+
+template< class T >
+inline
+std::ostream &
+MapBatch<T>::dumpInfo(
+  std::ostream &    dest,
+  const char *	    prefix
+  ) const
+{
+
+  if( ! MapBatch<T>::good() )
+    dest << prefix << "Error: " << MapBatch<T>::error() << '\n';
+  else
+    dest << prefix << "Good" << '\n';
+
+  std::string pre = prefix;
+  pre += "map:";
+  map.dumpInfo( dest, pre.c_str() );
+
+  dest << prefix << "endpos:     " << endPos << '\n'
+       << prefix << "records:    " << size() << '\n'
+    ;
+
+  return( dest );
+}
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	MapBatch	class
-//
-//  Constructors:
-//
-//  	MapBatch( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. MapBatch )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const MapBatch & src );
-//
-//	istream &
-//	operator >> ( istream & src, MapBatch & dest );
-//
-// Example:
-//
-//	  struct Rec {
-//	    long  a;
-//	    long  b;
-//	    char  c[50];
-//	  };
-//
-//	  MapBatch<Rec>   batch( "abc.bin" );
-//
-//	  for( MapBatch<Rec>::iterator them = batch.begin();
-//	       them != batch.end();
-//	       ++ them )
-//	    {
-//		 ...
-//	    }
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.4  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.3  2001/08/08 14:10:00  houghton
-// *** empty log message ***
-//
-// Revision 4.2  2001/07/30 12:18:36  houghton
-// *** empty log message ***
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.11  2000/07/31 13:05:06  houghton
-// Port(Sun CC 5.0) changes to support Sun Workshop 5.0.
-//
-// Revision 2.10  1999/06/24 10:26:29  houghton
-// Added getFileName().
-//
-// Revision 2.9  1999/05/01 12:57:38  houghton
-// Reworked constructors.
-//
-// Revision 2.8  1999/03/02 12:57:19  houghton
-// Changed constructors.
-// Added append().
-// Added write().
-// Added pop().
-//
-// Revision 2.7  1997/12/19 12:41:05  houghton
-// Added operator [].
-//
-// Revision 2.6  1997/10/01 14:03:56  houghton
-// Added typedef for Rec
-// Added sync().
-//
-// Revision 2.5  1997/09/02 13:25:53  houghton
-// Bug-Fix: endpos had the address which could change due to an
-//     append(). Changed so endpos is an offset and added to getBase() which
-//     allways has the correct base address.
-//
-// Revision 2.4  1997/08/31 10:17:30  houghton
-// Added operator [] to retreive a specific record.
-//
-// Revision 2.3  1997/08/17 01:38:39  houghton
-// Bug-Fix: MapMask is part of MapFile
-// Bug-Fix: endPos is not a function :)
-//
-// Revision 2.2  1997/08/10 20:31:58  houghton
-// Cleanup.
-// Added some methods.
-// Removed some of the definitions (now in MapBatch.ii).
-//
-// Revision 2.1  1997/08/10 19:46:47  houghton
-// Initial Version (by Charlie Reeves).
-//
-//
-#endif // ! def _MapBatch_hh_ 
+}; // namespace mdb
 
+/* Example:
+
+	  struct Rec {
+	    long  a;
+	    long  b;
+	    char  c[50];
+	  };
+
+	  MapBatch<Rec>   batch( "abc.bin" );
+
+	  for( MapBatch<Rec>::iterator them = batch.begin();
+	       them != batch.end();
+	       ++ them )
+	    {
+		 ...
+	    }
+*/
+
+#endif // ! def _clue_MapBatch_hpp_

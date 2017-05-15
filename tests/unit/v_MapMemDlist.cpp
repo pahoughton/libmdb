@@ -31,7 +31,7 @@ tMapMemDlist( LibTest & tester )
     const char * TestFn = TEST_DATA_DIR "/mdl01.mdl";
     
     MapMemDynamicDynamic    dataMap( TestFn,
-				     (ios::open_mode)(ios::in|ios::out),
+				     (std::ios::openmode)(ios::in|ios::out),
 				     true,
 				     1,
 				     1,

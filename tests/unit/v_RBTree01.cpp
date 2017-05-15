@@ -1,40 +1,33 @@
-//
-// File:        tRBTree01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tRBTree01
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/03/97 08:42
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-03 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <RBTree.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicFixed.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/RBTree.hpp>
+#include <mdb/MdbIdent.hpp>
+#include <mdb/MapMemDynamicFixed.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <LibTest.hh>
+
 #include <vector>
 #include <functional>
 #include <algorithm>
 
-typedef RBTree< long, long, MdbIdent< long, long >, less< long > >   Tree;
-typedef vector< long >	List;
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
 
-bool
-tRBTree01( LibTest & tester )
+using namespace mdb;
+using namespace clue;
+
+
+typedef RBTree< long, long, MdbIdent< long, long >, std::less< long > >   Tree;
+typedef std::vector< long >	List;
+
+valid::verify &
+v_RBTree01( void )
 {
+  static VVDESC( "mdb::RBTree01" );
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree01.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  Tree::getNodeSize(),
 				  1,
@@ -42,39 +35,39 @@ tRBTree01( LibTest & tester )
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
-    t.dumpInfo( tester.getDump() );
-    t.dumpTree( tester.getDump() );
-    t.testTree( tester.getDump() );
-    
-    TESTR( t.error(), t.insert( 15 ).second );
+    //t.dumpInfo( tester.getDump() );
+    //t.dumpTree( tester.getDump() );
+    //t.testTree( tester.getDump() );
 
-    t.dumpTree( tester.getDump() );
-    t.dumpInfo( tester.getDump() );
-    t.testTree( tester.getDump() );
+    TEST( t.insert( 15 ).second );
 
-    TESTR( t.error(), t.insert( 11 ).second );
-    
-    TEST( t.testTree( tester.getDump() ) );
-    t.dumpTree( tester.getDump() );
+    //t.dumpTree( tester.getDump() );
+    //t.dumpInfo( tester.getDump() );
+    //t.testTree( tester.getDump() );
+
+    TEST( t.insert( 11 ).second );
+
+    TEST( t.testTree( std::cout ) );
+    //t.dumpTree( tester.getDump() );
 
     {
       for( long k = 10; k < 20; ++ k )
 	{
 	  if( k == 11 || k == 15 )
 	    {
-	      TESTR( "ins dup", t.insert( k ).second == false );
+	      TEST( t.insert( k ).second == false );
 	    }
 	  else
 	    {
-	      TESTR( t.error(), t.insert( k ).second );
-	      TEST( t.testTree( tester.getDump() ) );
-	      t.dumpTree( tester.getDump() ) << '\n';
+	      TEST( t.insert( k ).second );
+	      TEST( t.testTree( std::cout ) );
+	      // t.dumpTree( tester.getDump() ) << '\n';
 	    }
 	}
     }
@@ -82,15 +75,15 @@ tRBTree01( LibTest & tester )
     {
       for( long k = 9; k >= 0; -- k )
 	{
-	  TESTR( t.error(), t.insert( k ).second );
-	  TEST( t.testTree( tester.getDump() ) );
-	  t.dumpTree( tester.getDump() ) << '\n';
+	  TEST( t.insert( k ).second );
+	  TEST( t.testTree( std::cout ) );
+	  //t.dumpTree( tester.getDump() ) << '\n';
 	}
     }
 
     {
       List randKeys;
-      
+
       for( long k = 50; k < 100; ++ k )
 	{
 	  randKeys.push_back( k );
@@ -102,14 +95,14 @@ tRBTree01( LibTest & tester )
 	   them != randKeys.end();
 	   ++ them )
 	{
-	  TESTR( t.error(), t.insert( *them ).second );
-	  TEST( t.testTree( tester.getDump() ) );
-	  t.dumpTree( tester.getDump() ) << endl;
+	  TEST( t.insert( *them ).second );
+	  TEST( t.testTree( std::cout ) );
+	  //t.dumpTree( tester.getDump() ) << endl;
 	}
     }
 
-    t.dumpInfo( tester.getDump() );
-	      
+    //t.dumpInfo( tester.getDump() );
+
     {
       long k = 0;
       for( Tree::iterator them = t.begin();
@@ -119,17 +112,16 @@ tRBTree01( LibTest & tester )
 	  if( k == 20 )
 	    k = 50;
 
-	  TESTR( "bad value", k == *them );
+	  TEST( k == *them );
 	}
 
-      TESTP( true );
-      TESTR( "bad value", k == 100 );
+      TEST( k == 100 );
     }
 
     {
       Tree::iterator it;
       long k;
-      
+
       for( k = -1; k < 101; ++ k )
 	{
 	  if( k < 0 ||
@@ -146,130 +138,130 @@ tRBTree01( LibTest & tester )
 	      TEST( *it == k );
 	    }
 	}
-      
-      TESTP( k == 101 );
-      
+
+      TEST( k == 101 );
+
     }
-    
+
   }
 
   {
     MapMemDynamicFixed	    mmdf( TEST_DATA_DIR "/tRBTree01.rbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  false );
 
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
-    tester.getDump() << "Erase Tests: " << endl;
+    // tester.getDump() << "Erase Tests: " << endl;
 
     {
       long e;
 
       e = 99;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 0;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 13;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 79;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 91;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 58;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 1;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 98;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 80;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 88;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 86;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 87;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 85;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 84;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
-      
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
+
       e = 83;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       e = 5;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
-      
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
+
       e = 6;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
-      
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
+
       e = 7;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
-      
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
+
       e = 8;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
-      
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
+
       e = 2;
-      TESTR( t.error(), t.erase( e ) );
-      TEST( t.testTree( tester.getDump() ) );
-      t.dumpTree( tester.getDump() ) << endl;
+      TEST( t.erase( e ) );
+      TEST( t.testTree( std::cout ) );
+      //t.dumpTree( tester.getDump() ) << endl;
 
       {
 	List erList;
@@ -279,23 +271,23 @@ tRBTree01( LibTest & tester )
 	     ++ them )
 	  erList.push_back( *them );
 
-	
+
 	for( List::reverse_iterator erThem = erList.rbegin();
 	     erThem != erList.rend();
 	     ++ erThem )
 	  {
-	    TESTR( t.error(), t.erase( *erThem ) );
-	    t.dumpTree( tester.getDump() ) << endl;
-	    TEST( t.testTree( tester.getDump() ) );
+	    TEST( t.erase( *erThem ) );
+	    //t.dumpTree( tester.getDump() ) << endl;
+	    TEST( t.testTree( std::cout ) );
 	  }
       }
-	    
+
     }
 
 #if defined( FIXME )
     {
       List randKeys;
-      
+
       for( long k = 50; k < 100; ++ k )
 	{
 	  randKeys.push_back( k );
@@ -306,16 +298,16 @@ tRBTree01( LibTest & tester )
       Tree::iterator it;
       while( randKeys.size() )
 	{
-	  
-	  TESTR( t.error(), t.erase( randKeys.back() ) );
 
-	  t.dumpTree( tester.getDump() ) << endl;
+	  TEST( t.erase( randKeys.back() ) );
+
+	  //t.dumpTree( tester.getDump() ) << endl;
 
 	  it = t.find( randKeys.back() );
 	  TEST( it == t.end() );
-	  
+
 	  randKeys.pop_back();
-	  
+
 	  for( List::iterator them = randKeys.begin();
 	       them != randKeys.end();
 	       ++ them )
@@ -337,58 +329,43 @@ tRBTree01( LibTest & tester )
     {
       for( long k = 0; k < 10; ++ k )
 	{
-	  TESTR( t.error(), t.erase( k ) );
-	  t.dumpTree( tester.getDump() ) << endl;
+	  TEST( t.erase( k ) );
+	  //t.dumpTree( tester.getDump() ) << endl;
 	}
     }
-    
+
     {
       for( long k = 19; k > 9; -- k )
 	{
-	  TESTR( t.error(), t.erase( k ) );
-	  t.dumpTree( tester.getDump() ) << endl;
+	  TEST( t.erase( k ) );
+	  //t.dumpTree( tester.getDump() ) << endl;
 	}
     }
-	  
+
     if( false )
     {
       List recList;
-      
+
       for( long k = 0; k < 256; ++ k )
 	{
 	  recList.push_back( k );
-	  TESTR( t.error(), t.insert( k ).second );
+	  TEST( t.insert( k ).second );
 	}
 
       for( List::reverse_iterator them = recList.rbegin();
 	   them != recList.rend();
 	   ++ them )
 	{
-	  TESTR( t.error(), t.erase( *them ) );
+	  TEST( t.erase( *them ) );
 	}
-      
+
       // random_shuffle( recList.begin(), recList.end() );
     }
 #endif
-    t.dumpInfo( tester.getDump() );
+    //t.dumpInfo( tester.getDump() );
     // TEST( t.allTested() );
-    
-  }
-  
-  return( true );
-}
-  
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.2  1997/07/19 10:40:32  houghton
-// Bug-Fix: added include <algorithm>
-//
-// Revision 2.1  1997/07/11 17:39:34  houghton
-// Initial Version.
-//
-//
+  }
+  return( VALID_VALIDATOR );
+
+}

@@ -1,0 +1,6 @@
+*.o
+unit
+Makefile
+Makefile.in
+.deps
+.libs

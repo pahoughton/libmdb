@@ -1,38 +1,16 @@
 #ifndef _MapMemDynamicFixed_hh_
 #define _MapMemDynamicFixed_hh_
-//
-// File:        MapMemDynamicFixed.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     11/18/94 10:09
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+// 1994-11-28 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <MapMemDynamic.hh>
-
-#include <DumpInfo.hh>
+#include <mdb/MapMemDynamic.hpp>
+#include <clue/Clue.hpp>
+#include <clue/DumpInfo.hpp>
 
 #include <iostream>
 
 #define MDF_VERSION 0x4d444605	// 'MDF5'
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
+namespace mdb {
 
 class MapMemDynamicFixed : public MapMemDynamic
 {
@@ -47,57 +25,54 @@ public:
     E_UNDEFINED
   };
 
-  
+
   // use this constructor to either create a new map or access an existing
-  MapMemDynamicFixed( const char *	fileName,
-		      ios::open_mode	mode,
-		      bool		create,
-		      size_type		recSize,
-		      size_type		allocNumRecs = 0,
-		      MapMask		permMask = 02 );
-  
-  // use this constructor to create a new map file  
+  MapMemDynamicFixed( const char *	    fileName,
+		      std::ios::openmode    mode,
+		      bool		    create,
+		      size_type		    recSize,
+		      size_type		    allocNumRecs = 0,
+		      MapMask		    permMask = 02 );
+
+  // use this constructor to create a new map file
   MapMemDynamicFixed( const char * 	fileName,
 		      size_type		recSize,
 		      size_type		allocNumRecs = 0,
 		      MapMask		permMask = 02 );
 
-  // use this constructor to access an existing map file  
-  MapMemDynamicFixed( const char * 	fileName,
-		      ios::open_mode	mode = (ios::open_mode)(ios::in),
-		      bool		overrideOwner = false );
+  // use this constructor to access an existing map file
+  MapMemDynamicFixed( const char *	    fileName,
+		      std::ios::openmode    mode = std::ios::in,
+		      bool		    overrideOwner = false );
 
   virtual ~MapMemDynamicFixed( void );
-  
-  Loc	    	    allocate( size_type size = 0 ); 
-  void	    	    release( Loc loc ); 	
-  
+
+  Loc	    	    allocate( size_type size = 0 );
+  void	    	    release( Loc loc );
+
   bool		    valid( Loc loc ) const;
-  
+
   size_type	    getRecSize( void ) const;
   size_type	    getAllocNumRecs( void ) const;
-  
+
   virtual bool	    expand( size_type minAmount );
 
-  virtual bool	    	good( void ) const;
-  virtual const char *	error( void ) const;    
-  virtual const char * 	getClassName( void ) const;
-  virtual const char *  getVersion( bool withPrjVer = true ) const;
-  virtual ostream &	dumpInfo( ostream &	dest,
-				  const char *  prefix = "    ",
-				  bool		showVer = false ) const;
+  virtual bool		    good( void ) const;
+  virtual const char *	    error( void ) const;
+  virtual std::ostream &    dumpInfo( std::ostream &	dest = std::cerr,
+				      const char *	prefix = "    " ) const;
 
-  inline
-  DumpInfo< MapMemDynamicFixed >  dump( const char *	prefix = "    ",
-					bool		showVer = true ) const;
+  inline DumpInfo< MapMemDynamicFixed >
+  dump( const char *	prefix = "    " ) const {
+    return( DumpInfo< MapMemDynamicFixed >( *this, prefix ) );
+  }
 
-  static const ClassVersion version;
 
   // debuging / testing methods
-  ostream &	dumpFreeList( ostream & dest ) const;
-  ostream &	dumpNodes( ostream & dest ) const;
-  bool		allTested( void );
-  
+  std::ostream &    dumpFreeList( std::ostream & dest ) const;
+  std::ostream &    dumpNodes( std::ostream & dest ) const;
+  bool		    allTested( void );
+
   // FreeNode should be protected but AIX can't deal with it.
   struct FreeNode
   {
@@ -109,14 +84,14 @@ protected:
 
   inline Loc		    firstNode( void ) const;
   inline Loc		    lastNode( void ) const;
-  
+
   inline const FreeNode &   freeList( void ) const;
   inline FreeNode &	    freeList( void );
 
   inline const FreeNode &   freeNode( Loc f ) const;
   inline FreeNode &	    freeNode( Loc f );
-  
-  
+
+
 private:
 
   MapMemDynamicFixed( const MapMemDynamicFixed & copyFrom );
@@ -126,199 +101,102 @@ private:
 				  size_type allocNumRecs );
 
   void	openMapMemDynamicFixed( void );
-  
+
   // do NOT use this it is only public because Sun can't handle it
   // being private.
-public:  
+public:
   struct MapDynamicFixedInfo : MapDynamicInfo
   {
     size_type	recSize;	    // record size
     size_type   allocNumRecs;   // records to allocate at a time
     FreeNode	freeList;	    // head to list of free records
   };
-  
+
 private:
-  
+
   inline MapDynamicFixedInfo *		mapInfo( void );
   inline const MapDynamicFixedInfo *	mapInfo( void ) const;
-  
+
   static const char * ErrorStrings[];
-  
+
   ErrorNum	errorNum;
 
 };
 
 
-#if !defined( inline )
-#include <MapMemDynamicFixed.ii>
-#else
-#undef inline
+inline
+MapMemDynamicFixed::size_type
+MapMemDynamicFixed::getRecSize( void ) const
+{
+  return( mapInfo() ? mapInfo()->recSize : 0 );
+}
+
+inline
+MapMemDynamicFixed::size_type
+MapMemDynamicFixed::getAllocNumRecs( void ) const
+{
+  return( mapInfo() ? mapInfo()->allocNumRecs : 0 );
+}
+
+inline
+MapMemDynamicFixed::Loc
+MapMemDynamicFixed::firstNode( void ) const
+{
+  return( clue::DwordAlign( sizeof( MapDynamicFixedInfo ) ) );
+}
+
+inline
+MapMemDynamicFixed::Loc
+MapMemDynamicFixed::lastNode( void ) const
+{
+  return( ( ( ((getMapSize() - firstNode()) / mapInfo()->recSize) - 1) *
+	  mapInfo()->recSize ) + firstNode() );
+}
+
+inline
+const MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeList( void ) const
+{
+  return( mapInfo()->freeList );
+}
+
+inline
+MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeList( void )
+{
+  return( mapInfo()->freeList );
+}
+
+inline
+const MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeNode( Loc f ) const
+{
+  return( *( (const FreeNode *)( (const char *)getBase() + f ) ));
+}
+
+inline
+MapMemDynamicFixed::FreeNode &
+MapMemDynamicFixed::freeNode( Loc f )
+{
+  return( *( (FreeNode *)( (char *)getBase() + f ) ));
+}
 
 
-#endif
+inline
+MapMemDynamicFixed::MapDynamicFixedInfo *
+MapMemDynamicFixed::mapInfo( void )
+{
+  return( (MapDynamicFixedInfo *)getBase() );
+}
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	MapMemDynamicFixed	class
-//
-//  Constructors:
-//
-//  	MapMemDynamicFixed( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. MapMemDynamicFixed )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const MapMemDynamicFixed & src );
-//
-//	istream &
-//	operator >> ( istream & src, MapMemDynamicFixed & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.14  1997/10/01 14:02:55  houghton
-// Chaged so that 'keys' have to be reserved to be set.
-// Increased the number of keys from 16 to 32.
-// Changed to use portable multi platform types.
-//
-// Revision 2.13  1997/09/17 16:56:08  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.12  1997/07/28 16:50:34  houghton
-// Changed expand() to virtual and to take an 'size' arg.
-//
-// Revision 2.11  1997/07/19 10:29:14  houghton
-// Port(Sun5): the compiler could not handle protected and/or private
-//     classes or structs.
-//
-// Revision 2.10  1997/07/13 11:25:40  houghton
-// Cleanup.
-// Added firstNode(), lastNode(), freeList() & freeNode().
-//
-// Revision 2.9  1997/06/19 12:02:31  houghton
-// Class was renamed from MapMemFixedDynamic to MapMemDynamicFixed.
-//
-// Revision 2.8  1997/06/18 14:15:26  houghton
-// Rework to use MapMemDynamic as base Class.
-// Rework to be part of libMdb.
-//
-// Revision 2.7  1997/04/25 22:25:18  houghton
-// Added valid( off_t ) - returns true if the off_t is a valid usable
-//     offset for this map.
-//
-// Revision 2.6  1997/04/04 20:50:25  houghton
-// Cleanup.
-// Added map owner to prevent to progs from opening the map in write
-//     mode at the same time.
-//
-// Revision 2.5  1997/03/08 10:28:40  houghton
-// Cleanup.
-// Added dump.
-// Added ClassVersion.
-//
-// Revision 2.4  1997/03/07 11:49:33  houghton
-// Add dumpInfo.
-//
-// Revision 2.3  1997/03/03 14:32:47  houghton
-// Added virtual destructor.
-//
-// Revision 2.2  1996/11/06 18:07:27  houghton
-// Renamed StlUtils.hh to StlUtilsUtils.hh.
-//
-// Revision 2.1  1995/11/10 12:42:31  houghton
-// Change to Version 2
-//
-// Revision 1.5  1995/11/05  16:32:35  houghton
-// Revised
-//
-// Revision 1.2  1995/03/02  16:35:36  houghton
-// Linux ports & new Classes
-//
-// Revision 1.1  1995/02/13  16:08:50  houghton
-// New Style Avl an memory management. Many New Classes
-//
-// Copyright:
-//
-//              This software is the sole property of
-// 
-//                 The Williams Companies, Inc.
-//                        1 Williams Center
-//                          P.O. Box 2400
-//        Copyright (c) 1994 by The Williams Companies, Inc.
-// 
-//                      All Rights Reserved.  
-// 
-//
-#endif // ! def _MapMemDynamicFixed_hh_ 
+inline
+const MapMemDynamicFixed::MapDynamicFixedInfo *
+MapMemDynamicFixed::mapInfo( void ) const
+{
+  return( (const MapDynamicFixedInfo *)getBase() );
+}
+
+}; // namespace mdb
+
+#endif // ! def _MapMemDynamicFixed_hh_

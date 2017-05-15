@@ -39,7 +39,7 @@ MapFile::shrink( size_type amount, caddr_t baseAddr )
 }
 
 inline
-ios::open_mode
+ios::openmode
 MapFile::getMode( void ) const
 {
   return( mapMode );

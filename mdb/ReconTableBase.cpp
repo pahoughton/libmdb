@@ -1,37 +1,16 @@
-//
-// File:        ReconTableBase.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for ReconTableBase
-//  
-// Author:      Paul Houghton 719-527-7834 - (paul.houghton@mci.com)
-// Created:     07/31/00 06:13
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 2000-07-31 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "ReconTableBase.hh"
-#include <Str.hh>
+#include "ReconTableBase.hpp"
+#include <clue/Str.hpp>
 #include <fstream>
 
-#if defined( MDB_DEBUG )
-#include "ReconTableBase.ii"
-#endif
-
-MDB_VERSION(
-  ReconTableBase,
-  "$Id$");
+namespace mdb {
 
 const ReconTableBase::RecordNum	    ReconTableBase::BadRec( -1 );
 
 ReconTableBase::ReconTableBase(
-  const FilePath &   tableFn,
-  ios::open_mode     mode,
+  const char *	     tableFn,
+  std::ios::openmode mode,
   bool               create,
   MapFile::MapMask   permMask,
   unsigned int	     tableVersion,
@@ -52,12 +31,12 @@ ReconTableBase::ReconTableBase(
     {
       if( map.good() && map.getSize() > sizeof( Header ) )
 	{
-	  if( lock.lockwrite( 0, ios::beg, 0, false ) )
+	  if( lock.lockwrite( 0, std::ios::beg, 0, false ) )
 	    {
-	      header().version  = Host2Net( tableVersion );
-	      header().count	= Host2Net( 0 );
-	      header().mapSize	= Host2Net( map.getSize() );
-	      header().recSize	= Host2Net( recSize );
+	      header().version  = tableVersion;
+	      header().count	= 0;
+	      header().mapSize	= map.getSize();
+	      header().recSize	= recSize;
 	      errorNum = E_OK;
 	    }
 	  lock.unlock();
@@ -67,15 +46,15 @@ ReconTableBase::ReconTableBase(
     {
       if( map.good() && lock.good() )
 	{
-	  if( ! lock.lockread( 0, ios::beg, sizeof( Header ) ) )
+	  if( ! lock.lockread( 0, std::ios::beg, sizeof( Header ) ) )
 	    return;
-	  
-	  if( Net2Host( header().version ) != tableVersion )
+
+	  if( header().version != tableVersion )
 	    errorNum = E_VERSION;
-	  if( Net2Host( header().recSize ) != recSize )
+	  if( header().recSize != recSize )
 	    errorNum = E_RECSIZE;
-	  
-	  lock.unlock( 0, ios::beg, sizeof( Header ) );
+
+	  lock.unlock( 0, std::ios::beg, sizeof( Header ) );
 	}
     }
 }
@@ -90,68 +69,67 @@ ReconTableBase::append( const void * rec )
   if( ! good() )
     return( false );
 
-  if( ! lock.lockwrite( 0, ios::beg, sizeof( Header ) ) )
+  if( ! lock.lockwrite( 0, std::ios::beg, sizeof( Header ) ) )
     return( false );
 
-  if( Net2Host( header().mapSize ) != map.getSize() )
+  if( header().mapSize != map.getSize() )
     {
       // someone else changed the map size, remap it
       if( ! map.map( map.getFileName(), 0, map.getMode() ) )
 	{
-	  lock.unlock( 0, ios::beg, sizeof( Header ) );
+	  lock.unlock( 0, std::ios::beg, sizeof( Header ) );
 	  return( false );
 	}
     }
-  
-  if( Net2Host( header().mapSize ) < ( sizeof(Header)
-				    + (Net2Host( header().recSize ) *
-				       ( Net2Host( header().count ) + 1))) )
+
+  if( header().mapSize < ( sizeof(Header)
+			   + (header().recSize * ( header().count ) + 1)))
     {
-      if( ! map.grow( Net2Host( header().recSize ) * 128, 0 ) )
+      if( ! map.grow( header().recSize * 128, 0 ) )
 	{
 	  lock.unlock();
 	  return( false );
 	}
-      
-      header().mapSize = Host2Net( map.getSize() );
+
+      header().mapSize = map.getSize();
     }
 
-  if( ! lock.lockwrite( recpos( Net2Host( header().count ) ),
-			ios::beg,
-			Net2Host( header().recSize ) ) )
+  if( ! lock.lockwrite( recpos( header().count ),
+			std::ios::beg,
+			header().recSize ) )
     {
-      lock.unlock( 0, ios::beg, sizeof( Header ) );
+      lock.unlock( 0, std::ios::beg, sizeof( Header ) );
       return( false );
     }
-  
-  memcpy( recptr( Net2Host( header().count ) ),
-	  rec, 
-	  Net2Host( header().recSize ) );
-  
-  lock.unlock( recpos( Net2Host( header().count ) ),
-	       ios::beg,
-	       Net2Host( header().recSize ) );
 
-  header().count = Host2Net( Net2Host( header().count ) + 1 );
-  lock.unlock( 0, ios::beg, sizeof( Header ) );
-  
+  memcpy( recptr( header().count ),
+	  rec,
+	  header().recSize );
+
+  lock.unlock( recpos( header().count ),
+	       std::ios::beg,
+	       header().recSize );
+
+  header().count = header().count + 1;
+  lock.unlock( 0, std::ios::beg, sizeof( Header ) );
+
   return( good() );
 }
 
 bool
 ReconTableBase::update( RecordNum r, const void * rec )
 {
-  if( r < Net2Host( header().count ) )
+  if( r < header().count )
     {
       if( ! lock.lockwrite( recpos( r ),
-			    ios::beg,
-			    Net2Host( header().recSize ) ) )
+			    std::ios::beg,
+			    header().recSize ) )
 	return( false );
-      
-      memcpy( recptr( r ), rec, Net2Host( header().recSize ) );
-      
-      lock.unlock( recpos( r ), ios::beg, Net2Host( header().recSize ) );
-      
+
+      memcpy( recptr( r ), rec, header().recSize );
+
+      lock.unlock( recpos( r ), std::ios::beg, header().recSize );
+
       return( true );
     }
   else
@@ -169,9 +147,9 @@ ReconTableBase::good( void ) const
 const char *
 ReconTableBase::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
 
-  errStr = ReconTableBase::getClassName();
+  errStr = "ReconTableBase";
 
   if( good() )
     {
@@ -182,10 +160,10 @@ ReconTableBase::error( void ) const
       size_t eSize = errStr.size();
 
       if( ! map.good() )
-	errStr << ": " << map.error() << endl;
+	errStr << ": " << map.error() << std::endl;
 
       if( ! lock.good() )
-	errStr << ": " << lock.error() << endl;
+	errStr << ": " << lock.error() << std::endl;
 
       if( errorNum != E_OK )
 	{
@@ -194,7 +172,7 @@ ReconTableBase::error( void ) const
 	    case E_VERSION:
 	      if( map.good() )
 		{
-		  errStr << ": wrong version '" << Net2Host( header().version )
+		  errStr << ": wrong version '" << header().version
 			 << "' expected '" << tableVer
 			 << '\''
 		    ;
@@ -205,7 +183,7 @@ ReconTableBase::error( void ) const
 	      if( map.good() )
 		{
 		  errStr << ": wrong rec size '"
-			 << Net2Host( header().recSize )
+			 << header().recSize
 			 << "' expected '" << recSize
 			 << '\''
 		    ;
@@ -221,95 +199,66 @@ ReconTableBase::error( void ) const
   return( errStr.c_str() );
 }
 
-const char *
-ReconTableBase::getClassName( void ) const
-{
-  return( "ReconTableBase" );
-}
 
-const char *
-ReconTableBase::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-
-
-ostream &
+std::ostream &
 ReconTableBase::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << ReconTableBase::getClassName() << ":\n"
-	 << ReconTableBase::getVersion() << '\n';
 
   if( ! ReconTableBase::good() )
     dest << prefix << "Error: " << ReconTableBase::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
   pre << "map:";
-  map.dumpInfo( dest, pre, false );
+  map.dumpInfo( dest, pre );
 
   pre = prefix;
   pre << "lock:";
-  lock.dumpInfo( dest, pre, false );
+  lock.dumpInfo( dest, pre );
 
   if( map.good() )
     {
       // make a copy so it doesn't change on me.
       Header hdr( header() );
 
-      dest << "version:      " << Net2Host( hdr.version ) << '\n'
-	   << "count:        " << Net2Host( hdr.count ) << '\n'
-	   << "mapSize:      " << Net2Host( hdr.mapSize ) << '\n'
-	   << "recSize:      " << Net2Host( hdr.recSize ) << '\n'
+      dest << "version:      " << hdr.version << '\n'
+	   << "count:        " << hdr.count << '\n'
+	   << "mapSize:      " << hdr.mapSize << '\n'
+	   << "recSize:      " << hdr.recSize << '\n'
 	;
     }
-  
+
 
   return( dest );
 }
 
 ReconTableBase::VersionNum
-ReconTableBase::getFileVersion( const FilePath & fn )
+ReconTableBase::getFileVersion( const char * fn )
 {
-  
-  VersionNum	ver( 0 );
-  FileLock	lock( fn, ios::in );
 
-  if( ! lock.lockread( 0, ios::beg, sizeof( Header ) ) )
+  VersionNum	    ver( 0 );
+  clue::FileLock    lock( fn, std::ios::in );
+
+  if( ! lock.lockread( 0, std::ios::beg, sizeof( Header ) ) )
     return( ver );
 
-  ifstream  in( fn );
+  std::ifstream  in( fn );
 
   ReconTableBase::Header	hdr;
-  
+
   if( in.good() && in.read( (char *)&hdr, sizeof( hdr ) ).good() )
     {
-      ver = Net2Host( hdr.version );
+      ver = hdr.version;
     }
 
-  lock.unlock( 0, ios::beg, sizeof( Header ) );
-  
+  lock.unlock( 0, std::ios::beg, sizeof( Header ) );
+
   return( ver );
 }
 
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 1.1  2000/08/02 11:03:47  houghton
-// Initial Version.
-//
-//
+}; // namespace mdb

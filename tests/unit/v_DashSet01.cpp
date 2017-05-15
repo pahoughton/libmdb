@@ -1,29 +1,19 @@
-//
-// File:        tDash01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tDash01
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/22/97 08:38
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-22 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <DashSet.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicDynamic.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/DashSet.hpp>
+#include <mdb/MapMemDynamicDynamic.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <LibTest.hh>
 #include <vector>
 #include <functional>
+
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 
 class LongHash
@@ -34,35 +24,36 @@ public:
   };
 };
 
-typedef DashSet< long, LongHash, less< long > >   Table;
+typedef DashSet< long, LongHash, std::less< long > >   Table;
 
-bool
-tDashSet01( LibTest & tester )
+valid::verify &
+v_DashSet01( void )
 {
+  static VVDESC( "mdb::DashSet01" );
   {
     MapMemDynamicDynamic    mmdd( TEST_DATA_DIR "/tDashSet01.data",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  1,
 				  1,
 				  02 );
 
-    TESTR( mmdd.error(), mmdd.good() );
-    
+    TEST( mmdd.good() );
+
     MultiMemOffsetMapDynamic	mmo( &mmdd, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Table    t( &mmo, TEST_DATA_DIR "/tDash01.dash",
-		(ios::open_mode)(ios::in|ios::out),
+		std::ios::in|std::ios::out,
 		true,
 		02 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     {
       Table::pair_iterator_bool	ins;
-      
+
       for( long k = 4; k < 20; k += 2 )
 	{
 	  ins = t.insert( k, 0 );
@@ -73,7 +64,7 @@ tDashSet01( LibTest & tester )
 
     {
       Table::const_iterator  it;
-      
+
       for( long k = 0; k < 25; ++ k )
 	{
 	  it = t.find( k, 0 );
@@ -97,26 +88,10 @@ tDashSet01( LibTest & tester )
 	  TEST( *them == k );
 	  k += 2;
 	}
-      TEST( them == t.end() );      
+      TEST( them == t.end() );
       TEST( k == 20 );
     }
-       
+
   }
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 2.2  1997/07/25 13:49:38  houghton
-// Changed: Dash was renamed to DashSet.
-// Changed: Hash was renamed to HashSet.
-//
-// Revision 2.1  1997/07/22 19:47:05  houghton
-// Initial Version.
-//
-//

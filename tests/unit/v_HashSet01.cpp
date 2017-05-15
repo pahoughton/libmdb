@@ -1,27 +1,19 @@
-//
-// File:        tHash01.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tHash01
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/02/97 05:58
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-02 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <MapMemDynamicFixed.hh>
-#include <MultiMemOffsetMapDynamic.hh>
-#include <HashSet.hh>
-#include <LibTest.hh>
+#include <mdb/HashSet.hpp>
+#include <mdb/MapMemDynamicFixed.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
+
 #include <iomanip>
 #include <cstring>
+
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 struct TestKey
 {
@@ -29,16 +21,17 @@ struct TestKey
   short	    v;
 };
 
-struct TestRec : public TestKey 
+struct TestRec : public TestKey
 {
   char	data[16];
 };
 
 inline
-ostream &
-operator << ( ostream & dest, const TestRec & obj )
+std::ostream &
+operator << ( std::ostream & dest, const TestRec & obj )
 {
-  dest << setw(4) << obj.h << ' ' << setw(2) << obj.v << ' ' << obj.data;
+  dest << std::setw(4) << obj.h << ' '
+       << std::setw(2) << obj.v << ' ' << obj.data;
   return( dest );
 }
 
@@ -75,7 +68,7 @@ public:
 
   TestHash( MultiMemOffset *	memMgr,
 	    const char *	indexFileName,
-	    ios::open_mode	mode = ios::in,
+	    std::ios::openmode	mode = std::ios::in,
 	    unsigned short	permMask = 02,
 	    bool		create = false ) :
     HashSet< TestRec, TestHashFunct, TestLess >( memMgr,
@@ -83,43 +76,45 @@ public:
 						 mode,
 						 permMask,
 						 create ) {};
-  
 
-  ostream & dumpKey( ostream & dest, const TestRec & rec ) const {
+
+  std::ostream & dumpKey( std::ostream & dest, const TestRec & rec ) const {
     dest << "key: " << rec.h << " " << rec.v;
     return( dest );
   };
 };
-    
-      
-typedef vector< TestRec >   List;
 
-bool
-tHashSet01( LibTest & tester )
+
+typedef std::vector< TestRec >   List;
+
+valid::verify &
+v_HashSet01( void )
 {
+  static VVDESC( "mdb::HashSet01" );
+
   {
     MapMemDynamicFixed	     mmdf( TEST_DATA_DIR "/tHash01.mdf",
 				   TestHash::getNodeSize(),
 				   1,
 				   02 );
-      
+
     MultiMemOffsetMapDynamic	mmo( &mmdf, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     TestHash	t( &mmo,
 		   TEST_DATA_DIR "/tHashSet01.hash",
-		   (ios::open_mode)(ios::in|ios::out),
+		   std::ios::in|std::ios::out,
 		   true,
 		   02 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     List	recList;
-    
+
     TestRec	rec;
     Str		str;
-    
+
     for( long k = 1; k < 10; ++ k )
       {
 	rec.h = k;
@@ -166,7 +161,7 @@ tHashSet01( LibTest & tester )
 	   them != recList.end();
 	   ++ them )
 	{
-	  TESTR( t.error(), t.insert( *them ).second == true );
+	  TEST( t.insert( *them ).second == true );
 	}
     }
     // t.dumpTable( tester.getDump() ) << endl;
@@ -180,21 +175,19 @@ tHashSet01( LibTest & tester )
 	   ++ them )
 	{
 	  TestHash::iterator it = t.find( *them );
-	  TESTR( "not found", it != t.end() );
-	  TESTR( "match", *it == *them );
+	  TEST( it != t.end() );
+	  TEST( *it == *them );
 
 	  badRec = *them;
 	  badRec.v += 1;
 	  it = t.find( badRec );
-	  TESTR( "found bad", it == t.end() );
+	  TEST( it == t.end() );
 	  badRec.v -= 2;
 	  it = t.find( badRec );
-	  TESTR( "found bad", it == t.end() );
+	  TEST( it == t.end() );
 	}
     }
 
-    TESTP( true );
-    
     {
       TestHash::iterator it;
       // erase( const Key & key )
@@ -202,43 +195,20 @@ tHashSet01( LibTest & tester )
 	{
 	  if( (r % 2) == 0 )
 	    {
-	      TESTR( t.error(), t.erase( recList[r] ) );
-	      TESTR( "found erased", t.find( recList[r] ) == t.end() );
+	      TEST( t.erase( recList[r] ) );
+	      TEST( t.find( recList[r] ) == t.end() );
 	    }
 	  else
 	    {
 	      it = t.find( recList[r] );
-	      TESTR( "not found", it != t.end() );
-	      TESTR( "match", *it == recList[r] );
+	      TEST( it != t.end() );
+	      TEST( *it == recList[r] );
 	    }
 	}
     }
     // t.dumpInfo( tester.getDump() );
-    
+
   }
 
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 2.4  1997/07/25 13:49:45  houghton
-// Changed: Dash was renamed to DashSet.
-// Changed: Hash was renamed to HashSet.
-//
-// Revision 2.3  1997/07/19 10:39:08  houghton
-// Bug-Fix: added include <cstring>
-// Port(Sun5): HashTableBase::Hash was renamed to HashValue.
-//
-// Revision 2.2  1997/07/14 10:47:05  houghton
-// Bug-Fix: added missing return statement.
-// Port(AIX): added bool constructor for the '?:' operator.
-//
-// Revision 2.1  1997/07/11 17:39:10  houghton
-// Initial Version.
-//
-//

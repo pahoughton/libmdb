@@ -1,35 +1,13 @@
-#ifndef _RBTreeBase_hh_
-#define _RBTreeBase_hh_
-//
-// File:        RBTreeBase.hh
-// Project:	Mdb
-// Desc:        
-//
-//
-//
-// Quick Start: - short example of class usage
-//
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     05/07/97 19:28
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
-//  $Id$
-//
+#ifndef _mdb_RBTreeBase_hpp_
+#define _mdb_RBTreeBase_hpp_
+// 1997-05-07 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <MdbConfig.hh>
-#include <MultiMemOffset.hh>
-#include <Str.hh>
+#include <mdb/MultiMemOffset.hpp>
+#include <clue/Str.hpp>
+
 #include <iostream>
 
-#if defined( MDB_DEBUG )
-#define inline
-#endif
-
+namespace mdb {
 
 class RBTreeBase
 {
@@ -38,7 +16,7 @@ public:
 
   typedef MultiMemOffset::Loc		Loc;
   typedef MultiMemOffset::size_type	size_type;
-  
+
   enum Color
   {
     Red,
@@ -58,7 +36,7 @@ public:
   public:
 
     inline ConstNodeBase( const MultiMemOffset & memMgr, Loc loc );
-    
+
     inline Loc		loc( void ) const;
     inline Loc		parent( void ) const;
     inline Loc		left( void ) const;
@@ -67,24 +45,24 @@ public:
 
     inline void	    next( void );
     inline void	    prev( void );
-    
+
     inline ConstNodeBase &  operator ++ ( void );
     inline ConstNodeBase &  operator -- ( void );
 
     inline ConstNodeBase &  operator = ( Loc rhs );
-      
+
   protected:
 
     inline const RBNodeBase &	rbNode( void ) const;
-    
+
     Loc			nodeLoc;
 
   private:
-    
+
     const MultiMemOffset &	mgr;
 
   };
-  
+
   class NodeBase : public ConstNodeBase
   {
   public:
@@ -95,30 +73,30 @@ public:
     inline Loc &	left( void );
     inline Loc &	right( void );
     inline Color &	color( void );
-    
+
     inline void		set( Loc p, Loc l, Loc r, Color c );
-    
+
     inline NodeBase &	operator =  ( Loc rhs );
-    
+
     inline NodeBase &  operator ++ ( void );
     inline NodeBase &  operator -- ( void );
-    
+
   protected:
-    
+
     inline RBNodeBase &	rbNode( void );
-    
+
     MultiMemOffset &		    mgr;
-    
+
   private:
 
   };
-  
+
   struct RBTreeHeader : RBNodeBase
   {
     unsigned long   version;
     unsigned long   count;
   };
-  
+
   RBTreeBase( MultiMemOffset *	memMgr,
 	      unsigned short	treeKey,
 	      bool		create );
@@ -127,35 +105,32 @@ public:
 
   inline size_type	size( void ) const;
   inline bool		empty( void ) const;
-  
-  virtual bool	    	good( void ) const;
-  virtual const char * 	error( void ) const;
-  virtual const char *	getClassName( void ) const;
-  virtual const char *  getVersion( bool withPrjVer = true ) const;
-  virtual ostream &     dumpInfo( ostream &	dest = cerr,
-				  const char *  prefix = "    ",
-                                  bool          showVer = true ) const;
 
-  
-  static const ClassVersion version;
+  virtual bool		    good( void ) const;
+  virtual const char *	    error( void ) const;
+  virtual std::ostream &    dumpInfo( std::ostream &	dest = std::cerr,
+				      const char *	prefix = "    " ) const;
+
 
 
   class DumpMethods
   {
   public:
 
-    virtual ostream &	dumpNode( ostream & dest,
-				  const Loc STLUTILS_UNUSED( node ) ) const {
+    virtual std::ostream &	dumpNode( std::ostream & dest,
+					  const Loc node ) const {
       return( dest );
     };
   };
-  
-  ostream &	dumpRBTree( ostream & dest, const DumpMethods & meth ) const;
-  bool		testNode( ostream & dest, const ConstNodeBase & node ) const;
-  bool		testTree( ostream & dest ) const;
+
+  std::ostream &	dumpRBTree( std::ostream & dest,
+				    const DumpMethods & meth ) const;
+
+  bool		testNode( std::ostream & dest, const ConstNodeBase & node ) const;
+  bool		testTree( std::ostream & dest ) const;
   bool		allTested( void ) const;
   void		resetTested( void ) const;
-    
+
 protected:
 
   virtual bool	lessKey( Loc one, Loc two ) const = 0;
@@ -164,32 +139,32 @@ protected:
   Loc	    insert( Loc nodeLoc );
 
   bool	    erase( Loc nodeLoc );
-  
+
   inline RBTreeHeader &		header( void );
   inline const RBTreeHeader &   header( void ) const;
 
   inline Loc &		    root( void );
   inline Loc		    root( void ) const;
-  
+
   inline Loc &		    first( void );
   inline Loc		    first( void ) const;
-  
+
   inline Loc &		    last( void );
   inline Loc		    last( void ) const;
 
   inline Loc		    next( Loc & node ) const;
   inline Loc		    prev( Loc & node ) const;
-  
+
   inline NodeBase	    parent( const ConstNodeBase & node );
   inline NodeBase	    parent( Loc loc );
   inline ConstNodeBase	    parent( const ConstNodeBase & node ) const;
   inline ConstNodeBase	    parent( Loc loc ) const;
-  
+
   inline NodeBase	    left( const ConstNodeBase & node );
   inline NodeBase	    left( Loc loc );
   inline ConstNodeBase	    left( const ConstNodeBase & node ) const;
   inline ConstNodeBase	    left( Loc loc ) const;
-  
+
   inline NodeBase	    right( const ConstNodeBase & node );
   inline NodeBase	    right( Loc loc );
   inline ConstNodeBase	    right( const ConstNodeBase & node ) const;
@@ -199,10 +174,10 @@ protected:
 
   inline NodeBase	    minimum( const NodeBase & node );
   inline NodeBase	    maximum( const NodeBase & node );
-  
+
   void		rotate_left( Loc loc );
   void		rotate_right( Loc loc );
-  
+
   enum ErrorNum
   {
     E_OK,
@@ -212,144 +187,435 @@ protected:
   };
 
   bool	setError( ErrorNum err );
-  
+
   MultiMemOffset *  mgr;
   Loc		    headerLoc;
   ErrorNum	    errorNum;
-  
-  static Str errStr;
-  
+
+  static clue::Str errStr;
+
 private:
 
   RBTreeBase( const RBTreeBase & from );
   RBTreeBase & operator =( const RBTreeBase & from );
 
   static const unsigned long rbTreeVersion;
-  
+
 };
 
-#if !defined( inline )
-#include <RBTreeBase.ii>
-#else
-#undef inline
+
+// * * * ConstNodeBase * * *
+
+inline
+RBTreeBase::ConstNodeBase::ConstNodeBase(
+  const MultiMemOffset &  memMgr,
+  Loc		    loc
+  )
+  : nodeLoc( loc ),
+    mgr( memMgr )
+{
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::loc( void ) const
+{
+  return( nodeLoc );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::parent( void ) const
+{
+  return( rbNode().parent );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::left( void ) const
+{
+  return( rbNode().left );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::ConstNodeBase::right( void ) const
+{
+  return( rbNode().right );
+}
+
+inline
+RBTreeBase::Color
+RBTreeBase::ConstNodeBase::color( void ) const
+{
+  return( rbNode().color );
+}
+
+inline
+const RBTreeBase::RBNodeBase &
+RBTreeBase::ConstNodeBase::rbNode( void ) const
+{
+  return( *((const RBNodeBase *)(mgr.address( nodeLoc ))) );
+}
+
+inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator ++ ( void )
+{
+  next();
+  return( *this );
+}
+
+inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator -- ( void )
+{
+  prev();
+  return( *this );
+}
+
+inline
+RBTreeBase::ConstNodeBase &
+RBTreeBase::ConstNodeBase::operator = ( Loc rhs )
+{
+  nodeLoc = rhs;
+  return( *this );
+}
+
+inline
+void
+RBTreeBase::ConstNodeBase::next( void )
+{
+  if( right() )
+    {
+      nodeLoc = right();
+      while( left() )
+	{
+	  nodeLoc = left();
+	}
+    }
+  else
+    {
+      ConstNodeBase parentNode( mgr, parent() );
+
+      while( nodeLoc == parentNode.right() )
+	{
+	  nodeLoc = parentNode.loc();
+	  parentNode.nodeLoc = parentNode.parent();
+	}
+
+      if( right() != parentNode.loc() )
+	{
+	  nodeLoc = parentNode.loc();
+	}
+    }
+}
+
+inline
+void
+RBTreeBase::ConstNodeBase::prev( void )
+{
+  ConstNodeBase parentNode( mgr, parent() );
+
+  if( color() == Red && parentNode.parent() == nodeLoc )
+    {
+      nodeLoc = right();
+    }
+  else
+    {
+      if( left() )
+	{
+	  for( nodeLoc = left(); right() ; nodeLoc = right() );
+	}
+      else
+	{
+	  while( nodeLoc == parentNode.left() )
+	    {
+	      nodeLoc = parentNode.loc();
+	      parentNode.nodeLoc = parentNode.parent();
+	    }
+	  nodeLoc = parentNode.loc();
+	}
+    }
+}
 
 
-#endif
+
+// * * * NodeBase * * *
+
+inline
+RBTreeBase::NodeBase::NodeBase( MultiMemOffset & memMgr, Loc nLoc )
+  : RBTreeBase::ConstNodeBase( memMgr, nLoc ),
+    mgr( memMgr )
+{
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::parent( void )
+{
+  return( rbNode().parent );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::left( void )
+{
+  return( rbNode().left );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::NodeBase::right( void )
+{
+  return( rbNode().right );
+}
+
+inline
+RBTreeBase::Color &
+RBTreeBase::NodeBase::color( void )
+{
+  return( rbNode().color );
+}
+
+inline
+void
+RBTreeBase::NodeBase::set( Loc p, Loc l, Loc r, Color c )
+{
+  parent() = p;
+  left() = l;
+  right() = r;
+  color() = c;
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator = ( Loc rhs )
+{
+  nodeLoc = rhs;
+  return( *this );
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator ++ ( void )
+{
+  next();
+  return( *this );
+}
+
+inline
+RBTreeBase::NodeBase &
+RBTreeBase::NodeBase::operator -- ( void )
+{
+  prev();
+  return( *this );
+}
+
+inline
+RBTreeBase::RBNodeBase &
+RBTreeBase::NodeBase::rbNode( void )
+{
+  return( *((RBNodeBase *)(mgr.address( nodeLoc ))) );
+}
+
+// * * * RBTreeBase * * *
+
+inline
+RBTreeBase::size_type
+RBTreeBase::size( void ) const
+{
+  return( header().count );
+}
+
+inline
+bool
+RBTreeBase::empty( void ) const
+{
+  return( size() == 0 );
+}
+
+inline
+RBTreeBase::RBTreeHeader &
+RBTreeBase::header( void )
+{
+  return( *((RBTreeHeader *)(mgr->address( headerLoc )) ) );
+}
+
+inline
+const RBTreeBase::RBTreeHeader &
+RBTreeBase::header( void ) const
+{
+  return( *((const RBTreeHeader *)(mgr->address( headerLoc )) ) );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::root( void )
+{
+  return( header().parent );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::root( void ) const
+{
+  return( header().parent );
+}
 
 
-//
-// Detail Documentation
-//
-//  Data Types: - data types defined by this header
-//
-//  	RBTreeBase	class
-//
-//  Constructors:
-//
-//  	RBTreeBase( );
-//
-//  Destructors:
-//
-//  Public Interface:
-//
-//	virtual ostream &
-//	write( ostream & dest ) const;
-//	    write the data for this class in binary form to the ostream.
-//
-//	virtual istream &
-//	read( istream & src );
-//	    read the data in binary form from the istream. It is
-//	    assumed it stream is correctly posistioned and the data
-//	    was written to the istream with 'write( ostream & )'
-//
-//	virtual ostream &
-//	toStream( ostream & dest ) const;
-//	    output class as a string to dest (used by operator <<)
-//
-//	virtual istream &
-//	fromStream( istream & src );
-//	    Set this class be reading a string representation from
-//	    src. Returns src.
-//
-//  	virtual Bool
-//  	good( void ) const;
-//  	    Return true if there are no detected errors associated
-//  	    with this class, otherwise false.
-//
-//  	virtual const char *
-//  	error( void ) const;
-//  	    Return a string description of the state of the class.
-//
-//  	virtual const char *
-//  	getClassName( void ) const;
-//  	    Return the name of this class (i.e. RBTreeBase )
-//
-//  	virtual const char *
-//  	getVersion( bool withPrjVer = true ) const;
-//  	    Return the version string of this class.
-//
-//	virtual ostream &
-//	dumpInfo( ostream & dest, const char * prefix, bool showVer );
-//	    output detail info to dest. Includes instance variable
-//	    values, state info & version info.
-//
-//	static const ClassVersion version
-//	    Class and project version information. (see ClassVersion.hh)
-//
-//  Protected Interface:
-//
-//  Private Methods:
-//
-//  Associated Functions:
-//
-//  	ostream &
-//  	operator <<( ostream & dest, const RBTreeBase & src );
-//
-//	istream &
-//	operator >> ( istream & src, RBTreeBase & dest );
-//
-// Example:
-//
-// See Also:
-//
-// Files:
-//
-// Documented Ver:
-//
-// Tested Ver:
-//
-// Revision Log:
-//
-// $Log$
-// Revision 4.2  2003/08/09 12:43:24  houghton
-// Changed ver strings.
-//
-// Revision 4.1  2001/07/27 00:57:44  houghton
-// Change Major Version to 4
-//
-// Revision 2.6  1997/10/01 14:03:33  houghton
-// Chaged to reserve 'keys' set.
-// Changed to use portable multi platform types.
-//
-// Revision 2.5  1997/09/17 16:56:10  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.4  1997/08/18 10:23:57  houghton
-// Port(Sun5): had to add static errStr to be used by template sub
-//     classes (DBTree). The sun compiler gets a dup symbol error.
-//
-// Revision 2.3  1997/07/25 13:48:48  houghton
-// Cleanup.
-//
-// Revision 2.2  1997/07/13 11:33:15  houghton
-// Cleanup.
-// Changed to use MultiMemOffset.
-// Added size() & empty().
-// Added testing & debuging methods().
-//
-// Revision 2.1  1997/06/05 11:29:14  houghton
-// Initial Version.
-//
-//
-#endif // ! def _RBTreeBase_hh_ 
+inline
+RBTreeBase::Loc &
+RBTreeBase::first( void )
+{
+  return( header().left );
+}
 
+inline
+RBTreeBase::Loc
+RBTreeBase::first( void ) const
+{
+  return( header().left );
+}
+
+inline
+RBTreeBase::Loc &
+RBTreeBase::last( void )
+{
+  return( header().right );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::last( void ) const
+{
+  return( header().right );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::next( Loc & node ) const
+{
+  ConstNodeBase n( *mgr, node );
+  n.next();
+  node = n.loc();
+  return( node );
+}
+
+inline
+RBTreeBase::Loc
+RBTreeBase::prev( Loc & node ) const
+{
+  ConstNodeBase p( *mgr, node );
+  p.prev();
+  node = p.loc();
+  return( node );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::parent( const ConstNodeBase & node )
+{
+  return( NodeBase( *mgr, node.parent() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::parent( Loc loc )
+{
+  return( parent( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::parent( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( *mgr, node.parent() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::parent( Loc loc ) const
+{
+  return( parent( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::left( const ConstNodeBase & node )
+{
+  return( NodeBase( *mgr, node.left() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::left( Loc loc )
+{
+  return( left( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::left( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( *mgr, node.left() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::left( Loc loc ) const
+{
+  return( left( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::right( const ConstNodeBase & node )
+{
+  return( NodeBase( *mgr, node.right() ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::right( Loc loc )
+{
+  return( right( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::right( const ConstNodeBase & node ) const
+{
+  return( ConstNodeBase( *mgr, node.right() ) );
+}
+
+inline
+RBTreeBase::ConstNodeBase
+RBTreeBase::right( Loc loc ) const
+{
+  return( right( ConstNodeBase( *mgr, loc ) ) );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::minimum( const NodeBase & node )
+{
+  NodeBase m = node;
+  while( m.left() )
+    m = m.left();
+  return( m );
+}
+
+inline
+RBTreeBase::NodeBase
+RBTreeBase::maximum( const NodeBase & node )
+{
+  NodeBase m = node;
+  while( m.right() )
+    m = m.right();
+  return( m );
+}
+
+
+}; // namespace mdb
+#endif // ! def _RBTreeBase_hh_

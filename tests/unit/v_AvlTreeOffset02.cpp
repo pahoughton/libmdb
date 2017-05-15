@@ -94,7 +94,7 @@ tAvlTreeOffset02( LibTest & tester )
   
   {
     TestAvlTreeOffset	t( TEST_DATA_DIR "/tAvlTreeOffset02.avl",
-			   (ios::open_mode)(ios::in | ios::out),
+			   (std::ios::openmode)(ios::in | ios::out),
 			   true );
 
     TESTR( t.error(), t.good() );
@@ -125,7 +125,7 @@ tAvlTreeOffset02( LibTest & tester )
 
   {
     TestAvlTreeOffset	    t( TEST_DATA_DIR "/tAvlTreeOffset02.avl",
-			       (ios::open_mode)(ios::in | ios::out),
+			       (std::ios::openmode)(ios::in | ios::out),
 			       false );
 
     TESTR( t.error(), t.good() );
@@ -135,7 +135,7 @@ tAvlTreeOffset02( LibTest & tester )
       // two writer's cant open.
       
       TestAvlTreeOffset	    t2( TEST_DATA_DIR "/tAvlTreeOffset02.avl",
-				(ios::open_mode)(ios::in | ios::out),
+				(std::ios::openmode)(ios::in | ios::out),
 				false );
       
       TESTR( "two writers", t.good() );

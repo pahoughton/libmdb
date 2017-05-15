@@ -1,0 +1,27 @@
+# 2017-04-23 (cc) <paul4hough@gmail.com>
+
+dist: trusty
+language: cpp
+notifications:
+  email:
+    - paul4hough@gmail.com
+
+# :( unavoidable
+install:
+  - sudo apt-get install automake libtool
+  - git clone http://github.com/pahoughton/libvalid
+  - pushd libvalid
+  - autoreconf --install && ./configure
+  - sudo make install
+  - popd
+  - git clone http://github.com/pahoughton/libclue
+  - pushd libclue
+  - autoreconf --install
+  - CXXFLAGS=-std=c++11 ./configure
+  - sudo make install
+  - popd
+
+script:
+  - autoreconf --install
+  - CXXFLAGS=-std=c++11 ./configure
+  - make test

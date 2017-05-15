@@ -1,28 +1,3 @@
-#
-#
-# Title:        00-Todo.txt
-# Project:	Mdb
-# Desc:
-# 
-#   This is the libMdb TODO file it is used to track all
-#   bug reports and enhancement request. It is formated so
-#   a perl script can be used to generate reports.
-#
-# The order of entries implies priority
-#   
-# Notes:
-# 
-# Author:	Paul A. Houghton - (paul.houghton@wcom.com)
-# Created:	07/11/97 09:14
-#
-# Revision History: (See end of file for Revision Log)
-#
-#   Last Mod By:    $Author$
-#   Last Mod:	    $Date$
-#   Version:	    $Revision$
-#
-#   $Id$
-# 
 
 ENH Paul A. Houghton 09/27/97 03:18
 Hash index needs a header w/ keys. for data set ID
@@ -56,28 +31,6 @@ Write new MapMemFixedFixed
 
 ENH Paul A. Houghton 07/11/97 09:16
 Write new AvlSetAddr< class Key, class Comp >
-
-#
-# $Log$
-# Revision 4.1  2001/07/27 00:57:39  houghton
-# Change Major Version to 4
-#
-# Revision 2.2  1997/10/01 13:58:20  houghton
-# *** empty log message ***
-#
-# Revision 2.1  1997/09/21 19:20:39  houghton
-# Changed version to 2
-#
-# Revision 1.3  1997/09/17 16:55:24  houghton
-# Changed for new library rename to StlUtils
-#
-# Revision 1.2  1997/08/20 10:36:33  houghton
-# *** empty log message ***
-#
-# Revision 1.1  1997/07/11 17:36:25  houghton
-# Initial Version.
-#
-#
 
 # Local Variables:
 # mode:TODO

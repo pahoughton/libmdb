@@ -1,37 +1,12 @@
-//
-// File:        MapMem.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for MapMem
-//  
-// Author:      Paul A. Houghton - (paul.houghton@mci.com)
-// Created:     11/21/94 10:59 
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1994-11-18 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include "MapMem.hh"
-#include "Str.hh"
+#include "MapMem.hpp"
+#include <clue/Str.hpp>
 
 #include <unistd.h>
-
-#ifdef Linux
 #include <fcntl.h>
-#endif
 
-#if defined( MDB_DEBUG )
-#include "MapMem.ii"
-#endif
-
-MDB_VERSION(
-  MapMem,
-  "$Id$");
-
+namespace mdb {
 
 const char * MapMem::ErrorStrings[] =
 {
@@ -56,14 +31,14 @@ const char * MapMem::TypeStrings[] =
 // Constructor for creating a new map or opening an existing one.
 //
 MapMem::MapMem(
-  const char *	    fileName,
-  MapType	    type,
-  MapVersion	    mapVersion,
-  ios::open_mode    mode,
-  bool		    create,
-  MapAddr	    baseAddr,
-  size_type	    size,
-  MapMask	    permMask
+  const char *		fileName,
+  MapType		type,
+  MapVersion		mapVersion,
+  std::ios::openmode    mode,
+  bool			create,
+  MapAddr		baseAddr,
+  size_type		size,
+  MapMask		permMask
   )
   : MapFile( fileName, baseAddr, mode, create, size, permMask ),
     errorNum( E_OK ),
@@ -75,7 +50,7 @@ MapMem::MapMem(
     openMapMem( fileName, type, mapVersion, mode, false );
 }
 
-  
+
 //
 // Constructor for creating a new map
 //
@@ -95,11 +70,11 @@ MapMem::MapMem(
 
 // constructor for opening an existing map
 MapMem::MapMem(
-  const char *	    fileName,
-  MapType   	    type,
-  MapVersion	    mapVersion,
-  ios::open_mode    mode,
-  bool		    overrideOwner
+  const char *		fileName,
+  MapType		type,
+  MapVersion		mapVersion,
+  std::ios::openmode    mode,
+  bool			overrideOwner
   )
   : MapFile( fileName, 0, mode )
 {
@@ -117,7 +92,7 @@ MapMem::getMapVersion( void ) const
 {
   return( (mapInfo()) ? mapInfo()->version : 0 );
 }
-	
+
 MapMem::MapType
 MapMem::getType( void  ) const
 {
@@ -146,11 +121,11 @@ MapMem::good( void ) const
 const char *
 MapMem::error( void ) const
 {
-  static Str errStr;
+  static clue::Str errStr;
   errStr.reset();
-  
-  errStr << MapMem::getClassName();
-  
+
+  errStr << "MapMem";
+
   if( good() )
     {
       errStr << ": ok";
@@ -174,47 +149,32 @@ MapMem::error( void ) const
 	    errStr << ErrorStrings[ errorNum ];
 	  break;
 	}
-      
+
       if( eSize == errStr.size() )
         errStr << ": unknown error";
-      
+
     }
   return( errStr.cstr() );
 }
 
-const char *
-MapMem::getClassName( void ) const
-{
-  return( "MapMem" );
-}
 
-const char *
-MapMem::getVersion( bool withPrjVer ) const
-{
-  return( version.getVer( withPrjVer ) );
-}
-  
-ostream &
+std::ostream &
 MapMem::dumpInfo(
-  ostream &	dest,
-  const char *	prefix,
-  bool		showVer
+  std::ostream &    dest,
+  const char *	    prefix
   ) const
 {
-  if( showVer )
-    dest << MapMem::getClassName() << ":\n"
-	 << MapMem::getVersion() << '\n';
-      
+
   if( ! MapMem::good() )
     dest << prefix << "Error: " << MapMem::error() << '\n';
   else
     dest << prefix << "Good" << '\n';
 
-  Str pre;
+  clue::Str pre;
   pre = prefix;
-  pre << MapFile::getClassName() << "::";
+  pre << "MapFile::";
 
-  MapFile::dumpInfo( dest, pre, false );
+  MapFile::dumpInfo( dest, pre );
 
   if( mapInfo() != 0 )
     {
@@ -237,12 +197,12 @@ void
 MapMem::createMapMem( MapType type, MapVersion mapVersion, MapAddr baseAddr )
 {
   osErrno = 0;
-  
+
   if( mapInfo() != 0 )
     {
       mapInfo()->type	    = type;
       mapInfo()->version    = mapVersion;
-      mapInfo()->base	    = (MapBaseAddr)baseAddr;      
+      mapInfo()->base	    = (MapBaseAddr)baseAddr;
       mapInfo()->size	    = getSize();
       mapInfo()->owner	    = getpid();
       errorNum = E_OK;
@@ -255,11 +215,11 @@ MapMem::createMapMem( MapType type, MapVersion mapVersion, MapAddr baseAddr )
 
 void
 MapMem::openMapMem(
-  const char *	    fileName,
-  MapType   	    type,
-  MapVersion	    mapVersion,
-  ios::open_mode    mode,
-  bool		    overrideOwner
+  const char *		fileName,
+  MapType		type,
+  MapVersion		mapVersion,
+  std::ios::openmode    mode,
+  bool			overrideOwner
   )
 {
   if( ! MapFile::good() )
@@ -290,14 +250,14 @@ MapMem::openMapMem(
       return;
     }
 
-  
+
   MapAddr   mapToAddr = (MapAddr)info->base;
-  
+
   unmap();
 
   if( map( fileName, mapToAddr, mode ) )
     {
-      if( mode & ios::out )
+      if( mode & std::ios::out )
 	{
 	  if( mapInfo()->owner && ! overrideOwner )
 	    {
@@ -311,71 +271,4 @@ MapMem::openMapMem(
 
 }
 
-// Revision Log:
-//
-// $Log$
-// Revision 4.3  2003/08/09 12:43:23  houghton
-// Changed ver strings.
-//
-// Revision 4.2  2003/07/19 09:11:13  houghton
-// Port to 64 bit.
-//
-// Revision 4.1  2001/07/27 00:57:43  houghton
-// Change Major Version to 4
-//
-// Revision 2.11  1997/10/01 14:00:54  houghton
-// Changed to use portable multi platform data types.
-//
-// Revision 2.10  1997/09/17 16:56:02  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.9  1997/07/19 10:26:35  houghton
-// Port(Sun5): renamed local variables to eliminate compiler warnings.
-//
-// Revision 2.8  1997/07/13 11:17:48  houghton
-// Cleanup
-// Added owner.
-//
-// Revision 2.7  1997/06/27 12:15:06  houghton
-// Cleanup dumpInfo output.
-//
-// Revision 2.6  1997/06/09 11:57:50  houghton
-// Bug-Fix: have to grab the base before I unmap.
-//
-// Revision 2.5  1997/06/05 11:23:36  houghton
-// Cleanup.
-// Change to be part of libMdb (vs StlUtils1).
-// Added constructor that can create or open existing.
-// Changed to use new MapFile types.
-// Added createMapMem and openMapMemMehtods.
-//
-// Revision 2.4  1997/04/04 20:49:11  houghton
-// Cleanup.
-//
-// Revision 2.3  1997/03/07 11:49:12  houghton
-// Add dumpInfo.
-//
-// Revision 2.2  1997/03/03 14:32:31  houghton
-// Added virtual destructor.
-//
-// Revision 2.1  1995/11/10 12:42:29  houghton
-// Change to Version 2
-//
-// Revision 1.4  1995/11/05  16:32:33  houghton
-// Revised
-//
-// Revision 1.1  1995/02/13  16:08:49  houghton
-// New Style Avl an memory management. Many New Classes
-//
-
-//
-//              This software is the sole property of
-// 
-//                 The Williams Companies, Inc.
-//                        1 Williams Center
-//                          P.O. Box 2400
-//        Copyright (c) 1994 by The Williams Companies, Inc.
-// 
-//                      All Rights Reserved.  
-// 
-//
+}; // namespace clue

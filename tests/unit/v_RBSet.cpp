@@ -1,29 +1,21 @@
-//
-// File:        tRBSet.C
-// Project:	Mdb
-// Desc:        
-//
-//  This is a small simple test of the RBSet<> tempate class.
-//  Since RBSet gets all of it's functionallity from RBTree,
-//  most of the testing ins done on the RBTree class.
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/23/97 06:26
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+/* 1997-07-23 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <RBSet.hh>
-#include <MapMemDynamicFixed.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+   This is a small simple test of the RBSet<> tempate class.
+   Since RBSet gets all of it's functionallity from RBTree,
+   most of the testing ins done on the RBTree class.
+*/
 
-#include <LibTest.hh>
-#include <Compare.hh>
+#include <mdb/RBSet.hpp>
+#include <mdb/MapMemDynamicFixed.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
+#include <clue/compare>
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 #define TEST_TABLE_FILENAME	TEST_DATA_DIR "/tRBSet.rbs"
 
@@ -40,15 +32,16 @@ operator < ( const Rec & one, const Rec & two )
   return( one.k < two.k );
 }
 
-typedef RBSet< Rec, less< Rec > >   Table;
+typedef RBSet< Rec, std::less< Rec > >   Table;
 
-
-bool
-tRBSet( LibTest & tester )
+valid::verify &
+v_RBSet( void )
 {
+  static VVDESC( "mdb::RBSet" );
+
   {
     MapMemDynamicFixed	mmdf( TEST_TABLE_FILENAME,
-			      (ios::open_mode)(ios::in|ios::out),
+			      std::ios::in|std::ios::out,
 			      true,
 			      Table::getNodeSize(),
 			      1,
@@ -58,17 +51,17 @@ tRBSet( LibTest & tester )
 
     Table   t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     TEST( t.size() == 0 );
     TEST( t.empty() );
-    
+
     Rec r;
 
     {
       // insert
       Table::pair_iterator_bool ins;
-      
+
       for( long k = 5; k < 100; ++ k )
 	{
 	  r.k = k;
@@ -80,15 +73,15 @@ tRBSet( LibTest & tester )
 
     TEST( t.size() == (100 - 5) );
     TEST( ! t.empty() );
-    
+
     {
       // find
       Table::iterator it;
-      
+
       for( long k = 0; k < 150; ++ k )
 	{
 	  r.k = k;
-	  
+
 	  it = t.find( r );
 	  if( k >= 5 && k < 100 )
 	    {
@@ -106,18 +99,18 @@ tRBSet( LibTest & tester )
 
   {
     // construct ios::in|ios::out
-    
+
     MapMemDynamicFixed	mmdf( TEST_TABLE_FILENAME,
-			      (ios::open_mode)(ios::in|ios::out) );
+			      std::ios::in|std::ios::out );
 
     MultiMemOffsetMapDynamic mmo( &mmdf, false );
 
     Table   t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     Rec r;
-    
+
     {
       r.k = 20;
       TEST( t.erase( r ) );
@@ -160,7 +153,7 @@ tRBSet( LibTest & tester )
 
 	  if( k == 10 )
 	    k = 16;
-	  
+
 	  if( k == 20 || k == 25 || k == 30 || k == 35 )
 	    ++ k;
 	}
@@ -177,7 +170,7 @@ tRBSet( LibTest & tester )
 	  -- k;
 	  if( k == 15 )
 	    k = 9;
-	  
+
 	  if( k == 20 || k == 25 || k == 30 || k == 35)
 	    --k;
 	}
@@ -189,26 +182,26 @@ tRBSet( LibTest & tester )
 
   {
     // const Table
-    
+
     MapMemDynamicFixed	mmdf( TEST_TABLE_FILENAME,
-			      ios::in );
+			      std::ios::in );
 
     MultiMemOffsetMapDynamic mmo( &mmdf, false );
 
     const Table   t( &mmo );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     Rec r;
 
     {
       // find const
       Table::const_iterator it;
-      
+
       for( long k = 0; k < 150; ++ k )
 	{
 	  r.k = k;
-	  
+
 	  it = t.find( r );
 	  if( k >= 5 && k < 100 &&
 	      ( k < 10 || k > 15 ) &&
@@ -235,7 +228,7 @@ tRBSet( LibTest & tester )
 
 	  if( k == 10 )
 	    k = 16;
-	  
+
 	  if( k == 20 || k == 25 || k == 30 || k == 35 )
 	    ++ k;
 	}
@@ -252,7 +245,7 @@ tRBSet( LibTest & tester )
 	  -- k;
 	  if( k == 15 )
 	    k = 9;
-	  
+
 	  if( k == 20 || k == 25 || k == 30 || k == 35)
 	    --k;
 	}
@@ -260,44 +253,27 @@ tRBSet( LibTest & tester )
       TEST( k == 4 );
     }
 
-    TEST( ::compare( t.getClassName(), "RBSet< Key, LessKey >" ) == 0 );
-    TEST( t.getVersion() != 0 );
+    // tester.getDump() << endl;
+    // t.dumpInfo( tester.getDump() ) << endl;;
+    // tester.getDump() << t.dump() << endl;
 
-    tester.getDump() << endl;
-    t.dumpInfo( tester.getDump() ) << endl;;
-    tester.getDump() << t.dump() << endl;
-    
   }
 
   {
     // now just empty the entire tree
-    
+
     MapMemDynamicFixed	mmdf( TEST_TABLE_FILENAME,
-			      (ios::open_mode)(ios::in|ios::out) );
+			      std::ios::in|std::ios::out );
 
     MultiMemOffsetMapDynamic mmo( &mmdf, false );
 
     Table   t( &mmo, 0 );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     TEST( t.erase( t.begin(), t.end() ) );
     TEST( t.size() == 0 );
     TEST( t.empty() );
   }
-
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-	    
-	    
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:46  houghton
-// Change Major Version to 4
-//
-// Revision 2.1  1997/07/25 13:40:51  houghton
-// Initial Version.
-//
-//

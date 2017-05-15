@@ -1,31 +1,21 @@
-//
-// File:        tDRBTree02.C
-// Project:	Mdb
-// Desc:        
-//
-//  Compiled sources for tDRBTree02
-//  
-// Author:      Paul A. Houghton - (paul.houghton@wcom.com)
-// Created:     07/16/97 06:28
-//
-// Revision History: (See end of file for Revision Log)
-//
-//  Last Mod By:    $Author$
-//  Last Mod:	    $Date$
-//  Version:	    $Revision$
-//
+// 1997-07-16 (cc) Paul Houghton <paul4hough@gmail.com>
 
-#include <TestConfig.hh>
-#include <DRBTree.hh>
-#include <MdbUtils.hh>
-#include <MapMemDynamicDynamic.hh>
-#include <MultiMemOffsetMapDynamic.hh>
+#include <mdb/DRBTree.hpp>
+#include <mdb/MdbIdent.hpp>
+#include <mdb/MapMemDynamicDynamic.hpp>
+#include <mdb/MultiMemOffsetMapDynamic.hpp>
+#include <valid/verify.hpp>
 
-#include <StlUtilsMisc.hh>
-#include <LibTest.hh>
+#include <clue/Clue.hpp>
 
 #include <vector>
 #include <functional>
+
+#define TEST_DATA_DIR "data"
+#define TEST VVTRUE
+
+using namespace mdb;
+using namespace clue;
 
 struct Rec
 {
@@ -40,14 +30,15 @@ operator < ( const Rec & one, const Rec & two )
   return( one.k < two.k );
 }
 
-typedef DRBTree< Rec, Rec, MdbIdent< Rec, Rec >, less< Rec > >   Tree;
+typedef DRBTree< Rec, Rec, MdbIdent< Rec, Rec >, std::less< Rec > >   Tree;
 
-bool
-tDRBTree02( LibTest & tester )
+valid::verify &
+v_DRBTree02( void )
 {
+  static VVDESC( "mdb::DRBTree02" );
   {
     MapMemDynamicDynamic    mmdd( TEST_DATA_DIR "/tDRBTree02.drbt",
-				  (ios::open_mode)(ios::in|ios::out),
+				  std::ios::in|std::ios::out,
 				  true,
 				  1,
 				  1,
@@ -55,23 +46,23 @@ tDRBTree02( LibTest & tester )
 
     MultiMemOffsetMapDynamic	mmo( &mmdd, false );
 
-    TESTR( mmo.error(), mmo.good() );
-    
+    TEST( mmo.good() );
+
     Tree    t( &mmo, 0, true );
 
-    TESTR( t.error(), t.good() );
+    TEST( t.good() );
 
     {
       Tree::pair_iterator_bool	ins;
       Rec r;
-      
+
       for( long k = 4; k < 20; k += 2 )
 	{
 	  for( long e = 5; e < 30; e += 5 )
 	    {
 	      r.k = k;
 	      r.v = (k * 100) + e;
-	      
+
 	      ins = t.insert( r, e );
 	      TEST( ins.second );
 	      TEST( (*ins.first).k == r.k );
@@ -79,7 +70,7 @@ tDRBTree02( LibTest & tester )
 	    }
 	}
     }
-    
+
     {
       Tree::const_iterator  it;
       Rec r;
@@ -89,13 +80,13 @@ tDRBTree02( LibTest & tester )
 	    {
 	      r.k = k;
 	      it = t.find( r, e );
-	      
+
 	      if( k >= 4 && k < 20 && (k % 2) == 0  && e >= 5 )
 		{
 		  TEST( it != t.end() );
 		  TEST( (*it).k == k );
-		  TEST( (*it).v == (k * 100) + RoundDown( min( e, 25L ), 5 ) );
-		
+		  TEST( (*it).v == (k * 100) + RoundDown( std::min( e, 25L ), 5 ) );
+
 		}
 	      else
 		{
@@ -104,7 +95,7 @@ tDRBTree02( LibTest & tester )
 	    }
 	}
     }
-    
+
     {
       Tree::const_iterator them = t.begin();
       long	     k = 4;
@@ -121,29 +112,10 @@ tDRBTree02( LibTest & tester )
 	      e = 25;
 	    }
 	}
-      TEST( them == t.end() );      
+      TEST( them == t.end() );
       TEST( k == 20 );
       TEST( e == 25 );
     }
   }
-
-  return( true );
+  return( VALID_VALIDATOR );
 }
-
-
-// Revision Log:
-//
-// $Log$
-// Revision 4.1  2001/07/27 00:57:45  houghton
-// Change Major Version to 4
-//
-// Revision 2.3  1997/09/17 16:56:12  houghton
-// Changed for new library rename to StlUtils
-//
-// Revision 2.2  1997/07/19 10:37:48  houghton
-// Bug-Fix: forgot to declare return type.
-//
-// Revision 2.1  1997/07/16 16:38:55  houghton
-// Initial Version (work in progress).
-//
-//
