@@ -8,7 +8,7 @@ were developed using (draft) ANSI Standard C++ and Unix's mapped
 memory system calls.
 
 Just to 'wet your appetite', during one of the performance test
-we where able to perform over 250,000 index searches per second on
+we were able to perform over 250,000 index searches per second on
 a 1,000,000 record table.
 
 ## Features
@@ -73,7 +73,7 @@ standard methods:
 	bool		    erase( iterator pos )
 	bool		    erase( iterator first, iterator last )
 
-C++'s template capability is used to specialized the container
+C++'s template capability is used to specialize the container
 classes for a specific data type. For example, the following code
 segment shows how a Trunk Group table could be created and used.
 
@@ -205,11 +205,11 @@ greater degree of flexibility and reuse.
 
 When deciding exactly which combination of classes to use for a
 specific Memory Database Table, there are a two primary factors to
-consider. The most significant of these is where to used fixed
+consider. The most significant of these is where to use fixed
 or dynamic addressing.
 
 Fixed addressing is faster that dynamic, but forces an application
-to pre-determine the maximum size of a table. It also creates and
+to pre-determine the maximum size of a table. It also creates an
 operating system dependency, because each OS uses different
 addresses for memory mapped files. For now, the fixed addressing
 capability has been designed for, but the classes have not yet
@@ -232,7 +232,7 @@ and the Mapped Memory class used by the Chunk Management Classes.
 ### Memory Interface Classes
 
 The Memory Interface classes define the interface for
-allocating and releasing chunks of memory. The also provide
+allocating and releasing chunks of memory. This also provides an
 offset to address translation and access to 16 specialized
 'key' values.
 
